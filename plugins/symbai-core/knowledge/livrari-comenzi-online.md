@@ -1,0 +1,95 @@
+# Livrări și comenzi online
+
+> Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie` — el e sursa autoritară de navigare.
+
+## Pe scurt
+Modulul acoperă tot ce pleacă din local către client: comenzile de pe platformele de livrare (Glovo, Wolt, Bolt Food, Tazz), livrarea cu flotă proprie (dispecerat, zone, livratori, vehicule), comenzile magazinului online (expediere cu AWB prin curieri naționali, retururi, antifraudă, marketplace-uri gen eMAG) și abonamentele cu livrări recurente. Include și aplicația dedicată a livratorului (PWA „Symbai Livrator") plus pagina publică de urmărire a comenzii pentru client.
+
+## Concepte
+- **Canal de livrare** — o conexiune cu o platformă externă (Glovo, Wolt, Bolt Food, Tazz): meniul se sincronizează spre platformă, comenzile vin automat în Symbai. Un canal poate fi Online/Offline și poate fi **pauzat** (cu motiv afișat).
+- **Livrator** — angajat marcat nominal „este livrator" în Flotă → tab Livratori. Doar angajații bifați pot primi comenzi de livrare; numărul de livratori se facturează separat (modul Livrator, 29€/livrator, raportat automat în Hub). Bifarea NU ascunde pagini.
+- **Schimb (tură de livrare)** — livrator + vehicul + km la plecare; se închide cu km la final. Un livrator e „activ" în dispecerat doar cu schimb deschis și poziție GPS recentă (15 min).
+- **Zonă de livrare** — arie pe hartă (desen liber sau localități alese cu contur administrativ automat; localitățile mici, fără contur disponibil pe hartă, se adaugă ca arie pătrată în jurul centrului, cu raza aleasă de tine) cu taxă de livrare, valoare minimă comandă, prag de livrare gratuită, ore limită și capacitate maximă de comenzi pe zi. Zonele sunt per locație.
+- **SLA** — timpul promis de livrare (implicit 45 min); depășirile generează „breșe SLA" și alerte.
+- **Batching** — gruparea mai multor comenzi pe același livrator, cu limite de comenzi/lot, întârziere la ridicare și ocol maxim (km).
+- **Curier extern** — pentru o comandă proprie poți cere cotații și trimite livrarea unui curier terț (glovo, uber_direct, bolt_food, tazz), cu auto-fallback opțional dacă nu găsești livrator propriu.
+- **Livrare eșuată** — comandă marcată cu motiv: client absent, adresă greșită, refuzată, produs lipsă, altele; se poate relivra, reprograma sau anula.
+- **Închidere de zi (livrator)** — raportul zilnic al livratorului: km, cash încasat, card, combustibil, livrări reușite/eșuate, semnătură.
+- **AWB** — scrisoare de transport generată la curieri (Sameday, FAN Courier, DPD România, GLS România, Cargus, plus KLG Europe pentru logistică externalizată) pentru coletele magazinului online; include tracking, etichete și reconciliere ramburs (COD).
+- **Marketplace** — platformă de vânzare externă pentru magazinul online: eMAG, Trendyol, Skroutz, Amazon, eBay.
+- **Tracking public** — link `/track/:token` trimis clientului: vede statusul comenzii, ETA și (dacă e activat) poziția live a livratorului, fără autentificare.
+
+## Paginile modulului
+
+### Platforme de livrare (agregatoare)
+- **Manager Canale** (`/channels`) — centrul integrărilor: 5 tab-uri — Prezentare & KPI (vânzări, timp mediu de preparare, rată comenzi pierdute, comisioane estimate), Control Comenzi, Meniu & Prețuri (sincronizarea meniului spre platforme), Reconciliere (loturi de decontare: plată așteptată vs primită, discrepanțe) și Integrări (conectare Glovo/Wolt/Bolt Food/Tazz cu credențialele platformei). Are ghid de configurare asistat în partea de sus.
+- **Livrări** (`/deliveries`, „Centru Livrări") — monitorizarea live a comenzilor de pe platforme: carduri statistici (comenzi noi, active, în pregătire, gata de ridicare, venituri și comision azi, canale pauzate), tab-uri Comenzi Active / Kanban / Istoric Comenzi / Rapoarte / Platforme. Accepți sau refuzi comenzi (cu motiv), le treci prin pregătire → gata → ridicată → livrată; buton „Acceptă Toate" (cere permisiunea de acțiuni în masă) și sunet de alertă la comenzi noi.
+
+### Flotă proprie și dispecerat
+- **Zone Livrare** (`/deliveries/zones`) — definirea zonelor pe hartă, cu taxe, praguri și program; tab-uri Zone / Program / Restricții (restricțiile per produs sunt deocamdată doar anunțate — vin într-o versiune viitoare). Pagina cere întâi alegerea unei locații (zonele sunt per locație).
+- **Flotă** (`/deliveries/fleet`) — 4 tab-uri: Vehicule (dubă/camion/mașină/frigorifică/bicicletă/scuter, capacitate comenzi, status activ/service), Livratori (bifezi nominal cine e livrator), Schimburi (deschidere/închidere cu km) și Livratori activi (poziție live, livrări azi).
+- **Dispecerat** (`/deliveries/dispatch`) — ecranul operatorului: kanban pe statusuri (pregătire → de livrat → asignat → în livrare → livrat/eșuat) + hartă cu comenzi și livratori. Asignezi manual, prin drag-and-drop pe livrator, sau cu butoanele „Sugerează"/„Asignează celui mai potrivit" (țin cont de zonă, distanță, capacitate vehicul și încărcare curentă). Vehiculul se completează automat din schimbul deschis al livratorului, cu posibilitate de suprascriere manuală.
+- **Mission Control Dispecerat** (`/dispatch/mission-control`) — consola avansată: KPI-urile zilei (livrate, eșuate, timp mediu, breșe SLA), alerte live cu confirmare/închidere, hartă live, recomandări top-3 livratori cu scor și motive, countdown SLA per comandă, „Comandă rapidă" (creată direct de operator: client, adresă, total, prioritate) și „Curier extern…" (cotații + trimitere).
+- **Setări Dispecerat** (`/dispatch/settings`) — SLA promis și praguri de alertă (fără livrator, livrator inactiv, blocat în bucătărie), auto-asignare cu prag de scor, batching, motor de rutare (OSRM/Mapbox/Google/fallback linie dreaptă), viteză medie, curieri externi activați, auto-fallback la extern și comutatoarele de tracking public (poziție livrator, SMS cu ETA).
+- **Analiză Dispecerat** (`/dispatch/analytics`) — KPI pe 1/7/30/90 zile, alerte pe tip, top livratori, jurnal de audit al acțiunilor de dispecerat.
+- **Livrări eșuate** (`/deliveries/failed`) — listă filtrabilă pe perioadă/motiv/livrator, statistici per motiv, acțiuni: Re-livrează (înapoi în coadă), Reprogramează, sună clientul, Anulează definitiv; export CSV.
+- **Cheltuieli vehicule** (`/deliveries/vehicle-expenses`) — raport pe vehicul din schimburile închise: km, litri, RON carburant, RON/km, L/100km; adaugi bonuri de carburant legate de schimb; export CSV.
+- **Închideri de Zi Livrări** (`/deliveries/day-closures`) — registrul închiderilor de zi ale livratorilor: km, cash, card, combustibil, livrări, eșuate, semnat/nesemnat.
+- **Aplicație Livrator** (`/livrator`) — PWA-ul curierului, 4 tab-uri: Acasă (tura și livrările zilei), Livrări (pornește livrarea, navigare Google Maps/Waze/Apple Maps, încasare cash/card, semnătură destinatar, poză dovadă, marchează livrată/eșuată, descarcă aviz/POD PDF), Combustibil (bonuri) și Casă (tura + închiderea de zi). Tab-urile se văd după permisiunile rolului de livrator; funcționează și offline (acțiunile se sincronizează la revenirea semnalului). `/driver` și `/agent` redirecționează aici.
+- **Urmărire Livrare** (`/track/:token`) — pagină publică pentru client: pașii comenzii (Primită → În preparare → Gata de livrare → În drum → Livrată), ETA în minute, hartă cu poziția curierului și traseul, buton de apel către livrator; se actualizează automat la câteva secunde.
+
+### Magazin online (paginile apar doar dacă domeniul de activitate Magazin online / Ecommerce e activ)
+- **Comenzi** (`/ecommerce/orders`) — comenzile magazinului online: statusuri În așteptare → În procesare → Expediat → Livrat (plus Anulat/Rambursat), nivel de risc antifraudă per comandă, acțiuni Procesează/Expediază/Livrat/Anulează, filtre și acțiuni în masă.
+- **Retururi (RMA)** (`/ecommerce/returns`) — cereri de retur, KPI (rată retur, total rambursat, top motive și produse returnate) și politici de retur.
+- **Fraud & Risk** (`/ecommerce/fraud`) — scoring de risc și motor de reguli: tab-uri Raport, Manual review (coadă de verificare), Reguli.
+- **Livrare & Transport** (`/ecommerce/shipping`) — zone de livrare, metode și tarife de transport pentru magazinele online (inclusiv „transport gratuit peste X RON").
+- **Marketplaces** (`/ecommerce/marketplaces`) — vedere unificată eMAG, Trendyol, Skroutz, Amazon, eBay: Dashboard, Conturi, Comenzi, Mapare oferte, Jurnal sincronizare. `/ecommerce/emag` redirecționează aici.
+- **AWB Curieri** (`/ecommerce/awb`) — generare AWB (inclusiv în masă) la Sameday/FAN Courier/DPD/GLS/Cargus/KLG Europe, tracking și etichete, reconciliere ramburs (COD), administrare conturi de curier.
+
+### Alte canale de comandă
+- **Abonamente** (`/subscriptions`) — abonamentele clienților cu livrări recurente: KPI MRR/ARR/ARPU/churn/LTV/venit 30 zile, listă cu căutare și filtru pe status (activ, trial, pauză, restant, anulat), acțiuni pauză/reactivare/anulare, iar pe fiecare abonament: livrările lui, evenimentele de plată eșuată (dunning) și istoricul.
+- **Inbox WhatsApp** (`/whatsapp-inbox`) — conversațiile WhatsApp cu clienții pe numărul central, per brand: fire de discuție stil WhatsApp, trimitere text/poze/documente, reacții, marcare citit; util pentru clienții care comandă prin mesaje.
+
+## Fluxuri frecvente
+1. **Conectezi Glovo/Wolt/Bolt/Tazz**: `/channels` → tab Integrări → adaugi canalul cu datele de la platformă (la Wolt: client ID/secret + venue) → sincronizezi meniul din tab Meniu & Prețuri → comenzile încep să apară în `/deliveries`.
+2. **Gestionezi comenzile de pe platforme**: `/deliveries` → tab Comenzi Active → accepți (sau „Acceptă Toate") → „În pregătire" → „Gata" → „Ridicată" → „Livrată"; refuzi cu motiv scris (ex. ingredient indisponibil).
+3. **Pornești livrarea cu flotă proprie**: `/deliveries/fleet` → tab Livratori → bifezi angajații curieri → tab Vehicule → adaugi vehiculele → tab Schimburi → „Deschide schimb" (livrator + vehicul + km) → definești zonele în `/deliveries/zones`.
+4. **Asignezi o comandă**: `/deliveries/dispatch` → bifezi comanda din coloana „De livrat" → alegi livratorul activ (sau „Asignează celui mai potrivit", sau tragi cardul comenzii peste livrator) → livratorul o vede instant în `/livrator`.
+5. **Livratorul finalizează**: în `/livrator` → „Pornesc livrarea" → navighează → „Încasare" (sumă + metodă) → opțional semnătură/poză → „Marchează livrată"; la sfârșitul zilei → tab Casă → închidere de zi; managerul o vede în `/deliveries/day-closures`.
+6. **Tratezi o livrare eșuată**: livratorul (sau dispecerul) o marchează eșuată cu motiv → în `/deliveries/failed` alegi: „Re-livrează" (înapoi în coada de dispecerat), „Reprogramează" la o oră anume, suni clientul sau „Anulează" definitiv.
+7. **Trimiți comanda unui curier extern**: activezi providerii în `/dispatch/settings` → în Mission Control, la comandă, „Curier extern…" → compari cotațiile → trimiți; comanda apare cu numele providerului în loc de livrator propriu.
+8. **Expediezi o comandă de magazin online**: `/ecommerce/orders` → Procesează → `/ecommerce/awb` → tab Generează AWB → alegi contul de curier și comenzile eligibile → generezi AWB-urile → tipărești etichetele → urmărești în Tracking & Etichete → la ramburs, închizi banii în Reconciliere COD.
+
+## Tool-uri MCP utile
+**Citire (fără permisiune de modul):**
+- `gaseste_in_aplicatie` — găsește pagina potrivită și dă link direct („unde configurez zonele de livrare?").
+- `raport_vanzari` — încasări pe perioadă cu defalcare pe metode de plată; bun pentru totalul zilei inclusiv comenzile online.
+- `get_orders_summary` — sumar comenzi pe perioadă: câte, ce produse, în ce cantități.
+- `top_produse` / `vanzari_in_timp` — ce se vinde și la ce ore (util pentru orele de vârf la livrare).
+- `jurnal_activitate` — cine a făcut ce pe comenzi: anulări, modificări, plăți (filtrabil pe entitate `order`).
+- `list_entities` — listare rapidă de entități per brand.
+- `get_portal_config` — configurația portalului de comenzi online (inclusiv livrare/ridicare).
+
+**SQL (doar-citire, dacă token-ul are toggle-ul SQL):** `list_database_tables` → `describe_database_table` → `execute_sql_query` — pentru întrebări pe care rapoartele dedicate nu le acoperă (ex. livrări eșuate pe motiv).
+
+**Scriere (cere modulul de permisiune `setari` pe token):**
+- `create_delivery_channel` — configurează un canal de livrare (platformă, brand, locație).
+- `configure_portal_general` — pornește/oprește livrarea și ridicarea personală pe portalul de comenzi online (allowDelivery / allowPickup).
+
+## Întrebări frecvente și capcane
+- **De ce nu văd comenzile de pe Glovo?** Verifică `/channels` → Integrări: canalul trebuie conectat și Online. Un canal **pauzat** apare cu badge roșu și motiv în `/deliveries` → tab Platforme.
+- **De ce nu pot asigna comanda unui angajat?** Trebuie să fie bifat ca livrator (Flotă → Livratori) ȘI să aibă un **schimb deschis**. Lista „Alege livrator activ" arată doar livratorii cu schimb deschis.
+- **De ce livratorul apare „Offline" deși lucrează?** Statusul vine din poziția GPS trimisă de aplicația livratorului; fără poziție în ultimele 15 minute dispare din „Livratori activi". Verifică dacă are aplicația deschisă și tracking-ul pornit.
+- **Livratorii costă în plus?** Da — fiecare angajat bifat ca livrator se taxează nominal (modul Livrator, 29€/livrator) și numărul se trimite automat în Hub. Bifarea nu dă și nu ia acces la pagini.
+- **De ce nu se salvează vehiculul pe care îl aleg eu la asignare?** Implicit se ia vehiculul din schimbul deschis al livratorului; alegerea manuală e opțională și are prioritate. La drag-and-drop se folosește mereu vehiculul din schimbul livratorului țintă.
+- **De ce pagina Zone Livrare e blocată?** Zonele sunt per locație — alege întâi o locație din selectorul de sus.
+- **Clientul nu vede poziția curierului pe linkul de tracking** — opțiunea „Afișează poziția livratorului" trebuie activată în `/dispatch/settings` (Tracking public).
+- **De ce nu primesc alerte de întârziere?** Pragurile (SLA promis, „fără livrator", „livrator inactiv", „blocat în bucătărie") se setează în `/dispatch/settings`; alertele apar în Mission Control.
+- **Comenzile Glovo/Wolt nu apar în Dispecerat** — sunt fluxuri separate: platformele își aduc curierii lor (le gestionezi în `/deliveries`), iar Dispeceratul e pentru livrările cu flota proprie sau curieri externi comandați de tine.
+- **De ce nu văd paginile /ecommerce/...?** Apar doar dacă domeniul de activitate Magazin online / Ecommerce e activ pe firmă; în plus, anumite pagini pot fi ascunse administrativ din Symbai Hub.
+- **O livrare eșuată dispare dacă o anulez?** Anularea e definitivă (comanda trece pe Anulată); dacă vrei să mai încerci, folosește „Re-livrează" sau „Reprogramează".
+- **Profitabilitatea pe platforme după comision?** Pe scurt în `/channels` → Prezentare & KPI și `/deliveries` → Rapoarte/Platforme (comision azi, rată anulare, timp de pregătire); pentru analiza completă există KPI-uri dedicate de profitabilitate a canalelor în P&L.
+
+## Pentru acces SQL
+Tabele relevante: `channel_orders` + `delivery_channels` (comenzile și canalele platformelor), `orders` (comenzile interne, inclusiv câmpurile de livrare: adresă, livrator asignat, motiv eșec), `delivery_zones` + `delivery_schedules`, `vehicles` + `vehicle_shifts` + `fuel_receipts`, `driver_day_closures`, `driver_locations`, `delivery_photos`, `delivery_alerts` + `dispatch_settings` + `dispatch_audit` + `delivery_provider_quotes`, `ecommerce_orders` + `ecommerce_order_items`, `courier_accounts` + `awb_shipments`, `marketplace_accounts` + `marketplace_order_map`, `subscriptions` + `subscription_deliveries`, `central_whatsapp_messages`.
+Exemple: „câte comenzi Glovo am avut săptămâna asta" → `channel_orders` filtrat pe canal; „livrările eșuate pe motive luna asta" → `orders` cu motivul de eșec; „câți km a făcut fiecare vehicul" → `vehicle_shifts` (km start/final).

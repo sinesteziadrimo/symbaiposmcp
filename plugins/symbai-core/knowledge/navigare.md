@@ -19,7 +19,7 @@ Dă utilizatorului **link-ul direct** — poate da click. Dacă sunt mai multe p
 
 - „Sunt pe X, cum ajung la Y" → `gaseste_in_aplicatie("Y")`, dă link.
 - „Unde văd / unde modific Z" → `gaseste_in_aplicatie("Z")`.
-- „Ce face pagina asta?" → după ce identifici pagina, explică din fișierul de modul potrivit (`comenzi-mese-ospatari.md`, `produse-meniu-retete.md`, `rapoarte-preturi.md`, `marketing-social.md`).
+- „Ce face pagina asta?" → după ce identifici pagina, explică din fișierul de modul potrivit (lista completă în `00-overview.md`); pentru orientare rapidă pe TOATE paginile și tab-urile lor există `harta-aplicatiei.md`.
 - „Nu găsesc butonul de ..." → întreabă ce vrea să **facă**, apoi `gaseste_in_aplicatie` pe intenție; dacă tot nu apare, poate ține de permisiunile rolului lui (spune-i să verifice cu un cont de proprietar/manager).
 
 ## Link-uri

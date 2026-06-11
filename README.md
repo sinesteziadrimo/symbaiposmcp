@@ -3,7 +3,7 @@
 Acest repo e un **plugin Claude Code** care învață asistentul AI cum să lucreze cu platforma **Symbai** (sistem de management pentru restaurante și hoteluri). Conține:
 
 - **skills/** — workflow-uri pas-cu-pas (găsește o pagină, investighează o masă, adaugă un produs/rețetă, programează o postare, rapoarte & prețuri).
-- **knowledge/** — ghiduri client-facing despre fiecare modul Symbai (ce face, cum se leagă, ce înseamnă rapoartele, regulile de TVA).
+- **knowledge/** — biblioteca completă de cunoștințe client-facing: un ghid pentru FIECARE modul Symbai (POS & sală, meniu & rețete, stocuri & furnizori, producție & trasabilitate, rezervări & evenimente, personal, rapoarte & P&L, finanțe & e-Factura, livrări & magazin online, marketing & website, echipamente & KDS, setări, AI în aplicație), fiecare cu concepte, pagini, fluxuri pas-cu-pas, întrebări frecvente și capcane. Plus două referințe transversale: **harta-aplicatiei.md** (indexul tuturor paginilor aplicației) și **tools-mcp.md** (catalogul celor 228 de tool-uri ale conexiunii MCP, cu modelul de permisiuni).
 
 Pluginul se folosește **împreună cu conexiunea MCP** la instanța ta Symbai (date live + acțiuni reale). Conexiunea o adaugi separat din portalul Hub.
 

@@ -21,14 +21,30 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 **Regula de aur**: „unde e / cum ajung / dă-mi link" → `gaseste_in_aplicatie` (mereu la zi). „cum funcționează / ce înseamnă" → `knowledge/`. „ce s-a întâmplat / fă-mi X" → tool-uri MCP de citire/scriere.
 
+**Tool-uri dedicate (preferă-le, NU SQL — merg și fără acces SQL)**: vânzări → `raport_vanzari`; best sellers → `top_produse`; ore/zile de vârf → `vanzari_in_timp`; performanță ospătari → `performanta_ospatari`; „ce s-a întâmplat / cine a făcut" (audit) → `jurnal_activitate`. Detalii în skill-urile `rapoarte-preturi` și `investigheaza-masa`.
+
 ## Hartă rapidă a cunoștințelor (folderul knowledge/)
 
+Orientare:
 - `00-overview.md` — ce e Symbai, modulele, cum se leagă. Citește primul dacă nu știi unde se încadrează întrebarea.
 - `navigare.md` — cum e organizată aplicația + cum dai link-uri corecte.
-- `comenzi-mese-ospatari.md` — POS, mese, note, transferuri, operații ospătari, ce poți investiga.
-- `produse-meniu-retete.md` — produse vs articole de meniu vs rețete; cum adaugi corect; consum și cost.
-- `rapoarte-preturi.md` — ce rapoarte există, ce înseamnă cifrele, cum se stabilesc prețurile, TVA România.
-- `marketing-social.md` — postări social media, cum le programezi, ce se publică automat.
+- `harta-aplicatiei.md` — indexul exhaustiv al TUTUROR paginilor și tab-urilor (Grep aici când cauți o pagină pe care n-o cunoști).
+- `tools-mcp.md` — catalogul complet al celor 228 de tool-uri MCP + ce permisiune cere fiecare + ce NU se poate face prin conexiune.
+
+Module (fiecare cu: concepte, pagini, fluxuri pas-cu-pas, tool-uri utile, întrebări frecvente, tabele SQL):
+- `comenzi-mese-ospatari.md` — POS, plan de sală, mese, note, transferuri/reduceri/retururi, plăți (Viva/GP), comenzi QR, ture ospătari.
+- `produse-meniu-retete.md` — produse vs articole de meniu vs rețete; prețuri pe canale, oferte/happy hour, alergeni, „86", import meniu.
+- `stocuri-inventar-furnizori.md` — recepție (NIR), loturi FIFO/FEFO, consum zilnic + reprocesare, inventariere, furnizori și comenzi.
+- `productie-trasabilitate.md` — loturi/șarje, execuție pe stații, MPS/MRP, trasabilitate & recall, QC, containere QR.
+- `rezervari-clienti-evenimente.md` — rezervări, evenimente/petreceri (BEO, P&L), Sales CRM, clienți, loialitate, feedback, hotel (PMS).
+- `personal-hr.md` — angajați, roluri & permisiuni, ture & pontaj, contracte & salarizare, concedii, beneficii personal.
+- `rapoarte-preturi.md` — ce rapoarte există, P&L & KPI, food cost teoretic vs realizat, prețuri, TVA România.
+- `finante-facturare-contabilitate.md` — registru de casă legal, închidere de zi, rapoarte Z, facturi & e-Factura ANAF, note contabile, contracte.
+- `livrari-comenzi-online.md` — Glovo/Wolt/Bolt/Tazz, flotă proprie & dispecerat, aplicația livratorului, magazin online (AWB, retururi).
+- `marketing-social.md` — postări social, email, ads, GBP, blog/SEO, website & portal public, coduri QR.
+- `echipamente-kds-imprimante.md` — ecrane KDS, imprimante & Print Agent, casă de marcat fiscală, server local (edge), rutare bonuri.
+- `setari-administrare.md` — setări firmă/branduri/locații, TVA & metode de plată, RBAC, module & facturare Hub, integrări, reparații date.
+- `asistentul-ai-in-aplicatie.md` — Sym (butonul plutitor), agenții specialiști, memorii AI, importuri, loguri AI.
 
 ## Reguli de comportament
 

@@ -9,9 +9,15 @@ Citește `knowledge/rapoarte-preturi.md` pentru ce înseamnă fiecare indicator 
 
 ## Cum răspunzi la cifre
 
-- Cifre standard (vânzări azi/perioadă, top produse, clienți): folosește tool-urile dedicate întâi — `generate_report`, `analyze_food_costs`, `analyze_recipes`, `get_accounting_overview`, `get_staff_overview` — sunt mai rapide și mai sigure decât SQL.
-- Analize ad-hoc fără raport dedicat (ex. „clienți distincți luna trecută", „produse nevândute niciodată"): `execute_sql_query` dacă tokenul are SQL (workflow: list_tables → describe → SELECT cu coloane + WHERE + LIMIT).
-- **Dacă tokenul NU are acces SQL**: rămâi pe tool-urile dedicate (`generate_report`, `analyze_food_costs`, `analyze_recipes`, `get_accounting_overview`, `list_entities`). Pentru o analiză care chiar cere SQL, spune-i utilizatorului că poate activa „Interogări SQL" din portal Hub → Acces AI.
+Folosește ÎNTÂI tool-urile dedicate de raport (funcționează FĂRĂ acces SQL, sunt rapide, sigure și compară automat cu perioada anterioară). Toate acceptă `perioada` (azi, ieri, saptamana_aceasta, luna_aceasta, ultimele_7_zile, ultimele_30_zile, custom + startDate/endDate) și opțional `brandId`/`locationId`:
+
+- „cât am vândut / cum merg vânzările / cash vs card / cresc sau scad" → **`raport_vanzari`** (total, bon mediu, bacșiș, reduceri, pe metodă de plată + % vs perioada anterioară).
+- „ce se vinde cel mai bine / top produse / best sellers" → **`top_produse`** (cantitate, venituri, pondere; `ordine: venituri|cantitate`).
+- „când am cei mai mulți clienți / la ce oră e vârf / ce zi merge" → **`vanzari_in_timp`** (`grupare: zi|ora|zi_saptamana`).
+- „cum merg ospătarii / cine vinde cel mai mult / cine a luat cel mai mult bacșiș" → **`performanta_ospatari`**.
+
+Pentru alte analize: `analyze_food_costs`, `analyze_recipes` (food cost, marjă), `get_accounting_overview`, `generate_report`.
+- Analize ad-hoc fără tool dedicat (ex. „clienți distincți luna trecută", „produse nevândute niciodată"): `execute_sql_query` DOAR dacă tokenul are SQL (workflow: list_tables → describe → SELECT cu coloane + WHERE + LIMIT). Dacă nu are SQL, rămâi pe tool-urile dedicate de mai sus — acoperă marea majoritate.
 - Întotdeauna **etichetează clar** sumele: „total facturat", „de plătit", „încasat", „de încasat" — niciodată „total" gol pe o sumă cu sens dublu.
 
 ## Prețuri și marjă
