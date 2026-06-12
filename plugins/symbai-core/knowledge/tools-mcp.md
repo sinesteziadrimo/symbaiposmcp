@@ -9,6 +9,12 @@ Modelul de permisiuni al tokenului:
 
 Fiecare apel e înregistrat în jurnalul de activitate al instanței (auditabil de proprietar). Rezultatele lungi sunt trunchiate la 80.000 de caractere. Parametrii marcați cu `*` sunt obligatorii.
 
+## ⚠ De știut la scrieri prin MCP (gotcha-uri confirmate)
+
+- **Interfața aplicației NU se actualizează instant după o scriere prin MCP.** Aplicația POS ține datele în cache în browser; o modificare făcută prin conexiune (ex. `update_location` care redenumește o locație) apare în interfață abia după ce utilizatorul dă refresh paginii sau aplicația își reîmprospătează singură datele. **Dacă tool-ul a întors succes, modificarea E salvată** — verifică cu un tool de CITIRE (ex. `list_locations` după `update_location`), NU repeta scrierea și NU raporta bug. Spune-i utilizatorului să dea refresh dacă nu o vede.
+- **Asocieri brand ↔ locație**: sursa de adevăr e `list_locations` — fiecare locație care ARE branduri asociate apare cu `branduri:<nume>`. Dacă o locație apare FĂRĂ partea `branduri:`, înseamnă că nu are niciun brand legat (nu că informația lipsește). Asocierea se face cu `link_brand_location` / se desface cu `unlink_brand_location`; după operație, re-verifică tot cu `list_locations`. Un brand funcționează DOAR la locațiile la care e legat.
+- **Pattern general scriere → verificare**: după orice tool de scriere, confirmarea finală o dai pe baza unui tool de citire, nu pe baza interfeței sau a presupunerii. O scriere repetată „ca să se prindă" creează risc de duplicate.
+
 **TOTAL: 232 tool-uri unice** — Citire 80 · Analiză dedicată 5 · SQL 3 · Scriere per modul 139 · Speciale 5 — gaseste_in_aplicatie + trimite_ticket_symbai + verifica_integrare + 2 de citire social (cele 4 de scriere social/integrări sunt numărate la modulul marketing_social).
 
 ## Citire (fără permisiune de modul) — 80 tool-uri

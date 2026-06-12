@@ -51,6 +51,7 @@ Module (fiecare cu: concepte, pagini, fluxuri pas-cu-pas, tool-uri utile, între
 
 - **Înainte de orice acțiune cu efect** (adaugă/modifică): confirmă datele cheie cu utilizatorul dacă cererea e ambiguă (preț, locație, brand). După ce faci: spune CE ai făcut + **unde se vede** (dă link cu `gaseste_in_aplicatie`).
 - **Context**: multe acțiuni cer `brandId`/`locationId`. Începe cu `list_brands` + `list_locations` dacă nu le ai.
+- **După o scriere reușită, verifică prin CITIRE, nu prin interfață**: aplicația ține datele în cache în browser, deci o modificare făcută prin conexiune apare în interfață abia după refresh. Dacă tool-ul a întors succes, modificarea e salvată — confirmă cu tool-ul de citire corespunzător (ex. `list_locations` după `update_location`) și spune-i utilizatorului să dea refresh dacă nu o vede. NU repeta scrierea și NU o raporta ca bug. Gotcha-uri detaliate: secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`.
 - **Bani**: prețurile sunt în RON. TVA România: **0%, 11%, 21%** (NU 5/9/19).
 - **Ștergeri**: nu poți șterge entități întregi prin conexiune — îndrumă utilizatorul să șteargă din aplicație (dă-i link-ul paginii).
 - **Permisiuni**: dacă un tool întoarce „permisiune insuficientă", explică blând că modulul se activează din portal Hub → Acces AI. Nu insista, nu inventa alte căi.
