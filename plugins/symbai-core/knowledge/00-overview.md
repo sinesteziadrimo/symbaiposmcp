@@ -22,7 +22,7 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **Setări & Administrare** — locații, branduri, TVA, metode de plată, utilizatori și roluri, integrări, abonament. → `setari-administrare.md`
 - **AI în aplicație** — asistentul Sym (butonul plutitor) + agenții specialiști. → `asistentul-ai-in-aplicatie.md`
 
-Două fișiere de referință transversale: `harta-aplicatiei.md` (indexul exhaustiv al TUTUROR paginilor, generat din registrul de navigare al aplicației) și `tools-mcp.md` (catalogul complet al celor 228 de tool-uri MCP, cu modelul de permisiuni).
+Două fișiere de referință transversale: `harta-aplicatiei.md` (indexul exhaustiv al TUTUROR paginilor, generat din registrul de navigare al aplicației) și `tools-mcp.md` (catalogul complet al tool-urilor MCP, cu modelul de permisiuni).
 
 ## Cum se leagă (lanțul de bază)
 
