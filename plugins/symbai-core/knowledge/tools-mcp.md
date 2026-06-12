@@ -14,6 +14,10 @@ Fiecare apel e înregistrat în jurnalul de activitate al instanței (auditabil 
 - **Interfața aplicației NU se actualizează instant după o scriere prin MCP.** Aplicația POS ține datele în cache în browser; o modificare făcută prin conexiune (ex. `update_location` care redenumește o locație) apare în interfață abia după ce utilizatorul dă refresh paginii sau aplicația își reîmprospătează singură datele. **Dacă tool-ul a întors succes, modificarea E salvată** — verifică cu un tool de CITIRE (ex. `list_locations` după `update_location`), NU repeta scrierea și NU raporta bug. Spune-i utilizatorului să dea refresh dacă nu o vede.
 - **Asocieri brand ↔ locație**: sursa de adevăr e `list_locations` — fiecare locație care ARE branduri asociate apare cu `branduri:<nume>`. Dacă o locație apare FĂRĂ partea `branduri:`, înseamnă că nu are niciun brand legat (nu că informația lipsește). Asocierea se face cu `link_brand_location` / se desface cu `unlink_brand_location`; după operație, re-verifică tot cu `list_locations`. Un brand funcționează DOAR la locațiile la care e legat.
 - **Pattern general scriere → verificare**: după orice tool de scriere, confirmarea finală o dai pe baza unui tool de citire, nu pe baza interfeței sau a presupunerii. O scriere repetată „ca să se prindă" creează risc de duplicate.
+- **Dedupe silențios cu success**: `create_product` (nume exact), `create_menu` (nume+brand), `add_menu_item` (meniu+produs), `create_tag`, `create_allergen` întorc entitatea EXISTENTĂ fără să aplice parametrii trimiși. „Success" ≠ „creat" și ≠ „parametrii mei s-au aplicat" — caută înainte de a crea și citește răspunsul.
+- **Ce NU se poate scrie prin MCP la produse/meniu** (verificat 2026-06): categorii de meniu (creare + asignare), descriere produs (parametrul există dar nu se salvează), gramaj, imagini. Nu repeta apelurile și nu promite — predă userului tabelul de completat manual + pagina potrivită (categorii/descrieri: fișa produsului; poze: `/menu/pricing/bulk-photos` cu potrivire AI). Alergenii SE POT seta complet (`set_product_allergens`).
+- **Tag nou ≠ rutare**: tagurile rutează bonurile către imprimante/KDS doar dacă au regulă creată în aplicație (Setări → Imprimante). Refolosește tagurile existente ale clientului (`list_tag_summary` arată convenția); un produs cu tag fără regulă (sau fără tag) generează bonuri care NU ies nicăieri, fără eroare.
+- **Date lipsă = întrebări, nu invenții**: la importuri (meniu de pe site/PDF/Excel) nu inventa prețuri/gramaje/alergeni. Cere sursa de date userului; la site-uri SPA cu HTML gol caută API-ul JSON din spate; ce rămâne necunoscut se întreabă compact, o singură dată. Detalii: skill-ul `adauga-produs-reteta`.
 
 **TOTAL: 232 tool-uri unice** — Citire 80 · Analiză dedicată 5 · SQL 3 · Scriere per modul 139 · Speciale 5 — gaseste_in_aplicatie + trimite_ticket_symbai + verifica_integrare + 2 de citire social (cele 4 de scriere social/integrări sunt numărate la modulul marketing_social).
 
@@ -147,7 +151,7 @@ Workflow obligatoriu în 3 pași, SELECT-only (INSERT/UPDATE/DELETE refuzate), p
 ## Scriere per modul — 137 tool-uri (gated de writeModules pe token)
 
 ### produse_meniu — Produse & Meniuri — 27 tool-uri
-- create_product — Creează un produs nou; se pune pe o magazie (warehouseId), zona de depozitare se setează automat; prețul de VÂNZARE se setează doar prin meniuri (add_menu_item), pe produs doar receptionPrice (parametri cheie: name*, brandId*, warehouseId, storageZoneId, receptionPrice, unit, vat, type, …)
+- create_product — Creează un produs nou; se pune pe o magazie (warehouseId), zona de depozitare se setează automat; prețul de VÂNZARE se setează doar prin meniuri (add_menu_item), pe produs doar receptionPrice. ⚠ dedupe silențios pe nume EXACT (întoarce existentul cu success). ⚠ `description` din schemă NU se salvează — descrierile se completează din aplicație (parametri cheie: name*, brandId*, warehouseId, storageZoneId, receptionPrice, unit, vat, type, …)
 - update_product — Actualizează un produs existent (TVA, categorie, furnizor, tip, cont contabil, receptionPrice etc.) (parametri cheie: productId*, name, warehouseId, storageZoneId, receptionPrice, vat, unit, type, …)
 - bulk_create_products — Creează mai multe produse deodată (import eficient) (parametri cheie: brandId*, products*)
 - bulk_update_products — Actualizează în masă un câmp pe mai multe produse (TVA, unitate, tip, furnizor, preț achiziție) (parametri cheie: productIds*, updates*)
@@ -156,12 +160,12 @@ Workflow obligatoriu în 3 pași, SELECT-only (INSERT/UPDATE/DELETE refuzate), p
 - update_storage_zone — Actualizează o zonă de depozitare existentă (parametri cheie: storageZoneId*, name, parentId, warehouseId, sortOrder)
 - bulk_create_storage_zones — Creează mai multe sub-zone de depozitare într-o magazie (parametri cheie: brandId*, storageZones*)
 - set_initial_stock — Setează stocul inițial al unui produs (cantitatea curentă în inventar) (parametri cheie: productId*, quantity*)
-- create_menu — Creează un meniu nou (principal, bar, livrare, kiosk) (parametri cheie: name*, brandId*, description, isActive)
+- create_menu — Creează un meniu nou (principal, bar, livrare, kiosk). ⚠ se naște cu status DRAFT — activează-l cu update_menu(status:"active"); description/isActive nu se salvează (parametri cheie: name*, brandId*)
 - bulk_create_menus — Creează mai multe meniuri dintr-o dată (un meniu per brand) (parametri cheie: menus*)
 - update_menu — Actualizează un meniu existent (nume, status, setări) (parametri cheie: menuId*, brandId*, name, status, isDefault)
-- add_menu_item — Adaugă un produs într-un meniu cu preț de vânzare (parametri cheie: menuId*, productId*, price*, sortOrder, isAvailable)
-- update_menu_item — Actualizează un menu item (preț, nume, disponibilitate, categorie) (parametri cheie: brandId*, menuItemId*, price, name, available, storageZoneId)
-- bulk_update_menu_item_prices — Actualizează prețurile mai multor menu items dintr-o dată, prin potrivire după nume (parametri cheie: brandId*, items*)
+- add_menu_item — Adaugă un produs într-un meniu cu preț de vânzare. ⚠ trimite MEREU și `name` (acceptat deși nedocumentat) — fără el articolul se numește literal „Item". ⚠ NU setează categoria de meniu / descrierea / gramajul / poza — acelea se completează din aplicație (parametri cheie: menuId*, productId*, price*, name, sortOrder, isAvailable)
+- update_menu_item — Actualizează un menu item — scrie DOAR preț, nume, disponibilitate, storageZoneId; categoria de meniu NU se poate seta, în ciuda descrierii tool-ului (parametri cheie: brandId*, menuItemId*, price, name, available, storageZoneId)
+- bulk_update_menu_item_prices — Actualizează prețurile mai multor menu items dintr-o dată, prin potrivire după nume. ⚠ dă MEREU brandId, altfel potrivirea se face în tot sistemul (parametri cheie: brandId*, items*)
 - auto_create_menu_from_products — Creează automat un meniu cu produsele care nu sunt în niciun alt meniu (parametri cheie: brandId*, menuName)
 - apply_menu_prices — Actualizează prețurile menu items în bulk (parametri cheie: menuId*, prices*)
 - create_vat_rate — Creează o cotă TVA (globală, fără brandId) (parametri cheie: name*, rate*, isDefault)
@@ -173,12 +177,12 @@ Workflow obligatoriu în 3 pași, SELECT-only (INSERT/UPDATE/DELETE refuzate), p
 - bulk_remove_tag — Elimină un tag de la toate produsele/entitățile care corespund filtrelor (parametri cheie: tagId*, entityType, brandId, menuId, menuName, locationId, warehouseId, menuCategoryId, …)
 - auto_tag_from_menu_categories — Creează automat taguri din categoriile de meniu și le asignează produselor corespunzătoare (parametri cheie: brandId*, menuId, color)
 - create_allergen — Creează un alergen (ex: Gluten, Lactate, Ouă) (parametri cheie: name*, brandId*, code)
-- set_product_allergens — Setează alergenii unui produs (parametri cheie: productId*, allergenIds*)
+- set_product_allergens — Setează alergenii unui produs. ⚠ ÎNLOCUIEȘTE tot setul existent — citește întâi alergenii curenți; produsele cu rețetă moștenesc automat alergenii ingredientelor (parametri cheie: productId*, allergenIds*)
 
 ### retete — Rețete — 9 tool-uri
-- create_recipe — Creează o rețetă nouă de producție (parametri cheie: name*, productId, brandId, yield, prepTime, storageType, shelfLife, shelfLifeFrozen, …)
+- create_recipe — Creează o rețetă nouă de producție. ⚠ dă MEREU productId explicit — fără el se face match (și PARȚIAL!) pe nume sau se auto-creează un produs nou greșit (parametri cheie: name*, productId, brandId, yield, prepTime, storageType, shelfLife, shelfLifeFrozen, …)
 - update_recipe — Actualizează o rețetă existentă (parametri cheie: recipeId*, name, yield, prepTime, storageType, shelfLife, shelfLifeFrozen, station, …)
-- add_recipe_ingredients — Adaugă ingrediente la o rețetă (parametri cheie: recipeId*, ingredients*)
+- add_recipe_ingredients — Adaugă ingrediente la o rețetă. ⚠ folosește productId, NU productName (nume negăsit = produs raw_material auto-creat = dublură). ⚠ verifică ÎNAINTE unitatea produsului-ingredient: cantitatea rețetei trebuie în aceeași familie (g↔kg, ml↔cl↔l); pereche neconvertibilă trece BRUTĂ, fără avertisment → COGS și stoc distruse (parametri cheie: recipeId*, ingredients* [{productId, quantity*, unit}])
 - remove_recipe_ingredient — Șterge un ingredient dintr-o rețetă (parametri cheie: ingredientId*)
 - bulk_replace_recipe_ingredients — Înlocuiește toate ingredientele unei rețete dintr-o dată (parametri cheie: recipeId*, ingredients*)
 - add_recipe_outputs — Adaugă output-uri (produse finite, co-produse, subproduse) la o rețetă (parametri cheie: recipeId*, outputs*)

@@ -1,29 +1,93 @@
 ---
 name: adauga-produs-reteta
-description: Adaugă un produs nou, pune-l în meniu cu preț, sau creează o rețetă cu ingrediente. Folosește la „adaugă produsul X la N lei", „pune Y în meniu", „fă o rețetă pentru Z", „leagă ingredientele la produs".
+description: Adaugă produse noi sau importă un meniu întreg — complet și corect, tip de produs, TVA, unități, rețete, taguri de rutare, alergeni, categorii. Folosește la „adaugă produsul X la N lei", „pune Y în meniu", „fă o rețetă pentru Z", „importă meniul de pe site/PDF/Excel", „introdu produsele", „pune-le pe categorii", „taguri pentru imprimante/KDS".
 ---
 
-# Adaugă produs / pune în meniu / creează rețetă
+# Adaugă produse / importă meniu / creează rețete — corect și complet
 
-Citește întâi `knowledge/produse-meniu-retete.md` ca să folosești termenii corect (produs ≠ articol de meniu ≠ rețetă).
+Citește întâi `knowledge/produse-meniu-retete.md` (termenii: produs ≠ articol de meniu ≠ rețetă) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`.
 
-## Produs nou + în meniu
+**Două moduri de lucru:**
+- **(A) Un produs-două** („adaugă cola la 12 lei") → sari direct la Fazele 1, 2, 4, 5 — scurt, fără ceremonie.
+- **(B) Import în masă** (meniu întreg, zeci-sute de produse) → toate fazele, în ordine.
 
-1. Află contextul: `list_brands` + (dacă e cazul) `list_locations`, `list_menus`.
-2. `create_product` cu numele, unitatea de măsură, eventual prețul de achiziție/vânzare, gestiunea.
-3. Pentru a-l face vandabil pe un meniu: `add_menu_item(menuId, productId, price)` — prețul de vânzare pe acel meniu.
-4. Confirmă: spune ce ai creat + dă link la pagina de Meniu (`gaseste_in_aplicatie("meniu")`).
+Regula de bază peste tot: **nu inventa NIMIC** — nici prețuri, nici gramaje, nici alergeni. Ce lipsește se întreabă sau se lasă gol.
 
-## Rețetă nouă (consum + cost)
+## Faza 0 — Strânge datele (doar la import)
 
-Folosește tool-urile de producție:
-1. `create_recipe` (nume, produsul finit asociat dacă există).
-2. `add_recipe_ingredients` — ingredientele cu **cantitate în unitatea ingredientului**. Atenție la unități: g/kg și ml/l contează (200 g ≠ 200 kg) — altfel costul și stocul ies greșit.
-3. Opțional `add_recipe_outputs` pentru co-produse / semipreparate, `set_recipe_labels` pentru etichete nutriționale.
+1. **Întreabă userul de unde vin datele**: website-ul restaurantului? PDF cu meniul? Excel/export din vechiul POS? poze? pagina de Glovo/Wolt? Cere-i fișierele direct în chat.
+2. **Website**: ia conținutul URL-ului. Dacă HTML-ul vine gol → e un SPA (React/Angular/Vue); **caută API-ul din spate** — platformele de meniu au de regulă un endpoint JSON public (exemplu real: SmartMenu servește totul din Firebase Realtime DB, `https://smart-menu-...firebasedatabase.app/restaurant-menus/{slug}.json` → categorii → produse, cu name/price/description/weight/allergens/imageUrl per produs). Dacă nu găsești API-ul, cere userului un export sau screenshot-uri — nu ghici conținutul.
+3. **Per produs vrei**: nume, preț, categorie/secție (bucătărie vs bar), descriere, gramaj, alergeni, poză (URL), și pentru băuturi: cum se vinde (sticlă întreagă vs porție turnată).
+4. **Inventariază ce lipsește** și pune userului **UN singur set compact de întrebări**, nu câte una pe rând.
+5. Alternativă in-app (propune-o când userul are PDF/poze/Excel și preferă să nu treci tu prin MCP): paginile `/menu/import-pdf` (extrage produse + prețuri + poze + design) și `/ai-bulk-import` (Excel cu mapare AI) fac importul direct în aplicație.
 
-## Reguli
+## Faza 1 — Descoperă stilul clientului (OBLIGATORIU înainte de orice scriere)
 
-- Dacă lipsește prețul, întreabă; nu inventa.
-- TVA România: 0%, 11% (mâncare, de regulă), 21%. Dacă nu ești sigur de cotă, întreabă sau lasă default-ul brandului.
-- După acțiune: confirmă clar + link unde se vede. Dacă tokenul nu are scriere pe „Produse & Meniuri" / „Rețete", explică activarea din portal Hub → Acces AI.
-- Pentru modificări în masă (zeci de produse), folosește `bulk_create_products` / `bulk_update_products` și confirmă numărul înainte.
+1. `list_brands` + `list_locations` + `list_menus` — brandul și meniul țintă. Dacă creezi meniu nou cu `create_menu`: se naște **draft** — activează-l cu `update_menu(status: "active")`.
+2. `list_product_types(brandId)` — tipurile de produs REALE ale clientului (poate avea tipuri custom; folosește-le pe ale lui).
+3. **Stilul de taguri**: `list_tag_summary` + `list_tags` — vezi ce taguri există și câte produse are fiecare (ex. „BAR" 115 produse, „BUCATARIE" 113). **Tagurile existente au deja reguli de rutare către imprimante/KDS — refolosește-le întocmai** (același nume, nu variante noi). Cu SQL read activ, verifică ce taguri au rute: `SELECT t.name, r.printer_id, r.screen_ids FROM tag_routing_rules r JOIN tags t ON t.id=r.tag_id WHERE r.active`.
+4. `list_menu_categories(brandId)` — structura categoriilor (e ierarhică).
+5. **Stilul de bar**: `search_products_db` pe 2-3 băuturi cheie (ex. „vodka", „cola") + `get_warehouse_products_summary` pe gestiunea barului — vezi dacă clientul ține băuturile ca **marfă la bucată** sau ca **materie primă la litru cu rețete de porționare (40 ml)**. Introdu produsele noi ÎN ACELAȘI stil.
+6. **Dedupe**: `search_products_db` pe fiecare nume nou înainte de creare. `create_product` face dedupe doar pe nume EXACT — „Coca Cola" vs „Coca-Cola" creează dublură.
+
+## Faza 2 — Decide modelarea per produs
+
+Arborele de decizie (confirmat de clasificatorul oficial Symbai):
+
+| Clientul vinde… | Tip | Unitate | Rețetă |
+|---|---|---|---|
+| Băutură îmbuteliată/doză, țigări, snacks, vândute ca atare | `merchandise` (marfă) | buc | NU — consum direct 1:1 din stoc |
+| Shot/pahar turnat din sticlă (Vodka 40ml, vin la pahar) | produsul vândut: `merchandise`, buc, **CU rețetă** | — | 0.04 l (sau 40 ml) din sticla-sursă |
+| Sticla-sursă a porțiilor | `raw_material` (doar pt. porții/cocktailuri) sau `merchandise` (dacă se vinde și întreagă) | **l** (litri!) | NU; nu intră în meniu dacă nu se vinde întreagă |
+| Cocktail, cafea, limonadă (≥2 ingrediente) | `finished_good` | buc/porție | DA |
+| Preparat de bucătărie | `finished_good` | buc/porție | DA |
+| Sos/semipreparat de casă refolosit în rețete | `wip` (semipreparat) | kg/l | DA |
+| Ingredient cumpărat | `raw_material` | unitatea de achiziție (kg/l/buc) | NU |
+| Meniu de eveniment la preț fix, fără rețetă cunoscută | `masa_servita` — NU e în enum-ul create_product; se setează din UI/tipuri | — | NU (cost ulterior prin fișă de consum) |
+
+- **Capcana unității la spirtoase**: sticla TREBUIE ținută la **l** (litri). Dacă e în „buc", rețeta „40 ml" e neconvertibilă → consumă 0.04 BUCĂȚI per shot, **fără niciun avertisment prin MCP** (incident real: COGS ×1000, stocuri −12.000 kg). Conversia e automată DOAR în aceeași familie: g↔kg, ml↔cl↔dl↔l.
+- **TVA România: 0 / 11 / 21.** Mâncare preparată și băuturi nealcoolice de regulă 11; **alcoolul mereu 21**; setează `vat` explicit la creare (default-ul e 21). Nu ești sigur → întreabă.
+- **Marfa fără rețetă e normală** (nu e o problemă de date); un `finished_good` fără rețetă E o problemă — nu scade stoc și rămâne necostat în P&L.
+
+## Faza 3 — Propune și cere aprobarea (doar la import)
+
+Construiește tabelul complet ÎNAINTE de orice scriere și arată-l userului: nume | tip | UM | TVA | categorie | preț | tag rutare | rețetă (da/nu) | gramaj | descriere | poză. Confirmă numărul de produse. Abia după aprobare scrii.
+
+## Faza 4 — Execută în ordinea corectă
+
+1. **Materiile prime întâi** (`bulk_create_products` cu type + unit + vat + warehouseId), apoi produsele vândute.
+2. ⚠ **Dedupe silențios cu success:true**: `create_product` / `create_menu` / `add_menu_item` / `create_tag` / `create_allergen` întorc entitatea EXISTENTĂ dacă numele/perechea există — parametrii tăi NU se aplică pe ea. Citește răspunsul, nu doar status-ul.
+3. ⚠ `description` din `create_product` NU se salvează (limitare cunoscută a handler-ului) — descrierile merg la Faza 6 (manual).
+4. **Rețete** (modul `retete`): `create_recipe` cu **productId EXPLICIT mereu** (fără el → match PARȚIAL pe nume sau auto-creează un produs nou greșit). `add_recipe_ingredients` cu **productId, nu productName** (typo la nume → auto-creează un raw_material dublură). Înainte de fiecare ingredient verifică `products.unit` al lui — cantitatea rețetei trebuie în aceeași familie de unități. `yield` gol = 1; „50 porții" = 50.
+5. **În meniu**: `add_menu_item(menuId, productId, price, name, sortOrder)` — **trimite MEREU și `name`** (numele afișat): fără el item-ul se numește literal „Item". Prețul de vânzare se setează DOAR aici, niciodată pe produs.
+6. **Taguri pentru rutare**: `bulk_assign_tag` cu `entityIds` sau filtre (categoryName face match pe subtree + fără diacritice). **Tag NOU = bonuri pierdute**: un tag creat de tine NU rutează nicăieri până nu există regula în aplicație — produsele lui generează bonuri „unrouted" care nu se printează și nu apar pe niciun ecran, FĂRĂ eroare. Dacă chiar e nevoie de tag nou: `create_tag` + spune-i userului EXPLICIT să creeze regula în Setări → Imprimante (rutare taguri) și verifică apoi.
+7. **Alergeni** (se pot complet prin MCP): `set_product_allergens(productId, allergenIds)` — ⚠ ÎNLOCUIEȘTE tot setul, citește întâi ce are produsul. Dacă lista de alergeni e goală, cere userului să ruleze seed-ul UE din pagina Alergeni. Produsele cu rețetă moștenesc automat alergenii ingredientelor — setează manual doar ce nu vine din rețetă.
+8. **TVA la final**: dacă au rămas găuri, `auto_assign_vat_batch` (cu onlyMissing) + verificare prin citire.
+9. **Stoc inițial** doar dacă userul îl cere: `set_initial_stock` (creează document de ajustare + mișcări reale).
+10. Anti-capcane: NU folosi `auto_create_menu_from_products` pe un tenant viu (bagă TOATE produsele nemeniuite cu preț 0 într-un meniu activ); la `bulk_update_menu_item_prices` dă MEREU `brandId` (altfel face match pe nume în tot sistemul); NU schimba `warehouseId` pe produse cu stoc „din curățenie" (declanșează transfer contabil automat).
+
+## Faza 5 — Verifică prin CITIRE (niciodată prin UI)
+
+- `list_menu_items(menuId)` — numărul și prețurile vs sursă.
+- `list_untagged_products` — niciun produs nou fără tag de rutare.
+- `analyze_recipes(brandId)` — rețete incomplete / ingrediente lipsă.
+- `analyze_food_costs` sau `generate_report(food_cost)` — un cost absurd (150%+) = aproape sigur unitate greșită în rețetă.
+- `get_recipe_details` pe 2-3 rețete noi — productId legat corect (`list_recipes` NU arată productId).
+- UI-ul se actualizează abia după refresh — succes la tool = salvat; nu repeta scrierea.
+
+## Faza 6 — Predă curat ce e MANUAL (limitări MCP reale)
+
+Prin conexiune NU se pot seta azi: **categoriile de meniu** (nici creare, nici asignare pe item), **descrierea**, **gramajul**, **pozele**. Nu te chinui și nu promite — livrează userului pachetul de lucru manual:
+
+1. Tabel „produs → categorie de meniu" — se setează din Produse Meniu / Toate Produsele; categoriile noi se creează tot acolo. Context util: lipsa categoriei NU blochează rutarea KDS (aia e pe taguri) și NU strică P&L (ăla e pe tipul de produs) — afectează doar gruparea vizuală în meniu.
+2. Tabel „produs → descriere + gramaj" gata de copiat în fișa produsului.
+3. Listă „produs → URL poză": fluxul ideal e pagina **Poze Bulk Meniu** (`/menu/pricing/bulk-photos`) — drag & drop multe poze, AI le potrivește automat cu produsele. `browse_brand_media` îți arată ce poze există deja în biblioteca brandului.
+4. **Raportează limitările care te-au blocat** cu `trimite_ticket_symbai` (tip „sugestie", cu `dedupeKey`) — echipa Symbai le prioritizează pe baza ticketelor.
+
+## Reguli de aur
+
+- Prețul de vânzare = meniu. Costul = rețetă + recepții (NIR). P&L = tipul de produs. Rutarea bonurilor = taguri. Nu le amesteca.
+- `receptionPrice` la marfă = preț de raft (se completează automat din primul preț de meniu), NU cost — nu-l „repara" pentru food cost.
+- Caută înainte de a crea; citește după ce scrii; nu repeta o scriere „ca să se prindă".
+- ID-uri, nu nume, peste tot unde ai ambele opțiuni.
+- Dacă tokenul nu are modulul de scriere necesar („Permisiune insuficientă"), explică activarea din portal Hub → Acces AI.

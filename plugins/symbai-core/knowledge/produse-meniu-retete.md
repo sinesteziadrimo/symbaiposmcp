@@ -92,6 +92,13 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 2. Verifici propunerea (produse, prețuri, categorii) și corectezi ce vrei.
 3. Imporți — produsele intră în catalog/meniu și designul e reconstruit în Meniu Fizic.
 
+**Introduci băuturile de bar corect (marfă vs materie primă)**
+1. Uită-te ÎNTÂI cum ține clientul barul (caută 2-3 băuturi existente): marfă la bucată sau materie primă la litru cu rețete de porționare. Continuă stilul lui.
+2. Îmbuteliate/doze/țigări vândute ca atare → **marfă** (merchandise), unitate „buc", FĂRĂ rețetă — consumul se descarcă direct 1:1 din stoc, iar „fără rețetă" e starea corectă pentru marfă.
+3. Porții turnate (Vodka 40 ml, vin la pahar) → sticla-sursă e produs separat ținut la **litri** (materie primă dacă nu se vinde întreagă), iar produsul vândut are **rețetă de porționare** 0,04 l (sau 40 ml — conversia ml↔l e automată). ⚠ Dacă sticla e ținută la „buc", rețeta în ml e neconvertibilă și consumă 0,04 BUCĂȚI per shot — fără avertisment.
+4. Cocktailuri/cafele/limonade (≥2 ingrediente) → **produs finit** cu rețetă; siropul de casă = semipreparat.
+5. TVA: alcoolul mereu 21%; mâncarea preparată și băuturile nealcoolice de regulă 11%.
+
 **„Stocul nu scade după vânzare" / rețete nelegate**
 1. Verifică la /ai-recipes dacă produsul are rețetă și dacă rețeta e legată de produs (cauza tipică: produs redenumit sau diferențe de nume — typo, diacritice, sufixe gen „mp"/„(4pers)").
 2. Setări → Reparații → „Leagă rețetele de produse" (1-click, cu previzualizare); tot acolo: curățare rețete orfane, unificare categorii duplicate, reparare unități de măsură neconvertibile.
@@ -122,6 +129,20 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 
 Notă: nu există tool-uri MCP pentru oferte/promoții (se gestionează doar din pagina Oferte) și nici tool-uri de ștergere de produse/meniuri (ștergerile se fac doar din aplicație).
 
+**⚠ Limitări MCP verificate (2026-06) — ce se face DOAR din aplicație:**
+- **Categoriile de meniu**: nu există `create_menu_category` și niciun tool nu setează categoria pe produs/articol de meniu — se asignează din Produse Meniu / Toate Produsele. Lipsa categoriei nu blochează rutarea KDS (taguri) și nu strică P&L (tip produs) — e doar gruparea vizuală.
+- **Descrierea și gramajul**: `create_product` are `description` în schemă dar valoarea NU se salvează; pe articolul de meniu nu există deloc. Se completează din fișa produsului.
+- **Pozele**: niciun tool de imagine. Fluxul recomandat: pagina Poze Bulk Meniu (`/menu/pricing/bulk-photos`, potrivire automată cu AI); `browse_brand_media` doar citește biblioteca existentă.
+- **Regulile de rutare taguri→imprimante/KDS**: doar din Setări → Imprimante. Un tag NOU creat prin MCP nu rutează nicăieri până nu i se creează regula acolo.
+
+**⚠ Capcane de tool-uri (verificate în cod):**
+- `add_menu_item` acceptă și `name` (nedocumentat) — trimite-l MEREU, altfel articolul se numește literal „Item". Tot el e singura cale de preț de vânzare.
+- Dedupe silențios cu success: `create_product` (nume exact), `create_menu`, `add_menu_item` (menuId+productId), `create_tag`, `create_allergen` întorc entitatea existentă FĂRĂ a aplica parametrii trimiși — caută înainte, citește răspunsul.
+- `create_recipe`: dă MEREU `productId` explicit (altfel match parțial pe nume sau auto-creează produs nou). `add_recipe_ingredients`: folosește `productId`, nu `productName` (typo = produs raw_material auto-creat).
+- `set_product_allergens` ÎNLOCUIEȘTE tot setul de alergeni al produsului. Alergenii din rețetă se moștenesc automat.
+- `auto_create_menu_from_products` pe tenant viu = toate produsele nemeniuite intră cu preț 0 într-un meniu activ. `bulk_update_menu_item_prices` fără `brandId` = match pe nume în tot sistemul.
+- Schimbarea gestiunii (`warehouseId`) pe un produs cu stoc declanșează transfer contabil automat (document + note).
+
 ## Întrebări frecvente și capcane
 
 - **De ce nu scade stocul când vând un preparat?** Rețeta nu e legată corect de produs (tipic după o redenumire) sau produsul n-are rețetă. Verifică la /ai-recipes, apoi Setări → Reparații → „Leagă rețetele de produse".
@@ -136,6 +157,8 @@ Notă: nu există tool-uri MCP pentru oferte/promoții (se gestionează doar din
 - **De ce nu pot importa rețetarul din Excel?** Conflictele de unitate de măsură (marcate galben) blochează importul până le rezolvi — intenționat, ca să nu-ți strice consumul.
 - **„Niciun produs cu acest nume" la legarea rețetelor.** Potrivirea e pe nume exact — divergențele tipice sunt typo-uri, diacritice sau sufixe („mp", „Promo", „(4pers)"). Redenumește sau leagă manual.
 - **Am două produse aproape identice în catalog.** Nu le șterge manual — folosește Unifică Duplicate, care păstrează vânzările, stocul (adunat), rețeta și locul în meniu.
+- **Produsul nou nu iese la imprimantă/KDS.** Aproape sigur n-are tag de rutare sau are un tag NOU fără regulă: bonul se creează „unrouted" (nu se printează, nu apare pe niciun ecran, fără eroare). Dă-i tagul EXISTENT al secției (`list_tag_summary` arată convenția clientului); pentru tag nou, regula se creează în Setări → Imprimante.
+- **De ce nu apare descrierea/categoria/poza pusă „prin asistent"?** Pentru că nu se pot seta prin conexiunea MCP (vezi Limitări MCP mai sus) — se completează din aplicație; asistentul trebuie să predea tabelul de completat, nu să repete scrierea.
 
 ## Pentru acces SQL
 

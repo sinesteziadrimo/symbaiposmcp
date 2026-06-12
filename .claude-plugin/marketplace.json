@@ -12,7 +12,7 @@
       "name": "symbai-core",
       "source": "./plugins/symbai-core",
       "description": "Asistentul Symbai: ghiduri pas-cu-pas + cunoștințe despre fiecare modul. Se folosește împreună cu conexiunea MCP la instanța ta (adăugată din portalul Hub → Acces AI).",
-      "version": "0.5.1",
+      "version": "0.6.0",
       "author": { "name": "Symbai" },
       "homepage": "https://github.com/sinesteziadrimo/symbaimemory",
       "repository": "https://github.com/sinesteziadrimo/symbaimemory",
