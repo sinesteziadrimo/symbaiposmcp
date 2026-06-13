@@ -39,8 +39,16 @@ Tu (Claude extern) vezi paginile prin **extensia Chrome**: deschizi `/menu/physi
 - **Poziție/crop în ramă**: `photoZoom`, `photoOffsetTop/Left` (pan în mască), `photoFrameOffsetX/Y` (mută rama în card). `photoLayout` (left/right/top/alternate) global sau per-item.
 - **Schimbă poza**: `customImageUrl` per produs (URL din galerie/upload). Pe produs în catalog: `set_product_image` (vezi pricing).
 
+### Crop precis pe poză (zoom + pan) și poze stricate
+- **Crop „arată exact zona asta din poză"**: poza se afișează în mod *cover* (umple rama, taie restul). Alegi ce parte se vede din 2 pârghii: `photoZoom` (1–4; 1 = cover normal, 4 = zoom maxim) + `photoOffsetTop`/`photoOffsetLeft` (px de pan ÎN interiorul ramei — mută zona vizibilă sus/jos, stânga/dreapta). Ex: o față dintr-o poză largă → `photoZoom: 1.8` + ajustezi `photoOffsetTop/Left` până cade fața în centru. ⚠ Când fixezi dimensiunea ramei manual cu `photoWidthCustomPx`/`photoHeightCustomPx`, ȘTERGE `photoColFrac`/`photoAspectNum`/`photoRole` (altfel revin și strică raportul).
+- **`photoOffset*` vs `photoFrameOffset*` — NU le confunda**: `photoOffsetTop/Left` = pan ÎN interiorul ramei (schimbi CE se vede din poză, crop). `photoFrameOffsetX/Y` = mută vizual TOATĂ rama în card (translație, conținutul rămâne la fel). Pentru „vreau altă bucată din poză" → `photoOffset*`. Pentru „mută poza puțin mai sus în card" → `photoFrameOffset*`.
+- **`photoRotation`** (-180…+180 grade): rotește poza (poze înclinate artistic). Cascadă normală item → pagină → global.
+- **`photoAspectNum` INTRĂ în calcul** (nu e informativ): împreună cu `photoColFrac` determină înălțimea ramei (lățime = fracțiune din coloană, înălțime = lățime ÷ raport). `1` = pătrat, `1.6` ≈ landscape erou, `0.7` ≈ portret. Presetele `photoAspectRatio` (square/landscape/portrait) sunt versiunea „pe butoane"; `photoAspectNum` dă raport numeric exact (ex. `1.33` pentru 4:3 cinematic).
+- **`photoColFrac` e sensibil la coloane**: e fracțiune din lățimea coloanei EFECTIVE — dacă schimbi numărul de coloane (global sau pe pagină), poza se rescalează. Pentru dimensiune stabilă indiferent de coloane, folosește `photoWidthCustomPx`.
+- **Poze stricate (URL 404)**: dacă URL-ul pozei nu mai e valid, în preview/export apare un placeholder (iconiță 🍽️) în loc de imagine goală. Recovery: pune alt `customImageUrl` valid, sau golește-l (revine la poza din catalog).
+
 ### Text (fonturi, mărimi, culori)
-- **Font**: global `fontFamily`/`titleFont`; per sub-element `titleFontFamily`/`descriptionFontFamily`/`priceFontFamily`/`gramajFontFamily`/`categoryTitleFontFamily` (id din cele 28 `FONT_OPTIONS`). Pe element freeform: `fontFamily`.
+- **Font (atenție la 2 convenții diferite!)**: cele globale de tip *picker* — `config.fontFamily` (corp/descriere) și `config.titleFont` (titluri) — primesc ID-ul fontului (ex. `"playfair"`, `"nunito"`) din cele 28 `FONT_OPTIONS`. Override-urile per sub-element — `titleFontFamily`/`descriptionFontFamily`/`priceFontFamily`/`gramajFontFamily` (pe item, pe `pageOverrides[i]` și global) și `categoryTitleFontFamily` — primesc un STRING CSS complet (ex. `"'Playfair Display','Georgia',serif"`), NU ID-ul. Pe element freeform: `fontFamily` = tot string CSS. ⚠ `categoryTitleFontFamily` există DOAR la nivel de categorie (`config.categories[].categoryTitleFontFamily`) și global, NU pe `pageOverrides[i]` — nu poți schimba fontul titlului de categorie doar pe o pagină.
 - **Mărime**: presete `titleSizeGlobal`/`descriptionSizeGlobal`/`gramajSizeGlobal`/`priceSizeGlobal`/`categoryTitleSizeGlobal` (small/medium/large) + `*SizeCustomPx`; per produs la fel (`titleSize`+`titleSizeCustomPx` etc.).
 - **Culoare/stil**: `titleColor`/`descriptionColor`/`priceColor`/`gramajColor`/`categoryTitleColor`/`accentColor`/`textColor`/`backgroundColor`; `*LineHeight`, `*LetterSpacing`, `*Opacity`; `priceStyle`, `descriptionAlign`, `categoryTitleUnderline`.
 - **Cascada de culori (paleta conduce titlurile)**: paleta = 3 culori — `backgroundColor` (Fundal), `textColor` (Text), `accentColor` (Accent). **Titlul de produs urmează `textColor`, titlul de categorie urmează `accentColor`** — DAR doar dacă NU sunt setate explicit `titleColor`/`categoryTitleColor`. Dacă o temă (look) sau un șablon a pus culori explicite pe titluri, acelea „bat" paleta și schimbarea paletei nu le mai mișcă. Ca titlurile să urmeze din nou paleta, **omite (golește) din config** `titleColor`, `categoryTitleColor`, `priceColor`, `descriptionColor`, `gramajColor` → re-derivă din Text/Accent. (În app: apăsarea unui „Template Design" sau editarea swatch-ului Text/Accent face automat această golire; reglaj individual rămâne în tab-ul „Stil".)
@@ -53,19 +61,35 @@ Tu (Claude extern) vezi paginile prin **extensia Chrome**: deschizi `/menu/physi
 ### Mutare & ordine produse/pagini
 - **Ordine produse** (cel mai sigur): per produs `sortOrder` în `categories[].items[]` (și/sau prin `update_menu_item(sortOrder)` la nivel de date). Reordonezi produsele în categorie — engine-ul le repaginează.
 - **Mută produse între pagini**: `pageAssignments` = array de chunk-uri (1 chunk = 1 pagină). ⚠ **Poate fi `null`** — atunci engine-ul distribuie produsele AUTOMAT (estimator). Dacă-l scrii, **FIXEZI** distribuția manual și TREBUIE să conțină consistent toate produsele vizibile (altfel dispar produse). La nevoie de control fin al mutării între pagini, e mai sigur prin designer (drag) sau lași `pageAssignments=null` (auto) + influențezi cu `spanColumns`/`sortOrder`. ⚠ NU folosi câmpul legacy `pages` (vestigial, nu se randează pe calea curentă).
-- **Pagini fixe inserate**: `pinnedPages[poz1based]` (cover spate, QR etc.).
+- **Pagini fixe inserate**: `pinnedPages` = obiect (map) cu CHEI = poziția 1-based ABSOLUTĂ a paginii (nu array), valoarea = `{ template, title?, content? }`. Ex. `{ "3": { template: "informations", title: "..." } }` inserează o pagină fixă pe poziția 3. Distinct de `pageOverrides`: pinned = pagină STRUCTURALĂ care nu se repaginează; pageOverride = ajustare pe o pagină de conținut care se renumerotează la reflow.
 
 ### Fundal & rame
 - `backgroundType` (solid/gradient/image/split) + `backgroundColor`/`backgroundGradientColor2`/`backgroundImageUrl`/`backgroundImageOpacity`/`backgroundSplitColor2`. Per-pagină via `pageOverrides[idx].backgroundType/backgroundImageUrl`.
 - `pageBorderEnabled`/`pageBorderColor`/`pageBorderWidth`/`pageBorderStyle`/`pageBorderImageUrl` (rama colorată groasă = semnătura Design 2); `coverBorder*`.
 
+### Detalii fundal, ramă, copertă (câmpuri care lipseau)
+- **Split fundal**: `backgroundType:"split"` + `backgroundColor` + `backgroundSplitColor2` + `backgroundSplitDirection` (`horizontal`|`vertical`) — două culori, contrast dramatic pe copertă/pagina finală. **DOAR GLOBAL** — split-ul NU poate fi aplicat per-pagină.
+- **Ramă — culoare VS imagine**: `pageBorderType` (`color`|`image`). La `color`: `pageBorderColor` + `pageBorderStyle` (`solid`|`dashed`|`dotted`|`double`) + `pageBorderWidth`. La `image`: `pageBorderImageUrl` + `pageBorderImageZoom`. Colțuri rotunjite: `pageBorderRadius` (px). Coperta are aceleași câmpuri cu prefix `cover` (`coverBorderType`/`coverBorderStyle`/`coverBorderColor`/`coverBorderWidth`/`coverBorderImageUrl`/`coverBorderImageZoom`/`coverBorderRadius`). `double` = look fine-dining clasic, `dashed`/`dotted` = casual/playful.
+- **Copertă full-bleed**: `coverImageFullBleed:true` + `coverImageFit` (`cover` = umple, taie / `contain` = încadrează cu margine) + `coverImageZoom`/`coverImageOffsetX/Y` (ajustare fină). Plus `coverTitleFontScale`/`coverSubtitleFontScale` (scalare text), `coverTitleOffsetX/Y`/`coverSubtitleOffsetX/Y`, `coverLogoZoom`/`coverLogoOffsetX/Y`, `showCoverDivider` (linie separator pe copertă).
+- **Per-pagină**: pe `pageOverrides[idx]` poți pune fundal diferit — `backgroundType` (`solid`/`gradient`/`image` DOAR — split nu e disponibil pe pagini), `backgroundGradientColor2`, `backgroundGradientDirection`, `backgroundImageUrl`, `backgroundImageOpacity` — ex. copertă cu split (global), paginile interne cu gradient subtil, finala cu solid.
+
 ### Elemente libere (adaugă poze/text/forme/evidențieri)
 - `freeformElements[]` global SAU `pageOverrides[idx].freeformElements[]`: fiecare = `{ type: text|image|separator|shape, x, y, width, height, fontFamily?, content?, imageUrl?, z, rotation, scaleX/Y }`. ⚠ Coordonatele sunt în **px LOGICE = mm × PAGE_SCALE (2.8)**. Cu astea inserezi poze decorative, casete de text, separatoare, forme, evidențieri pe orice pagină.
 - **Evidențiere produs** (featured): per produs `featuredStyle` + `featuredAccentColor`/`featuredBorderWidthPx`/`featuredGlowIntensity`/`featuredCornerRadius`/`featuredBadgeText`/`featuredBgOpacity` — scoate în evidență un produs (chenar/glow/badge).
 
+#### Câmpurile complete ale unui element liber
+Elementele libere stau DOAR în `pageOverrides[absIdx].freeformElements[]` (NU există `config.freeformElements` la nivel global). Fiecare element:
+- **Bază**: `id` (unic), `type` (`text`|`image`|`separator`|`shape`), `x`, `y`, `width`, `height` (toate în px logice = mm × 2.8; `(0,0)` = colțul stânga-sus al paginii), `zIndex` (stivuire — mai mare = deasupra; default 10), `rotation` (-180…+180 grade), `scaleX`/`scaleY` (`1` = normal, `-1` = oglindit pe acea axă), `opacity` (0–1), `locked` (true = nu poate fi mutat/redimensionat din designer, dar tot selectabil), `name` (eticheta din panoul de layere, ex. „Logo decorativ"), `hidden` (true = ascuns în preview ȘI export, dar rămâne în config — toggle, nu ștergere).
+- **Text** (`type:"text"`): `content` (textul), `color`, `fontSize`, `fontWeight` (`normal`/`bold`/`600`/`700`/`800`), `fontFamily` (string CSS), `fontStyle` (`normal`/`italic`), `textDecoration` (`none`/`underline`), `textAlign` (`left`/`center`/`right`).
+- **Imagine** (`type:"image"`): `imageUrl`.
+- **Formă** (`type:"shape"`): `shapeType` (`rectangle`/`circle`/`line`), `color` (fundal pentru rect/cerc, culoarea liniei pentru line). `type:"separator"` = linie dedicată (grosimea = `height`).
+- **⚠ Decor de temă**: când o temă pune ornamente automate, ele au `name`/`id` cu prefix `theme:` și se șterg/regenerează automat la re-aplicarea temei. NU pune prefix `theme:` pe elementele TALE — e rezervat decorului generat de temă. Elementele tale (fără prefix) supraviețuiesc schimbării temei.
+
+**Tehnici de grafician**: watermark („PROOF"/„CONFIDENTIAL") = text cu `opacity:0.3` + `fontStyle:italic` într-un colț; badge peste un produs = `shape` rectangle semi-transparent + un text element deasupra (zIndex mai mare); titlu diagonal = text cu `rotation:-30` + `locked:true`; cadru simetric = 2 imagini, una cu `scaleX:-1`; header fix pe toate paginile = pune același logo (același x/y) în `freeformElements` pe fiecare pagină.
+
 ### Cover & QR
 - `coverTitle`/`coverSubtitle`/`coverImageUrl`/`coverImageFullBleed`/`coverImageFit`/`coverImageZoom`/`coverImageOffsetX/Y`/`coverLogoZoom`/`coverTitleFontScale`...
-- `showQrCode`/`qrCodeDynamicCode`/`qrCodeSizeMm`/`qrCodePosition`/`qrCodeFgColor`/`qrCodeBgColor`/`qrCodeCaption`.
+- `showQrCode` (activează QR), `qrCodeUrl` (destinația — EDITABILĂ fără reprintare), `qrCodeDynamicId`/`qrCodeDynamicCode` (legătura cu codul dinamic de pe `/q/<code>`, printat FIX), `qrCodeSizeMm`, `qrCodePosition` (`bottom-center`|`bottom-right`|`bottom-left`|`top-center`|`top-right`|`top-left`|`center`), `qrCodeOffsetX`/`qrCodeOffsetY` (ajustare fină poziție, px logice), `qrCodeFgColor`/`qrCodeBgColor`, `qrCodeCaption` + `qrCodeShowCaption` (toggle afișare text sub QR).
 
 ## Poziție, ordine & coloane (reordonare în categorie · mutare între categorii · pe ce coloană ajunge)
 
@@ -198,6 +222,16 @@ Sunt **13 teme** (`bistro-navy` = cea mai bună, ADN-ul „Design 2": navy+crem,
 
 Scrierea `activeThemeId` în config = semnal că tema se re-aplică la load, dar nu reproduce gramatica — nu te baza pe ea pentru „look-ul" temei; aplică tema în app.
 
+### Cele 13 teme + ce face „gramatica de poze"
+Alege tema după tipul localului. Cele 13: `bistro-navy` (ADN-ul Design 2 — navy+crem, Nunito, poze mari), `fine-dining-elegant` (text-only, serif), `modern-minimalist`, `rustic-trattoria`, `bold-street-food`, `cafe-brunch-warm-minimal`, `cocktail-bar-dark` (speakeasy nocturn), `classic-wine-list`, `asian-izakaya`, `patisserie-dessert` (carduri rose-gold), `health-vegan-fresh`, `steakhouse-grill` (accent oxblood), `editorial-bistro-a3l` (4-col A3-landscape).
+
+**De ce nu rescrii tema din config** (mecanica care explică fine-tuning-ul corect):
+- **Distribuția eroilor e DETERMINISTĂ** (nu random): tema alege ce produse devin „eroi" cu poză mare pe baza unui seed fix (tema + categorie). La re-aplicare → ACEIAȘI eroi. În designer userul confirmă recomandarea într-o modală ÎNAINTE de aplicare. După aplicare, eroii stau pe itemi ca `photoRole:"hero"`. Fine-tuning corect: dacă un produs nu merită statut de erou (n-are poză bună), pe acel item șterge `photoRole` și pune `photoSize:"small"`.
+- **Coloane per secțiune**: unele teme pun alcoolul pe 1 coloană (citire de listă, gen wine-list) și mâncarea pe 2 — prin override-uri pe paginile omogene. Dacă schimbi GLOBAL coloanele acelei pagini, pierzi efectul; re-aplicarea temei le regenerează.
+- **Decor programatic**: temele cu „rețetă de decor" (filete, ornamente, benzi laterale) generează elemente freeform cu prefix `theme:` — se regenerează la re-aplicare. Decorul TĂU manual (fără prefix) rămâne.
+
+**Fine-tuning după temă (ce CHIAR poți face prin MCP)**: după aplicare, citește config-ul și ajustează exact câmpurile pe care le-a pus tema — `titleFont`/`fontFamily` (ID), paleta (`backgroundColor`/`textColor`/`accentColor`), `columns`, `pageBorder*`, spacing, plus stilizarea/offset-urile pozelor pe itemi anume. Reordonezi prin `sortOrder`, umpli goluri prin `spanColumns`. Regula de aur: NU rescrie geometria de poză a temei la global — rescrie itemii care nu se încadrează.
+
 ## Pagini/coloane goale — cum le umpli
 
 > **Linia roșie „nu se tipărește" (conținut care nu încape)**: în editor, ce nu încape pe o pagină NU mai e ascuns — rămâne vizibil sub o linie roșie punctată care marchează marginea de tipărire. La vision: orice e SUB acea linie **nu intră în PDF/print** → trebuie urcat sau redistribuit (mai puține produse pe pagină, poze mai mici, `itemSpacing` compact, `pageAssignments`, sau butonul „Recalculează și optimizează" în app — care repară orice pagină supra-plină, indiferent unde ești derulat). Pagina supra-plină arată și un procent > 100% („% umplut").
@@ -210,9 +244,31 @@ Pagina cu fill < ~30% = goală. Pârghii (prin config):
 - inserezi o pagină sau un element freeform decorativ.
 - Gol mic (10–20%) e NORMAL (whitespace intenționat) — nu-l forța.
 
+### „Recalculează" vs „Optimizează pagina" + procentul de umplere
+- **Procent umplut**: fiecare pagină arată un badge `% umplut` = cât din înălțimea utilă (după margini/header/footer/ramă) e ocupat. Peste 100% → pagina e supra-plină (conținut sub linia roșie, care NU se tipărește). Sub ~30% → considerată goală.
+- **Butonul are 2 moduri**: „Recalculează și optimizează" = repaginează de la pagina curentă în jos și REsetează distribuția fixă (`pageAssignments`) — folosește-l când vrei rearanjare globală. „Optimizează pagina" = optimizează DOAR pagina pe care ești. Pe paginile bune (ex. 1–3) nu apăsa recalc de la pagina 1 — pornește optimizarea de la prima pagină cu probleme ca să nu strice ce e deja bun.
+- **Pârghie în plus pentru umplere**: `categorySpacingPx` (spațiul ÎNTRE categorii, default 16) — micșorează-l (ex. 8) ca să strângi mai multe categorii pe pagină, fără să atingi pozele. Complementar lui `itemSpacing` (spațiul între produse).
+- **După recalc, verifică vision**: recalcul-ul poate micșora poze prea agresiv (erou 0.7 → 0.2). Repară 2-3 poze cu `photoColFrac` pe item, apoi recalc din nou de la pagina respectivă. Iterativ, nu dintr-o lovitură.
+
 ## Multiplu de 4 (A3 broșură)
 
 La `formatType: "a3-booklet"`, engine-ul **forțează automat** `totalPages % 4 === 0` (adaugă pagini goale la final post-paginare). Tu NU scrii `pages.length`; setezi formatul și lași engine-ul. Ștergerea unei pagini re-pad-ează automat. `a4-individual` și `a3-landscape` n-au constrângerea.
+
+## Export PDF, formate și pagini speciale
+
+**Cum se exportă**: PDF-ul se generează pe SERVER (nu prin print din browser, ca să fie DPI/dimensiuni controlate) — randează HTML-ul designului cu dimensiuni exacte per format (`@page` = mărimea formatului). Imaginile din galerie/R2 se înglobează în HTML înainte de export (self-contained), deci nu depind de rețea la randare. Tu nu setezi nimic manual aici — alegi formatul și conținutul, restul e automat.
+
+**Formate** (`formatType`): `a4-individual` (210×297mm, vertical), `a3-booklet` (broșură pliată, engine forțează multiplu de 4 pagini), `a3-single` (297×420mm), `a3-landscape` (420×297mm — placemat de masă, 4 coloane). Doar `a3-booklet` are constrângerea multiplu-de-4.
+
+**Pagini speciale structurale** (toggle, undefined sau true = afișat, false = ascuns): `coverPage`, `locationPage`, `bonFiscalPage`. `contentStartPage` = pagina unde încep produsele (după paginile speciale) — se recalculează automat când activezi/dezactivezi pagini speciale.
+
+**Pagini de recomandări dedicate**: `barRecommendations` / `chefRecommendations` = liste de `productId` (din config) care se randează pe pagini proprii; titlurile lor `barRecommendationsTitle` / `chefRecommendationsTitle`. Distinct de „evidențiere" (featured) pe item.
+
+**Pagini de final — nutrițional & alergeni** (listă compactă pe categorii, multi-coloană):
+- Activare globală: `showNutritionalEndPages` / `showAllergensEndPages`.
+- Stilizare: `nutritionalFontFamily`/`nutritionalFontSize` (px, default 8)/`nutritionalColor`/`nutritionalColumns` (1–4, default 2)/`nutritionalPageTitle`; identic cu prefix `allergens` (`allergensFontSize` default 8 similar).
+- Ordine: `endPagesReversed` (false/undefined = nutrițional apoi alergeni — default; true = alergeni apoi nutrițional).
+- **Cascadă de includere (inversă — exclude bate include)**: global ON → `pageOverrides[idx].showInNutritionalEndPage:false` exclude TOATE produsele de pe pagina respectivă → `item.showInNutritionalEndPage:false` exclude DOAR produsul. La fel pentru alergeni (`showInAllergensEndPage`).
 
 ## Bucla „grafician senior" (per pagină, cu vision)
 
