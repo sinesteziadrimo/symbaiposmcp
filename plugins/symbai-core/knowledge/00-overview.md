@@ -12,7 +12,7 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **Meniu** — ce se vinde: articole de meniu cu preț, categorii, poze, meniu fizic, oferte/promoții. → `produse-meniu-retete.md`
 - **Produse & Stocuri (Inventar)** — produsele fizice, gestiunile, stocul pe loturi, recepții (NIR), transferuri, inventariere, consum. → `stocuri-inventar-furnizori.md`
 - **Furnizori & Achiziții** — de la cine cumperi, cataloage, comenzi de aprovizionare, prețuri furnizor. → `stocuri-inventar-furnizori.md`
-- **Rețete & Producție** — din ce se face fiecare preparat (consum + cost); pentru fabrici: loturi, planificare, trasabilitate, calitate. → `produse-meniu-retete.md` + `productie-trasabilitate.md`
+- **Rețete & Producție** — din ce se face fiecare preparat (consum + cost); producția: simplă (restaurant) sau de fabrică (loturi, planificare, trasabilitate, calitate). → `produse-meniu-retete.md` + `productie-restaurant.md` (restaurant) / `productie-fabrica.md` (fabrică)
 - **Rezervări & Evenimente** — rezervări de masă, evenimente private, petreceri, clienți (CRM), loialitate, feedback. → `rezervari-clienti-evenimente.md`
 - **Personal (Staff)** — angajați, roluri, contracte, ture, pontaj, salarizare, beneficii. → `personal-hr.md`
 - **Rapoarte / Analytics** — vânzări, KPI, food cost, marjă, performanță. → `rapoarte-preturi.md`
