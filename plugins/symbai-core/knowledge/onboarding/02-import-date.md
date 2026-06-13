@@ -35,12 +35,15 @@ Se activează din portalul Hub (hub.symbai.app) → Acces AI. Fără modul, tool
 4. „Setez și stocul curent din fișier, sau pornești de la zero și înregistrezi marfa prin recepții în aplicație?" — doar dacă fișierul are coloană de stoc.
 5. **Confirmarea înainte de scriere**: arată un rezumat (câte produse, ce mapare de coloane ai dedus, 3-5 rânduri exemplu, ce TVA/unități ai normalizat) și așteaptă „da". Nu cere date opționale (SKU, coduri de bare, descrieri) — le imporți dacă există, nu le vânezi.
 
-## Calea A vs Calea B — când o alegi pe care
+## Trei căi — când o alegi pe care
 
-- **Calea A — direct prin tool-uri (tu faci tot)**: fișiere mici-medii și curate (orientativ sub ~200-300 de rânduri), sau utilizatorul dictează lista. Control complet, zero context-switch.
-- **Calea B — wizard-ul din aplicație** (pagina „Import din Excel", pasul 2 din onboarding): fișiere mari, multe fișiere deodată, formate murdare (exporturi SAGA/HTML, encoding ciudat), **rețetare ierarhice** sau orice import cu categorii de meniu. Wizard-ul are mapare AI a coloanelor, „Import Doctor" (duplicate, TVA invalid), normalizare automată și import tranzacțional. Ghidează cu `gaseste_in_aplicatie("import produse din excel")`.
-- **Meniu din PDF sau poze**: există o pagină dedicată în aplicație care extrage produse + prețuri + design — `gaseste_in_aplicatie("import meniu din PDF")`. NU încerca să reconstruiești tu un meniu fotografiat dacă pagina asta e disponibilă.
+- **Calea A — direct prin tool-uri (tu faci tot, fără pagină)**: fișiere mici-medii și curate (orientativ sub ~200-300 de rânduri), sau utilizatorul dictează lista. Control complet, zero context-switch. Pașii de execuție mai jos.
+- **Calea C — IMPORT ASISTAT (recomandată pentru fișiere reale)**: lași **pagina de import** să parseze fișierele (motorul ei robust pe encoding/numere RO/formate murdare + import tranzacțional), dar **TU răspunzi la întrebările ei** (în ce magazie, ce tip de produs, ce TVA, ce meniu — exact unde pagina greșește des) și **după import verifici și corectezi prin conexiune** tot ce a ieșit strâmb. În mod automat conduci pagina prin extensia Chrome; în mod asistat îi spui userului exact ce să încarce și ce să răspundă. Și mai inteligent: dacă fișierul e murdar/incomplet, **construiești tu un fișier canonic** (anteturi exacte → import determinist, fără întrebări) și **pre-creezi referințele prin MCP**, ba chiar **completezi datele lipsă din website/SmartMenu** cu permisiunea userului. **Playbook complet: `02b-import-asistat.md`** + `02c-import-sabloane-canonice.md` (fișier canonic + pre-creare + capcane) + `02d-import-surse-externe.md` (enrichment), sau skill-ul dedicat `importa-date`. Asta e calea de ales la fișiere mari, multe fișiere, exporturi SAGA/HTML, categorii de meniu, date lipsă, sau orice format care nu e fix cum trebuie.
+- **Calea B — wizard-ul „pe cont propriu"**: dacă userul preferă să facă singur importul în pagină, fără tine — `gaseste_in_aplicatie("import produse din excel")`. (Calea C e Calea B + tu răspunzi la întrebări și corectezi după — aproape mereu preferabilă.)
+- **Meniu din PDF sau poze**: pagină dedicată care extrage produse + prețuri + design — `gaseste_in_aplicatie("import meniu din PDF")`. NU reconstrui tu un meniu fotografiat dacă pagina asta e disponibilă. (Vezi și skill-ul `adauga-produs-reteta` pentru meniu de pe website.)
 - Fișierele cu **rețete** sau **angajați** NU se importă în faza asta — au fazele lor (rețete, personal); notează că le-ai văzut și revino la ele.
+
+> Regula scurtă, cu exemple: **fișier mic și curat → Calea A** (ex.: o listă de ~40 de produse pe Excel cu coloane clare nume/preț/categorie, sau userul ți le dictează). **Orice altceva → Calea C asistat**: export din SAGA/alt POS cu coloane strâmbe, mai multe foi, numere în formate ciudate, encoding stricat; peste ~300 de rânduri; mai multe fișiere deodată; meniuri cu categorii care trebuie să intre în locuri diferite; sau userul cere „importă exact cum era în programul vechi". Pagina e plasa de siguranță la citire; tu ești creierul la decizii și verificare.
 
 ## Pașii de execuție — tool-urile MCP exacte (Calea A)
 
@@ -114,7 +117,9 @@ Datele create de tine prin MCP **sunt văzute** de wizard (pașii detectează en
 
 ## Verificare la final
 
-Replica verificării din pasul 3, prin citiri:
+> Verificarea NU e doar „bifez că există" — e momentul în care repari ce a greșit importul automat (tip de produs, magazie, TVA, categorii). Citești datele reale, le judeci cu cap și **corectezi prin tool-uri** — faci mai mult și mai bine decât pasul 3 mecanic din wizard. La calea asistată (C), playbook-ul de corecție e „Faza E" din `02b-import-asistat.md`.
+
+Replica verificării din pasul 3, prin citiri (+ corecții):
 1. `list_warehouses_full` → ≥1 gestiune; `get_warehouse_products_summary({ warehouseId })` pe fiecare → nicio gestiune goală neintenționat.
 2. `list_vat_rates` → există 0/11/21 (RO); produsele au cote valide — pe catalog mare, cu SQL: `SELECT id, name, vat_rate FROM products WHERE active = true AND vat_rate::numeric NOT IN (0,11,21) LIMIT 50`.
 3. `list_menus({ brandId })` → ≥1 meniu activ per brand; `list_menu_items({ menuId })` → fără articole cu preț 0/lipsă (sau SQL: `menu_items` cu `price <= 0`).

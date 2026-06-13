@@ -5,7 +5,7 @@
 ## DASHBOARD & OPERATIUNI
 
 - **Panou de Control** (`/`) — Dashboard principal — vânzări, comenzi, grafice, alerturi, KPI-uri, rezumat zilnic, overview general
-- **Sarcinile Mele** (`/my-tasks`) — Lista de sarcini și task-uri personale
+- **Sarcinile Mele** (`/my-tasks`) — Feed-ul de sarcini al angajatului, grupat Întârziate → Azi → Următoarele, cu bifare directă și formular de dovadă (foto/notă/număr/semnătură); arată DE CE vede fiecare sarcină (atribuit ție / rolul tău pe tura de azi / liber). Taburi: Astăzi, Generale, Finalizate și — cu permisiune — Toate / Liste (unde managerul construiește)
 - **Control Operațional** (`/operations`) — Monitorizare în timp real — comenzi active, stare bucătărie, stare sală
 ## POS — PUNCTE DE VÂNZARE
 
@@ -57,13 +57,15 @@
   - Tab **Rapoarte Gestiune** — Tab Rapoarte Gestiune — NIR, avize, fișe de magazie, rapoarte stoc
 ## PERSONAL (STAFF)
 
-- **Personal** (`/staff`) — Administrare angajați cu 6 tab-uri: Planificator Ture, Foaie Pontaj, Sarcini, Listă Personal, Roluri & Permisiuni, Program Salon
+- **Personal** (`/staff`) — Administrare angajați cu 8 tab-uri: Planificator Ture, Foaie Pontaj, Sarcini & Liste, Listă Personal, Roluri & Permisiuni, Grupuri Mesaje, Program Salon, Contracte & Salarii
   - Tab **Planificator Ture** — Tab Planificator Ture — calendar ture, repartizare angajați pe ture
   - Tab **Foaie Pontaj** — Tab Foaie Pontaj — ore lucrate, prezență, absențe, overtime
-  - Tab **Sarcini & Liste** — Tab Sarcini & Liste — task-uri, liste de verificare per angajat
+  - Tab **Sarcini & Liste** — Tab Sarcini & Liste — managerul construiește checklist-uri cu țintă pe rol+tură+raion (vizibile automat celor în tură), atribuire pe nume sau liste libere, recurență, oră-limită, dovadă (foto/notă/număr/semnătură), verificare; panou „Cine va vedea asta și când", șabloane și dashboard per listă. Angajatul le bifează din /my-tasks
   - Tab **Listă Personal** — Tab Listă Personal — toți angajații, date personale, contract, PIN POS
   - Tab **Roluri & Permisiuni** — Tab Roluri & Permisiuni — creare roluri, atribuire permisiuni, acces module
-  - Tab **Program Salon** — Tab Program Salon — repartizare ospătari pe zone/mese per tură
+  - Tab **Grupuri Mesaje** — Tab Grupuri Mesaje — administrarea grupurilor de chat ale personalului (apartenență nominală, pe rol sau „cine e în tură")
+  - Tab **Program Salon** — Tab Program Salon — programează ce aranjament de sală (configurație de plan sală) e activ pe fiecare zi a săptămânii + QR self-service per raion. NU repartizează ospătari pe mese (asta se face pe tură, în Planificator Ture, prin raionul/secțiunea de pe tură)
+  - Tab **Contracte & Salarii** — Tab Contracte & Salarii — contractele fiecărui angajat (CIM/SRL-PFA/Zilier/Fără contract), alocări pe brand/locație și bonusuri
 ## INVENTAR & STOC
 
 - **Tablou de Bord Stoc** (`/inventory`) — Dashboard inventar cu 16 tab-uri: Stoc Curent, Inventariere, Zone, Mobil, Diferențe, Niveluri, Risipă, Mișcări, Rețete, Producție, Depozite, Categorii, Documente, Rapoarte, Aprobări, Audit

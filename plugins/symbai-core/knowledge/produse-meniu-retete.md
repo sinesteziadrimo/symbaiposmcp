@@ -127,17 +127,22 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 
 **Scriere (modul `financiar`):** `create_product_type`, `update_product_type`, `update_product_type_accounts_per_unit` — tipuri de produs și conturile lor.
 
+**Scriere — categorii de meniu și imagini (din 2026-06, acoperă golurile de import):**
+- `create_menu_category` — creează o categorie de meniu (ierarhică prin `parentId`, ex. Bar > Bere); idempotentă pe (nume, brand); se atașează automat la meniurile brandului.
+- `set_product_image` — pune o imagine pe produs dintr-un URL public (ex. de pe meniul/site-ul vechi); o descarcă și o stochează optimizat (NU rămâne hotlink), apoi o propagă la articolele de meniu. `gallery: true` adaugă în galerie fără a înlocui cover-ul.
+- `add_menu_item` / `update_menu_item` acceptă acum și `menuCategoryId`, `description`, `gramaj` — categoria se oglindește automat și pe produs.
+
 Notă: nu există tool-uri MCP pentru oferte/promoții (se gestionează doar din pagina Oferte) și nici tool-uri de ștergere de produse/meniuri (ștergerile se fac doar din aplicație).
 
-**⚠ Limitări MCP verificate (2026-06) — ce se face DOAR din aplicație:**
-- **Categoriile de meniu**: nu există `create_menu_category` și niciun tool nu setează categoria pe produs/articol de meniu — se asignează din Produse Meniu / Toate Produsele. Lipsa categoriei nu blochează rutarea KDS (taguri) și nu strică P&L (tip produs) — e doar gruparea vizuală.
-- **Descrierea și gramajul**: `create_product` are `description` în schemă dar valoarea NU se salvează; pe articolul de meniu nu există deloc. Se completează din fișa produsului.
-- **Pozele**: niciun tool de imagine. Fluxul recomandat: pagina Poze Bulk Meniu (`/menu/pricing/bulk-photos`, potrivire automată cu AI); `browse_brand_media` doar citește biblioteca existentă.
-- **Regulile de rutare taguri→imprimante/KDS**: doar din Setări → Imprimante. Un tag NOU creat prin MCP nu rutează nicăieri până nu i se creează regula acolo.
+**⚠ Ce rămâne DOAR din aplicație (nu prin MCP):**
+- **Regulile de rutare taguri→imprimante/KDS**: doar din Setări → Imprimante. Un tag NOU creat prin MCP nu rutează nicăieri până nu i se creează regula acolo (refolosește tagurile EXISTENTE ale clientului).
+- **Pozele în masă cu potrivire automată**: dacă ai zeci de poze fără să știi exact ce produs e fiecare, pagina Poze Bulk Meniu (`/menu/pricing/bulk-photos`) le potrivește cu AI. Prin MCP pui poza pe un produs anume cu `set_product_image` (când ai URL-ul și produsul).
+- **Ofertele/promoțiile, ștergerile de entități**: din aplicație.
 
 **⚠ Capcane de tool-uri (verificate în cod):**
-- `add_menu_item` acceptă și `name` (nedocumentat) — trimite-l MEREU, altfel articolul se numește literal „Item". Tot el e singura cale de preț de vânzare.
-- Dedupe silențios cu success: `create_product` (nume exact), `create_menu`, `add_menu_item` (menuId+productId), `create_tag`, `create_allergen` întorc entitatea existentă FĂRĂ a aplica parametrii trimiși — caută înainte, citește răspunsul.
+- `add_menu_item` e UPSERT: dacă produsul e deja în meniu, câmpurile trimise se aplică pe item-ul existent (nu mai e „există deja, ignorat"). Numele afișat ia implicit numele produsului dacă nu trimiți `name`.
+- `set_product_image`: URL-ul trebuie PUBLIC (http/https, nu IP intern); imaginea se descarcă și se optimizează — dacă URL-ul pică, dă eroare clară, nu poză moartă.
+- Dedupe silențios cu success: `create_product` (nume exact), `create_menu`, `create_tag`, `create_allergen`, `create_menu_category` (nume+brand) întorc entitatea existentă FĂRĂ a aplica parametrii trimiși — caută înainte, citește răspunsul.
 - `create_recipe`: dă MEREU `productId` explicit (altfel match parțial pe nume sau auto-creează produs nou). `add_recipe_ingredients`: folosește `productId`, nu `productName` (typo = produs raw_material auto-creat).
 - `set_product_allergens` ÎNLOCUIEȘTE tot setul de alergeni al produsului. Alergenii din rețetă se moștenesc automat.
 - `auto_create_menu_from_products` pe tenant viu = toate produsele nemeniuite intră cu preț 0 într-un meniu activ. `bulk_update_menu_item_prices` fără `brandId` = match pe nume în tot sistemul.
@@ -158,7 +163,7 @@ Notă: nu există tool-uri MCP pentru oferte/promoții (se gestionează doar din
 - **„Niciun produs cu acest nume" la legarea rețetelor.** Potrivirea e pe nume exact — divergențele tipice sunt typo-uri, diacritice sau sufixe („mp", „Promo", „(4pers)"). Redenumește sau leagă manual.
 - **Am două produse aproape identice în catalog.** Nu le șterge manual — folosește Unifică Duplicate, care păstrează vânzările, stocul (adunat), rețeta și locul în meniu.
 - **Produsul nou nu iese la imprimantă/KDS.** Aproape sigur n-are tag de rutare sau are un tag NOU fără regulă: bonul se creează „unrouted" (nu se printează, nu apare pe niciun ecran, fără eroare). Dă-i tagul EXISTENT al secției (`list_tag_summary` arată convenția clientului); pentru tag nou, regula se creează în Setări → Imprimante.
-- **De ce nu apare descrierea/categoria/poza pusă „prin asistent"?** Pentru că nu se pot seta prin conexiunea MCP (vezi Limitări MCP mai sus) — se completează din aplicație; asistentul trebuie să predea tabelul de completat, nu să repete scrierea.
+- **Cum pun categorie/descriere/gramaj/poză la import prin asistent?** Categoria: `create_menu_category` (o dată per secție) + `menuCategoryId` pe `add_menu_item`. Descrierea și gramajul: direct pe `add_menu_item`/`update_menu_item` (sau `description`/`weight` pe produs). Poza: `set_product_image` cu URL public. Toate se văd după un refresh al paginii.
 
 ## Pentru acces SQL
 

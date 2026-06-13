@@ -15,11 +15,11 @@ Fiecare apel e înregistrat în jurnalul de activitate al instanței (auditabil 
 - **Asocieri brand ↔ locație**: sursa de adevăr e `list_locations` — fiecare locație care ARE branduri asociate apare cu `branduri:<nume>`. Dacă o locație apare FĂRĂ partea `branduri:`, înseamnă că nu are niciun brand legat (nu că informația lipsește). Asocierea se face cu `link_brand_location` / se desface cu `unlink_brand_location`; după operație, re-verifică tot cu `list_locations`. Un brand funcționează DOAR la locațiile la care e legat.
 - **Pattern general scriere → verificare**: după orice tool de scriere, confirmarea finală o dai pe baza unui tool de citire, nu pe baza interfeței sau a presupunerii. O scriere repetată „ca să se prindă" creează risc de duplicate.
 - **Dedupe silențios cu success**: `create_product` (nume exact), `create_menu` (nume+brand), `add_menu_item` (meniu+produs), `create_tag`, `create_allergen` întorc entitatea EXISTENTĂ fără să aplice parametrii trimiși. „Success" ≠ „creat" și ≠ „parametrii mei s-au aplicat" — caută înainte de a crea și citește răspunsul.
-- **Ce NU se poate scrie prin MCP la produse/meniu** (verificat 2026-06): categorii de meniu (creare + asignare), descriere produs (parametrul există dar nu se salvează), gramaj, imagini. Nu repeta apelurile și nu promite — predă userului tabelul de completat manual + pagina potrivită (categorii/descrieri: fișa produsului; poze: `/menu/pricing/bulk-photos` cu potrivire AI). Alergenii SE POT seta complet (`set_product_allergens`).
+- **Import de meniu COMPLET prin MCP** (din 2026-06): categorii (`create_menu_category`), descriere + gramaj (pe `add_menu_item`/`update_menu_item` sau pe produs prin `description`/`weight`), imagini din URL public (`set_product_image`), alergeni (`set_product_allergens`) — toate se pot face prin conexiune. Ce rămâne din aplicație: regulile de rutare taguri→imprimante (Setări → Imprimante) și potrivirea AI a zeci de poze necunoscute (`/menu/pricing/bulk-photos`).
 - **Tag nou ≠ rutare**: tagurile rutează bonurile către imprimante/KDS doar dacă au regulă creată în aplicație (Setări → Imprimante). Refolosește tagurile existente ale clientului (`list_tag_summary` arată convenția); un produs cu tag fără regulă (sau fără tag) generează bonuri care NU ies nicăieri, fără eroare.
 - **Date lipsă = întrebări, nu invenții**: la importuri (meniu de pe site/PDF/Excel) nu inventa prețuri/gramaje/alergeni. Cere sursa de date userului; la site-uri SPA cu HTML gol caută API-ul JSON din spate; ce rămâne necunoscut se întreabă compact, o singură dată. Detalii: skill-ul `adauga-produs-reteta`.
 
-**TOTAL: 232 tool-uri unice** — Citire 80 · Analiză dedicată 5 · SQL 3 · Scriere per modul 139 · Speciale 5 — gaseste_in_aplicatie + trimite_ticket_symbai + verifica_integrare + 2 de citire social (cele 4 de scriere social/integrări sunt numărate la modulul marketing_social).
+**TOTAL: 234 tool-uri unice** — Citire 80 · Analiză dedicată 5 · SQL 3 · Scriere per modul 141 · Speciale 5 — gaseste_in_aplicatie + trimite_ticket_symbai + verifica_integrare + 2 de citire social (cele 4 de scriere social/integrări sunt numărate la modulul marketing_social).
 
 ## Citire (fără permisiune de modul) — 80 tool-uri
 
@@ -150,9 +150,10 @@ Workflow obligatoriu în 3 pași, SELECT-only (INSERT/UPDATE/DELETE refuzate), p
 
 ## Scriere per modul — 137 tool-uri (gated de writeModules pe token)
 
-### produse_meniu — Produse & Meniuri — 27 tool-uri
-- create_product — Creează un produs nou; se pune pe o magazie (warehouseId), zona de depozitare se setează automat; prețul de VÂNZARE se setează doar prin meniuri (add_menu_item), pe produs doar receptionPrice. ⚠ dedupe silențios pe nume EXACT (întoarce existentul cu success). ⚠ `description` din schemă NU se salvează — descrierile se completează din aplicație (parametri cheie: name*, brandId*, warehouseId, storageZoneId, receptionPrice, unit, vat, type, …)
-- update_product — Actualizează un produs existent (TVA, categorie, furnizor, tip, cont contabil, receptionPrice etc.) (parametri cheie: productId*, name, warehouseId, storageZoneId, receptionPrice, vat, unit, type, …)
+### produse_meniu — Produse & Meniuri — 29 tool-uri
+- create_product — Creează un produs nou; se pune pe o magazie (warehouseId), zona de depozitare se setează automat; prețul de VÂNZARE se setează doar prin meniuri (add_menu_item), pe produs doar receptionPrice. ⚠ dedupe silențios pe nume EXACT (întoarce existentul cu success) (parametri cheie: name*, brandId*, warehouseId, storageZoneId, receptionPrice, unit, vat, type, description, weight, …)
+- update_product — Actualizează un produs existent (TVA, furnizor, tip, cont contabil, receptionPrice, descriere, gramaj etc.) (parametri cheie: productId*, name, warehouseId, storageZoneId, receptionPrice, vat, unit, type, description, weight, …)
+- set_product_image — Pune o imagine pe produs dintr-un URL PUBLIC (ex. de pe meniul/site-ul vechi). O descarcă și o stochează optimizat în storage-ul instanței (NU rămâne hotlink) și o propagă automat la articolele de meniu. gallery=true adaugă în galerie fără a înlocui cover-ul (parametri cheie: productId*, imageUrl*, gallery)
 - bulk_create_products — Creează mai multe produse deodată (import eficient) (parametri cheie: brandId*, products*)
 - bulk_update_products — Actualizează în masă un câmp pe mai multe produse (TVA, unitate, tip, furnizor, preț achiziție) (parametri cheie: productIds*, updates*)
 - create_warehouse — Creează o gestiune/magazie nouă (globală, fără brandId) (parametri cheie: name*, locationId*, tag)
@@ -160,11 +161,12 @@ Workflow obligatoriu în 3 pași, SELECT-only (INSERT/UPDATE/DELETE refuzate), p
 - update_storage_zone — Actualizează o zonă de depozitare existentă (parametri cheie: storageZoneId*, name, parentId, warehouseId, sortOrder)
 - bulk_create_storage_zones — Creează mai multe sub-zone de depozitare într-o magazie (parametri cheie: brandId*, storageZones*)
 - set_initial_stock — Setează stocul inițial al unui produs (cantitatea curentă în inventar) (parametri cheie: productId*, quantity*)
-- create_menu — Creează un meniu nou (principal, bar, livrare, kiosk). ⚠ se naște cu status DRAFT — activează-l cu update_menu(status:"active"); description/isActive nu se salvează (parametri cheie: name*, brandId*)
+- create_menu — Creează un meniu nou (principal, bar, livrare, kiosk). ⚠ fără isActive=true se naște DRAFT — activează cu isActive sau update_menu(status:"active") (parametri cheie: name*, brandId*, isActive)
+- create_menu_category — Creează o categorie de meniu (ex. Gustări, Cocktailuri); ierarhică prin parentId (Bar > Bere); idempotentă pe (nume, brand); se atașează automat la meniurile brandului. Apoi se pune pe produse cu menuCategoryId pe add_menu_item/update_menu_item (parametri cheie: name*, brandId*, parentId, color, sortOrder)
 - bulk_create_menus — Creează mai multe meniuri dintr-o dată (un meniu per brand) (parametri cheie: menus*)
 - update_menu — Actualizează un meniu existent (nume, status, setări) (parametri cheie: menuId*, brandId*, name, status, isDefault)
-- add_menu_item — Adaugă un produs într-un meniu cu preț de vânzare. ⚠ trimite MEREU și `name` (acceptat deși nedocumentat) — fără el articolul se numește literal „Item". ⚠ NU setează categoria de meniu / descrierea / gramajul / poza — acelea se completează din aplicație (parametri cheie: menuId*, productId*, price*, name, sortOrder, isAvailable)
-- update_menu_item — Actualizează un menu item — scrie DOAR preț, nume, disponibilitate, storageZoneId; categoria de meniu NU se poate seta, în ciuda descrierii tool-ului (parametri cheie: brandId*, menuItemId*, price, name, available, storageZoneId)
+- add_menu_item — Adaugă un produs într-un meniu cu preț de vânzare (singura cale de preț de vânzare). UPSERT: dacă produsul e deja în meniu, câmpurile trimise se aplică pe item-ul existent. Numele afișat ia implicit numele produsului. Setarea menuCategoryId se oglindește și pe produs (parametri cheie: menuId*, productId*, price*, name, menuCategoryId, description, gramaj, sortOrder, isAvailable)
+- update_menu_item — Actualizează un menu item: preț, nume, disponibilitate, categorie de meniu, descriere, gramaj, ordine, activ (parametri cheie: brandId*, menuItemId*, price, name, available, menuCategoryId, description, gramaj, sortOrder, active, storageZoneId)
 - bulk_update_menu_item_prices — Actualizează prețurile mai multor menu items dintr-o dată, prin potrivire după nume. ⚠ dă MEREU brandId, altfel potrivirea se face în tot sistemul (parametri cheie: brandId*, items*)
 - auto_create_menu_from_products — Creează automat un meniu cu produsele care nu sunt în niciun alt meniu (parametri cheie: brandId*, menuName)
 - apply_menu_prices — Actualizează prețurile menu items în bulk (parametri cheie: menuId*, prices*)
@@ -214,7 +216,7 @@ Workflow obligatoriu în 3 pași, SELECT-only (INSERT/UPDATE/DELETE refuzate), p
 - set_equipment_recipe_capacity — Setează capacitatea unui echipament pentru o rețetă (max per lot, timp ciclu, timp setup) (parametri cheie: equipmentId*, recipeId*, maxQtyPerBatch, cycleTimeMinutes, setupTimeMinutes)
 - assign_recipe_to_zone — Asociază o rețetă cu o zonă de producție (parametri cheie: recipeId*, zoneId*)
 
-### personal — Personal & Ture — 15 tool-uri
+### personal — Personal & Ture — 15 tool-uri (+ 11 noi de sarcini după deploy-ul nexuspos: 5 citire + 6 scriere)
 - create_employee — Creează un angajat nou cu toate detaliile (parametri cheie: firstName*, lastName*, brandId*, roleId, email, phone, locationId, position, …)
 - update_employee — Actualizează un angajat (nume, rol, poziție, salariu, contract, PIN etc.) (parametri cheie: employeeId*, firstName, lastName, email, phone, roleId, locationId, position, …)
 - bulk_create_employees — Creează mai mulți angajați dintr-o dată (import Revisal/Excel) (parametri cheie: brandId*, employees*, locationId)
@@ -227,9 +229,22 @@ Workflow obligatoriu în 3 pași, SELECT-only (INSERT/UPDATE/DELETE refuzate), p
 - bulk_create_shifts — Creează mai multe ture dintr-o dată (pontaj pe o săptămână) (parametri cheie: shifts*, locationId)
 - create_staff_schedule — Creează o intrare de program planificat (șablon de tură recurentă) (parametri cheie: employeeId*, scheduledStart*, scheduledEnd*, locationId, floorConfigId, status)
 - bulk_create_staff_schedules — Creează mai multe intrări de program dintr-o dată (parametri cheie: schedules*, status)
-- create_task_list — Creează o listă de sarcini (checklist operațional) (parametri cheie: title*, brandId*, role, shift, isTemplate)
-- create_task — Creează o sarcină individuală într-o listă (parametri cheie: taskListId*, title*, description, assignedTo, priority, dueDate)
+- create_task_list — Creează o listă de sarcini (checklist operațional) (parametri cheie: title*, brandId*, role, shift, isTemplate). **După deploy**: + țintă funcțională targetRoleId/targetShift (any|morning|afternoon|evening|night)/targetSection/locationId, recurrence (none|daily|weekdays|weekly|monthly)+recurrenceDays, dueTime (HH:MM), color, active — ținta face lista vizibilă automat celor în tură
+- create_task — Creează o sarcină individuală într-o listă (parametri cheie: taskListId*, title*, description, assignedTo, priority, dueDate). **După deploy**: + dueTime, requiresProof (none|photo|note|photo_note|number|signature), requiresVerification, estimatedMinutes; în liste recurente devine sarcină-șablon
 - bulk_create_tasks — Creează mai multe sarcini într-o listă dintr-o dată (parametri cheie: taskListId*, tasks*)
+
+**Sarcini — noi (după deploy-ul nexuspos)** — citire fără permisiune, scriere pe modulul `personal`:
+- list_task_lists — [read, după deploy] Listele de sarcini ale brandului/locației, cu țintă, recurență, culoare, activ
+- list_tasks — [read, după deploy] Sarcinile, cu filtre pe listă, instanțe vs șabloane, ziua-instanță (parametri: listId, includeTemplates, occurrenceDate)
+- get_task — [read, după deploy] Detaliile unei sarcini (parametri: taskId*)
+- get_task_dashboard — [read, după deploy] Per listă: De făcut / În lucru / Gata / Întârziate / total / procent + țintă (parametri: brandId, locationId, date)
+- get_my_tasks — [read, după deploy] Feed-ul unui angajat pe o zi: Întârziate / Azi / Următoarele / Generale / Finalizate azi, cu motivul vizibilității per sarcină (parametri: employeeId*, date)
+- update_task_list — [write: personal, după deploy] Modifică ținta/recurența/ora-limită/culoarea/activ a unei liste (parametri: id*, …)
+- clone_task_list — [write: personal, după deploy] Clonează o listă cu sarcinile-șablon — pentru șabloane/duplicare (parametri: id*, title, isTemplate)
+- update_task — [write: personal, după deploy] Modifică o sarcină (parametri: taskId*, …)
+- complete_task — [write: personal, după deploy] Bifează o sarcină cu dovada cerută (note/value/photoUrl), sau de-bifează (uncomplete) (parametri: taskId*, employeeId, note, value, photoUrl, uncomplete)
+- assign_task — [write: personal, după deploy] Atribuie sarcina unei persoane anume (parametri: taskId*, employeeId*)
+- seed_task_templates — [write: personal, după deploy] Populează preset-urile RO HORECA (Deschidere Bar, Închidere Bucătărie, Curățenie zilnică, HACCP) ca liste-șablon
 
 ### rezervari_clienti — Rezervări & Clienți — 7 tool-uri
 - create_reservation — Creează o rezervare de masă (parametri cheie: brandId*, customerName*, guestCount*, date*, time*, locationId, tableId, customerPhone, …)

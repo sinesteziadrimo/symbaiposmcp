@@ -55,16 +55,17 @@ Construiește tabelul complet ÎNAINTE de orice scriere și arată-l userului: n
 
 ## Faza 4 — Execută în ordinea corectă
 
-1. **Materiile prime întâi** (`bulk_create_products` cu type + unit + vat + warehouseId), apoi produsele vândute.
-2. ⚠ **Dedupe silențios cu success:true**: `create_product` / `create_menu` / `add_menu_item` / `create_tag` / `create_allergen` întorc entitatea EXISTENTĂ dacă numele/perechea există — parametrii tăi NU se aplică pe ea. Citește răspunsul, nu doar status-ul.
-3. ⚠ `description` din `create_product` NU se salvează (limitare cunoscută a handler-ului) — descrierile merg la Faza 6 (manual).
+1. **Categoriile de meniu întâi** (la import): `create_menu_category` per secție (Gustări, Cocktailuri, Vin Alb…), ierarhic cu `parentId` unde are sens (Bar > Bere). E idempotentă pe (nume, brand) și se atașează automat la meniurile brandului.
+2. **Materiile prime apoi** (`bulk_create_products` cu type + unit + vat + warehouseId + description + weight), apoi produsele vândute.
+3. ⚠ **Dedupe silențios cu success:true**: `create_product` / `create_menu` / `create_menu_category` / `create_tag` / `create_allergen` întorc entitatea EXISTENTĂ dacă numele/perechea există — parametrii tăi NU se aplică pe ea. Citește răspunsul, nu doar status-ul.
 4. **Rețete** (modul `retete`): `create_recipe` cu **productId EXPLICIT mereu** (fără el → match PARȚIAL pe nume sau auto-creează un produs nou greșit). `add_recipe_ingredients` cu **productId, nu productName** (typo la nume → auto-creează un raw_material dublură). Înainte de fiecare ingredient verifică `products.unit` al lui — cantitatea rețetei trebuie în aceeași familie de unități. `yield` gol = 1; „50 porții" = 50.
-5. **În meniu**: `add_menu_item(menuId, productId, price, name, sortOrder)` — **trimite MEREU și `name`** (numele afișat): fără el item-ul se numește literal „Item". Prețul de vânzare se setează DOAR aici, niciodată pe produs.
-6. **Taguri pentru rutare**: `bulk_assign_tag` cu `entityIds` sau filtre (categoryName face match pe subtree + fără diacritice). **Tag NOU = bonuri pierdute**: un tag creat de tine NU rutează nicăieri până nu există regula în aplicație — produsele lui generează bonuri „unrouted" care nu se printează și nu apar pe niciun ecran, FĂRĂ eroare. Dacă chiar e nevoie de tag nou: `create_tag` + spune-i userului EXPLICIT să creeze regula în Setări → Imprimante (rutare taguri) și verifică apoi.
-7. **Alergeni** (se pot complet prin MCP): `set_product_allergens(productId, allergenIds)` — ⚠ ÎNLOCUIEȘTE tot setul, citește întâi ce are produsul. Dacă lista de alergeni e goală, cere userului să ruleze seed-ul UE din pagina Alergeni. Produsele cu rețetă moștenesc automat alergenii ingredientelor — setează manual doar ce nu vine din rețetă.
-8. **TVA la final**: dacă au rămas găuri, `auto_assign_vat_batch` (cu onlyMissing) + verificare prin citire.
-9. **Stoc inițial** doar dacă userul îl cere: `set_initial_stock` (creează document de ajustare + mișcări reale).
-10. Anti-capcane: NU folosi `auto_create_menu_from_products` pe un tenant viu (bagă TOATE produsele nemeniuite cu preț 0 într-un meniu activ); la `bulk_update_menu_item_prices` dă MEREU `brandId` (altfel face match pe nume în tot sistemul); NU schimba `warehouseId` pe produse cu stoc „din curățenie" (declanșează transfer contabil automat).
+5. **În meniu, complet dintr-un apel**: `add_menu_item(menuId, productId, price, name, menuCategoryId, description, gramaj, sortOrder)` — pune prețul, categoria, descrierea și gramajul deodată. E UPSERT (dacă produsul e deja în meniu, câmpurile se aplică pe item-ul existent); numele afișat ia implicit numele produsului. Categoria se oglindește automat și pe produs. Prețul de vânzare se setează DOAR aici.
+6. **Imagini**: `set_product_image(productId, imageUrl)` cu URL-ul public al pozei (de pe meniul/site-ul vechi) — se descarcă, se optimizează și se propagă la articolele de meniu. `gallery: true` pentru poze suplimentare. Dacă ai zeci de poze fără să știi care e fiecare produs, trimite userul la pagina Poze Bulk Meniu (`/menu/pricing/bulk-photos`, potrivire AI).
+7. **Taguri pentru rutare**: `bulk_assign_tag` cu `entityIds` sau filtre (categoryName face match pe subtree + fără diacritice). **Tag NOU = bonuri pierdute**: un tag creat de tine NU rutează nicăieri până nu există regula în aplicație — produsele lui generează bonuri „unrouted" care nu se printează și nu apar pe niciun ecran, FĂRĂ eroare. Dacă chiar e nevoie de tag nou: `create_tag` + spune-i userului EXPLICIT să creeze regula în Setări → Imprimante (rutare taguri) și verifică apoi.
+8. **Alergeni**: `set_product_allergens(productId, allergenIds)` — ⚠ ÎNLOCUIEȘTE tot setul, citește întâi ce are produsul. Dacă lista de alergeni e goală, cere userului să ruleze seed-ul UE din pagina Alergeni. Produsele cu rețetă moștenesc automat alergenii ingredientelor — setează manual doar ce nu vine din rețetă.
+9. **TVA la final**: dacă au rămas găuri, `auto_assign_vat_batch` (cu onlyMissing) + verificare prin citire.
+10. **Stoc inițial** doar dacă userul îl cere: `set_initial_stock` (creează document de ajustare + mișcări reale).
+11. Anti-capcane: NU folosi `auto_create_menu_from_products` pe un tenant viu (bagă TOATE produsele nemeniuite cu preț 0 într-un meniu activ); la `bulk_update_menu_item_prices` dă MEREU `brandId` (altfel face match pe nume în tot sistemul); NU schimba `warehouseId` pe produse cu stoc „din curățenie" (declanșează transfer contabil automat).
 
 ## Faza 5 — Verifică prin CITIRE (niciodată prin UI)
 
@@ -75,14 +76,13 @@ Construiește tabelul complet ÎNAINTE de orice scriere și arată-l userului: n
 - `get_recipe_details` pe 2-3 rețete noi — productId legat corect (`list_recipes` NU arată productId).
 - UI-ul se actualizează abia după refresh — succes la tool = salvat; nu repeta scrierea.
 
-## Faza 6 — Predă curat ce e MANUAL (limitări MCP reale)
+## Faza 6 — Ce rămâne din aplicație (puțin)
 
-Prin conexiune NU se pot seta azi: **categoriile de meniu** (nici creare, nici asignare pe item), **descrierea**, **gramajul**, **pozele**. Nu te chinui și nu promite — livrează userului pachetul de lucru manual:
+Aproape tot importul se face acum prin conexiune (categorii, descriere, gramaj, poze, alergeni). Rămâne pentru user doar:
 
-1. Tabel „produs → categorie de meniu" — se setează din Produse Meniu / Toate Produsele; categoriile noi se creează tot acolo. Context util: lipsa categoriei NU blochează rutarea KDS (aia e pe taguri) și NU strică P&L (ăla e pe tipul de produs) — afectează doar gruparea vizuală în meniu.
-2. Tabel „produs → descriere + gramaj" gata de copiat în fișa produsului.
-3. Listă „produs → URL poză": fluxul ideal e pagina **Poze Bulk Meniu** (`/menu/pricing/bulk-photos`) — drag & drop multe poze, AI le potrivește automat cu produsele. `browse_brand_media` îți arată ce poze există deja în biblioteca brandului.
-4. **Raportează limitările care te-au blocat** cu `trimite_ticket_symbai` (tip „sugestie", cu `dedupeKey`) — echipa Symbai le prioritizează pe baza ticketelor.
+1. **Regulile de rutare pentru taguri NOI** — dacă ai introdus o secție pentru care clientul nu avea deja un tag cu regulă, regula tag→imprimantă/KDS se creează din Setări → Imprimante. Spune-i clar ce tag și unde trebuie să iasă.
+2. **Zeci de poze necunoscute** — dacă userul are un folder de poze fără să știi ce produs e fiecare, pagina Poze Bulk Meniu (`/menu/pricing/bulk-photos`) le potrivește cu AI. (Când ai URL-ul + produsul, pui poza direct cu `set_product_image`.)
+3. **Dacă tot dai de un perete** (ceva ce userul poate face în aplicație dar tu nu poți prin conexiune) — raportează cu `trimite_ticket_symbai` (tip „sugestie", cu `dedupeKey`); echipa Symbai prioritizează pe baza ticketelor.
 
 ## Reguli de aur
 
