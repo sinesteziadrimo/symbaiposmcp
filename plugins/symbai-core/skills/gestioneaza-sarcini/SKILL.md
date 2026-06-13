@@ -42,7 +42,7 @@ Citește întâi `knowledge/tasks-sarcini.md` (model nou: țintă rol+tură+raio
 ## Recipe 5 — Marchează cu dovadă / verificare
 
 - Angajatul: `complete_task(taskId, employeeId, photoUrl?|note?|value?)` — trimite exact ce cere `requiresProof` (număr la `number`, text la `note`, URL poză la `photo`, etc.). De-bifare: `complete_task(... uncomplete:true)`.
-- Sarcină cu verificare: după bifare rămâne „de confirmat” până managerul dă `verify` (POST `/api/tasks/:id/verify`) — prin MCP, tool-ul de verificare după deploy.
+- Sarcină cu verificare: după bifare rămâne „de confirmat” până o validează managerul — din interfață (`/staff` → Sarcini & Liste, butonul de verificare pe sarcina bifată; endpoint `POST /api/tasks/:id/verify`). NU există tool MCP dedicat de verificare (la nevoie, `update_task` poate seta verifiedBy/verifiedAt).
 
 ## Recipe 6 — Dashboard manager
 
