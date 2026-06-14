@@ -1,6 +1,6 @@
 # Prezentare de Vânzare — Referință COMPLETĂ de câmpuri (toate editabile din UI)
 
-> Anexă la `prezentare-vanzare.md`. Aici e lista EXHAUSTIVĂ a câmpurilor pe care le poate seta proprietarul în editorul de prezentări (Setări → CRM → Configurare prezentare). **Toate sunt web-only** (fără MCP): se setează din interfață, ideal cu extensia Chrome (`claude-in-chrome`) + user logat. **Regulă: dacă userul îți cere ORICE câmp de mai jos, îl poți seta — navighează la tabul potrivit și completează-l.** Singurele excepții sunt în secțiunea „⚠ Câmpuri legacy" (există în date, dar NU au control în UI — nu le promite).
+> Anexă la `prezentare-vanzare.md`. Aici e lista EXHAUSTIVĂ a câmpurilor pe care le poate seta proprietarul în editorul de prezentări (Setări → CRM → Configurare prezentare). **Construcție HIBRIDĂ: multe câmpuri se pot seta și prin MCP** (completând JSON — vezi **`prezentare-vanzare-mcp.md`** pentru formele JSON exacte și ce cheie top-level acoperă fiecare tab); restul, plus editarea vizuală fină + Preview + rularea, se fac din **interfață** cu extensia Chrome (`claude-in-chrome`) + user logat. Regula hibridă: cheile „mici" (intro/temă/ofertă/flux/tipologii) le pui rapid prin MCP; editarea per-item pe biblioteci mari (dureri/soluții/discovery din gold-standard — `libraryOverride` de sute de KB) o faci în UI. **Regulă: dacă userul îți cere ORICE câmp de mai jos, îl poți seta** — prin MCP dacă e o cheie acoperită, altfel navighează la tabul potrivit și completează-l. Singurele excepții sunt în secțiunea „⚠ Câmpuri legacy" (există în date, dar NU au control în UI — nu le promite).
 
 Convenții valoare: `text` (scris liber) · `nr` (numeric) · `on/off` (comutator) · `listă` (alegere dintr-un set) · `culoare` (hex/selector) · `formulă` · `imagine` (URL sau Upload R2) · `chips` (multi-selecție on/off).
 
@@ -161,4 +161,4 @@ Comun fiecărui pas: **Comutator on/off** · **Apare: Mereu / condiție** (§5) 
 Pe acestea motorul folosește valori implicite — dacă userul le cere, explică-i că nu există buton și că se acoperă din temă/comportament implicit (sau trimite `trimite_ticket_symbai` ca sugestie).
 
 ## Cross-link
-- Conceptul + metodologia + cum rulezi → `prezentare-vanzare.md`. Skill: `construieste-prezentare`. CRM de unde se lansează → `crm-vanzari-pipeline.md`.
+- Conceptul + metodologia + cum rulezi → `prezentare-vanzare.md`. **Construcție prin MCP (forme JSON) → `prezentare-vanzare-mcp.md`.** Skill: `construieste-prezentare`. CRM de unde se lansează → `crm-vanzari-pipeline.md`.
