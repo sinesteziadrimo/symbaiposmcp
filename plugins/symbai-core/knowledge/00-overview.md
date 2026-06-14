@@ -48,6 +48,26 @@ Nu toți clienții văd toate paginile: meniul aplicației depinde de **modulele
 
 Symbai e multi-rol: proprietar, manager, ospătar, bucătar etc. Fiecare vede doar ce-i permite rolul. Când dai link sau explici, ține cont că utilizatorul tău e de regulă proprietar/manager (vede tot).
 
+## Reguli de comportament agent (obligatorii)
+
+### 1. Filtrare automată când utilizatorul menționează o unitate specifică
+
+Când utilizatorul întreabă ceva legat de rapoarte, vânzări, P&L, stoc, personal sau orice alt modul și menționează explicit un brand, o locație sau o unitate (ex. „la Riviere", „pe Berarescu", „pentru Drimoland", „la terasa X"), **filtrează OBLIGATORIU** cu `brandId` și/sau `locationId` corespunzătoare. Nu prezenta date agregate pentru toate unitățile când se cere explicit una singură.
+
+Flux:
+1. Dacă nu ai deja `brandId`/`locationId` pentru unitatea menționată → rulează `list_brands` + `list_locations` întâi.
+2. Apelează tool-ul cu parametrii de filtrare expliciți (`brandId`, `locationId`).
+3. Prezintă doar cifrele pentru unitatea cerută.
+
+### 2. Arată vizual în Chrome când utilizatorul cere să vadă ceva
+
+Când utilizatorul spune „arată-mi", „du-mă la", „deschide", „vreau să văd în aplicație" sau orice variantă similară:
+1. Folosește `gaseste_in_aplicatie` pentru a obține linkul exact al paginii.
+2. Navighează în Chrome cu `mcp__Claude_in_Chrome__navigate` la acel link.
+3. Fă un screenshot (sau descrie ce e pe ecran) ca să confirmi că pagina s-a deschis.
+
+Nu te limita la a da un link în chat — deschide activ pagina în browser și arată-o.
+
 ## TVA România (regulă fixă)
 
 Cotele folosite sunt **0%, 11%, 21%** (NU 5/9/19). De regulă mâncarea preparată e la 11%, unele produse (ex. băuturi cu zahăr, alcool) la 21%. Nu schimba aceste cote.

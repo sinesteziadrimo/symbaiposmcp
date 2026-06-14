@@ -87,6 +87,8 @@ Modulul de rapoarte acoperă tot ce ține de cifre: dashboard-ul de start, rapoa
 
 Toate tool-urile de vânzări acceptă `perioada` (azi / ieri / saptamana_aceasta / saptamana_trecuta / luna_aceasta / luna_trecuta / ultimele_7_zile / ultimele_30_zile / custom cu startDate+endDate) plus `brandId` / `locationId` opțional.
 
+> **Regulă obligatorie de filtrare**: când utilizatorul menționează explicit un brand sau o locație (ex. „la Riviere", „pe Berarescu", „pentru Drimoland"), **treci întotdeauna `brandId` și/sau `locationId`** la apelul tool-ului. Nu prezenta date agregate pentru toate unitățile când se cere una singură. Dacă nu cunoști ID-urile, rulează mai întâi `list_brands` + `list_locations`.
+
 **SQL (doar dacă tokenul are acces SQL):** `list_database_tables` → `describe_database_table` → `execute_sql_query` — doar citire, pentru analize unice fără tool dedicat.
 
 **Scriere (cer modulul de permisiune `produse_meniu`):**
