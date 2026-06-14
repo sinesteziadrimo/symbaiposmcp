@@ -1,59 +1,98 @@
 ---
 name: receptie-factura-furnizor
-description: Procesează facturile de la furnizori (Intrări Marfă) — mapează liniile la produse + conturi, factor de pachet, deductibilitate, recepție/NIR, reconciliere aviz/poză cu eFactura. Folosește la „mapează factura de la X", „recepție marfă", „de ce nu intră pe stoc", „leagă avizul de factură", „factură furnizor fără recepție", „reconciliază facturile", „intrări marfă", „NIR".
+description: Procesează facturile de la furnizori și intrările de marfă (Intrări Marfă) — recepție directă pe stoc prin MCP (NIR + note contabile automate), maparea liniilor de eFactură la produse + conturi, factor de pachet, tip produs corect, magazie/unitate, deductibilitate, reconciliere aviz/poză cu eFactura. Folosește la „adaugă factura de intrare", „recepție marfă", „bagă marfa pe stoc", „mapează factura de la X", „de ce nu intră pe stoc", „leagă avizul de factură", „intrări marfă", „NIR", „factură furnizor".
 ---
 
-# Recepție factură furnizor (Intrări Marfă) — corect și complet
+# Recepție factură furnizor / Intrări Marfă — corect, complet, rapid
 
-Citește întâi `knowledge/intrari-marfa-receptie.md` (fluxul + ce e fiecare câmp) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`. Regula de aur: **stocul se mișcă DOAR la NIR postat** — nimic mai devreme.
+Scopul: marfa de la furnizor să intre pe stoc ȘI în contabilitate, corect. Citește la nevoie `knowledge/intrari-marfa-receptie.md` (fluxul complet, fiecare câmp) și `knowledge/finante-facturare-contabilitate.md` (conturi & note contabile). Secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md` rămâne valabilă (interfața se actualizează la refresh; verifică prin CITIRE, nu reapela scrierea).
+
+**Regula de aur:** stocul se mișcă DOAR la postarea NIR-ului (document de inventar POSTED). Nimic nu intră pe stoc mai devreme — nici „recepție din poză", nici factura nemapată.
+
+## Pasul 0 — alege calea corectă (citește asta întâi)
+
+Sunt DOUĂ situații. Confundarea lor dublează stocul — nu sări peste.
+
+- **CALEA A — marfa NU are încă o factură în sistem** (cumpărare cash & carry, aviz, sau eFactura n-a sosit încă din SPV): faci o **recepție directă** complet prin MCP cu `create_inventory_document` (vezi Calea A). Rapid și fără aplicație.
+- **CALEA B — factura/eFactura EXISTĂ deja în sistem** (importată din SPV, din poză OCR, sau împinsă din contabilitate — apare în `list_received_efactura`): **mapezi liniile** prin MCP, apoi creezi **NIR-ul legat de factură** (vezi Calea B). ⚠ NU folosi `create_inventory_document` pe Calea B — el creează o recepție SEPARATĂ, NElegată de factură, deci marfa intră de două ori și factura rămâne „fără NIR".
+
+Întreabă-te: „Există această factură în `list_received_efactura`?" Da → Calea B. Nu → Calea A.
 
 ## Principii (nu greși astea)
-- **Nu inventa** produse, conturi sau prețuri. Ce nu se potrivește clar → întreabă userul sau lasă pentru mapare manuală.
-- **Caută înainte de a mapa** (`search_products_db`), **verifică prin citire după** (`get_received_efactura_details`). UI-ul se actualizează la refresh.
-- **Contul vine din tipul produsului** — leagă linia de produsul corect și contul se rezolvă singur. Nu forța 371 pe servicii.
-- **Crearea NIR-ului (intrarea pe stoc) se face din aplicație** — dă userului linkul (`gaseste_in_aplicatie`). Tool MCP de NIR vine separat.
+- **Nu inventa** produse, conturi sau prețuri. Ce nu se potrivește clar → întreabă userul.
+- **Caută înainte de a crea** (`search_products_db`); **verifică prin citire după** (`get_received_efactura_details`, `get_stock_levels`, `get_journal_entries_summary`).
+- **Contul vine din TIPUL produsului.** Leagă linia/produsul de tipul corect și contul se rezolvă singur (raw_material→301, merchandise→371, consumable→302/603, packaging→381, service→628 etc.). Verificat: nota contabilă se generează corect chiar dacă brandul n-are tipuri de produs configurate (sistemul folosește maparea implicită pe tipul canonic). Tipurile configurate (`create_product_type`) sunt necesare doar pentru CONTURI PERSONALIZATE / override-uri.
+- **Costul e obligatoriu la intrare.** Pe Calea A pune `unitCost` pe fiecare linie, altfel stocul se valorează la 0 și nota contabilă iese 0. Pe Calea B costul vine din factură.
 
 ## Faza 1 — Context
-`list_brands` + `list_locations` (pentru brandId/locationId/magazii). `list_suppliers` dacă lucrezi pe un furnizor anume.
+`list_brands` + `list_locations` (brandId/locationId) și `list_warehouses_full` (magaziile). `list_suppliers` pentru furnizor. Dacă furnizorul lipsește → `create_supplier`. Dacă produsul lipsește → `create_product` (vezi mai jos).
 
-## Faza 2 — Vezi ce e de procesat
-`list_received_efactura({ hasNir: false })` — facturile FĂRĂ recepție (de procesat). Filtrează după `status` (`new`/`mapped`), `mappingStatus` (`unmapped`/`partially_mapped`/`ai_mapped`), `supplierId`, interval de date. Arată-i userului lista (furnizor, număr, dată, total, câte linii / câte acceptate) și confirmă pe care le procesăm.
+### Produs nou corect din prima (tip, unitate, magazie, TVA)
+`create_product({ name, brandId, type, unit, warehouseId, vat, receptionPrice })`:
+- `type` decide contul contabil — alege-l corect: `raw_material` (materii prime, 301), `merchandise` (marfă de revânzare, 371), `consumable` (consumabile, 302), `packaging` (ambalaje, 381), `service` (servicii, 628), `asset` (imobilizări).
+- `warehouseId` = magazia (din `list_warehouses_full`). Zona de depozitare se setează automat dacă magazia are sub-zone.
+- `unit` = unitatea de STOC (kg, l, buc) — în ea ții cantitatea, nu „bax". Reconversia din bax se face cu factorul de pachet (vezi Faza 3).
+- `vat`: 21 standard, 11 alimente preparate / produse alimentare, 9, 0.
 
-## Faza 3 — Pe fiecare factură: mapează liniile
-1. `get_received_efactura_details({ invoiceId })` — vezi liniile + starea (produs mapat, cont, acceptat, factor pachet).
+## CALEA A — recepție directă pe stoc prin MCP (fără factură în sistem)
+
+Totul prin conexiune, fără aplicație. Pași:
+
+1. Asigură-te că furnizorul și produsele există (Faza 1).
+2. **Creează NIR-ul ca DRAFT mai întâi** (verificabil, nemișcat încă):
+   `create_inventory_document({ docType: "GOODS_RECEIPT", docNo, docDate, supplierId, warehouseId, brandId, locationId, lines: [{ productId, qty, unitCost }], autoPost: false })`.
+   - `docType` de intrare: `GOODS_RECEIPT` / `NIR` / `PURCHASE_RECEIPT` (toate alimentează stocul). `qty` în unitatea produsului. `unitCost` = cost de achiziție fără TVA per unitate.
+3. Verifică DRAFT-ul: `list_pending_nirs({ warehouseId })` — trebuie să apară.
+4. **Confirmă cu userul** că postezi (mișcă stocul real, ireversibil), apoi `post_inventory_document({ documentId, confirm: true })`. (Sau direct `create_inventory_document(..., autoPost: true, confirm: true)` după acordul userului.)
+5. Verifică efectul: `get_stock_levels({ productName })` (cantitatea + costul mediu au crescut) și `get_journal_entries_summary({ brandId, startDate, endDate })` (apare o înregistrare sursă NIR; debit stoc + 4426 TVA / credit 401 furnizor).
+
+Asta acoperă „adaugă factura de intrare" când nu vrei să treci prin eFactură: marfa intră pe stoc și nota contabilă se generează automat.
+
+## CALEA B — factura există deja în sistem (mapezi liniile, apoi NIR legat)
+
+### Faza 2 — vezi ce e de procesat
+`list_received_efactura({ hasNir: false })` — facturile FĂRĂ recepție. Filtrează după `status`, `mappingStatus` (`unmapped`/`partially_mapped`/`ai_mapped`/`fully_mapped`), `supplierId`, interval de date. Arată userului lista (furnizor, număr, dată, total, câte linii / câte acceptate) și confirmă pe care le procesezi.
+
+### Faza 3 — pe fiecare factură, mapează liniile
+1. `get_received_efactura_details({ invoiceId })` — liniile + starea (produs mapat, cont, acceptat, factor pachet).
 2. Pentru fiecare linie **nemapată / neacceptată**:
-   - `search_products_db` pe descrierea liniei → găsește produsul intern. Dacă nu există, întreabă userul dacă să-l creezi (`create_product`, modul `produse_meniu`) sau dacă e altul existent (typo/diacritice).
-   - `map_invoice_line({ invoiceId, lineId, productId })` — leagă + acceptă + învață regula. Contul se rezolvă automat din tipul produsului; dă `accountCode` doar dacă userul vrea altul.
-   - **Factor de pachet**: dacă furnizorul facturează în bax/cutie și tu ții la bucată, adaugă `packMultiplier` (ex. 24) + `packKeyword` („bax"). Recalculează cantitatea/prețul, păstrând originalul.
-3. Dacă mai multe linii sunt deja mapate de AI cu încredere bună: `accept_all_invoice_mappings({ invoiceId })` (acceptă în bloc cele ≥ 0.5; nu creează produse noi).
+   - `search_products_db` pe descrierea liniei → găsește produsul intern. Lipsă? Întreabă userul dacă să-l creezi (`create_product` cu tipul corect) sau e altul existent (typo/diacritice).
+   - `map_invoice_line({ invoiceId, lineId, productId })` — leagă + acceptă + învață regula. Contul se rezolvă automat din tipul produsului; dă `accountCode` doar dacă userul cere altul. (Implicit, dacă nu poate deriva, cade pe 371 — de aceea tipul produsului trebuie corect.)
+   - **Factor de pachet (pachete):** furnizorul facturează în bax/cutie dar tu ții la bucată → adaugă `packMultiplier` (ex. 24) + `packKeyword` („bax"). Cantitatea se înmulțește (×24), prețul unitar se împarte (÷24), valoarea originală din factură rămâne. Se învață pentru data viitoare. (Există DOAR pe `map_invoice_line` — Calea B. Pe Calea A convertești tu cantitatea în unitatea de stoc.)
+3. O linie deja legată corect (are produs + cont) dar neacceptată: `accept_invoice_line_mapping({ invoiceId, lineId })` o acceptă fără s-o re-mapezi. Pentru toate liniile deja mapate dintr-o dată: `accept_all_invoice_mappings({ invoiceId })` (acceptă în bloc cele cu produs+cont; NU creează produse noi — pe acelea le mapezi individual). O linie neacceptată blochează NIR-ul.
 
-## Faza 4 — Context factură (opțional)
-`set_invoice_context({ invoiceId, ... })`:
-- `warehouseId` / `warehouseIds` — magazia de recepție.
-- `brandId` / `locationId` — unitatea.
-- `invoiceType` — marfuri / materii_prime / servicii / utilitati / ambalaje / imobilizari.
-- `vatDeductibility` / `expenseDeductibility` / prepaid 471 — **etichetă pentru contabil** (azi nu schimbă nota contabilă; spune-i userului).
+### Faza 4 — context factură (opțional)
+`set_invoice_context({ invoiceId, warehouseId, brandId, locationId, invoiceType, vatDeductibility, ... })`. ⚠ Deductibilitatea + prepaid 471 se SALVEAZĂ ca etichetă pentru contabil — azi NU schimbă nota contabilă (TVA merge integral pe 4426). Spune-i userului.
 
-## Faza 5 — Recepția (NIR) = intrarea pe stoc
-Când TOATE liniile sunt mapate + acceptate (verifică cu `get_received_efactura_details` → `mappingStatus: "fully_mapped"`): trimite userul în aplicație, Intrări Marfă → tab Recepții (NIR) → „Recepție Nouă" (alege factura sursă + magazia) → Creează NIR. Dă-i linkul cu `gaseste_in_aplicatie("recepție marfă / NIR")`. La postare intră marfa pe stoc + se generează notele contabile.
+### Faza 5 — NIR-ul legat de factură
+Când toate liniile sunt `fully_mapped` + acceptate (verifică cu `get_received_efactura_details`): creează NIR-ul LEGAT de factură din aplicație — Intrări Marfă → tab Recepții (NIR) → „Recepție Nouă" (alegi factura sursă + magazia) → Creează NIR. Dă userului linkul cu `gaseste_in_aplicatie("recepție marfă / NIR")`. La postare intră marfa pe stoc + se generează notele contabile, iar factura primește NIR (`hasNir:true`).
 
-## Faza 6 — Reconciliere (aviz/poză ↔ eFactura) — ca să nu pierzi/dublezi facturi
-Caz tipic: a venit marfa cu aviz / s-a făcut recepție din poză, iar eFactura oficială vine mai târziu.
-- Dacă ciorna din poză e **neaprobată** și sumele se potrivesc → eFactura o **înlocuiește automat** la import (nimic de făcut).
-- Altfel, trimite userul în Intrări Marfă → tab **Reconciliere** → „Leagă" documentul de eFactura candidată. **Avertizează-l să verifice numărul + suma** înainte de „Leagă" (legarea se face doar pe furnizor, nu verifică suma — risc de a lega două facturi diferite).
-- Verifică „igiena" în `/inventory/inbox-quality` (eFacturi fără NIR, NIR-uri ciornă vechi, mapări slabe).
+⚠ De ce NU `create_inventory_document` aici: el nu primește `invoiceId`, deci nu leagă recepția de eFactură (factura rămâne „fără NIR" și marfa s-ar dubla). Pentru Calea B, NIR-ul legat se face deocamdată din aplicație. (Vezi „Limită cunoscută" mai jos.)
 
-## Faza 7 — Verifică prin citire
-- `get_received_efactura_details` — `mappingStatus` + ce linii mai sunt nemapate.
-- `list_received_efactura({ hasNir: true })` — confirmă că factura a primit NIR.
-- `list_pending_nirs` — NIR-uri ciornă nepostate.
-- `get_stock_levels` pe 1-2 produse — confirmă că stocul a crescut după NIR.
+## Faza 6 — Reconciliere (aviz/poză ↔ eFactura)
+Marfa a venit cu aviz / recepție din poză, iar eFactura oficială vine mai târziu.
+- Ciornă din poză **neaprobată** + sume care se potrivesc → eFactura o **înlocuiește automat** la import (nimic de făcut).
+- Altfel: Intrări Marfă → tab **Reconciliere** → „Leagă". ⚠ Avertizează userul să verifice numărul + suma înainte (legarea se face doar pe furnizor, nu verifică suma — risc de a lega două facturi diferite).
+- Igienă: `/inventory/inbox-quality` (eFacturi fără NIR, ciorne vechi, mapări slabe).
+
+## Servicii / utilități fără stoc
+Factură doar de servicii/utilități (fără marfă pe stoc): nu face NIR. Folosește calea de cheltuieli (`create_expense`) sau, pe factură, `set_invoice_context({ invoiceType: "servicii" })` + linii pe produs de tip `service` (cont 628). Stocul nu se mișcă.
+
+## Faza 7 — Verifică prin citire (mereu)
+- `get_received_efactura_details` — `mappingStatus` + linii rămase nemapate.
+- `list_received_efactura({ hasNir: true })` — confirmă că factura a primit NIR (Calea B).
+- `list_pending_nirs` — NIR-uri DRAFT nepostate.
+- `get_stock_levels` pe 1-2 produse — stocul a crescut.
+- `get_journal_entries_summary` — nota contabilă s-a generat (sursă NIR).
 
 ## Capcane (spune-le userului când apar)
-- **„De ce nu intră pe stoc după poză?"** Recepția din poză = doar ciornă. Mapare → Aprobă → Creează NIR cu magazie.
-- **„Permisiune insuficientă"** la map_invoice_line / set_invoice_context → tokenul n-are modulul `inventar` („Stocuri & Recepție"). Portal Hub → Acces AI.
+- **Stoc dublat** = ai folosit `create_inventory_document` pentru o marfă care avea deja factură în sistem (trebuia Calea B). Verifică în `list_pending_nirs` / Recepții (NIR).
+- **„De ce nu intră pe stoc după poză?"** Recepția din poză = doar ciornă. Mapare → Aprobă → NIR cu magazie.
+- **Stoc/notă pe valoare 0** = ai uitat `unitCost` pe Calea A (sau costul lipsește din factură).
+- **Serviciu pe cont de marfă (371)** = tip produs greșit. Leagă-l de un produs de tip `service` (cont 628 automat) sau schimbă tipul cu `update_product`.
+- **„Permisiune insuficientă"** la `map_invoice_line` / `create_inventory_document` / `set_invoice_context` → tokenul n-are modulul `inventar` („Stocuri & Recepție"). Portal Hub → Acces AI.
 - **Factură deja cu NIR** → `map_invoice_line` și câmpurile structurale din `set_invoice_context` se blochează (ar dezalinia stocul). Modificarea se face din aplicație („Modificare NIR").
-- **Serviciu pe cont de marfă (371)** → tip produs greșit. Leagă-l de un produs de tip serviciu (contul devine 628 automat) sau schimbă tipul.
-- **Preț recepție / deductibilitate** nu se reflectă în notele contabile → e normal azi (informativ). Stocul se valorează la cost.
-- **NIR dublu** pe aceeași factură = stoc dublat → caută în Recepții (NIR) după furnizor+dată, raportează cu `trimite_ticket_symbai` dacă pare bug.
-- Dacă lovești un perete (ceva ce se poate doar din aplicație) → `trimite_ticket_symbai` (tip „sugestie", cu `dedupeKey`).
+- **Deductibilitate/preț recepție** nu se reflectă în notele contabile → e normal azi (informativ). Stocul se valorează la cost.
+
+## Limită cunoscută (raportează dacă userul o cere des)
+Azi prin MCP NU se poate (1) crea o factură de intrare manuală de la zero (`set_invoice_context` doar editează una existentă) și (2) crea un NIR LEGAT de o eFactură existentă (`create_inventory_document` nu primește `invoiceId`). Pentru aceste două, calea e aplicația. Dacă userul lovește des aceste pereți, trimite o sugestie cu `trimite_ticket_symbai` (tip „sugestie", cu `dedupeKey` stabil, ex. `mcp-create-incoming-invoice` / `mcp-create-nir-from-invoice`).

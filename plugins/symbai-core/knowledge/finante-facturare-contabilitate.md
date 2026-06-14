@@ -17,7 +17,7 @@ Modulul Finanțe acoperă banii afacerii de la sertarul de numerar până la bal
 - **Bon fiscal ≠ factură** — bonul e tranzacția POS tipărită pe imprimanta fiscală; factura e documentul comercial separat, cu e-Factura opțională.
 - **e-Factura ANAF** — conectare OAuth la SPV, generare XML UBL, upload manual sau automat, verificare status (acceptat/respins), urmărirea termenului legal de 5 zile, storno/notă de credit cu referință la original.
 - **Serie de facturare** — prefix + număr curent configurabile per brand/locație. Pe serverele locale (offline) fiecare dispozitiv are propria serie, deci facturile se emit și fără internet, fără coliziuni de numere.
-- **Note contabile (registru contabil)** — înregistrări debit/credit generate automat: recepția (debit stoc 371/301 + TVA 4426 / credit furnizor 401), vânzarea (4111 / 707 + 4427), pe baza conturilor configurate per tip de produs (OMFP 1802), cu override-uri pe brand/locație/produs.
+- **Note contabile (registru contabil)** — înregistrări debit/credit generate automat: recepția (debit stoc 371/301 + TVA 4426 / credit furnizor 401), vânzarea (4111 / 707 + 4427), pe baza conturilor configurate per tip de produs (OMFP 1802), cu override-uri pe brand/locație/produs. Contul de stoc se derivă din TIPUL produsului (raw_material→301, merchandise→371, consumable→302, packaging→381, service→628) — funcționează chiar dacă brandul are 0 tipuri de produs configurate (mapare implicită pe tipul canonic). Tipurile configurate sunt necesare doar pentru conturi personalizate / override-uri.
 - **Conturi pe tip de produs** — fiecare tip de produs (marfă, produs propriu, masă servită etc.) are conturi de venit/stoc/cheltuială configurate în hub-ul „Conturi pe Tip Produs" (/ai-product-types); metodele de plată au și ele cont contabil asociat.
 - **Cotele TVA România** — 0 / 11 / 21%; mâncarea preparată e de regulă la 11%, băuturile și alte produse la 21%.
 - **Masă servită** — produs vândut fără rețetă cunoscută (ex. meniu de eveniment); costul se stabilește ULTERIOR printr-o fișă de ieșire de tip consum sau dintr-un eveniment legat — NU printr-o factură.
@@ -84,6 +84,8 @@ Modulul Finanțe acoperă banii afacerii de la sertarul de numerar până la bal
 - `create_product_type` / `update_product_type` — tip de produs cu proprietăți și conturi contabile.
 - `update_product_type_accounts_per_unit` — conturile unui tip de produs doar pentru un brand+locație.
 - `apply_accounting_codes` — aplică coduri contabile în masă pe produse.
+
+> Notele contabile de **recepție** (debit stoc + 4426 / credit 401) se generează automat la postarea unui NIR. O recepție DIRECTĂ pe stoc se poate face complet prin MCP cu `create_inventory_document` (docType GOODS_RECEIPT/NIR) + `post_inventory_document` (cer modulul `inventar`). Vezi `intrari-marfa-receptie.md` și skill-ul `receptie-factura-furnizor`. NIR-ul legat de o eFactură existentă se face deocamdată din aplicație.
 
 ## Întrebări frecvente și capcane
 
