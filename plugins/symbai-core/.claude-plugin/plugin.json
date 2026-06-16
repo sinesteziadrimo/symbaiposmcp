@@ -1,7 +1,7 @@
 {
   "name": "symbai-core",
   "description": "Asistentul Symbai pentru Claude Code: skill-uri (workflow-uri pas-cu-pas) + o bibliotecă de cunoștințe client-facing despre fiecare modul Symbai (POS, comenzi, meniu, stocuri, rezervări, producție, marketing, rapoarte, finanțe). Se cuplează cu tool-urile live MCP ale instanței tale.",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "author": { "name": "Symbai", "email": "support@symbai.app" },
   "homepage": "https://github.com/sinesteziadrimo/symbaimemory#readme",
   "repository": "https://github.com/sinesteziadrimo/symbaimemory",
