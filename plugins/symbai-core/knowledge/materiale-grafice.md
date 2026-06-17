@@ -84,6 +84,7 @@ Sloturile QR (`qr-slot`) sunt locuri rezervate. Pe șabloanele QR de masă, slot
 
 ## Legături
 - Flux complet + livrare → skill-ul `materiale-grafice`.
+- **Etichete de PRODUCȚIE** (material de tip „Etichetă" cu cod de bare + câmpuri auto `{{lot}}`/`{{termenValabilitate}}`/`{{alergeni}}`, legate de rețetă, printate la lot pe Zebra/termică ZPL sau PDF) → `etichete-productie.md` + skill `etichete-productie`.
 - Cum conduci Chrome (deep-link, screenshot = livrabil) → `condu-chrome.md`.
 - Coduri QR de masă (generare + print în lot) → `plan-sala-qr.md` / pagina „Coduri QR".
 - Meniul fizic tipărit (alt modul, alt set de tool-uri) → `meniu-fizic-design.md`.

@@ -62,6 +62,7 @@ Butoane: **„Adaugă Lot Producție"** (peste tot) și **„Adaugă Eveniment"*
 
 **Etichete (opțional)** — pentru imprimanta de etichete (valabilitate, alergeni):
 - `get_recipe_labels` (params: `recipeId`) și `set_recipe_labels` (params: `recipeId`*, `labels`* = listă de `{name`, `copies`, `enabled}`).
+- Pentru etichete FRUMOASE, desenate (cu cod de bare + câmpuri auto `{{lot}}`/`{{termenValabilitate}}`/`{{alergeni}}`), legate de rețetă și printate la lot (ZPL/PDF) → vezi `etichete-productie.md` + tool-ul `print_designed_label`.
 
 ### 2. (Opțional) Verifică ce materii prime îți trebuie
 - `run_bom_explosion` (params: `recipeId`*, `quantity`*) — îți calculează lista totală de materii prime pentru cantitatea dată. E doar o **previzualizare** (NU mișcă stoc) — bună ca listă de cumpărături înainte de un eveniment mare.
