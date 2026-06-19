@@ -64,10 +64,12 @@ Asta acoperă „adaugă factura de intrare" când nu vrei să treci prin eFactu
 ### Faza 4 — context factură (opțional)
 `set_invoice_context({ invoiceId, warehouseId, brandId, locationId, invoiceType, vatDeductibility, ... })`. ⚠ Deductibilitatea + prepaid 471 se SALVEAZĂ ca etichetă pentru contabil — azi NU schimbă nota contabilă (TVA merge integral pe 4426). Spune-i userului.
 
-### Faza 5 — NIR-ul legat de factură
-Când toate liniile sunt `fully_mapped` + acceptate (verifică cu `get_received_efactura_details`): creează NIR-ul LEGAT de factură din aplicație — Intrări Marfă → tab Recepții (NIR) → „Recepție Nouă" (alegi factura sursă + magazia) → Creează NIR. Dă userului linkul cu `gaseste_in_aplicatie("recepție marfă / NIR")`. La postare intră marfa pe stoc + se generează notele contabile, iar factura primește NIR (`hasNir:true`).
+### Faza 5 — NIR-ul legat de factură (prin MCP)
+Când toate liniile sunt `fully_mapped` + acceptate (verifică cu `get_received_efactura_details`): **confirmă cu userul**, apoi `create_nir_from_invoice({ invoiceId, warehouseId, confirm: true })` — creează NIR-ul LEGAT de factură, îl postează pe stoc, generează notele contabile și marchează factura cu NIR (`hasNir:true`). Toate liniile trebuie să aibă deja produs mapat (altfel dă eroare). `warehouseId` = magazia de recepție (din `list_warehouses_full`); opțional doar dacă toate liniile sunt servicii non-stocabile. `confirm:true` e obligatoriu (mișcă stocul real, ireversibil).
 
-⚠ De ce NU `create_inventory_document` aici: el nu primește `invoiceId`, deci nu leagă recepția de eFactură (factura rămâne „fără NIR" și marfa s-ar dubla). Pentru Calea B, NIR-ul legat se face deocamdată din aplicație. (Vezi „Limită cunoscută" mai jos.)
+Alternativ, din aplicație: Intrări Marfă → tab Recepții (NIR) → „Recepție Nouă" (alegi factura sursă + magazia) → Creează NIR. Dă linkul cu `gaseste_in_aplicatie("recepție marfă / NIR")`.
+
+⚠ NU folosi `create_inventory_document` pe Calea B: el nu primește `invoiceId`, deci ar crea o recepție SEPARATĂ, nelegată de factură (marfa s-ar dubla, factura rămâne „fără NIR"). Pentru o factură care există deja în sistem, folosește MEREU `create_nir_from_invoice`.
 
 ## Faza 6 — Reconciliere (aviz/poză ↔ eFactura)
 Marfa a venit cu aviz / recepție din poză, iar eFactura oficială vine mai târziu.
@@ -94,5 +96,7 @@ Factură doar de servicii/utilități (fără marfă pe stoc): nu face NIR. Folo
 - **Factură deja cu NIR** → `map_invoice_line` și câmpurile structurale din `set_invoice_context` se blochează (ar dezalinia stocul). Modificarea se face din aplicație („Modificare NIR").
 - **Deductibilitate/preț recepție** nu se reflectă în notele contabile → e normal azi (informativ). Stocul se valorează la cost.
 
-## Limită cunoscută (raportează dacă userul o cere des)
-Azi prin MCP NU se poate (1) crea o factură de intrare manuală de la zero (`set_invoice_context` doar editează una existentă) și (2) crea un NIR LEGAT de o eFactură existentă (`create_inventory_document` nu primește `invoiceId`). Pentru aceste două, calea e aplicația. Dacă userul lovește des aceste pereți, trimite o sugestie cu `trimite_ticket_symbai` (tip „sugestie", cu `dedupeKey` stabil, ex. `mcp-create-incoming-invoice` / `mcp-create-nir-from-invoice`).
+## Factură manuală de la zero (prin MCP)
+Pentru o factură pe hârtie/PDF care NU vine prin eFactura/SPV sau OCR, o creezi direct prin conexiune: `create_incoming_invoice({ invoiceNumber, invoiceDate, lines: [{ description, quantity, unit?, unitPrice?, vatRate?, mappedProductId? }], supplierId? SAU supplierName?(+supplierCui?), brandId?, locationId? })` (modul `financiar`). Creează factura ca CIORNĂ și NU mișcă stoc. Apoi mapezi liniile (`map_invoice_line`) și faci recepția cu `create_nir_from_invoice` (Faza 5) — astfel o factură de hârtie devine Calea B, integral prin MCP.
+
+(Notă: ambele operații — factură manuală de la zero ȘI NIR legat de o factură existentă — se pot face acum prin MCP, cu `create_incoming_invoice` și `create_nir_from_invoice`. Vechea limitare „doar din aplicație" nu mai e valabilă.)
