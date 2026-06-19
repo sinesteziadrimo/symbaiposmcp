@@ -4,7 +4,7 @@
 
 ## Pe scurt
 
-Modulul de magazin online acoperă vânzarea de produse pe site-ul propriu și pe marketplace-uri: catalogul cu variante și colecții, feed-urile de produse pentru Google/Facebook, codurile de reducere, comenzile online, retururile (RMA), antifrauda și integrările cu marketplace-uri (eMAG etc.). Partea de **livrare** a comenzilor (AWB cu curieri, dispecerat, abonamente) e detaliată în ghidul „Livrări și comenzi online" — aici ne ocupăm de **magazin, catalog și comenzi**. Paginile apar doar dacă modulul de magazin online e activat.
+Modulul de magazin online acoperă vânzarea de produse pe site-ul propriu și pe marketplace-uri: catalogul cu variante și colecții, feed-urile de produse pentru Google/Facebook, codurile de reducere, comenzile online, retururile (RMA), antifrauda și integrările cu marketplace-uri (eMAG etc.). Partea de **livrare** a comenzilor (AWB cu curieri, dispecerat, abonamente) e detaliată în ghidul „Livrări și comenzi online"; **CONSTRUIREA propriu-zisă a site-ului public** (pagini, componente, ierarhie de categorii, filtre faceted, hero, footer, pagini legale, temă) e în ghidul **„website-builder.md"** + skill-ul `construieste-website`. Aici ne ocupăm de **catalog, marketing și comenzi**. Paginile apar doar dacă modulul de magazin online e activat.
 
 ## Concepte
 

@@ -5,14 +5,14 @@
     "email": "support@symbai.app"
   },
   "metadata": {
-    "description": "Cunoștințe și skill-uri pentru a folosi Symbai (POS, meniu, stocuri, rezervări, producție, marketing, rapoarte) prin Claude Code."
+    "description": "Cunoștințe și skill-uri pentru a folosi Symbai prin Claude Code + MCP: POS, meniu, stocuri, rezervări, producție, marketing, aplicații native Expo, rapoarte și verificări live."
   },
   "plugins": [
     {
       "name": "symbai-core",
       "source": "./plugins/symbai-core",
-      "description": "Asistentul Symbai: ghiduri pas-cu-pas + cunoștințe despre fiecare modul. Se folosește împreună cu conexiunea MCP la instanța ta (adăugată din portalul Hub → Acces AI).",
-      "version": "0.13.1",
+      "description": "Asistentul Symbai: ghiduri pas-cu-pas + cunoștințe despre modulele Symbai, aplicațiile native Expo și catalogul MCP live. Lucrează MCP-first cu confirmări sigure și verificare prin citire.",
+      "version": "0.17.1",
       "author": { "name": "Symbai" },
       "homepage": "https://github.com/sinesteziadrimo/symbaimemory",
       "repository": "https://github.com/sinesteziadrimo/symbaimemory",

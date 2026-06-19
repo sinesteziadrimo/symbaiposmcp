@@ -16,18 +16,18 @@ Userul vrea un material grafic care arată profesionist (afiș, flyer, postare, 
 
 **Pasul 1 — Înțelege cererea + alege punctul de start.** Ce vrea (tip + unde se folosește)? Aproape mereu **pornește dintr-un șablon** potrivit (`list_material_templates` → alege `templateId`) — sunt echilibrate și frumoase. Compui de la zero (`create_material_design` cu `elements`) doar când cere ceva specific ce niciun șablon nu acoperă. Dacă vrea să plece de la un material existent → `duplicate_material_design`.
 
-**Pasul 2 — Creează + pune conținutul real.** `create_material_from_template({templateId, applyBrandColors:true, useBrandFont:true, tokens})` — completează automat numele brandului/locația; tu pui în `tokens` restul (ex. `{tableNumber, code}`) și ajustezi textele/oferta cu `update_material_elements` (ia id-urile din `get_material_design`). Nu inventa prețuri/oferte — întreabă userul.
+**Pasul 2 — Creează + pune conținutul real.** `create_material_from_template({templateId, applyBrandColors:true, useBrandFont:true, tokens})` — completează automat numele brandului/locația; tu pui în `tokens` restul (ex. `{tableNumber, code}`) și ajustezi textele/oferta cu `update_material_elements` (ia id-urile din `get_material_design`). Pentru șabloane QR reutilizabile, lasă tokenii de print în text (`{{tableNumber}}`, `{{customText1}}`...), nu îi transforma în text fix. Nu inventa prețuri/oferte — întreabă userul.
 
 **Pasul 3 — Rafinează ca grafician.** Citește cu `get_material_design` (vezi pozițiile în procente) și aplică principii: un punct focal, ierarhie clară, contrast citibil, aliniere cu `arrange_material_elements` (nu „la ochi"), spațiu de respirație, max 2–3 culori + 1–2 fonturi, CTA clar. Brandul: `apply_brand_to_material` (recolor + font + logo). Fundal: `set_material_page_background`. Uită-te REAL (screenshot prin Chrome) și iterează.
 
-**Pasul 4 — Livrează.** Arată-i rezultatul (screenshot / link `gaseste_in_aplicatie("materiale grafice")`), spune-i ce-ai făcut, și cum îl exportă: butonul „Descarcă" (PDF pentru print, PNG pentru social) din studio. Vrea și alt format? `resize_material_design({format})` (ex. afiș → story Instagram). Card QR de masă pentru toate mesele? Printarea în lot se face din pagina „Coduri QR" (alegi șablonul + mesele).
+**Pasul 4 — Livrează.** Arată-i rezultatul (screenshot / link `gaseste_in_aplicatie("materiale grafice")`), spune-i ce-ai făcut, și cum îl exportă: butonul „Descarcă" (PDF pentru print, PNG pentru social) din studio. Vrea și alt format? `resize_material_design({format})` (ex. afiș → story Instagram). Card QR de masă pentru toate mesele? Printarea în lot se face din pagina „Coduri QR" (alegi șablonul + mesele). Dacă șablonul are `{{customText1}}`...`{{customText4}}`, userul completează acele câmpuri direct în dialogul de print; valorile sunt comune pentru PDF-ul curent.
 
 ## Reguli (cele care contează)
 - **Pornește din șabloane** pentru rezultate frumoase rapid; coordonate FRACȚIONALE (0..1) când compui — gândești în procente, nu pixeli.
 - **Tool-uri, NU clickuri, NU SQL.** Citește cu `get_material_design`, editezi pe `id` cu `update_material_elements` / `arrange_material_elements`.
 - **Brand consecvent**: `applyBrandColors:true` la from-template sau `apply_brand_to_material` după.
 - **Claritate**: limbaj de restaurant, nu jargon; alege cu userul deciziile mari; arată-i rezultatul (screenshot / link).
-- **Nu inventa** prețuri/oferte/poze reale; QR-ul pe șabloanele de masă se completează la printarea în lot din „Coduri QR".
+- **Nu inventa** prețuri/oferte/poze reale; QR-ul pe șabloanele de masă se completează la printarea în lot din „Coduri QR". `{{tableNumber}}` este per QR; `{{customText1}}`...`{{customText4}}` sunt texte manuale per print/PDF.
 - **Permisiune**: scrierea cere modulul `marketing_social` („Marketing & Social Media"). „Permisiune insuficientă" → portal Hub → Acces AI.
 
 ## Legături

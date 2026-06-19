@@ -62,6 +62,42 @@ Patch: trimite TOT array-ul (cele existente + ce adaugi). Citește întâi cu `g
 
 ---
 
+## SLIDE SEPARAT după un răspuns de discovery → `followUpSlide` (pe o opțiune) ✅ NOU (2026-06-19)
+Pe lângă reveal-ul inline (text peste același slide), o **opțiune de răspuns dintr-o întrebare discovery** poate avea un **slide întreg dedicat**, full-screen, care apare IMEDIAT după ce clientul alege acel răspuns (apoi „Mai departe" → următoarea întrebare). Util pentru fluxuri educaționale: *întrebare → slide educațional → întrebare*. Câmpul stă pe **opțiunea** întrebării (`options[].followUpSlide`), NU pe întrebare. Funcționează DOAR pe întrebările din `libraryOverride.questions` (discovery), nu pe `introFields`.
+
+Forma (toate câmpurile opționale; fără titlu/text/bullets/poză SAU cu `enabled:false` → nu apare nimic):
+```json
+{
+  "id": "opt_first_open", "label": "🚀 E prima mea deschidere",
+  "followUpSlide": {
+    "enabled": true,                                  // pune-l EXPLICIT true (vezi capcana bullets)
+    "kicker": "Ce înseamnă asta pentru tine",          // eyebrow mic; suportă {cheie}
+    "title": "La prima deschidere, 6 luni decid totul", // suportă {cheie}
+    "body": "Hai să-ți arăt unde pierd cei mai mulți bani fără să-și dea seama.",
+    "bullets": [
+      { "text": "Food cost necontrolat — 8-12% din profit", "icon": "TrendingDown" },
+      { "text": "Fără cifre clare nu poți negocia cu furnizorii", "icon": "Receipt" }
+    ],
+    "imageUrl": "https://...",                         // poză fundal (image-dark) / laterală (image-side)
+    "imageObjectPosition": "50% 35%",                  // CSS object-position (opțional)
+    "layout": "image-dark",                            // "image-dark"(default) | "image-side" | "solid"
+    "accentColor": "#8b5cf6"                           // accent kicker+iconițe; lipsă = primary-ul temei
+  }
+}
+```
+- `icon` pe bullet = nume **Lucide** (ex `TrendingUp`, `Receipt`, `AlertTriangle`); nume necunoscut → bulină default.
+- **layout**: `image-dark` (poză full-bleed + overlay închis, text alb jos) · `image-side` (split 2-col) · `solid` (fără poză, gradient pe accent).
+- ⚠ **Capcană bullets**: pune `enabled: true` pe followUpSlide ȘI asigură-te că fiecare bullet are `text` ne-gol — un bullet gol e aruncat la normalizare. Fără `enabled:true` explicit, slide-ul apare doar dacă are titlu/text/poză.
+
+**Cum îl scrii prin MCP** (întrebarea trăiește în `libraryOverride.questions` = bibliotecă mare → folosește tool-urile GRANULARE, nu `patch_presentation`):
+1. `list_presentation_library_items(presentationId, kind:"question")` → iei `itemId`-ul întrebării.
+2. `get_presentation_library_item(presentationId, kind:"question", itemId)` → vezi `options[]` curente.
+3. `patch_presentation_library_item(presentationId, kind:"question", itemId, patch:{ options:[ ...toate opțiunile, cu `followUpSlide` adăugat pe cea dorită ] })` — `options` se înlocuiește integral, deci trimite TOATE opțiunile.
+
+Confirmă în Preview: alegi acel răspuns → trebuie să apară slide-ul dedicat, apoi „Mai departe".
+
+---
+
 ## TEMĂ → `theme` (CONFIRMATĂ)
 ```json
 {
@@ -102,13 +138,31 @@ Patch: trimite TOT array-ul (cele existente + ce adaugi). Citește întâi cu `g
   "discovery":   { "enabled": true, "maxQuestions": 6 },
   "transition":  { "enabled": true },
   "solutions":   { "enabled": true, "count": 3 },               // câte perechi durere+soluție în deck
-  "calculation": { "enabled": true, "calculationId": "calc_softs_savings" },
+  "calculation": { "enabled": true, "calculationId": "calc_softs_savings" }, // ⚠ enabled:true ALTFEL calculatorul NU apare
   "objections":  { "enabled": true },
   "proofs":      { "enabled": true, "count": 2 },               // dovezi pe oraș/tipologie — lever mare de conversie
-  "offer":       { "enabled": true }
+  "offer":       { "enabled": true },
+  "calculationAfterOffer": { "enabled": false, "calculationId": "calc_softs_savings_phase2" } // ✅ NOU: calcul DUPĂ ofertă (opt-in)
 }
 ```
 Notă: `stages[]` + `autoDeriveRules[]` sunt chei separate (le păstrezi neatinse când dai patch DOAR pe `flowV2`). `autoDeriveRules` derivă axele tipologiei din răspunsurile intro (ex. `business_type → businessSize`, `years_open → experience`) — formă: `{id,label,targetAxis,derive:{path,source:"answer",mapping:[{op:"eq",value,result}],defaultValue}}`.
+
+### ⚠ „Nu se vede calculatorul" = `flowV2.calculation.enabled` e `false`
+Cauza #1 când calculatorul lipsește din prezentare: pasul e OPRIT din flux. Repară: `get_presentation(section:"flow")` → setezi `enabled:true` (și un `calculationId` care există în `libraryOverride.calculations`) → `patch_presentation(patch:{flowV2:{...flux complet cu calculation.enabled=true}})`. (Patch = înlocuire de cheie → trimite TOT obiectul `flowV2`, nu doar `calculation`.) Verifică în Preview: trebuie să apară slide-ul de calcul.
+
+### Calculator „costuri-întâi, comparație-după ofertă" ✅ NOU (2026-06-19)
+Pe un calcul de tip **Listă cheltuieli** (`comparative-list`) ai 3 câmpuri noi (le pui per-calcul cu `patch_presentation_library_item(kind:"calculation", itemId, patch:{...})`):
+- **`currentCostOnly: true`** — ascunde coloana „Cu Symbai" + prețul; arată DOAR cât plătește clientul ACUM (total lună/an/5 ani). Strategic: arăți costul lui actual ÎNAINTE de a-i spune prețul tău.
+- **`placement: "before-offer" | "after-offer"`** — în ce etapă apare calculul. Lipsă/`before-offer` = înainte de ofertă (default). `after-offer` = doar în etapa nouă de după ofertă (trebuie ȘI `flowV2.calculationAfterOffer.enabled:true`).
+- **`comparativeItemsFromCalculationId: "<id-calc-faza-1>"`** — calculul de fază 2 (după ofertă) **reia cheltuielile** pe care agentul le-a introdus LIVE în calculul de fază 1, și acum arată economia vs prețul Symbai. (1 nivel, nu urmărește lanțuri.)
+
+**Rețeta cerută de clienți (calc înainte fără preț → ofertă → economie după):**
+1. Faza 1 (before): un `comparative-list` cu `currentCostOnly:true`, `placement:"before-offer"` → arată „cât plătești acum".
+2. Faza 2 (after): un AL DOILEA `comparative-list` cu `currentCostOnly:false`, `placement:"after-offer"`, `comparativeItemsFromCalculationId:"<id-faza-1>"` (preia aceleași cheltuieli) + `symbaiCost` setat → arată economia.
+3. `flowV2.calculationAfterOffer = { enabled:true, calculationId:"<id-faza-2>" }`.
+Cheltuielile introduse live în faza 1 supraviețuiesc până în faza 2 fără nimic de salvat (sunt în același runner).
+
+⚠ **Recalc live**: dacă raportul e „cifrele nu se actualizează când adaug linii în calculator" — bug-ul de recalc a fost reparat pe 2026-06-19 (guard pe sume). Dacă persistă pe instanța clientului, e versiune veche → cere deploy.
 
 ## TIPOLOGII → `typologies[]` (segmentele + regulile de detecție)
 Conceptual: `{ id, name, vertical, keyMessage, axes:{experience,businessSize,businessModel,techMentality,...}, detectionThreshold, detectionRules:[{label,weight,conditions}], dominantPains:[painId], recommendedFeatures:[featId], predictedObjections:[objId], recommendedProofs:[proofId], agentTips }`. Fiecare match de axă = +1; pragul implicit 1. Citește un exemplu cu `get_presentation(section:"typologies")` înainte de a edita.

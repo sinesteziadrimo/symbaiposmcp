@@ -17,12 +17,13 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **Personal (Staff)** — angajați, roluri, contracte, ture, pontaj, salarizare, beneficii. → `personal-hr.md`
 - **Rapoarte / Analytics** — vânzări, KPI, food cost, marjă, performanță. → `rapoarte-preturi.md`
 - **Finanțe** — casierie (registru de casă), închidere de zi, facturi, e-Factura ANAF, contabilitate. → `finante-facturare-contabilitate.md`
-- **Marketing & Website** — postări social media, e-mail, ads, website-ul restaurantului, coduri QR. → `marketing-social.md`
+- **Marketing & Website** — postări social media, e-mail, ads, coduri QR (→ `marketing-social.md`); **site-ul public / magazinul online** — builder (pagini, componente, ierarhie de categorii, filtre faceted, hero, footer, pagini legale, temă) → `website-builder.md` + `ecommerce-magazin-online.md`
 - **Echipamente** — imprimante, ecrane bucătărie (KDS), agentul de imprimare, serverul local (edge), dispozitive. → `echipamente-kds-imprimante.md`
+- **Aplicatii native Expo** — Symbai POS, Symbai Portal si Symbai Staff: configurare app.json, branding, emulator Android, build nativ, GP/Viva app2app, push notifications. → `expo-aplicatii-mobile.md`
 - **Setări & Administrare** — locații, branduri, TVA, metode de plată, utilizatori și roluri, integrări, abonament. → `setari-administrare.md`
 - **AI în aplicație** — asistentul Sym (butonul plutitor) + agenții specialiști. → `asistentul-ai-in-aplicatie.md`
 
-Două fișiere de referință transversale: `harta-aplicatiei.md` (indexul exhaustiv al TUTUROR paginilor, generat din registrul de navigare al aplicației) și `tools-mcp.md` (catalogul complet al tool-urilor MCP, cu modelul de permisiuni).
+Fișiere de referință transversale: `harta-aplicatiei.md` (indexul exhaustiv al TUTUROR paginilor, generat din registrul de navigare al aplicației), `tools-mcp.md` (catalogul complet al tool-urilor MCP, generat din registry-ul live, cu modelul de permisiuni), `expo-aplicatii-mobile.md` (configurarea actuala a aplicatiilor native) și `claude-code-mcp-operare.md` (cum lucrează corect Claude Code cu skill-uri, knowledge, MCP live, confirmări și verificare prin citire).
 
 ## Cum se leagă (lanțul de bază)
 

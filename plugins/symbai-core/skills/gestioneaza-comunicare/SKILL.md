@@ -1,90 +1,156 @@
 ---
 name: gestioneaza-comunicare
-description: Gestionează comunicarea cu clienții și echipa — campanii și șabloane de email, secvențe automate (drip), audiență, statistici email, conversații WhatsApp / Messenger / Instagram, notificări push și linkuri de conectare — hands-free prin conexiune (MCP) + Chrome. Folosește la „trimite o campanie de email", „fă o newsletter", „câți clienți primesc emailul", „cum a mers campania X", „de ce nu deschide nimeni emailurile", „cine mi-a scris pe WhatsApp", „răspunde-i clientului de pe WhatsApp/Instagram", „ce conversații am deschise", „trimite un WhatsApp lui X", „dezabonează adresa Y", „de pe ce adresă plec emailurile", „notifică personalul", „trimite-i un link de conectare clientului". Confirmă MEREU înainte de orice trimitere reală.
+description: Gestioneaza comunicarea cu clientii si echipa prin MCP + Chrome: campanii email, newslettere, flow-uri automate, send-time optimization, deliverability/warm-up, A/B, atribuire conversii, sabloane, WhatsApp/Messenger/Instagram, push si linkuri de conectare. Foloseste la "trimite o campanie", "cand e cel mai bine sa trimit emailul", "creste open rate", "cum stam fata de ActiveCampaign", "de ce nu se livreaza", "cine mi-a scris", "raspunde pe WhatsApp", "dezaboneaza". Confirmare explicita obligatorie inainte de orice trimitere reala.
 ---
 
-# Gestionează comunicarea — email + WhatsApp + conversații, prin MCP + Chrome
+# Gestioneaza Comunicare — Email + WhatsApp + Push, MCP-First
 
-Userul (proprietar/manager) vrea să comunice cu clienții sau cu echipa: să trimită o campanie de email, să vadă cum merg emailurile, să răspundă la mesaje de pe WhatsApp/Messenger/Instagram, să dezaboneze pe cineva, să notifice personalul. Tu faci munca **prin conexiune (tool-uri MCP)** — citești, pregătești draft-uri, previzualizezi audiența, tragi statistici — și folosești **Chrome doar ca să NAVIGHEZI și să-i ARĂȚI** rezultatul. **Regula de aur a acestui modul: orice TRIMITERE REALĂ (email în masă, WhatsApp, push, link de login) se face DOAR după ce ai confirmat explicit cu userul** — tool-urile cer `confirm: true`, dar confirmarea adevărată o ceri tu, în cuvinte, de la user.
+Userul este proprietar/manager, nu programator. Tu faci munca grea prin tool-urile MCP: citesti date live, pregatesti drafturi, rulezi planuri dry-run, calculezi audienta, alegi orele recomandate, verifici livrabilitatea si arati clar ce se va intampla. Chrome este pentru navigare si vizualizare; adevarul operational vine din MCP.
 
-## Înainte de orice
-1. Citește **`knowledge/email-marketing.md`** (cum funcționează campaniile, șabloanele, secvențele, audiența, ce înseamnă ratele) și **`knowledge/comunicare-whatsapp.md`** (inbox unificat, fereastra de 24h WhatsApp, consimțământ de marketing). Pentru postări/reclame (≠ conversații 1-la-1) → `knowledge/marketing-social.md` + skill-ul `programeaza-postare`. Pentru cum conduci Chrome (deep-link, screenshot = livrabil, click doar la nevoie) → **`knowledge/condu-chrome.md`** — nu repet aici, o presupun.
-2. **Context întâi**: `list_brands` (+ `list_locations` la nevoie) → afli `brandId`. Aproape toate tool-urile de comunicare cer `brandId` când ai mai multe branduri. Verifică și de pe ce identitate pleci: **`comms_get_status`** (ce adresă de email + ce cont WhatsApp e activ) și **`list_whatsapp_accounts`** înainte de orice WhatsApp.
-3. **Navigare prin deep-link stabil** (nu click prin meniu): `/email-campaigns` (campanii + wizard Configurare→Șablon→Audiență→Revizuire), `/email-templates` (șabloane), `/email-analytics` (statistici), `/email-logs` (trimiteri individuale), `/email-review` (curățare adrese înainte de campanii mari), `/whatsapp-inbox` (conversații WhatsApp), `/social-messages` (inbox unificat DM/comentarii sociale). Ruta exactă a oricărei pagini → `gaseste_in_aplicatie("termen scurt")` (ex. „campanii email", „inbox whatsapp"). **Nu inventa URL-uri.**
+Regula de aur: **orice trimitere reala cere confirmare explicita in cuvinte**. Nu seta `confirm:true` doar pentru ca tool-ul exista. Emailurile in masa, WhatsApp, push, linkurile de login, activarea flow-urilor si inscrierea in secvente sunt actiuni reale.
 
-## Intent → tool (cheat table)
+## Inainte De Orice
 
-| Userul cere… | Tool MCP | Note |
+1. Citeste `knowledge/email-marketing.md`, `knowledge/comunicare-whatsapp.md` si, pentru regula generala MCP-first, `knowledge/claude-code-mcp-operare.md`.
+2. Stabileste contextul: `list_brands` si, daca e relevant, `list_locations`. Pentru mai multe branduri, cere clar brandul daca userul nu l-a spus.
+3. Verifica identitatea de trimitere: `comms_get_status`. Pentru WhatsApp: `list_whatsapp_accounts`.
+4. Pentru email marketing, verifica sanatatea inainte de volum: `get_email_account_health`, `get_brand_email_reputation`, `get_sender_domain_status`.
+5. Pentru pagini foloseste deep-link-uri stabile: `/email-campaigns`, `/email-templates`, `/email-setup`, `/email-analytics`, `/email-logs`, `/email-review`, `/whatsapp-inbox`, `/social-messages`. Daca nu esti sigur, `gaseste_in_aplicatie("campanii email")`.
+
+## Intent -> Tool
+
+| Userul cere | Tool MCP | Nota |
 |---|---|---|
-| „ce campanii am / draft / trimise" | `list_email_campaigns` | filtru `status` (draft/scheduled/sent/active) |
-| „cum a mers campania X" | `get_email_campaign_analytics` | livrare, deschideri reale, click, CTOR, bounce, dezabonări |
-| „cum stau cu emailul în general" | `get_email_analytics_overview` | rate pe tot brandul |
-| „de pe ce dispozitive deschid / ce link s-a apăsat" | `get_email_analytics_breakdowns` | device/client email/țară + top link-uri + funnel |
-| „a ajuns emailul la X / de ce bounce" | `list_email_logs` | per destinatar; `search` pe adresă |
-| „ce șabloane am" | `list_email_templates` | înainte de a face o campanie pe șablon |
-| „ce automatizări (drip) am" | `list_email_sequences` | secvențe + câți înscriși |
-| „câți clienți cu eticheta VIP" | `get_customer_email_segments` | numără clienți activi + tag-uri |
-| **„câți primesc emailul ăsta"** | **`preview_email_audience`** | **dry-run OBLIGATORIU înainte de send — NU trimite** |
-| „fă o campanie / newsletter" | `create_email_campaign` | creează **DRAFT**, nu trimite |
-| „schimbă subiectul/conținutul campaniei" | `update_email_campaign` | doar draft/programată |
-| „fă un șablon" | `create_email_template` | reutilizabil |
-| „fă o secvență automată" | `create_email_sequence` | DRAFT inactiv |
-| **„trimite campania"** | **`send_email_campaign`** (`confirm:true`) | **IREVERSIBIL — confirm-first** |
-| **„pornește fluxul drip"** | **`activate_email_flow`** (`confirm:true`) | trimiteri automate reale |
-| **„înscrie clienții în secvență"** | **`enroll_customers_in_email_sequence`** (`confirm:true`) | drip real către ei |
-| „trimite-mi un test la adresa mea" | `send_test_email_campaign` | o singură adresă — sigur |
-| „nu-i mai trimite lui X / dezabonează Y" | `add_email_suppression` | îl scoate de pe listă (GDPR) |
-| „cine mi-a scris / ce conversații am" | `list_conversations` | WhatsApp/Messenger/Instagram + necitite |
-| „arată-mi firul cu clientul" | `get_conversation_messages` | citește ÎNAINTE de a răspunde |
-| **„răspunde-i clientului"** | **`reply_to_conversation`** (`confirm:true`) | pe canalul nativ — confirm textul |
-| **„trimite un WhatsApp lui X"** | **`send_whatsapp_message`** (`confirm:true`) | număr internațional (40712…) |
-| **„trimite-i o poză/PDF pe WhatsApp"** | **`send_whatsapp_media`** (`confirm:true`) | `mediaUrl` public, `mediaType` |
-| **„notifică personalul / un angajat"** | **`push_notify_staff`** (`confirm:true`) | `employeeIds` sau tot brandul |
-| **„notifică clienții (push)"** | **`push_notify_customers`** (`confirm:true`) | `portalUserIds` |
-| „trimite-i clientului un link de conectare" | `send_magic_login_link` (`confirm:true`) | login fără parolă, valabil 24h |
+| "ce campanii am" | `list_email_campaigns` | filtreaza pe status daca e cazul |
+| "cum a mers campania X" | `get_email_campaign_analytics` | livrare, reliable opens, click, CTOR, bounce, complaints |
+| "cum stau in general cu emailul" | `get_email_analytics_overview` + `get_email_account_health` | overview + risc cont |
+| "ce linkuri/dispozitive au mers" | `get_email_analytics_breakdowns` | top linkuri, funnel, device/client/tara |
+| "a ajuns emailul la X" | `list_email_logs` | cauta pe adresa |
+| "cine e suprimat/dezabonat" | `get_email_suppression_list` | cauta adresa sau lista |
+| "de pe ce adresa pleaca" | `comms_get_status` + `get_sender_domain_status` | expeditor + DNS |
+| "ce segment sa targetez" | `get_email_segment_opportunities` | propuneri din date POS/CRM |
+| "cati primesc emailul" | `preview_email_audience` | dry-run obligatoriu |
+| "cand sa trimit" | `analyze_email_send_time_plan` | plan serios, individual |
+| "ore rapide recomandate" | `get_email_send_time_recommendations` | fallback/overview pe ore |
+| "este safe sa trimit" | `analyze_email_deliverability_plan` | readiness, warm-up, cap/ora |
+| "scor spam continut" | `check_email_campaign_deliverability` | subiect, CTA, HTML, risc |
+| "fata de ActiveCampaign cum stam" | `get_email_competitive_audit` | audit enterprise parity |
+| "fa campania/newsletter" | `create_email_campaign` | draft, nu trimite |
+| "editeaza campania" | `update_email_campaign` | draft/programata |
+| "activeaza ore individuale" | `enable_email_predictive_sending` | salveaza config, nu trimite |
+| "trimite campania" | `send_email_campaign_predictive` | default recomandat pentru marketing |
+| "trimite imediat/fix" | `send_email_campaign` | doar daca userul accepta fara predictive |
+| "programeaza pe data X" | `schedule_email_campaign` | confirm-first; predictive daca e activ |
+| "raport A/B" | `get_email_ab_test_report` | castigator provizoriu |
+| "ROI/conversii din POS" | `get_email_conversion_attribution` | comenzi + rezervari atribuite |
+| "recalculeaza conversii" | `reconcile_email_conversions` | nu trimite nimic |
+| "fa un sablon" | `create_email_template` | reutilizabil |
+| "fa flow/drip" | `create_email_campaign` cu `campaignType:"flow"` sau `create_email_sequence` | draft |
+| "porneste flow-ul" | `activate_email_flow` | confirm-first |
+| "inscrie clienti in secventa" | `enroll_customers_in_email_sequence` | confirm-first |
+| "trimite-mi un test" | `send_test_email_campaign` | la o singura adresa |
+| "nu-i mai trimite lui X" | `add_email_suppression` | GDPR pozitiv |
+| "cine mi-a scris" | `list_conversations` | WhatsApp/Messenger/Instagram |
+| "arata firul" | `get_conversation_messages` | citeste inainte de raspuns |
+| "raspunde-i clientului" | `reply_to_conversation` | confirm textul |
+| "trimite WhatsApp" | `send_whatsapp_message` / `send_whatsapp_media` | confirm numar + text |
+| "notifica personal/clienti" | `push_notify_staff` / `push_notify_customers` | confirm-first |
+| "trimite link de conectare" | `send_magic_login_link` | credential pe email, confirm-first |
 
-Citirile (`list_*`/`get_*`/`preview_*`/`comms_get_status`) merg mereu. Scrierile-draft și trimiterile cer modulul **Comunicare** bifat pe token.
+## Reteta Standard Pentru Campanie Email
 
-## Fluxul (rețete)
+**Nu sari pasii.** Pentru orice campanie de marketing reala:
 
-**A — „Vezi campaniile / cum merge emailul" (citire pură).** `list_email_campaigns` (sau `get_email_analytics_overview` pentru ansamblu) → spune-i userului în limbaj de business („3 campanii trimise, rată de deschidere 28%, cea mai bună a fost «Oferta de toamnă»"). Vrea detaliu pe una → `get_email_campaign_analytics(campaignId)` + `get_email_analytics_breakdowns` (de pe ce telefoane deschid, ce link au apăsat). Ca să-i ARĂȚI: `navigate("/email-analytics")` + screenshot.
+1. **Context** — `list_brands` -> brandul corect; `comms_get_status`.
+2. **Health** — `get_email_account_health`, `get_brand_email_reputation`, `get_sender_domain_status`.
+3. **Segment** — daca userul nu stie cui sa trimita, `get_email_segment_opportunities`. Apoi `preview_email_audience`.
+4. **Draft** — `create_email_campaign` sau `update_email_campaign`. Pentru A/B foloseste `abTest`; pentru personalizare foloseste template overrides/conditional content.
+5. **Deliverability continut** — `check_email_campaign_deliverability`.
+6. **Deliverability plan** — `analyze_email_deliverability_plan`. Pentru 5k+ contacte este obligatoriu.
+7. **Send-time plan** — `analyze_email_send_time_plan`. Pentru marketing, acesta este noul default.
+8. **Test** — `send_test_email_campaign` daca userul vrea validare in inbox.
+9. **Explica si cere confirmare** — campanie, audienta, cate emailuri, ritm, fereastra, riscuri, metoda de trimitere.
+10. **Trimite** — `send_email_campaign_predictive({ campaignId, confirm:true, ... })`, cu aceiasi parametri de ore/cap aprobati. Daca e programata pe viitor, `schedule_email_campaign` dupa `enable_email_predictive_sending`.
+11. **Verifica dupa** — `get_email_campaign_analytics`, `get_email_analytics_breakdowns`, `get_email_ab_test_report`, `get_email_conversion_attribution`.
 
-**B — „Trimite o campanie de email" (draft → preview → CONFIRMĂ → send).** Flux în 4 pași, niciodată sărit:
-1. **Draft**: `create_email_campaign({ brandId, name, subject, fromName, htmlContent | templateId, audienceType, audienceConfig })`. Dacă vrea pe un șablon → întâi `list_email_templates`. Nu inventa conținut de marketing — confirmă textul cu userul sau pornește de la un șablon.
-2. **Preview audiență (OBLIGATORIU)**: `preview_email_audience({ brandId, audienceType, audienceConfig })` → îți dă **numărul exact** de destinatari + defalcare (clienți/portal/staff/B2B) + un eșantion. NU s-a trimis nimic.
-3. **CONFIRMĂ cu userul**: „Trimit «Oferta de toamnă» către **412 clienți**. Confirmi?" — așteaptă „da" în cuvinte. (Trimite-i întâi `send_test_email_campaign` la adresa lui dacă vrea să vadă cum arată în inbox.)
-4. **Send**: `send_email_campaign({ campaignId, confirm: true })`. Ireversibil. Respectă plafonul de destinatari din Hub (dacă-l depășește, tool-ul refuză — spune-i userului să mărească plafonul din Hub → Acces AI). Apoi raportează ce-a întors tool-ul (câți trimiși).
+Formula de confirmare buna:
 
-Pentru un **flux drip**: `create_email_sequence` (draft) → activarea pasului automat = `activate_email_flow(confirm)` (campanie de tip flux) sau înscrierea manuală a clienților = `enroll_customers_in_email_sequence(confirm)` — ambele confirm-first.
+> "Am pregatit campania `Nume` pentru brandul `X`. Ar primi `N` destinatari. Recomand sa nu plece instant, ci predictiv pe `36h`, intre `08:00-22:00`, cu maxim `Y` destinatari/ora. Planul de livrabilitate spune `risc`. Confirmi sa o pornesc asa?"
 
-**C — „Cine mi-a scris / răspunde-i clientului" (WhatsApp/Messenger/Instagram).** `list_conversations({ brandId, status:"open" })` → vezi cine a scris + câte necitite. Pentru fir: `get_conversation_messages(conversationId)` (citește contextul ÎNTÂI). Propune userului un text de răspuns, **confirmă-l**, apoi `reply_to_conversation({ conversationId, message, confirm:true })` — pleacă pe canalul nativ al conversației. Ca să-i arăți inbox-ul: `navigate("/whatsapp-inbox")` (WhatsApp) sau `/social-messages` (DM/comentarii sociale) + screenshot.
-⚠ **WhatsApp inițiat de tine**: în afara ferestrei de 24h de la ultimul mesaj al clientului ai nevoie de șablon pre-aprobat, iar mesajele de marketing cer consimțământ (vezi `comunicare-whatsapp.md`). Pentru un mesaj nou către un număr: `send_whatsapp_message({ to:"40712…", message, confirm:true })` — confirmă numărul ȘI textul.
+Daca raspunsul nu e un "da/confirm" clar, nu trimiti.
 
-**D — „Dezabonează / nu-i mai trimite lui X".** `add_email_suppression({ email, reason })` — îl scoate efectiv de pe lista de trimiteri (GDPR, pozitiv). Confirmă adresa cu userul.
+## Liste Mari, De Tip Drimonad 20.000 Contacte
 
-**E — „Notifică personalul / clienții".** `push_notify_staff({ title, body, employeeIds | brandId, confirm:true })` (un angajat anume sau tot brandul) / `push_notify_customers({ title, body, portalUserIds, confirm:true })`. Push real pe telefoane — confirm-first + plafon Hub. Pentru onboarding-ul unui client în portal: `send_magic_login_link({ email, confirm:true })`.
+Pentru liste mari, scopul este cresterea reala a performantei, nu doar livrare rapida:
 
-## Câteva cazuri care chiar cer un click în Chrome
-Aproape tot e prin MCP. Click (pe ELEMENT, nu pe pixel — vezi `condu-chrome.md`) doar la:
-- **designul vizual al unui email/șablon** (editorul de blocuri din `/email-templates`) — prin MCP pui `htmlContent`/`designJson`, dar aranjarea fină vizuală o face userul sau o vezi/ajustezi în pagină;
-- **activarea unei secvențe drip ca «activă»** și **constructorul vizual de flux** (tab-urile Flux/Config din campaniile de tip flux) — MCP creează draft-ul, dar comutatorul „activă" și fluxul vizual sunt în pagină;
-- **conectarea numărului de WhatsApp Business / a paginilor sociale** — aprobarea OAuth se face în browserul userului (vezi skill-ul `conecteaza-meta`);
-- **răspuns pe un canal pe care tool-ul nu-l acoperă** (conversație fără brand/canal asociat) — atunci ghidează-l să răspundă din inbox.
+- nu trimite toata lista rece intr-un singur val;
+- foloseste `analyze_email_deliverability_plan` ca sursa pentru warm-up si cap pe ora;
+- porneste cu contacte calde: vizita recenta, click anterior, comenzi recente, loialitate, taguri clare;
+- foloseste `send_email_campaign_predictive`, nu broadcast fix;
+- monitorizeaza bounce si complaints dupa fiecare val;
+- daca bounce >= 2% sau complaints se apropie de 0.1%, opreste cresterea si curata lista;
+- masoara click/conversie cu `get_email_conversion_attribution`, nu doar open rate.
 
-## Reguli (cele care contează)
-- **Confirm-first la ORICE trimitere reală.** `preview_email_audience` întâi → arată numărul → cere „da" în cuvinte → abia apoi `confirm:true`. Nu seta `confirm:true` din proprie inițiativă, niciodată la trimiteri în masă. Trimiterile sunt **ireversibile** și pot costa (WhatsApp).
-- **Draft ≠ send.** `create_email_campaign` doar pregătește; nimic nu pleacă până la `send_email_campaign(confirm)`. Spune-i clar userului în ce stare e („am pregătit ciorna, n-am trimis nimic").
-- **Plafonul de destinatari** (din Hub) se aplică la campanii/flux/push/secvențe. Dacă tool-ul refuză pe plafon, nu insista — explică-i userului și trimite-l la Hub → Acces AI să-l mărească.
-- **Citește firul înainte de a răspunde** (`get_conversation_messages`) — nu răspunde pe orb într-o conversație.
-- **Confirmă-prin-citire, nu prin ecran**: tool-ul a întors `success` = e făcut (campania a plecat / mesajul s-a trimis). Verifică cu `list_*`/`get_*`, nu repeta trimiterea pe baza unei poze. Screenshot-ul e ca să-i ARĂȚI userului, citirea ca să VERIFICI tu.
-- **Nu inventa** conținut de marketing, adrese, numere sau testimoniale. Ce lipsește → întrebi userul sau pornești de la un șablon existent.
-- **Permisiune**: modulul **Comunicare** pe token pentru draft-uri + trimiteri. „Permisiune insuficientă" → Hub → Acces AI.
-- **Limbaj de business** cu userul („câți clienți primesc", „rată de deschidere", „i-am răspuns pe WhatsApp"), nu jargon (`audienceConfig`, `ctor`, `suppression`).
+Cand userul intreaba daca va avea open rate mai bun decat ActiveCampaign, raspunde onest: "sansele sunt bune daca folosim datele POS, segmentare calda, warm-up si predictive sending, dar nu promit un procent fara istoric si fara primele valuri". Apoi ruleaza tool-urile relevante.
 
-## Legături
-- Concepte email (campanii, șabloane, secvențe, audiență, rate) → `knowledge/email-marketing.md`; conversații + WhatsApp (inbox unificat, fereastra 24h, consimțământ) → `knowledge/comunicare-whatsapp.md`.
-- Postări programate & reclame (≠ conversații 1-la-1) → `knowledge/marketing-social.md` + skill-ul `programeaza-postare`; reclame plătite → skill-ul `gestioneaza-reclame`.
-- Conectarea WhatsApp Business / paginilor sociale (OAuth) → skill-ul `conecteaza-meta`.
-- Cum conduci Chrome (deep-link, screenshot = livrabil, click pe element, fallback fără extensie) → `knowledge/condu-chrome.md`.
-- Segmentarea clienților pe etichete pentru audiență → `knowledge/segmentare-clienti.md` + skill-ul `gestioneaza-etichete`.
-- Blocaj (ceva ce nu se poate prin conexiune) → `trimite_ticket_symbai` (sugestie) + ghidează în aplicație.
+## Flow-Uri Si Automatizari
+
+Pentru flow-uri complexe:
+
+1. afla triggerul: client nou, win-back, zi de nastere, rezervare, click/no-click, VIP;
+2. creeaza structura cu `campaignType:"flow"`, `flowSteps` si `flowEdges` sau `create_email_sequence`;
+3. foloseste delay-uri naturale, nu spam: 1 zi, 3 zile, 7 zile, 30 zile dupa caz;
+4. pune conditii pe opened/clicked/converted/tag/lastVisit cand exista date;
+5. inainte de activare, ruleaza audienta si deliverability;
+6. `activate_email_flow(confirm:true)` doar dupa confirmarea explicita.
+
+Flow-uri utile pentru HoReCa:
+
+- Welcome dupa prima vizita -> poveste brand -> voucher revenire;
+- Win-back 45/60 zile -> oferta usoara -> reminder doar daca a dat click;
+- VIP/high value -> invitatie privata/eveniment;
+- Birthday 30 zile -> rezervare/masa/grup;
+- Click fara conversie -> follow-up cu CTA mai clar;
+- Post-event/reservation -> multumire + review + revenire.
+
+## WhatsApp, Conversatii Si Push
+
+- Pentru inbox: `list_conversations`, apoi `get_conversation_messages`. Nu raspunde fara context.
+- Pentru raspuns: propune textul, cere confirmare, apoi `reply_to_conversation(confirm:true)`.
+- Pentru WhatsApp initiat de tine: confirma numarul si textul; tine cont de fereastra 24h si template-uri aprobate.
+- Pentru push: arata cati destinatari, cere confirmare, apoi `push_notify_staff` sau `push_notify_customers`.
+- Pentru link magic: este credential temporar, confirma adresa inainte de `send_magic_login_link(confirm:true)`.
+
+## Ce Arati Vizual Userului
+
+Cand userul vrea sa vada:
+
+- campaniile: `/email-campaigns`;
+- statistici: `/email-analytics`;
+- loguri/destinatar: `/email-logs`;
+- setup si domeniu: `/email-setup`;
+- inbox WhatsApp: `/whatsapp-inbox`;
+- mesaje social: `/social-messages`.
+
+Dar nu verifica succesul prin pixel. Dupa orice write/send, confirma prin tool de citire: `list_email_campaigns`, `get_email_campaign_analytics`, `list_email_logs`, `list_conversations`.
+
+## Reguli Care Nu Se Incalca
+
+- Confirm-first pentru orice trimitere reala.
+- `preview_email_audience` inainte de email in masa.
+- `analyze_email_deliverability_plan` si `analyze_email_send_time_plan` inainte de campanii mari sau cand userul cere crestere open rate.
+- Pentru marketing, prefera `send_email_campaign_predictive`; `send_email_campaign` este fallback, nu default.
+- Nu promite open rate garantat. Optimizezi probabilitatea si masori.
+- Nu inventa subiecte, oferte, testimoniale, reduceri sau numere fara acord.
+- Nu repeta send-ul pentru ca UI nu s-a refresh-uit.
+- Nu folosi SQL daca exista tool dedicat.
+- Daca apare "permisiune insuficienta", explica Hub -> Acces AI -> modulul Comunicare.
+
+## Legaturi
+
+- `knowledge/email-marketing.md` — concepte si best practice actualizat pentru email.
+- `knowledge/claude-code-mcp-operare.md` — modelul general de lucru cu MCP.
+- `knowledge/comunicare-whatsapp.md` — WhatsApp si inbox unificat.
+- `knowledge/segmentare-clienti.md` — segmente, taguri, grupuri.
+- `knowledge/gdpr-clienti-oaspeti.md` — consimtamant, dezabonare, anonimizare.
+- `knowledge/marketing-social.md` — postari, reclame, atribuire.

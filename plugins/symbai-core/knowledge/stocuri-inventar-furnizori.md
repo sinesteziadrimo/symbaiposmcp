@@ -48,6 +48,13 @@ Modulul acoperă tot drumul mărfii: intrarea (facturi de la furnizori → recep
 - **Verificări Stoc** (`/inventory-check`) — 6 taburi: Stoc Live (stocul curent, cu căutare), Istoric & Jurnale, Inventare (sesiuni de numărare), Raport Diferențe, Zone & Amplasare, Aprobări.
 - **Inventariere Mobil** (`/inventory-check/mobile/:sessionId`) — sesiunea de numărare pe telefon: filtrezi pe magazie și zonă, cauți articolul sau scanezi codul și introduci cantitatea numărată.
 
+**Reguli actuale pentru inventariere si zone**
+- Cand pornesti un inventar pe una sau mai multe gestiuni, lista de numarat trebuie sa fie limitata la acele gestiuni: intra produsele cu stoc live in gestiunea aleasa si produsele stocabile care au zona de depozitare asignata in acea gestiune, inclusiv daca stocul lor este 0. Nu se includ produse doar pentru ca exista o mapare istorica in `product_warehouses`.
+- Produsele nestocabile si tipurile cu `hasStock=false` nu se numara. In Zone & Amplasare, la "Adauga produse" apar doar produse stocabile fizic; produsele finite (`finished_good`, preparate din retete) nu se adauga ca produse de depozitare.
+- La "Produse alese manual", cautarea si filtrele respecta gestiunile inventarului. Poti filtra dupa cautare text, tag, furnizor, tip produs si TVA; "Select all" si "Deselect all" actioneaza doar pe rezultatul filtrat curent (ex. cauti "bere" si selectezi toate berile gasite).
+- Butonul de trimitere de langa "Inventar Mobil" creeaza link pentru un numarator. Poti aloca produse filtrate sau una/mai multe zone de depozitare, poti trimite prin WhatsApp/email sau copia linkul, si poti decide daca numaratorul are voie sa caute produse extra. In modal apar doar numele zonelor de depozitare, fara repetarea gestiunii; zonele adaugate dupa pornirea inventarului sunt eligibile daca apartin gestiunilor inventarului.
+- Persoana care intra pe linkul mobil vede doar produsele sau zonele primite. Daca "poate numara si alte produse" este activ, cautarea extra ramane limitata la gestiunea aleasa si la produse numarabile.
+
 ### Consum
 - **Consum Zilnic** (`/daily-consumption`) — consumul automat de materii prime din comenzile finalizate; 4 taburi: Sumar Consum, Bonuri de Consum, Consum Temporar (produse vândute fără rețetă), Istoric Reprocesări. Tot aici e reprocesarea pe perioadă (job pe fundal) și meniul de remediere per produs.
 
@@ -75,7 +82,7 @@ Factura intră pe una din cele 4 căi (eFactura/ANAF, poze cu OCR, push din cont
 `/stock-operations` → Mișcări Stoc → operațiune de tip Transfer Între Gestiuni → alegi gestiunea sursă și destinație, produsele și cantitățile → postezi. Mișcarea apare în istoricul din `/stock-movements`.
 
 **3. Inventariere (numărare fizică)**
-`/inventory-check` → tab Inventare → „Inventar nou" (sesiune pe magazii/zone) → echipa numără, inclusiv de pe telefon la `/inventory-check/mobile/:sessionId` (căutare sau scanare) → tab Raport Diferențe arată plusurile/minusurile → după aprobare (tab Aprobări), stocul se ajustează.
+`/inventory-check` -> tab Inventare -> "Inventar nou" (sesiune pe gestiuni; optional toate produsele, pe zone, pe taguri sau produse alese manual) -> lista se limiteaza la gestiunile alese si la produse numarabile -> echipa numara in aplicatie sau pe telefon la `/inventory-check/mobile/:sessionId` (cautare/scanner, sau link delegat pe produse/zone) -> tab Raport Diferente arata plusurile/minusurile -> dupa aprobare (tab Aprobari), stocul se ajusteaza. Daca o zona a fost adaugata dupa pornirea inventarului, foloseste "Actualizeaza Stocuri" ca sesiunea sa regenereze asteptatul pentru noile produse/zone.
 
 **4. Fișă de ieșire (protocol, pierdere, casare)**
 `/stock-exits` → tab Ieșiri → „Fișă ieșire nouă" → alegi tipul (consum, protocol, pierdere/casare etc. — tipuri configurabile tot de aici) → produse + cantități → postezi direct sau salvezi ca ciornă. Tipurile marcate „afectează P&L" intră la pierderi în rapoarte.
@@ -117,6 +124,8 @@ Factura intră pe una din cele 4 căi (eFactura/ANAF, poze cu OCR, push din cont
 - **De ce nu pot crea NIR-ul?** NIR-ul se creează doar legat de o factură sursă, iar toate liniile facturii trebuie să fie mapate pe produse interne. Verifică maparea în `/inventory/ai-review`.
 - **Am introdus avizul — de ce nu a intrat marfa în stoc?** Recepția pe aviz intră marfa în stoc doar când documentul e postat; recepțiile rămase în ciornă nu mișcă stocul (le vezi în Avize & Draft și în bannerul din `/purchases`, de unde le poți posta). Iar avizul rămâne „neînchis" până îl legi de factura oficială în tabul Reconciliere.
 - **De ce nu scade stocul când vând un produs?** Cel mai des: produsul nu are rețetă sau rețeta nu e legată de produs. Caută-l în `/daily-consumption`, tabul Consum Temporar, și folosește meniul de remediere, apoi „Reprocesează acest produs".
+- **De ce apar produse din alta gestiune in inventar?** Verifica daca inventarul a fost creat pe gestiunea corecta si daca produsele au stoc live acolo sau zona de depozitare asignata acelei gestiuni. Produsele nu trebuie incluse doar din mapari istorice; daca vezi produse fara stoc si fara zona in gestiunea inventariata, e o problema de scoping si trebuie investigata pe `stock_count_sessions`, `stock_count_items`, `warehouse_stock`, `storage_zones` si `products.storage_zone_id`.
+- **De ce nu apare o zona in trimiterea catre numarator?** Zona trebuie sa apartina uneia dintre gestiunile sesiunii. Daca zona a fost creata dupa pornirea inventarului, este eligibila pentru linkul de numarare; pentru produse/asteptat in sesiunea principala foloseste si "Actualizeaza Stocuri".
 - **Am corectat rețetele, dar rapoartele arată tot vechiul food cost.** Corectarea rețetei nu rescrie trecutul — rulează Reprocesarea pe perioada afectată din `/daily-consumption`.
 - **De ce diferă costul (COGS) de cel din rețetă?** Costul raportat e cel „realizat" — din loturile FIFO efectiv consumate, la prețurile lor reale de intrare — nu cel teoretic din rețetă.
 - **Cantitate × preț nu bate cu totalul liniei de factură.** Normal la penalități/abonamente: valoarea totală a liniei e autoritară, recepția folosește totalul real.

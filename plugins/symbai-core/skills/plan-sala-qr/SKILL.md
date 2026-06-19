@@ -25,7 +25,7 @@ Tabel intenție → tool MCP (toate scrierile cer modulul **Setări & Configurar
 | „mută o masă în alt raion" | `set_floor_table_geometry` cu `sectionId` | sau `move_tables_to_section` pentru mai multe. |
 | „de ce nu iese bonul la bucătărie/bar / rutează zona la imprimantă/KDS" | `list_zone_routing` → `set_zone_routing` | `zoneId` + `fiscalPrinterId`/`billPrinterId`/`shiftClosePrinterId`/`kitchenPrinterId`/`barPrinterId`/`kitchenScreenId`/`barScreenId`. Ia id-urile cu `list_printers`/`list_kds_screens`. Trimite doar ce schimbi. |
 | „layout de sală pe zile / pentru Revelion / eveniment" | `list_floor_config_schedules` → `set_floor_config_date_override` (excepție pe dată) / `delete_floor_config_schedule` / `delete_floor_config_date_override` | Programul recurent pe zile se CREEAZĂ cu `create_floor_config_schedule` (vezi `06-sala-qr.md`). Aici gestionezi excepțiile + ștergi sub-entități. `dayOfWeek`: 0=Duminică. |
-| „generează QR pentru mese / am adăugat mese noi, fă-le QR" | `generate_table_qr_codes` | Idempotent — sare peste mesele cu QR. Opțional `locationId`. Rulează după ce mesele există. |
+| „generează QR pentru mese / am adăugat mese noi, fă-le QR" | `generate_table_qr_codes` | Idempotent — sare peste mesele cu QR. Opțional `locationId`. Rulează după ce mesele există. Pentru print frumos pe șablon, du userul la `/qr-codes` și/sau citește `knowledge/materiale-grafice.md`. |
 | „fă-mi un QR pentru promoție / meniu online / rezervări" | `create_dynamic_qr_code` | `title` + `redirectUrl` (link extern `https://…` sau rută internă `/…`). Întoarce cod scurt → link public `{instanță}/q/<cod>`. |
 | „schimbă unde duce QR-ul (fără retipărire) / dezactivează-l" | `set_dynamic_qr_fields` | `id` + `redirectUrl` (retarget) sau `active:false` (dezactivare — `/q/<cod>` dă 404, reversibil). Ia id-ul cu `list_dynamic_qr_codes`. |
 | „cere telefonul/email la scanare / activează plata directă pe QR / treci prin ospătar" | `list_qr_field_presets` → `set_qr_field_preset_fields` | `phoneVisible`/`phoneRequired`/`emailVisible`…, `directPayment`, `waiterConfirmation`, `clientFieldsPrompt` (`on_scan`/`before_order`/`never`). |
@@ -45,7 +45,7 @@ Userul nu vede conexiunea ta. După o rearanjare/rutare, deschide pagina relevan
 ## Cazurile rare care cer un CLICK
 Aproape tot e prin MCP. Click pe element (nu pe pixeli, după `read_page`/`find`) doar pentru:
 - **Salvarea finală în Designer** dacă userul a tras ceva manual între timp (mutările tale prin MCP se salvează singure — scriu și în rândul mesei, și în canvas).
-- **Printarea/exportul QR-urilor** din `/qr-codes` (butonul de print/PDF) — generarea e prin MCP, dar tipărirea fizică o face userul.
+- **Printarea/exportul QR-urilor** din `/qr-codes` (butonul de print/PDF) — generarea e prin MCP, dar tipărirea fizică o face userul. În dialogul „Printează pe șablon", câmpurile `{{customText1}}`...`{{customText4}}` apar automat dacă șablonul le folosește.
 - **Crearea de la zero a unei configurații noi / ștergerea de zone/mese/configurații întregi** — NU există prin MCP (regula platformei). Ghidează userul în aplicație (sau folosește tool-urile de onboarding `create_floor_config`/`add_zones_to_config` din `06-sala-qr.md` pentru structura nouă).
 
 ## Reguli (cele care contează)
@@ -54,6 +54,7 @@ Aproape tot e prin MCP. Click pe element (nu pe pixeli, după `read_page`/`find`
 - **Rutarea = de ce iese bonul corect.** „Bonul nu iese la bar" se rezolvă cel mai des prin `set_zone_routing` (zona greșit/ne-rutată). Verifică întâi `list_zone_routing`. `set_zone_routing` face merge — trimite doar câmpurile pe care le schimbi.
 - **Raioanele nu rutează singure** — comanda QR ajunge la ospătarul corect abia când tura lui e legată de raion (modulul `personal`, vezi `gestioneaza-personal`). Spune-i userului asta.
 - **Două sisteme de QR, separate**: QR de masă (`generate_table_qr_codes`, idempotent, `/t/<cod>`) ≠ QR dinamic (`create_/set_dynamic_qr`, link editabil `/q/<cod>`). Nu le amesteca. Nu există ștergere de QR prin MCP — dezactivezi un QR dinamic cu `set_dynamic_qr_fields(active:false)`.
+- **Șabloane QR și text custom**: șablonul se editează în Materiale grafice; `qr-slot` marchează locul codului, `{{tableNumber}}` variază per masă, iar `{{customText1}}`...`{{customText4}}` sunt completate manual per PDF (ex. Parter/Etaj).
 - **Confirmă-prin-citire**, nu „pare bine pe ecran": după scriere, re-citește cu `get_floor_config`/`list_*`. Tool-ul a întors `success` = e salvat; spune-i userului să dea refresh, nu repeta scrierea (`condu-chrome.md`, regula f).
 - **Permisiune**: scrierile cer modulul `setari` (Setări & Configurare). „Permisiune insuficientă" → portal Hub → Acces AI → bifează modulul.
 - **Limbaj de restaurant**, nu jargon: „mut masa", „aranjez terasa", „grupez mesele pe ospătari", „rutez zona la barul corect", „QR care duce la promoție" — nu `configData.zonesMap`/`sectionId`/`redirectUrl`.

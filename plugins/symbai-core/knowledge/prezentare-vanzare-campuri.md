@@ -33,6 +33,7 @@ Câmpuri întrebare: **Text întrebare** `text` · **Hint** `text` · **Cheie te
 - (Alegere cu imagini) **URL/Upload imagine** + **Focalizare**.
 - (icon-cards) **Iconiță** `listă` (set Lucide) · **Descriere** `text`.
 - **🖥 Pe ecran când e ales** (reveal): **Text** `text` (suportă `{cheie}`) · **Unde apare** `listă` (Auto/Peste poză centrat/Peste poză jos/Sub întrebare/Sub răspunsuri) · **Mărime** S/M/L/XL · **Culoare text** `culoare` · **Culoare fundal** `culoare` · **Poză la alegere** URL/Upload + focalizare · **⏭ Direct mai departe** `on/off`.
+- **🖼 Slide separat după răspuns** (followUpSlide, ✅ 2026-06-19 — DIFERIT de reveal: un slide ÎNTREG dedicat, nu text pe slide-ul curent): **Activ** `on/off` · **Kicker** `text` (`{cheie}`) · **Titlu** `text` · **Text** `text` · **Bullete** (Text + **Iconiță** Lucide) · **Poză** URL/Upload + **Focalizare** · **Layout** `listă` (Poză fundal/Poză laterală/Plin pe culoare) · **Culoare accent** `culoare`. Apare imediat ce clientul alege răspunsul → buton „Mai departe" la întrebarea următoare. Doar pe întrebări Discovery (nu Intro).
 - **💔 Ce dureri semnalează** (vezi §4).
 
 ## 4. Legare răspuns → durere (panoul „💔 dureri", la Intro/Discovery/wishlist)
@@ -106,7 +107,7 @@ Fiecare bloc: drag reordonare, duplică, șterge. Interpolare `{{variabile}}` î
 - **Nume intern** `text` · **Cheie tehnică** `text` · **Titlu slide** `text`.
 - **Tip** `listă` (4): **Formulă matematică** / **Listă cheltuieli** (comparativ live) / **Cost amânare** (slider) / **Payback period**.
   - Formulă: **Inputs** (Nume `{var}` + Cheie sursă din răspuns/intro + Default `nr` + Etichetă) · **Formulă** `formulă` (`+ - * / ( )`, `{var}`) · **Output template** (`{result}`) · **Body template**.
-  - Listă cheltuieli: **Etichetă/Cost Symbai** + **Perioada** (RON lună/an) · **Orizonturi** (lună/an/3 ani/5 ani) · **Highlight cea mai mare economie** `on/off` · **Categorii** (Icon emoji + Etichetă + Hint + Sugestii [nume+cost]).
+  - Listă cheltuieli: **Etichetă/Cost Symbai** + **Perioada** (RON lună/an) · **Orizonturi** (lună/an/3 ani/5 ani) · **Highlight cea mai mare economie** `on/off` · **Categorii** (Icon emoji + Etichetă + Hint + Sugestii [nume+cost]). ✅ 2026-06-19: **Doar costurile actuale (fără preț Symbai)** `on/off` (currentCostOnly — ascunde coloana „Cu Symbai", arată doar cât plătește clientul ACUM) · **Plasare** `listă` Înainte/După ofertă (placement) · **Reia cheltuielile din alt calcul** `listă` (comparativeItemsFromCalculationId — calculul de fază 2, după ofertă, preia liniile introduse live în faza 1 și arată economia).
   - Cost amânare: **Sursa pierderii** `listă` (din listă cheltuieli / valoare fixă / formulă) · **Delay default** `nr` (impl. 6) · **Delay max** `nr` (impl. 24).
   - Payback: **Setup cost** `nr` · **Benchmark industry (luni)** `nr` · **Sursa economiei** `listă`.
 - **Slide vizual** `on/off` → conținut bogat.
@@ -124,7 +125,7 @@ Fiecare bloc: drag reordonare, duplică, șterge. Interpolare `{{variabile}}` î
 - **Automatizări post-trimitere** („Adaugă automatizare"): **Activă** `on/off` · Etichetă · **Trigger** Imediat/După plată/După feedback/După X ore/După X zile · **Acțiune** Task agent/Email/WhatsApp/Log CRM/Rezervare pre-confirmată/Eveniment pre-confirmat/Notificare push · Delay/Titlu task/Subiect+Body (condiționate de acțiune).
 - **Dialog „Trimite oferta"** (la rulare): Canal Email/WhatsApp · Destinatar · Șablon · Subiect · Body · Atașează contract · Atașează PDF · (Plată) Include link + % avans override · (Feedback) Include chestionar · (Automatizări) bifare per item.
 
-## 15. FLUX (tab Flux ✨ — povestea, 8 pași)
+## 15. FLUX (tab Flux ✨ — povestea, 9 pași)
 Comun fiecărui pas: **Comutator on/off** · **Apare: Mereu / condiție** (§5) · **Mai multe/puține după tipologie** (per tipologie `nr` 1–10).
 - **1 Deschidere** `on/off` (formularul se editează în Intro).
 - **2 Întrebări**: **Câte (max)** `nr` 1–20 · per întrebare Pe ecran/Doar telefon + condiție.
@@ -134,6 +135,7 @@ Comun fiecărui pas: **Comutator on/off** · **Apare: Mereu / condiție** (§5) 
 - **6 Obiecții**: **Obiecții în joc** `chips` (gol = toate relevante).
 - **7 Dovezi**: **Câte** `nr` 1–10 (impl. 2) + override/tipologie + condiție.
 - **8 Ofertă**: **Ofertă** `listă` (anume / „Automat prima") + condiție.
+- **9 Calcul după ofertă** `on/off` (✅ 2026-06-19, implicit OFF — calculationAfterOffer): **Calcul** `listă` (un calcul cu **Plasare = După ofertă**). Tipic: faza 1 arată costul actual fără preț (§13 currentCostOnly), apoi oferta, apoi acest pas reia cheltuielile și arată economia vs prețul tău.
 
 ## 16. Cele 2 slide-uri de TRANZIȚIE (inline în pasul 3)
 - **Slide 1 „De la probleme la posibilități"**: **Titlu** · **Text introductiv** · **Conținut** = editor conținut bogat (coloanele Acum↔Cu noi etc., §9).
