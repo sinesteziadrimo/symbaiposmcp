@@ -20,6 +20,7 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **Marketing & Website** — postări social media, e-mail, ads, coduri QR (→ `marketing-social.md`); **site-ul public / magazinul online** — builder (pagini, componente, ierarhie de categorii, filtre faceted, hero, footer, pagini legale, temă) → `website-builder.md` + `ecommerce-magazin-online.md`
 - **Echipamente** — imprimante, ecrane bucătărie (KDS), agentul de imprimare, serverul local (edge), dispozitive. → `echipamente-kds-imprimante.md`
 - **Aplicatii native Expo** — Symbai POS, Symbai Portal si Symbai Staff: configurare app.json, branding, emulator Android, build nativ, GP/Viva app2app, push notifications. → `expo-aplicatii-mobile.md`
+- **Aplicatie Staff in POS web** — cardul `In Aplicatie Staff` de pe `/menu/platforms`: profiluri pentru livratori/agenti/task-uri/CRM, preview telefon si legatura cu rolurile reale din Personal. → `expo-aplicatii-mobile.md` + skill `configureaza-aplicatie-staff`
 - **Setări & Administrare** — locații, branduri, TVA, metode de plată, utilizatori și roluri, integrări, abonament. → `setari-administrare.md`
 - **AI în aplicație** — asistentul Sym (butonul plutitor) + agenții specialiști. → `asistentul-ai-in-aplicatie.md`
 

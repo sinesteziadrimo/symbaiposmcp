@@ -38,6 +38,51 @@ Assets de verificat:
 - `assets/splash-icon.png`
 - dupa prebuild: `android/app/src/main/res/**`
 
+## Configurare in POS web: /menu/platforms
+
+Aceeasi pagina are doua configurari diferite si Claude trebuie sa le separe clar:
+
+| Card / dialog | Pentru cine | Skill corect | Tool-uri |
+|---|---|---|---|
+| `Configurare Platforma Clienti` | clientii publici: portal, QR, meniu, comenzi, jocuri | `configureaza-portal` | `get_portal_config`, `configure_portal_*`, `configure_portal_qr`, `spotlight_portal_tab` |
+| `In Aplicatie Staff` | angajati: livratori, agenti teren, CRM, task-uri, receptie, marfa | `configureaza-aplicatie-staff` | UI/Chrome; nu exista tool MCP dedicat pentru acest dialog in catalogul curent |
+
+### In Aplicatie Staff / Symbai Staff
+
+Dialogul **In Aplicatie Staff** configureaza preview-ul si profilul implicit pentru canalul `expo-sales`. In cod, configurarea se salveaza pe device-ul POS cu `channelId = "expo-sales"` in `portalDisplayConfig`.
+
+Campuri reale:
+
+- `defaultPreviewProfile`: presetul implicit pentru preview.
+- `density`: `guided` sau `compact`.
+- `showManagerHints`: arata/ascunde sumarul explicativ pentru manager.
+- `profileOverrides`: toggle-uri de feature pe preset.
+
+Nu confunda cu permisiunile reale: toggle-urile din dialog nu dau acces angajatului. Accesul real vine din rolurile din Personal (`/staff?tab=roles`) si permisiuni precum `crm_access`, `fleet_drive`, `delivery_view`, `delivery_status_update`, `tasks_view`, `stock_receive`, `kds_view`, `reservations_view`, `report_sales`.
+
+Preseturi verificate in cod (`shared/expo-sales-profile.ts`):
+
+| Preset | ID | Ce arata |
+|---|---|---|
+| `1. Angajat simplu` | `tasks_basic` | task-uri proprii, fara CRM/stoc |
+| `2. Operare marfa / bucatarie` | `stock_kitchen` | task-uri, preluare marfa, bucatarie/productie |
+| `3. Receptie + marfa` | `reception_stock` | receptie, rezervari, mesaje, preluare marfa |
+| `4. Livrator simplu` | `driver_basic` | livrari, statusuri, rapoarte; CRM ascuns |
+| `5. Livrator cu vanzari` | `driver_sales` | livrari + CRM + mesaje + apeluri + rapoarte |
+| `6. Vanzari / CRM in locatie` | `sales_location` | CRM locatie, apeluri, mesaje, rapoarte |
+| `7. Vanzari / CRM cu vizite` | `sales_field` | CRM teren, traseu zilnic, check-in si vizite |
+
+Feature-uri toggle: `tasks`, `stockReceiving`, `kitchenPickup`, `reception`, `deliveries`, `deliverySales`, `salesCrm`, `fieldVisits`, `messages`, `reports`, `callDesk`.
+
+Preview-ul de livrator este clickabil si trebuie explicat ca o simulare realista: `Traseu`, `Suna`, `Problema`, `Pornesc cursa`, `Am ajuns`, `Poza`, `Incasez`, `Marchez livrata`, `Reiau simularea`. Pentru `driver_basic`, app-ul este livrator-focused: primul tab este `Livrari`, CRM-ul nu apare si `Mai mult` este ascuns.
+
+Branding in preview:
+
+- logo lung: `/brand/symbai-logo-left.png`;
+- mark S: `/brand/symbai-mark-dark.png`;
+- culori: `#001858`, `#0771D5`, `#10D0B0`;
+- texte user-facing: `Symbai Staff`, `Aplicatie Staff`, `In Aplicatie Staff`.
+
 ## Server URL si emulator
 
 Regula de baza: `localhost` din Android emulator inseamna emulatorul, nu PC-ul.
@@ -104,8 +149,9 @@ Pentru GP app2app:
 
 ## Unde trimiti userul in POS web
 
-- Configurarea platformei clientilor si preview-uri: `/menu/platforms` sau alias `/portal-config`.
-- Dispozitive POS, staff preview si moduri aplicatie: `/menu/platforms`.
+- Configurarea platformei clientilor: `/menu/platforms` sau alias `/portal-config`, card `Configurare Platforma Clienti`, skill `configureaza-portal`.
+- Configurarea Aplicatiei Staff: `/menu/platforms`, card `In Aplicatie Staff`, skill `configureaza-aplicatie-staff`.
+- Roluri si permisiuni reale pentru angajati: `/staff?tab=roles`.
 - Integrari plati GP/Viva: `/settings?tab=integrations`.
 - Server/edge/print agent: `/settings?tab=edge-server`.
 - Imprimante/case de marcat: `/settings?tab=printers`.

@@ -130,6 +130,8 @@ Confirmă în Preview: alegi acel răspuns → trebuie să apară slide-ul dedic
   "addons": [{ "id": "addon_x", "name": "...", "price": 18, "billingPeriod": "month", "category": "Storage", "description": "..." }]
 }]
 ```
+⚠ **Iconițele de pe ofertă/semnale de încredere se randează ca TEXT BRUT** — pune EMOJI direct (`"icon": "🚀"`, `"🛡️"`), NU nume de iconițe (`"Rocket"` ar apărea literal pe slide). (Excepție: bullet-ele de pe `followUpSlide` folosesc nume Lucide — acolo motorul le rezolvă în iconițe.)
+⚠ **Verticalele clonate (`sala_evenimente`/`catering`/`servicii`) vin cu 0 oferte** — creezi `offers[]` de la zero.
 
 ## FLUX → `flowV2` (CONFIRMATĂ — povestea: ce pași sunt activi + câte elemente)
 ```json
@@ -167,6 +169,8 @@ Cheltuielile introduse live în faza 1 supraviețuiesc până în faza 2 fără 
 ## TIPOLOGII → `typologies[]` (segmentele + regulile de detecție)
 Conceptual: `{ id, name, vertical, keyMessage, axes:{experience,businessSize,businessModel,techMentality,...}, detectionThreshold, detectionRules:[{label,weight,conditions}], dominantPains:[painId], recommendedFeatures:[featId], predictedObjections:[objId], recommendedProofs:[proofId], agentTips }`. Fiecare match de axă = +1; pragul implicit 1. Citește un exemplu cu `get_presentation(section:"typologies")` înainte de a edita.
 
+⚠ **`dominantPains` e POARTA de admitere a durerilor (regula #1 de calitate).** O durere apare în secțiunea Dureri & Soluții DOAR dacă e în `dominantPains` la tipologia detectată (sau bifată pe wishlist). Scorul din painTriggers doar **ordonează** durerile admise — **nu le admite**. Deci pentru fiecare durere prioritară: leag-o de răspunsuri (painTriggers) ȘI pune-i `painId`-ul în `dominantPains` la tipologia relevantă. Altfel, oricât scor ar avea, **nu apare**. (Și fiecare durere are nevoie de minim o soluție în `addressedByFeatures`, altfel e sărită tăcut.)
+
 ## SLIDE-URI cu POZE → `slides[]` (slide-uri statice cu conținut bogat)
 Slide-urile statice (intro discovery, tranziție, closing) folosesc blocuri de conținut bogat. Bloc imagine:
 ```json
@@ -187,7 +191,7 @@ Aici trăiesc durerile (`pains`), soluțiile (`features`), întrebările discove
 ```
 Maparea durere↔soluție e bidirecțională: `pain.addressedByFeatures=[feat]` + `feature.addressesPains=[pain]` (ideal 1:1).
 
-**De ce NU editezi biblioteca prin `patch_presentation(libraryOverride)`:** biblioteca gold-standard `symbai_horeca_2026` are `libraryOverride` de **~300 KB** (14 dureri + 14 soluții + 15 discovery + 23 dovezi + 21 obiecții + 18 calcule, cu walkthrough-uri bogate). `get_presentation(section:"library")` **nu o poate returna întreagă** (depășește limita de payload) — deci nu o poți citi → modifica → re-trimite integral pentru o singură schimbare. Pentru asta există **tool-urile GRANULARE** de mai jos: fac read-modify-write pe UN element, server-side, fără să cari toată biblioteca.
+**De ce NU editezi biblioteca prin `patch_presentation(libraryOverride)`:** orice răspuns MCP peste **~80.000 de caractere se TRUNCHIAZĂ** (vezi `dataOmitted` / „TRUNCAT"). Biblioteca gold-standard `symbai_horeca_2026` (14 dureri + 14 soluții + 15 discovery + 23 dovezi + 21 obiecții + 18 calcule, cu walkthrough-uri bogate) depășește mult pragul → `get_presentation(section:"library")` **nu o poate returna întreagă** — deci nu o poți citi → modifica → re-trimite integral pentru o singură schimbare. Pentru asta există **tool-urile GRANULARE** de mai jos: fac read-modify-write pe UN element, server-side, fără să cari toată biblioteca. (Pe biblioteci mici — un vertical clonat — secțiunea poate încăpea sub 80k și atunci merge și `save_presentation`.)
 
 ### Editare per-item prin MCP — 5 tool-uri granulare (recomandat pentru dureri/soluții/discovery)
 `kind` ∈ `pain` / `feature` (soluție) / `question` (discovery) / `proof` / `objection` / `calculation`.

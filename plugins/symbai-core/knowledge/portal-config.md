@@ -8,6 +8,8 @@
 
 Configurarea se face în pagina **/menu/platforms** (alias `/portal-config`), care deschide un **dialog cu 5 tab-uri** (General, Texte, Funcționalități, Aspect, QR). Dialogul e fragil de operat prin mouse — de aceea preferi **tool-urile MCP**, care citesc config-ul și scriu doar ce ceri, fără click prin tab-uri. Și ca userul să VADĂ în browserul lui ce schimbi, ai `spotlight_portal_tab` (deschide modala + comută tab/secțiune live).
 
+Pe aceeasi pagina exista si cardul **"In Aplicatie Staff"**. Acela NU configureaza portalul clientilor; configureaza preview-ul aplicatiei **Symbai Staff** pentru livratori/agenti/angajati. Pentru el foloseste `expo-aplicatii-mobile.md` + skill-ul `configureaza-aplicatie-staff`. Nu folosi `configure_portal_*` pentru Aplicatie Staff.
+
 ## Discovery — întreabă inteligent înainte să configurezi
 
 Userul rareori știe toate opțiunile. **Nu turna tot dialogul peste el** și nu cere „spune-mi toate setările". Pornește de la business-ul lui și pune 3-5 întrebări țintite, apoi recomandă o variantă simplă și o aplici. Întrebări utile (alege ce e relevant):
@@ -103,6 +105,7 @@ Important de înțeles ca să-i explici userului — comanda QR NU ajunge la cin
 
 ## Pagini
 - **Configurare Portal** (`/menu/platforms`, alias `/portal-config`) — cardul „Configurare Platformă Clienți" deschide dialogul cu 5 tab-uri (General / Texte / Funcționalități / Aspect / QR). Are selector de unitate (sus) dacă brandul are mai multe locații. ⚠ Tab-urile dialogului NU sunt adresabile prin `?tab=` în URL (e o modală în pagină) — DAR le poți deschide/comuta live cu `spotlight_portal_tab` ca userul să vadă. În rest, modificările le faci prin MCP.
+- **Aplicatie Staff** (`/menu/platforms`) — cardul „In Aplicatie Staff" deschide dialogul de preview pentru Symbai Staff: profiluri livrator/agent teren/CRM/task-uri, branding Symbai, telefon interactiv. Nu e portal public si nu are tool MCP dedicat in catalogul curent. Vezi `expo-aplicatii-mobile.md` + skill `configureaza-aplicatie-staff`.
 - **Jocuri** (`/portal-games`) — atracții/jocuri (liste, programe, prețuri, excepții). → `jocuri-activitati.md`.
 - **Atracții** (`/portal-attractions`) — vizualizarea publică a atracțiilor.
 - **Misiuni & Recompense** (`/portal-missions`) — gamificarea; din MCP doar pornești modulul (`gamification: true`), configurarea fină e în pagină.

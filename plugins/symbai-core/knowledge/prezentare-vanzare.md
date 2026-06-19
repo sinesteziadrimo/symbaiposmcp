@@ -21,29 +21,51 @@ Structura clasică **problemă → agitare → soluție → dovadă → ofertă*
 1. **Intro / ecran de start** — vânzătorul completează (sau importă din lead) câteva date despre prospect ÎNAINTE de a începe: tip de afacere, vechime, număr de locații, canalul principal de venituri, cifra de afaceri, ce sistem folosește acum, **cine decide** (proprietar/manager/contabil). Rol: personalizează tot ce urmează + alimentează „ghicirea" tipologiei. Prospectul vede doar un titlu + subtitlu de copertă.
 2. **Discovery — deschidere (framing)** — un slide-punte „Să ne cunoaștem", care anunță întrebările ca pe o conversație, nu un interogatoriu. Are deschideri diferite per tipologie (la un conservator de 10+ ani: „nu îți spun să schimbi sistemul, doar să adaugi un modul").
 3. **Discovery — întrebările cheie** — 5-6 întrebări (dintr-un pool mai mare), alese DINAMIC pe relevanță, nu primele din listă. Formate: carduri cu iconițe, scală 1-10, da/nu, alegere multiplă, text, dată. Unele întrebări pot fi „doar pe telefonul vânzătorului" (prospectul nu le vede). Răspunsurile aici declanșează automat durerile.
-4. **Discovery — rezumat** — „Iată ce am înțeles din răspunsurile tale…": confirmă prospectului că a fost ascultat, listează tipologia detectată + top 3-5 dureri. Dacă prospectul corectează ceva, prezentarea se reordonează.
-5. **Punte „de la negativ la pozitiv"** — slide-pivot emoțional „De la probleme la posibilități": pornește afișând DOAR coloana problemelor („afli profitul abia de la contabil", „food cost din instinct"…); la primul „Înainte" se dezvăluie coloana-oglindă cu soluția („vezi profitul în timp real"…). Apoi un slide-wishlist „**Ce ai bifa primul?**" — prospectul (sau vânzătorul) bifează ce și-ar dori; bifele REORDONEAZĂ restul prezentării.
+4. **Discovery — rezumat** — „Iată ce am înțeles din răspunsurile tale…": confirmă prospectului că a fost ascultat, listează tipologia detectată + top 3-5 dureri. (Notă: e element de RULARE/UI, nu un pas configurabil din Flux — nu-l căuta ca „stage".)
+5. **Punte „de la negativ la pozitiv"** — slide-pivot emoțional „De la probleme la posibilități": pornește afișând DOAR coloana problemelor („afli profitul abia de la contabil", „food cost din instinct"…); la primul „Înainte" se dezvăluie coloana-oglindă cu soluția („vezi profitul în timp real"…). Apoi un slide-wishlist „**Ce ai bifa primul?**" — prospectul (sau vânzătorul) bifează ce și-ar dori; bifele ADAUGĂ durerea aferentă în pool-ul de candidați (deci soluția bifată ajunge în deck chiar dacă tipologia nu o avea „dominantă"). E un slide `info` cu conținut bogat (bloc comparison + reveal), NU un tip special de slide.
 6. **Bucla Durere → Soluție** (top 3 dureri) — inima prezentării. Pentru fiecare durere prioritară: întâi DUREREA (reformulată cum o trăiește el, cu o cifră-șoc), apoi imediat SOLUȚIA care o rezolvă, demonstrată **LIVE pe platforma reală** (buton „🎬 Vezi LIVE"), nu doar promis verbal.
 7. **Calcul revelator** — cifre interactive: „cât plătești ACUM pe 5-8 softuri separate vs o singură platformă". Momentul de șoc financiar.
 8. **Dovezi (case studies)** — 1-3 studii de caz reale, alese automat pe tipul de afacere + ORAȘUL prospectului + durerile confirmate („un loc ca al tău, din orașul tău, a obținut X"). Dovada locală bate dovada generică.
 9. **Calcul ROI + costul inacțiunii** — al doilea calcul, de încheiere: recuperarea investiției + cât pierde dacă AMÂNĂ (slider 6/12/24 luni). Creează urgență.
-10. **Ofertă personalizată** — pachete de preț (ex. Pilot/Pro/Enterprise) cu unul marcat „recomandat" după tipologie, add-on-uri bifabile, semnale de încredere (garanție, fără contract pe termen lung), trimitere pe email/WhatsApp.
+10. **Ofertă personalizată** — pachete de preț (ex. un model în 3 trepte) cu unul marcat „recomandat" după tipologie, add-on-uri bifabile, semnale de încredere (garanție, fără contract pe termen lung), trimitere pe email/WhatsApp. (Prețurile/pachetele le pui pe businessul owner-ului — nu inventa cifre. Iconițele de pe ofertă se randează ca TEXT BRUT → folosește EMOJI „🚀", nu nume de iconițe „Rocket". Verticalele clonate vin cu 0 oferte — le creezi de la zero.)
 11. **Închidere (CTA)** — un singur pas concret de făcut acum (pornește pilotul, rezervă kickoff).
 
 **Obiecțiile NU sunt o etapă fixă** — se tratează LIVE, când prospectul ezită: vânzătorul marchează obiecția pe panoul lui și poate afișa pe ecranul prospectului răspunsul pregătit + dovada potrivită.
 
-## Mecanicile dinamice (esența — ce face prezentarea „vie")
+## Modelul mental — cum funcționează CU ADEVĂRAT (citește înainte să construiești)
 
-- **Legarea răspuns → durere** (mecanismul central). Fiecare opțiune de răspuns (la Intro, Discovery sau wishlist) poate „aprinde" o durere, cu 3 niveluri pe care le vezi în editor ca etichete intuitive:
-  - 🎯 **Sigură** — răspunsul confirmă durerea, ea intră garantat;
-  - ➕ **Scor ±** — răspunsul mărește/micșorează cât de tare e simțită durerea (mai multe semnale mici se adună);
-  - 🔍 **De confirmat** — semnal slab, durerea apare doar dacă alte răspunsuri o întăresc.
-- **Scoring / intensitate** — fiecare durere acumulează un scor 1-10 din toate semnalele. Apar doar durerile peste un prag (~5-6); top 3-5 devin scheletul. Când mai multe răspunsuri ating aceeași durere, se ia intensitatea maximă. Un răspuns poate alimenta mai multe dureri.
-- **Tipologii (ghicirea tipului de cumpărător)** — din răspunsuri, sistemul deduce profilul prospectului (conservator, în expansiune, începător, lanț, hotel, catering…). Tipologia rescrie ce dureri/soluții/dovezi/obiecții se accentuează și ce pachet se recomandă (vezi „override" mai jos). Nu se setează manual — se derivă.
-- **Smart fields (variabile)** — datele din Intro și răspunsurile din Discovery se salvează și se inserează AUTOMAT în textul slide-urilor ulterioare și în calcule (numele prospectului, nr. invitați, tipul de eveniment, cifra de afaceri). Prezentarea „vorbește" personalizat fără editare manuală.
-- **Flux condițional (ramificare)** — slide-uri, întrebări sau pași întregi pot avea condiții de vizibilitate: apar DOAR dacă un răspuns satisface o regulă (ex. întrebarea de livrare apare doar dacă afacerea are canal de livrare).
-- **Reveal per răspuns** — la alegerea unui răspuns poate apărea pe loc un text/imagine de impact, calibrat pe ce a ales; la răspuns „bun/rezolvat" prezentarea trece automat mai departe (nu mai e nimic de vândut acolo).
-- **Tur virtual LIVE („walkthrough")** — pe durere/soluție, buton care pornește un tur ghidat prin produsul real (pagini reale, narațiune cu cifre). Dovada se face arătând, nu promițând.
+> Asta descrie mecanica REALĂ din motor, nu cum „pare" din interfață. Dacă n-o înțelegi, faci prezentări plate. Trebuie să poți explica unui owner ne-tehnic DE CE iese o prezentare bună sau slabă.
+
+**Lanțul cauzal (ține-l minte pe de rost):**
+`Datele de intro → ghicirea tipologiei → întrebările de discovery alese pe relevanță → fiecare răspuns aprinde/gradează DURERI (scor 1-10) → durerile ADMISE în pool își trag SOLUȚIA mapată 1:1 → calculele iau cifrele LUI → dovezile relevante apar → obiecțiile prezise sunt pregătite → oferta închide.`
+Dacă rupi o verigă (legi un răspuns la o durere care nu e „dominantă" la tipologia lui, sau pui un `painId` care nu există), veriga e ignorată **TĂCUT** — fără eroare — și prezentarea iese plată.
+
+**Mecanicile vii:**
+
+- **Răspuns → durere (mecanismul central).** Fiecare opțiune (la Intro, Discovery SAU wishlist) poate „aprinde" o durere în **3 moduri care NU sunt interschimbabile** — atenție la matematica lor, e sursa multor greșeli:
+  - 🎯 **Sigură (direct)** — durerea intră garantat, cu o intensitate fixată 1-10. Mai multe semnale „direct" pe aceeași durere → se ia **MAXIMUL**.
+  - ➕ **Scor ± (boost)** — răspunsul **ADUNĂ** la intensitate (poate fi și NEGATIV, ca să atenueze). Mai multe boost-uri se **ÎNSUMEAZĂ** (NU maximul!).
+  - 🔍 **De confirmat (potential)** — semnal slab, plafonat la max 4; durerea apare doar dacă alte semnale o întăresc.
+  - Formula finală pe o durere: `bază = max(direct, potential)`, apoi `+ suma boost-urilor`, apoi clamp 0-10. (Reacția marcată de vânzător pe telefon — wow/interes/sceptic — ajustează și ea scorul.)
+- **⚠ REGULA CARE DECIDE DACĂ O DURERE APARE (cea mai importantă, lipsea din docs):** în secțiunea Dureri & Soluții pot intra DOAR durerile aflate în **`dominantPains`** ale tipologiei detectate (plus cele bifate explicit de prospect pe slide-ul wishlist). **O durere cu scor uriaș care NU e în `dominantPains` la tipologia lui NU apare NICIODATĂ.** Scorul/intensitatea doar **ORDONEAZĂ** candidații deja admiși — nu îi admite. Deci o durere are nevoie de DOUĂ lucruri ca să fie spusă: (1) painTriggers care îi dau scor și (2) să fie în `dominantPains` la tipologia relevantă. (Abia dacă pool-ul e gol se cade pe primele dureri din bibliotecă = prezentare generică.)
+- **Durere fără soluție = dispare tăcut.** O durere admisă dar fără nicio soluție legată (`addressedByFeatures` gol) e SĂRITĂ de motor (nu lasă prospectul „cu problema pe ecran, fără remediu"). Maparea de aur: **1 durere ↔ 1 soluție**, numele soluției = BENEFICIUL, nu termenul tehnic.
+- **Tipologii (ghicirea cumpărătorului).** Din datele de intro (auto-derive) + răspunsuri, motorul deduce profilul (conservator, expansiune, începător, hotel, catering, „familie sensibilă la preț", „firmă team-building"…). Tipologia e **dirijorul**: din ea decurg `dominantPains`, soluțiile/dovezile recomandate, oferta și tonul. **Nu se setează manual — se derivă.** O tipologie FĂRĂ reguli de detecție = personalizare moartă (toți prospecții primesc aceeași prezentare).
+- **Smart fields (variabile).** Datele din Intro + răspunsurile Discovery se inserează AUTOMAT în textele de mai târziu și în calcule (`{nume}`, `{nr_invitati}`, `{cifra}`). Prezentarea „vorbește" personalizat fără editare manuală.
+- **Reveal vs followUpSlide (NU le confunda).** La alegerea unui răspuns poate apărea: un **reveal** = text/imagine scurtă PESTE slide-ul curent; SAU un **followUpSlide** = un **SLIDE ÎNTREG separat**, full-screen (titlu/bullete/poză), injectat după întrebare — un mini-pitch educațional. Când owner-ul cere „un slide educațional după răspuns", vrea **followUpSlide**, nu reveal. La răspunsul „rezolvat" se folosește **autoAdvance** (trece automat mai departe — nu mai e nimic de vândut acolo); asta NU sare întrebarea, doar nu aprinde durerea.
+- **Flux condițional (ramificare).** Slide-uri/întrebări/pași pot avea condiții de vizibilitate: apar DOAR dacă un răspuns satisface o regulă (ex. întrebarea de livrare doar dacă afacerea are canal de livrare). O întrebare se SARE doar prin `skipIf`/`visibleWhen`/axă deja cunoscută — nu printr-un trigger cu intensitate 0.
+- **Tur virtual LIVE („walkthrough").** Pe soluție, buton care deschide produsul REAL într-un **iframe overlay** (NU navighează fereastra, ca să nu piardă prezentarea) — pagini reale, narațiune cu cifre. Dovada se face arătând, nu promițând.
+- **Ce e OUTPUT, nu input.** Tipologia detectată, durerile active + intensitatea, ce slide-uri ies, ce calcule se evaluează — toate sunt **CALCULATE de motor la rulare**. Le verifici în **Preview**, nu le „setezi". A încerca să scrii „detectedTypology" sau „assignedPains" e o greșeală conceptuală.
+
+## ⚠ Cele 4 cauze TĂCUTE ale prezentărilor slabe (fără eroare, dar deck plat)
+
+| Cauza | Simptom în Preview | Fix |
+|---|---|---|
+| **1. Durere nelegată de niciun răspuns** (fără painTriggers) | scorul durerii e mereu 0; nu iese în față | leagă cel puțin un răspuns Intro/Discovery la durere (`whenAnswerEquals` + `painId`) |
+| **2. Durere legată dar ABSENTĂ din `dominantPains`** | badge 💔 pe răspuns, dar durerea NU apare în deck | adaug-o în `dominantPains` la tipologia relevantă (altfel scorul e degeaba) |
+| **3. Durere fără soluție mapată** (`addressedByFeatures` gol) | durerea dispare din deck deși e dominantă + intensă | leagă o soluție la durere (1:1) |
+| **4. `painId` / `calculationId` orfan** (scris greșit / inexistent) | nimic nu se aprinde / „lipsește calculatorul" | verifică în Preview badge-ul 💔 N + că id-ul există în bibliotecă |
+
+Plus: **calculatorul nu apare** dacă `flowV2.calculation.enabled=false` (pasul Calcul e stins); **Tranziția** și **Calculul-după-ofertă** sunt OPT-IN (oprite implicit — trebuie pornite din Flux).
 
 ## Taburile de editare (Setări → CRM → Configurare prezentare)
 
@@ -86,7 +108,7 @@ Metodologia se copiază 1:1 în orice vertical. Pașii:
 1. **Definește axele de profil (Intro)** care segmentează prospecții: cine decide, sub-tipul de business, mărimea/volumul, vechimea, de unde vin banii, ce folosesc acum.
    - *Parc de distracții:* tip (acvatic/aventură/indoor kids/trambuline), nr. atracții, sezonalitate, canale (la poartă/online/grup-corporate), sistem de ticketing actual, ce vinde (petreceri copii / team-building corporate / abonamente).
 2. **Pentru fiecare durere, scrie O întrebare cu 4 răspunsuri-card**, gradate de la „rezolvat perfect" la „habar n-am / haos total" — să sune ca o conversație între colegi de breaslă, nu chestionar. *Ex. parc:* „Știi care atracție îți aduce cel mai mult profit pe oră de funcționare?" → o știu exact / aproximativ / doar încasări totale / habar n-am.
-3. **Atașează fiecărui răspuns o intensitate 1-10 + mod** (🎯/➕/🔍). „Rezolvat" = 0 (întrebarea se sare). „Habar n-am / haos" = 9-10.
+3. **Atașează fiecărui răspuns o intensitate 1-10 + mod** (🎯/➕/🔍). La răspunsul „rezolvat" nu legi nicio durere (+ poți pune `autoAdvance` ca să treacă automat mai departe — NU înseamnă că se „sare" întrebarea). „Habar n-am / haos" = intensitate 9-10. **Și pune durerea în `dominantPains` la tipologia relevantă** — altfel scorul e degeaba (vezi regula din modelul mental).
 4. **Alege o ancoră** — întrebarea pusă MEREU (de regulă cea de profit).
 5. **Definește tipologiile reale** (nu segmente de marketing) cu semnale de detecție + semnale negative + prag minim. *Parc:* „familia cu copii mici, sensibilă la preț", „grupul de adolescenți pe adrenalină", „firma care vrea team-building", „organizatorul de petreceri aniversare". *Hotel:* „city-break", „corporate recurent", „cuplu de aniversare premium", „grup/nuntă".
 6. **Pentru fiecare tipologie, definește cele 4 accente (override-ul):** care durere o scoți în față, ce arăți primul (ce atracție/pachet/serviciu), ce poveste de succes îi arăți (un client *ca el*), cum deschizi și pe ce ton (provocare? calcul? siguranță? noutate?).
@@ -100,7 +122,7 @@ Metodologia se copiază 1:1 în orice vertical. Pașii:
 - **Pot construi prezentarea prin conexiune (cu Claude direct)?** Parțial DA — există tool-uri MCP cu care Claude clonează un șablon și setează prin conexiune titlurile, tema, oferta, fluxul, câmpurile intro și tipologiile (`create_presentation_from_template` + `patch_presentation`; citește cu `get_presentation`). Editarea vizuală fină per-slide + Preview + rularea se fac în aplicație (extensia Chrome). În plus, Claude îți PROIECTEAZĂ conținutul (întrebări, dureri, soluții, obiecții, calcule, oferte, dovezi pentru businessul tău).
 - **De unde pornesc cel mai repede?** „+ Adaugă prezentare" → un șablon apropiat de ce vinzi (Sală evenimente / Catering / Servicii / Produse), sau **Symbai HoReCa 2026** ca model de structură — apoi rescrii durerile/soluțiile/ofertele pe businessul tău. Cel mai greu (logica și fluxul) e deja făcut.
 - **Diferența dintre «Configurare prezentare» și tabul «Prezentare» din CRM?** Prima (Setări → CRM) = unde CONSTRUIEȘTI. A doua (Vânzări → CRM) = unde RULEZI în fața prospectului. Le confunzi ușor.
-- **De ce nu apare un slide la rulare?** Cel mai des: e dezactivat din tabul Flux, sau are o condiție „apare doar dacă…" neîndeplinită de răspunsuri, sau durerea legată n-a depășit pragul de intensitate. Testează în Preview pe scenariul potrivit.
+- **De ce nu apare un slide la rulare?** În ordinea probabilității: (1) **durerea nu e în `dominantPains`** la tipologia detectată (cauza #1 — scorul nu o admite, doar o ordonează); (2) durerea n-are nicio soluție legată (dispare tăcut); (3) pasul e stins din tabul Flux (ex. `calculation.enabled=false` → fără calculator; Tranziția/Calcul-după-ofertă sunt OPT-IN); (4) o condiție „apare doar dacă…" neîndeplinită; (5) `painId`/`calculationId` scris greșit. Testează în Preview pe scenariul potrivit și uită-te la badge-ul 💔.
 - **Coach pe telefon nu se deschide / linkul nu merge?** Linkul e valabil 24h — regenerează-l din panoul Coach („Trimite pe telefon"). Funcționează prin internet, nu cere aceeași rețea WiFi; dacă a fost revocat, generează altul.
 
 ## Capcane
@@ -110,6 +132,10 @@ Metodologia se copiază 1:1 în orice vertical. Pașii:
 - **Întrebări care măgulesc = inutile**: răspunsurile trebuie să permită variantele oneste/jenante („habar n-am") — altfel nu descoperi durerea reală.
 - **Cifre generice resping clienții analitici**: calculele trebuie să folosească datele LUI (din Intro/Discovery), nu estimări de broșură.
 - **Loc CRM nominal (crm_seat)**: paginile CRM (deci și Prezentarea) se văd doar de angajații nominalizați ca „User CRM" — vezi `crm-vanzari-pipeline.md`.
+- **Durere fără `dominantPains` = invizibilă**: cea mai frecventă greșeală — legi o durere de răspunsuri (scor mare) dar uiți s-o pui în `dominantPains` la tipologie → nu apare deloc. Scorul ordonează, `dominantPains` admite.
+- **Verticalele clonate sunt SCHELETE**: `sala_evenimente`/`catering`/`servicii` au ~5 dureri, ~1 dovadă, 0 oferte. Nu le „doar ajusta" — pornește de la **gold-standard ca STRUCTURĂ** și rescrie conținutul pe businessul owner-ului (altfel vinzi software de restaurant unui client de nunți).
+- **Reveal ≠ followUpSlide**: „text peste slide" vs „slide întreg separat". Owner-ul care cere slide educațional după un răspuns vrea followUpSlide.
+- **Emoji, nu nume de iconițe**: pe ofertă/semnale de încredere iconițele se randează literal — pune „🚀", nu „Rocket".
 
 ## Cross-link-uri
 

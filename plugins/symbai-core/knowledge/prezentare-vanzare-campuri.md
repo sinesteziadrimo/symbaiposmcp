@@ -22,7 +22,7 @@ Convenții valoare: `text` (scris liber) · `nr` (numeric) · `on/off` (comutato
 - Date/Info: Dată (min/max) · Statement (card info, fără input).
 
 Câmpuri întrebare: **Text întrebare** `text` · **Hint** `text` · **Cheie tehnică** `text` · **Kicker/eyebrow** `text`.
-- **Cine vede întrebarea** = condiții (§5) + presets „Doar la <tipologie>/<tip eveniment>"; **Pe ecran vs Doar telefon** `on/off`; **întrebare-ancoră** (mereu inclusă).
+- **Cine vede întrebarea** = condiții (§5) + presets „Doar la <tipologie>/<tip eveniment>". · **Pe ecran vs Doar telefon** (`coachOnly`) se setează în tabul **Flux → pasul 2 Întrebări** (per întrebare), nu aici. · **întrebare-ancoră** (`discoveryAnchor` — mereu inclusă, exceptată de la dedup) NU are buton în UI: se setează doar prin **MCP/șablon** (vezi §„legacy/doar prin MCP").
 - **Axa tipologie** `listă`: Fără / Experiență / Mărime / Model / Mentalitate tech / Durere principală / Buget / Vertical.
 - **Slide vizual înainte de întrebare** `on/off` → editor conținut bogat (§9). **Media**: URL/Upload (max 5MB) + **Focalizare/crop** + **Layout** `listă`: Sus/Jos/Fundal/Stânga/Dreapta.
 - Config pe tip: Rating (nr items, iconiță ⭐/❤️/👍/⚪) · Da/Nu (label Da/Nu) · Scală opinie (min/max/label stânga/dreapta) · Dată (min/max) · Statement (corp + iconiță) · Emoji (set 5) · Alegere imagini (permite selecție multiplă + poză/opțiune).
