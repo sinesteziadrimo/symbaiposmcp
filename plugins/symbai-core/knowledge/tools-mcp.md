@@ -33,9 +33,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 810 tool-uri** — Citire 326 · Speciale 5 · SQL 3 · Scriere per modul 476 (pe 19 module).
+**TOTAL: 815 tool-uri** — Citire 328 · Speciale 5 · SQL 3 · Scriere per modul 479 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 326 tool-uri
+## Citire (fără permisiune de modul) — 328 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 42
 - `get_attribution_ltv_by_channel` — Valoarea pe viață (LTV) a clienților grupată după canalul de achiziție, pe o cohortă de N zile: nr. (parametri opționali: brandId, days)
@@ -305,9 +305,10 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `read_integration_memory_files` — Citește fișierele de memorie ale integrărilor. (parametri opționali: fileType, integrationKey)
 - `view_brand_media` — Arată-ți EFECTIV o imagine din Biblioteca Media (sau de la un URL) ca s-o VEZI și să alegi ce atașezi la o postare. (parametri opționali: mediaAssetId, url)
 
-### Diverse — 76
+### Diverse — 78
 - `analyze_food_costs` — Analizează food cost-ul produselor unui brand. (necesită: brandId)
 - `analyze_procurement` — Analizează aprovizionarea unui brand (furnizori, prețuri, lead time-uri). (necesită: brandId)
+- `audit_shop_health` — Auditează SĂNĂTATEA magazinului online al unui brand și întoarce probleme (severity error/warn) + statistici. (necesită: brandId)
 - `build_recall_report` — Construiește RAPORTUL DE RETRAGERE (recall) pentru un lot — arborele complet de impact într-un singur apel: toate loturile descendente (în ce s-a transformat / unde a ajuns) și, opțional, cele ascende (necesită: lotId)
 - `check_efactura_status` 🌐 — Verifică la ANAF starea unei facturi trimise în e-Factura (acceptată / respinsă cu erori / în procesare) și actualizează statusul local. (necesită: invoiceId)
 - `compare_pnl_periods` — Compara P&L pe mai multe perioade si explica DE CE s-a schimbat profitul (profit bridge: cat a adus venitul, cat au mancat COGS/personal/OpEx). (parametri opționali: mod, periods, brandId, locationId)
@@ -323,6 +324,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_event_fiche` — Citește fișa unui EVENIMENT/REZERVARE (dintr-un deal CRM convertit) — secțiunea cerută. (necesită: reservationId, section)
 - `get_factory_dashboard` — Obține dashboard-ul fabricii: pipeline loturi, status echipamente, livrări azi/mâine, probleme QC, lipsuri materie primă, KPI-uri globale.
 - `get_keyword_rankings` — Istoricul de poziții al unui cuvânt-cheie urmărit (evoluția în Google pe ultimele N zile). (necesită: id)
+- `get_manufacturing_readiness` — Audit read-only de pregătire fabricație pentru o rețetă/produs: BoM, stoc disponibil, flux tehnologic, echipamente/capacități, QC și recomandări înainte de MPS/lansare lot. (parametri opționali: recipeId, productId, productName, quantity)
 - `get_material_design` — Citește un material grafic ca să-l ÎNȚELEGI: dimensiunile colii (mm + px), fundalul, și TOATE elementele cu id, tip, poziție (px + procente din coală), dimensiune, conținut/culoare. (necesită: designId)
 - `get_my_tasks` — Sarcinile vizibile unui angajat în ziua dată, grupate Întârziate → Azi → Viitoare + Generale (libere) + Finalizate azi. (necesită: employeeId)
 - `get_nutrition_gaps` — Arată ce ingrediente ale unui produs NU au încă valori nutriționale completate — adică ce te împiedică să rulezi recalc_product_nutrition cu succes. (necesită: productId)
@@ -389,7 +391,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 476 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 479 tool-uri (gated de writeModules pe token)
 
 ### produse_meniu — Produse & Meniuri — 54 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
@@ -681,7 +683,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_reception_note` — Actualizează o notă de recepție existentă (status, rezoluție, descriere). (necesită: noteId)
 - `update_supplier` — Actualizează datele unui furnizor existent (adresă, termeni plată, IBAN, zile livrare, etc.) (necesită: supplierId)
 
-### setari — Setări & Configurare — 98 tool-uri
+### setari — Setări & Configurare — 101 tool-uri
 - `add_cooling_reading` — Adaugă o citire de temperatură la o sesiune de răcire rapidă în curs. (necesită: sessionId, tempCelsius)
 - `add_physical_menu_page_element` — Adaugă un element FREEFORM pe o pagină (Imagine/Text/Separator/Formă) — peste produse. (necesită: configId, pageIndex, element)
 - `add_presentation_library_item` — Adaugă un element NOU în bibliotecă (durere/soluție/întrebare/dovadă/obiecție/calcul). (necesită: presentationId, kind, item)
@@ -751,10 +753,12 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `save_presentation` — UPSERT o prezentare completă: dacă `presentation.id` există pe brand o ÎNLOCUIEȘTE integral, altfel o adaugă (generează id dacă lipsește). (necesită: presentation)
 - `seed_reservation_settings` — Configurează automat setările de rezervări recomandate pe tipul de business (restaurant, bar, cafenea, hotel, etc.) (necesită: brandId, businessType)
 - `set_config_sections` — Setează lista de RAIOANE (sections) ale unei configurații — ÎNLOCUIEȘTE complet lista existentă cu cea dată. (necesită: floorConfigId, sections)
+- `set_discovery_option_followup` — Setează (sau șterge) SLIDE-ul suplimentar de după un răspuns de discovery (followUpSlide) pe O SINGURĂ opțiune a unei întrebări, FĂRĂ să retrimiți tot array-ul options (altfel pierzi opțiuni dacă uiți (necesită: presentationId, questionId, optionId)
 - `set_dynamic_qr_fields` — Modifică un QR DINAMIC existent la nivel de câmp — trimite DOAR câmpurile pe care vrei să le schimbi (restul rămân neatinse). (necesită: id)
 - `set_floor_config_date_override` — Fixează (upsert) ce configurație de plan de sală e activă într-o DATĂ anume — o excepție peste programul pe zile (ex. (necesită: date, floorConfigId)
 - `set_floor_table_geometry` — Mută / redimensionează / rotește O masă pe planul de sală, fără să o tragi cu mouse-ul. (necesită: tableId)
 - `set_game_date_override` — Setează o excepție de dată pentru un joc: închis, program custom, capacitate diferită. (necesită: gameId, date)
+- `set_option_reveal` — Setează (sau șterge) REVEAL-ul (text/imagine de impact PESTE slide-ul curent) pe O SINGURĂ opțiune de răspuns, fără să retrimiți tot array-ul options. (necesită: presentationId, questionId, optionId)
 - `set_physical_menu_category_fields` — Setează/resetează ORICE câmp al unei CATEGORII din meniul fizic (name, sortOrder, visible, titleHidden, culori, accentColor, pageBreakBefore, description, offset-uri titlu...). (necesită: configId, categoryId)
 - `set_physical_menu_config_fields` — Setează/resetează ORICE câmp GLOBAL al unui design de meniu fizic (culori, fonturi, margini, photoLayout/photoSizeGlobal, columns, copertă, footer, QR, fundal, border... (necesită: configId)
 - `set_physical_menu_item_fields` — Setează/resetează ORICE câmp pe UNUL sau MAI MULTE produse din meniul fizic — cele ~80 de câmpuri per-item (poză: photoLayout/photoAspectRatio/photoSize/photoRotation/photoMaskShape/photoOpacity/showP (necesită: configId)
@@ -763,6 +767,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_qr_field_preset_fields` — Modifică un PRESET de câmpuri QR la nivel de câmp — controlează ce completează clientul când scanează QR-ul de masă (nume / prenume / email / telefon: vizibil + obligatoriu), dacă poate plăti DIRECT d (necesită: id)
 - `set_tag_routing` — Seteaza rutarea reala a unui tag catre ecrane KDS / imprimanta PER ZONA (scrie in zone_tag_routing_overrides — exact ce face pagina Rutare Taguri si ce ruteaza POS-ul). (parametri opționali: tagId, tagName, printerId, printerName)
 - `set_zone_routing` — Setează (upsert) rutarea de hardware a unei ZONE: ce imprimante și ecrane KDS primesc comenzile meselor din acea zonă. (necesită: zoneId)
+- `setup_two_phase_calculation` — Preset calcul in 2 faze: dat un calcul comparative-list existent (faza 1), il pregateste pe modul cost-actual fara pret (currentCostOnly:true, placement:before-offer) INAINTE de oferta si creeaza auto (necesită: presentationId, calculationId)
 - `spotlight_portal_tab` — Deschide (daca e inchisa) modala 'Configurare Platforma Clienti Web' IN BROWSERUL utilizatorului si comuta pe tab-ul indicat, ca userul sa VADA in timp real ce configurezi. (necesită: brandId)
 - `start_rapid_cooling_session` — Pornește o sesiune de RĂCIRE RAPIDĂ (blast chilling) monitorizată — obligatorie HACCP pentru produsele gătite care trebuie răcite rapid sub o limită de timp. (necesită: label)
 - `swap_physical_menu_items` — Schimbă locul (poziția) între DOUĂ produse într-un design de meniu fizic. (necesită: configId, productIdA, productIdB)
@@ -918,6 +923,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 Clientul le poate „pull-ui" la nevoie (nu se țin permanent în context):
 - `symbai://context` — brandurile, locațiile și numărul lor (ca să afli brandId/locationId fără un tool).
 - `symbai://permisiuni` — modulele de scriere active + plafoanele setate pe tokenul curent.
+- `symbai://operare` — standardul de lucru pentru task-uri complexe: citire, risc, confirmare, scriere idempotentă, verificare și dovadă.
 
 ## Workflow-uri ghidate (prompts)
 
@@ -926,6 +932,10 @@ Invocabile ca „slash-commands" în clientul MCP — ghidează un flux pas-cu-p
 - `trimite_campanie_email` — draft → preview audiență → confirmare → trimitere.
 - `proceseaza_retur` — eligibilitate → aprobare → refund (cu confirmare).
 - `raport_zilnic` — vânzări + top produse + performanță ospătari, azi.
+- `audit_instanta` — audit read-only: branduri, locații, permisiuni, configurare, riscuri și următorii pași.
+- `investigheaza_incident` — investigație cronologică pe masă/comandă/plată/stoc/producție/KDS/angajat.
+- `configureaza_client_nou` — pornește onboardingul cu inventar, plan pe faze și execuție MCP-first.
+- `planifica_productie` — planificare producție/fabrică: cerere, stoc, MPS, loturi, echipamente și QC.
 
 ## Ce NU se poate face prin conexiunea AI (by design)
 

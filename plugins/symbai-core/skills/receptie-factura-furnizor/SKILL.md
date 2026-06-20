@@ -5,7 +5,7 @@ description: Procesează facturile de la furnizori și intrările de marfă (Int
 
 # Recepție factură furnizor / Intrări Marfă — corect, complet, rapid
 
-Scopul: marfa de la furnizor să intre pe stoc ȘI în contabilitate, corect. Citește la nevoie `knowledge/intrari-marfa-receptie.md` (fluxul complet, fiecare câmp) și `knowledge/finante-facturare-contabilitate.md` (conturi & note contabile). Secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md` rămâne valabilă (interfața se actualizează la refresh; verifică prin CITIRE, nu reapela scrierea).
+Scopul: marfa de la furnizor să intre pe stoc ȘI în contabilitate, corect. Citește la nevoie `knowledge/agent-operare-avansata.md` (confirm-first, verificare, dovezi), `knowledge/intrari-marfa-receptie.md` (fluxul complet, fiecare câmp) și `knowledge/finante-facturare-contabilitate.md` (conturi & note contabile). Secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md` rămâne valabilă (interfața se actualizează la refresh; verifică prin CITIRE, nu reapela scrierea).
 
 **Regula de aur:** stocul se mișcă DOAR la postarea NIR-ului (document de inventar POSTED). Nimic nu intră pe stoc mai devreme — nici „recepție din poză", nici factura nemapată.
 

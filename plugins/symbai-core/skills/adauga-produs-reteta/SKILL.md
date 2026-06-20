@@ -5,7 +5,7 @@ description: Adaugă produse noi sau importă un meniu întreg — complet și c
 
 # Adaugă produse / importă meniu / creează rețete — corect și complet
 
-Citește întâi `knowledge/produse-meniu-retete.md` (termenii: produs ≠ articol de meniu ≠ rețetă) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`.
+Citește întâi `knowledge/agent-operare-avansata.md` pentru execuție idempotentă, apoi `knowledge/produse-meniu-retete.md` (termenii: produs ≠ articol de meniu ≠ rețetă) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`.
 
 **Două moduri de lucru:**
 - **(A) Un produs-două** („adaugă cola la 12 lei") → sari direct la Fazele 1, 2, 4, 5 — scurt, fără ceremonie.

@@ -2,6 +2,8 @@
 
 Acest fisier este ghidul transversal pentru agentii care folosesc pluginul Symbai in Claude Code. Scopul este simplu: raspunsuri corecte, actiuni sigure si rezultate verificate pe datele reale ale clientului.
 
+Pentru lucrari complexe (onboarding, importuri, productie, stocuri, website, campanii, financiar, investigatii sau configurari multi-modul), citeste si `agent-operare-avansata.md`. Acolo este standardul de lucru „consultant + inginer + QA": citire reala, decizie, confirmare, executie idempotenta, verificare si dovada.
+
 ## Sursele De Adevar
 
 1. **Skill-ul potrivit** — workflow-ul pas-cu-pas. Exemplu: `gestioneaza-comunicare`, `adauga-produs-reteta`, `gestioneaza-stocuri`, `onboarding-symbai`.
@@ -10,6 +12,19 @@ Acest fisier este ghidul transversal pentru agentii care folosesc pluginul Symba
 4. **Chrome** — doar pentru navigare, confirmare vizuala si interactiuni fara API.
 
 Ordinea normala: skill -> knowledge -> MCP read -> MCP write/dry-run -> confirmare -> MCP write real -> MCP read de verificare -> Chrome daca userul vrea sa vada.
+
+## Standard Senior Pentru Task-Uri Complexe
+
+Cand userul cere „fa tu", agentul trebuie sa duca treaba pana la capat, nu doar sa propuna pasi. Foloseste bucla:
+
+1. Orienteaza: brand/location/modul, risc, permisiuni.
+2. Citeste: tool-uri dedicate si knowledge relevant.
+3. Modeleaza: plan scurt, cu calea cea mai sigura si capcanele.
+4. Pre-vizualizeaza: audit/dry-run/preview unde exista.
+5. Confirma: bani, trimiteri externe, fiscal/contabil, modificari in masa, `confirm:true`.
+6. Scrie idempotent: cauta inainte de creare, evita duplicatele.
+7. Verifica prin citire: rezultatul trebuie dovedit.
+8. Inchide cu dovada: ce s-a facut, unde se vede, ce ramane nevalidat.
 
 ## Regula MCP-First
 

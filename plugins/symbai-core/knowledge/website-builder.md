@@ -2,6 +2,7 @@
 
 > Pentru linkul exact către orice pagină folosește `gaseste_in_aplicatie` — el e sursa autoritară de navigare.
 > Acest ghid = **cum CONSTRUIEȘTI și CONFIGUREZI site-ul public** (paginile, componentele, aspectul, catalogul pe site). Pentru **comenzi online / eMAG / feed-uri / retururi** vezi `ecommerce-magazin-online.md`. Pentru **portalul clienților** (aplicația de la masă, prin QR — meniu/comenzi/rezervări) vezi `portal-config.md`. Sunt lucruri DIFERITE: portalul = app-ul pentru clienții din local; website-ul = site-ul public, indexat de Google, cu magazin.
+> ⭐ **Pentru CALITATE (ce face un magazin să convertească) + cum explici clientului fiecare alegere, citește `website-best-practices-2026.md`** — best-practice moderne (header pe 2 rânduri cu bară de categorii dedicată, megamenu cu grupuri + hover lin, search proeminent, anti-dead-end pe pagina de produs, „shop by age/occasion", bară de transport gratuit), fiecare cu cifra de conversie de citat clientului.
 
 ## Pe scurt — ce e și ce poate face
 
@@ -64,6 +65,9 @@ Symbai are un **builder de website** integrat: din catalogul de produse + meniul
 - `create_website_promotion` / `update_website_promotion` / `list_website_promotions` — bannere/pop-up-uri pe site (placement: banner / header-strip / footer-strip / side-modal).
 - `update_ecommerce_settings` / `get_ecommerce_settings` — monedă, TVA implicit, nume magazin, metode de checkout (ramburs / transfer bancar / card).
 - `update_menu_display_config` — editări avansate pe configul site-ului (de folosit când un tool dedicat nu acoperă un câmp).
+
+**Verificare (auto-check — folosește-l MEREU la final)**
+- `audit_shop_health` — auditează sănătatea magazinului și întoarce probleme (`error`/`warn`) + statistici: categorii goale/plate/gunoi, TVA în afara cotelor RO (0/11/21), % acoperire filtre (brand/material/vârstă), email placeholder în footer, navbar/footer cu prea multe categorii, hero fără imagine, produse fără poză. **Rulează-l după ce construiești/imporți un magazin și repară problemele `error` ÎNAINTE de a spune că e gata** — nu aștepta ca userul să-ți găsească greșelile.
 
 ## Componentele de pagină (blocuri) — ce ai la dispoziție
 

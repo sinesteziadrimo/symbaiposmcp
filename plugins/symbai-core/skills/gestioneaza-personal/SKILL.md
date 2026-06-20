@@ -5,7 +5,7 @@ description: Gestionează personalul în Symbai — angajați, roluri & permisiu
 
 # Gestionează personalul — angajați, roluri, ture, raioane, contracte
 
-Citește întâi `knowledge/personal-hr.md` (modal de tură câmp-cu-câmp, Program Salon, ladderul de rutare QR, unitatea) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`. Pentru sarcini & checklist-uri vezi skill-ul separat `gestioneaza-sarcini`. Turele de **producție** (fabrică) sunt alt concept — nu le confunda.
+Citește întâi `knowledge/agent-operare-avansata.md` pentru standardul de execuție sigură, apoi `knowledge/personal-hr.md` (modal de tură câmp-cu-câmp, Program Salon, ladderul de rutare QR, unitatea) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`. Pentru sarcini & checklist-uri vezi skill-ul separat `gestioneaza-sarcini`. Turele de **producție** (fabrică) sunt alt concept — nu le confunda.
 
 **Tot ce e scriere cere modulul `personal` pe token.** Context mereu întâi: `list_brands` + `list_locations` (ai nevoie de brandId/locationId). Roluri: `list_entities(entityType:"roles", brandId)`. Stare curentă: `get_staff_overview(brandId, locationId)`.
 

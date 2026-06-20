@@ -9,7 +9,7 @@ Userul (proprietar/manager) vine cu o cerere de **conformitate** sau de **igien�
 
 ## Înainte de orice
 
-1. Citește **`knowledge/gdpr-clienti-oaspeti.md`** (concepte: dreptul de a fi uitat, portabilitate, consimțământ per canal, anonimizare vs ștergere, fuziune duplicate; fluxuri pas-cu-pas; capcane — mai ales **client retail vs oaspete hotel** = două profiluri și două seturi de tool-uri). Pentru grupuri & segmente → **`knowledge/segmentare-clienti.md`** (grup static manual vs segment dinamic RFM). Pentru opt-out la trimitere → **`knowledge/email-marketing.md`** / **`knowledge/marketing-social.md`**.
+1. Citește **`knowledge/agent-operare-avansata.md`** pentru standardul de confirmare/verificare la acțiuni ireversibile, apoi **`knowledge/gdpr-clienti-oaspeti.md`** (concepte: dreptul de a fi uitat, portabilitate, consimțământ per canal, anonimizare vs ștergere, fuziune duplicate; fluxuri pas-cu-pas; capcane — mai ales **client retail vs oaspete hotel** = două profiluri și două seturi de tool-uri). Pentru grupuri & segmente → **`knowledge/segmentare-clienti.md`** (grup static manual vs segment dinamic RFM). Pentru opt-out la trimitere → **`knowledge/email-marketing.md`** / **`knowledge/marketing-social.md`**.
 2. Citește **`knowledge/condu-chrome.md`** — doctrina „munca prin MCP, Chrome doar pentru a NAVIGA și a ARĂTA, click pe element doar la nevoie". Nu o repeta, aplic-o.
 3. **Context**: `list_brands` + `list_locations` la nevoie (multe tool-uri de oaspeți cer `brandId`/`locationId`). Pentru ID-ul clientului/oaspetelui, cere-l userului sau găsește-l în pagina `/customers`.
 

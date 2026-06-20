@@ -6,6 +6,29 @@
 ## Pe scurt — ce e o fabrică în Symbai
 Modul fabrică transformă Symbai într-un mini-MES/ERP de producție: planifici ce produci (MPS/MRP din comenzi B2B + cereri interne), execuți pe stații de lucru cu tabletă (shop-floor), urmărești fiecare lot de la materie primă la produs finit (genealogie + recall), controlezi calitatea (carantină, inspecții, HACCP), urmărești echipamente/zone/ture și livrezi clienților business (B2B picking + expediere). Totul cu trasabilitate de container cu cod QR și KPI live (Yield, OEE, FPY, On-Time, Waste).
 
+## Scenariul local Senneville / ARCA (seed demo)
+În dezvoltare locală, fabrica demo **Senneville ARCA Factory** (`brandId=40`, cod `arca-factory-40`) trebuie tratată ca un client industrial real, nu ca date de prezentare superficiale. Seed-ul este incremental și idempotent: dacă baza există deja, el o îmbogățește în loc să sară peste scenariu.
+
+Ce conține scenariul local:
+- 47 materii prime, 26 semifabricate și 30 produse finite.
+- 56 rețete active, cu versiuni de formulă, linii de formulă, randament, termen de valabilitate, depozitare, etichete și fișă tehnologică.
+- 56 fluxuri tehnologice active, cu operații pe zone/stații, dependențe, materiale, ieșiri, resurse, QC, HACCP, checklists, handover și stage templates.
+- 9 zone de fabrică, 19 echipamente, 8 stații, 5 ecrane de stație și 5 grupe de capabilități.
+- Capacități pe echipament-rețetă, reguli de changeover, mapări zonă-gestiune pentru ingrediente, ture, angajați și alocări pe schimburi.
+- 35 loturi de producție cu execuții pe operații, evenimente shop-floor, inspecții QC, măsurători echipament, containere QR, loturi WIP/final, MPS, planned lots și praguri WIP.
+- 3 comenzi B2B, 21 cereri de producție și o rută frigorifică de livrare.
+
+Cum verifici rapid local:
+- Dashboard: `get_factory_dashboard`.
+- Plan: `list_mps_schedule`.
+- Loturi: `exec_list_batches`, apoi `exec_get_batch_progress`, `exec_list_operation_executions`, `exec_list_shop_floor_events`.
+- B2B: `list_b2b_orders`, `list_production_demand`.
+- Echipamente/zone: citește paginile **Echipamente & Zone**, **Tabletă Stație**, **Loturi & WIP**, **Scanner Containere** și **Panou Fabrică**.
+
+Regula pentru asistenți: când userul spune „Senneville”, „ARCA” sau „fabrica locală”, pornești pe traseul **Fabrică**. Nu folosi `exec_complete_batch` pentru loturile seeduite cu `flowVersionId`; lucrează și explică prin operații shop-floor, containere, QC, handover, MPS și B2B.
+
+Notă de audit local: în unele baze dev vechi, coloana fizică `products.brand_id` poate lipsi deși schema aplicației o cunoaște. Pentru auditul scenariului Senneville, ancorează produsele prin `recipes.brand_id = 40` și prin `recipe.product_id`.
+
 ## Cum activezi modul fabrică și ce deblochează
 - **Unde**: Setări → General (Date Companie) → secțiunea „Domenii de Activitate". Bifezi **„Fabrică alimentară"** sau **„Fabrică nealimentară"** → modul devine automat „fabrică". (Bifând „Sală evenimente" obții modul „restaurant & evenimente", un nivel intermediar.)
 - **Ce deblochează modul fabrică** (pagini vizibile DOAR în acest mod):
@@ -101,14 +124,16 @@ Aceasta e calea industrială, pe tabletă (`/workstation-tablet`) sau din `/prod
 ## MPS / MRP — planificarea producției
 - **MPS** (Master Production Schedule) = ce produci, când, pe ce stație, în ce tură.
 - **MRP** = necesarul net de materiale: cerere − stoc existent − deja programat = ce TREBUIE produs/comandat.
+- **Readiness gate** = verificarea obligatorie înainte de planificare/lansare: rețetă + BOM, stoc disponibil, conversii de unități, flux tehnologic activ, echipamente/capacitate și cerințe QC. Tool: `get_manufacturing_readiness`.
 - **Bucla planificare:**
   1. **Citește cererea**: `get_orders_summary` (`dateFrom`, `dateTo`, `status` all/open/completed/cancelled, `groupBy` product/order) — ce produse sunt cerute, în ce cantități.
   2. **Citește stocul**: `get_stock_levels` (`productType` raw_material/wip/finished_good/all, `warehouseId`, `onlyLowStock`, `productName`) — stoc curent + prag minim + deficit.
   3. **Calculează necesarul net**: `get_mps_net_requirements` (`horizonDays`) — cerere − stoc − programat, pe orizont.
-  4. **Vezi programul**: `list_mps_schedule` (`from`, `to` YYYY-MM-DD) — rețete planificate pe date/ture/stații.
-  5. **Adaugă în plan**: `create_mps_entry` (`scheduledDate` + `plannedQty` obligatorii; opțional `stationId`, `recipeId`, `shiftNumber`, `status` draft/confirmed/in_progress/completed/cancelled).
-  6. **Actualizează plan**: `update_mps_entry` (`entryId` + câmpuri).
-  7. **Loturi planificate**: `list_planned_lots` — loturi pre-producție din comenzi B2B sau cereri interne care necesită producție.
+  4. **Readiness**: `get_manufacturing_readiness` pentru rețeta/produsul propus. Dacă status = `blocked`, nu planifica și explică blocajele; dacă status = `needs_attention`, cere confirmare cu riscurile clare.
+  5. **Vezi programul**: `list_mps_schedule` (`from`, `to` YYYY-MM-DD) — rețete planificate pe date/ture/stații.
+  6. **Adaugă în plan**: `create_mps_entry` (`scheduledDate` + `plannedQty` obligatorii; opțional `stationId`, `recipeId`, `shiftNumber`, `status` draft/confirmed/in_progress/completed/cancelled).
+  7. **Actualizează plan**: `update_mps_entry` (`entryId` + câmpuri).
+  8. **Loturi planificate**: `list_planned_lots` — loturi pre-producție din comenzi B2B sau cereri interne care necesită producție.
 - **BOM explosion** (explozie de rețetă): `run_bom_explosion` (`recipeId`, `quantity`) — calculează totalul de materii prime necesare pentru o cantitate dată, cu conversie de unități. ⚠ E doar previzualizare — NU mișcă stoc.
 - **Stoc producție / semipreparate**: `get_production_stock_overview` (`productTypes`) — WIP + produse finite cu cantități/loturi/expirare/rezervări/cerere; `get_semipreparate_stock` () — stoc semifabricate (WIP).
 - Pagina: `/planificare-mps` (taburi Calendar Operații, Planificare MRP, Coproduse & Subproduse, Monitorizare, Trasabilitate, Bottleneck, Productivitate, Loturi Planificate, Flux Fabrică, Configurare).
@@ -209,8 +234,9 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 | „Care e statusul QC al lotului X" | `exec_get_lot_qc_status` (`lotId`). |
 | „Statistici calitate / cele mai dese defecte" | `get_qc_stats` / `get_defect_pareto`. |
 | „Cât rebut/pierderi am avut" | `get_waste_report`. |
-| „Ce trebuie să produc săptămâna asta" | `get_orders_summary` + `get_stock_levels` + `get_mps_net_requirements` (`horizonDays`). |
-| „Pune în planul de producție rețeta X, 500 kg pe vineri" | `create_mps_entry` (`scheduledDate`, `plannedQty`). |
+| „Ce trebuie să produc săptămâna asta" | `get_orders_summary` + `get_stock_levels` + `get_mps_net_requirements`, apoi `get_manufacturing_readiness` pe produsele/rețetele care intră în plan. |
+| „Pot porni/programez produsul X?" | `get_manufacturing_readiness` (`productId`/`recipeId` sau `productName`, `quantity`, opțional `scheduledDate`) — verifică BOM, materiale, flux, echipamente/capacitate și QC. |
+| „Pune în planul de producție rețeta X, 500 kg pe vineri" | Întâi `get_manufacturing_readiness`; dacă nu e `blocked`, `create_mps_entry` (`scheduledDate`, `plannedQty`). |
 | „Arată-mi programul MPS" | `list_mps_schedule` (`from`, `to`). |
 | „De câte materii prime am nevoie pentru 1000 buc din rețeta X" | `run_bom_explosion` (`recipeId`, `quantity`) — doar previzualizare. |
 | „Cât stoc de semipreparate am" | `get_semipreparate_stock` / `get_production_stock_overview`. |

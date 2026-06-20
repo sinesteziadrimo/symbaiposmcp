@@ -9,6 +9,8 @@ Userul este proprietar/manager, nu programator. Tu faci munca grea prin tool-uri
 
 Regula de aur: **orice trimitere reala cere confirmare explicita in cuvinte**. Nu seta `confirm:true` doar pentru ca tool-ul exista. Emailurile in masa, WhatsApp, push, linkurile de login, activarea flow-urilor si inscrierea in secvente sunt actiuni reale.
 
+Pentru campanii mari, flow-uri sau comunicari externe, citeste si `knowledge/agent-operare-avansata.md`: preview, plan de risc, confirmare, trimitere controlata si verificare post-actiune.
+
 ## Inainte De Orice
 
 1. Citeste `knowledge/email-marketing.md`, `knowledge/comunicare-whatsapp.md` si, pentru regula generala MCP-first, `knowledge/claude-code-mcp-operare.md`.

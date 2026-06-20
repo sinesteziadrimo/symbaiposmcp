@@ -7,6 +7,8 @@ description: Creează și gestionează reclame plătite Meta (Facebook/Instagram
 
 Symbai POS are tool-uri MCP dedicate pentru reclame — promovezi o postare în câteva secunde, fără să intri în wizard. **Reclamele cheltuie bani reali**, așa că tool-urile de scriere cer confirmare explicită și respectă plafonul de buget setat de proprietar pe token (Hub → Acces AI).
 
+Pentru orice buget publicitar, citește și `knowledge/agent-operare-avansata.md`: verifici contul, explici costul, obții confirmare clară, rulezi tool-ul și verifici statusul după.
+
 ## Fluxul de bază — promovează o postare (boost)
 
 1. **Verifică contul de reclame**: `list_ad_accounts` (opțional `brandId`). Dacă lista e goală → contul Meta Ads nu e conectat: folosește skill-ul `conecteaza-meta` (sau spune utilizatorului să-l lege din portal). Fără cont, nu poți face reclame.

@@ -9,6 +9,8 @@ Userul are fișiere (Excel/CSV exportate din vechiul sistem) și vrea datele în
 
 **De ce combinația, nu doar una:** pagina de import a aplicației are cel mai bun motor de citire a fișierelor (encoding, numere românești, formate murdare) + import tranzacțional — dar deciziile ei automate (în ce magazie, ce tip de produs) **greșesc des**. Tu, cu un model mai deștept și mai mult context, **răspunzi mai bine la întrebările ei** și **corectezi după** prin conexiunea MCP. Userul primește o experiență simplă, cu date corecte.
 
+La importuri mari sau murdare, citește și `knowledge/agent-operare-avansata.md`: tratează importul ca proiect de date cu citire, normalizare, verificare, corecții și raport de dovadă.
+
 **`importa-date` vs `adauga-produs-reteta` — care skill:**
 - **`importa-date`** (ăsta): userul **ARE fișiere** (Excel/CSV, export din vechiul POS) pe calculator și vrea date în masă (produse + stoc + furnizori + meniu) → import + verificare; poți și completa golurile din surse online.
 - **`adauga-produs-reteta`**: userul **N-are fișiere** — vrea un meniu de pe website/PDF sau să adauge câteva produse/rețete.

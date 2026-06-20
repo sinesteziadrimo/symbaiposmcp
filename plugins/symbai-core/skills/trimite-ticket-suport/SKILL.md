@@ -7,6 +7,8 @@ description: Trimite un ticket către echipa Symbai (problemă tehnică, reclama
 
 Două situații diferite — tratează-le diferit:
 
+Pentru a decide dacă e bug, lipsă de tool sau doar pași greșiți, folosește standardul din `knowledge/agent-operare-avansata.md`: încearcă întâi citirea/diagnosticul real, apoi trimite ticket cu dovezi și workaround.
+
 ## A. Utilizatorul cere explicit (problemă / reclamație / suport)
 
 1. Adună detaliile: CE a încercat, CE s-a întâmplat, CE se aștepta să se întâmple. La probleme, include pașii de reproducere și unde apare (pagina, modulul).

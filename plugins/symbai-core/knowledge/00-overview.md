@@ -12,7 +12,7 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **Meniu** — ce se vinde: articole de meniu cu preț, categorii, poze, meniu fizic, oferte/promoții. → `produse-meniu-retete.md`
 - **Produse & Stocuri (Inventar)** — produsele fizice, gestiunile, stocul pe loturi, recepții (NIR), transferuri, inventariere, consum. → `stocuri-inventar-furnizori.md`
 - **Furnizori & Achiziții** — de la cine cumperi, cataloage, comenzi de aprovizionare, prețuri furnizor. → `stocuri-inventar-furnizori.md`
-- **Rețete & Producție** — din ce se face fiecare preparat (consum + cost); producția: simplă (restaurant) sau de fabrică (loturi, planificare, trasabilitate, calitate). → `produse-meniu-retete.md` + `productie-restaurant.md` (restaurant) / `productie-fabrica.md` (fabrică)
+- **Rețete & Producție** — din ce se face fiecare preparat (consum + cost); producția: simplă (restaurant) sau de fabrică (loturi, planificare, trasabilitate, calitate). → `produse-meniu-retete.md` + `productie-restaurant.md` (restaurant) / `productie-fabrica.md` (fabrică) + `erp-manufacturing-benchmark.md` (preflight ERP/MES: BoM, stoc, flux, capacitate, QC)
 - **Rezervări & Evenimente** — rezervări de masă, evenimente private, petreceri, clienți (CRM), loialitate, feedback. → `rezervari-clienti-evenimente.md`
 - **Personal (Staff)** — angajați, roluri, contracte, ture, pontaj, salarizare, beneficii. → `personal-hr.md`
 - **Rapoarte / Analytics** — vânzări, KPI, food cost, marjă, performanță. → `rapoarte-preturi.md`
@@ -24,7 +24,7 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **Setări & Administrare** — locații, branduri, TVA, metode de plată, utilizatori și roluri, integrări, abonament. → `setari-administrare.md`
 - **AI în aplicație** — asistentul Sym (butonul plutitor) + agenții specialiști. → `asistentul-ai-in-aplicatie.md`
 
-Fișiere de referință transversale: `harta-aplicatiei.md` (indexul exhaustiv al TUTUROR paginilor, generat din registrul de navigare al aplicației), `tools-mcp.md` (catalogul complet al tool-urilor MCP, generat din registry-ul live, cu modelul de permisiuni), `expo-aplicatii-mobile.md` (configurarea actuala a aplicatiilor native) și `claude-code-mcp-operare.md` (cum lucrează corect Claude Code cu skill-uri, knowledge, MCP live, confirmări și verificare prin citire).
+Fișiere de referință transversale: `agent-operare-avansata.md` (standardul de lucru pentru task-uri complexe: consultant + inginer + QA), `erp-manufacturing-benchmark.md` (pattern-uri ERP/MES pentru fabrică: release gate, BoM, MPS, capacitate, QC), `harta-aplicatiei.md` (indexul exhaustiv al TUTUROR paginilor, generat din registrul de navigare al aplicației), `tools-mcp.md` (catalogul complet al tool-urilor MCP, generat din registry-ul live, cu modelul de permisiuni), `expo-aplicatii-mobile.md` (configurarea actuala a aplicatiilor native) și `claude-code-mcp-operare.md` (cum lucrează corect Claude Code cu skill-uri, knowledge, MCP live, confirmări și verificare prin citire).
 
 ## Cum se leagă (lanțul de bază)
 
