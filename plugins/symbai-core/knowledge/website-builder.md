@@ -66,6 +66,7 @@ Symbai are un **builder de website** integrat: din catalogul de produse + meniul
 - `set_product_bundle` — pachet „Cumpărate frecvent împreună" (produs principal + produse din pachet + reducere opțională).
 
 **Promoții & setări**
+- `configure_storefront_trust_bar` — bara de încredere (trust bar): pilonii „14 zile retur / transport gratuit / fidelizare / rate fără dobândă" afișați pe TOATE paginile, deasupra sau sub meniul de sus. Complet configurabilă (piloni, iconuri, culori, poziție). Vezi secțiunea dedicată mai jos.
 - `create_website_promotion` / `update_website_promotion` / `list_website_promotions` — bannere/pop-up-uri pe site (placement: banner / header-strip / footer-strip / side-modal).
 - `update_ecommerce_settings` / `get_ecommerce_settings` — monedă, TVA implicit, nume magazin, metode de checkout (ramburs / transfer bancar / card).
 - `update_menu_display_config` — editări avansate pe configul site-ului (de folosit când un tool dedicat nu acoperă un câmp).
@@ -85,6 +86,50 @@ Le pui prin `add_website_section`/`set_website_page_content` cu `type` + `config
 - **`brand-logos`** — logo-uri de branduri/parteneri.
 - **`testimonials`**, **`text-block`**, **`contact`**, **`blog-list`** — recenzii, text liber, contact, articole de blog.
 
+## Bara de încredere (trust bar) a magazinului
+
+**Ce e:** o bandă subțire, vizibilă pe **toate paginile** site-ului, cu „pilonii de încredere" ai magazinului — promisiunile care îl liniștesc pe cumpărător: **„14 zile drept de retur"**, **„Transport gratuit"**, **„Fidelizare clienți"**, **„Rate fără dobândă"** etc. E exact bara pe care o vezi sus pe magazinele mari (tip bebebliss). Face parte din „chrome-ul" global al site-ului (ca meniul de sus și footer-ul), nu e o componentă pusă pe o singură pagină.
+
+**La ce folosește:** comunică din prima, pe orice pagină, avantajele care decid cumpărarea (retur ușor, livrare gratuită, plata în rate). Reduce ezitarea și abandonul — clientul vede garanțiile fără să caute prin pagini separate.
+
+**Tool: `configure_storefront_trust_bar`** — e **complet configurabilă**: alegi orice piloni vrei, în ce ordine, cu ce iconuri, ce culori și unde stă (deasupra sau sub meniu). Parametri:
+- `brandId` (obligatoriu).
+- `pillars` — lista pilonilor, în ordine; fiecare are `{icon, text}`. Iconuri disponibile: `truck` (camion/livrare), `gift` (cadou), `rotate-ccw` (retur), `shield` (garanție/protecție), `star` (stea/fidelizare), `credit-card` (card/rate), `award` (premiu/calitate), `check` (bifă), `clock` (ceas/program), `heart` (inimă). Poți pune și piloni **fără icon** (doar text). `pillars: []` (listă goală) **ascunde** bara.
+- `enabled` (true/false) — implicit `true` când pui piloni; pune `false` ca să ascunzi bara fără să-i ștergi pilonii.
+- `position` — `above-nav` (deasupra meniului, ca bebebliss — implicit) sau `below-nav` (sub meniu).
+- `backgroundColor`, `textColor` (culori hex, opționale — implicit se iau din temă/brand).
+- `borderBottom` (true/false) — o linie subțire sub bară (implicit `true`).
+
+**Exemplu 1 — ca la magazinele mari (4 piloni, bebebliss-style):**
+```
+configure_storefront_trust_bar(
+  brandId,
+  position: "above-nav",
+  pillars: [
+    {icon: "rotate-ccw",  text: "14 zile drept de retur"},
+    {icon: "truck",       text: "Transport gratuit"},
+    {icon: "star",        text: "Fidelizare clienți"},
+    {icon: "credit-card", text: "Rate fără dobândă"}
+  ]
+)
+```
+
+**Exemplu 2 — minimal, 2 piloni custom în culorile tale:**
+```
+configure_storefront_trust_bar(
+  brandId,
+  pillars: [
+    {icon: "shield", text: "Plată securizată"},
+    {icon: "clock",  text: "Livrare în 24-48h"}
+  ],
+  backgroundColor: "#0B5", textColor: "#FFF"
+)
+```
+
+**De reținut:** bara apare pe TOATE paginile (Acasă, Magazin, categorie, produs, Despre...), e poziționabilă (deasupra/sub meniu), și se ascunde fie cu `enabled: false`, fie cu `pillars: []`. Pune piloni REALI (politica ta chiar de retur/transport/rate) — nu promisiuni pe care nu le ții.
+
+> 💡 **Principiu — storefront din componente configurabile:** site-ul Symbai e construit din blocuri și „chrome" reglabile prin conexiune (bara de încredere, meniul de sus, hero-ul, footer-ul, barele de anunțuri, aspectul). Asta înseamnă că poți construi **orice variantă vrea clientul** — nu doar bara de încredere, ci și aspectul portalului (`configure_portal_appearance`), navigarea (`update_website_navigation`), footer-ul (`set_website_footer`) etc. Pornește de la ce vrea proprietarul, alege componenta potrivită și configureaz-o; nu te limita la un singur „șablon".
+
 ## Rețetă rapidă — un magazin online bun, repede
 
 1. **Creează + șablon**: `create_website(kind:"shop", makeDefault:true)` → `apply_website_template(kind:"shop", confirmReplace:true)` (preia culoarea brandului).
@@ -93,7 +138,7 @@ Le pui prin `add_website_section`/`set_website_page_content` cu `type` + `config
 4. **Hero** pe Acasă: `set_hero(imageUrl, title, subtitle, ctaText:"Vezi produsele", ctaUrl:"/magazin")`.
 5. **Filtre**: activează `showFilters` + `showFacets` pe grila de produse (din pagina de catalog/categorie). Cu brand/material/vârstă populate, sidebar-ul faceted devine bogat.
 6. **Footer + legale**: `set_website_footer(contactInfo + socialLinks + columns)` + `set_website_legal_page` pentru Despre/Contact/Termeni/Confidențialitate/Livrare/Retur/FAQ (`fillCompanyData:true`) — conform ANPC, indexat de Google.
-7. **Anunțuri + logo**: `add_website_section(type:"announcement-bar", ...)` + logo în navigare.
+7. **Anunțuri + logo + bară de încredere**: `add_website_section(type:"announcement-bar", ...)` + logo în navigare + `configure_storefront_trust_bar` (pilonii retur/transport/rate, pe toate paginile).
 8. **Promoții**: `create_website_promotion` (pop-up de abonare / banner reduceri).
 9. **Pagini de produs bogate** (cel puțin pe best-sellers): galerie ≥3 poze, descriere lungă, specificații, preț redus, garanție, FAQ, accesorii/pachet — vezi rețeta completă în `website-builder-pdp.md`.
 10. **Verifică**: deschide site-ul (link prin `gaseste_in_aplicatie`) — Acasă, o categorie-părinte (subcategorii + produse + filtre), o pagină de produs (galerie + tab-uri + specificații + preț redus + FAQ + accesorii), Despre/Contact pline. Pune o comandă test.
@@ -125,4 +170,5 @@ Le pui prin `add_website_section`/`set_website_page_content` cu `type` + `config
 - **Cum fac filtrele ca la magazinele mari?** Activează `showFacets` pe grila de produse ȘI populează brand/material/vârstă/interes pe produse.
 - **Cum fac pagina de produs să arate completă (ca la Bebebliss/eMAG)?** Galerie ≥3 poze + descriere lungă + specificații + preț redus + garanție + FAQ + accesorii/pachet + (opțional) video — rețeta cu bife și tool-uri în `website-builder-pdp.md`.
 - **De ce e goală o categorie când dau click?** Ori e părinte fără ierarhie setată, ori produsele nu sunt legate de ea (`set_products_menu_category`).
+- **Cum pun bara de sus cu „14 zile retur / transport gratuit / rate" (ca pe magazinele mari)?** E **bara de încredere** — `configure_storefront_trust_bar` cu pilonii tăi (icon + text); apare pe toate paginile, deasupra sau sub meniu. Vezi secțiunea „Bara de încredere (trust bar)".
 - **Unde văd comenzile de pe site?** În modulul de magazin — `ecommerce-magazin-online.md` (`/ecommerce/orders`).

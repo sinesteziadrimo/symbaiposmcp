@@ -1,6 +1,6 @@
 ---
 name: construieste-website
-description: Construiește, îmbunătățește și configurează SITE-UL PUBLIC / magazinul online al brandului prin conexiune (MCP) — pagini, componente, ierarhie de categorii, filtre faceted, hero, footer, pagini legale (Despre/Contact/Termeni/ANPC), bară de anunțuri, logo, promoții, temă, ȘI pagina de produs completă (galerie, descriere lungă, specificații, preț redus, garanție, FAQ, accesorii, pachete, video). Folosește la „fă-mi un site / magazin online", „construiește-mi magazinul", „adaugă filtre / categorii / subcategorii pe site", „site-ul arată gol / categoriile sunt goale", „pune un hero / banner / footer mai bun", „adaugă pagina Despre / Termeni / Livrare", „de ce nu apar produsele pe categorie", „fă site-ul să arate ca un magazin mare", „pune o bară de anunțuri / pop-up de reduceri", „schimbă aspectul / culorile site-ului", „fă pagina de produs completă", „produsul arată sărac pe site", „adaugă specificații / garanție / FAQ la produs", „pune accesorii compatibile / produse recomandate", „pune un pachet cumpărate frecvent împreună", „adaugă galerie de poze la produs", „pune preț redus / rate / video / certificări pe produs". NU pentru: comenzi online/eMAG/feeds/retururi (→ gestioneaza-ecommerce-emag), portalul clienților de la masă (→ configureaza-portal).
+description: Construiește, îmbunătățește și configurează SITE-UL PUBLIC / magazinul online al brandului prin conexiune (MCP) — pagini, componente, ierarhie de categorii, filtre faceted, hero, footer, pagini legale (Despre/Contact/Termeni/ANPC), bară de anunțuri, logo, promoții, temă, ȘI pagina de produs completă (galerie, descriere lungă, specificații, preț redus, garanție, FAQ, accesorii, pachete, video). Folosește la „fă-mi un site / magazin online", „construiește-mi magazinul", „adaugă filtre / categorii / subcategorii pe site", „site-ul arată gol / categoriile sunt goale", „pune un hero / banner / footer mai bun", „adaugă pagina Despre / Termeni / Livrare", „de ce nu apar produsele pe categorie", „fă site-ul să arate ca un magazin mare", „pune o bară de anunțuri / pop-up de reduceri", „adaugă bară de încredere / trust bar", „pune 14 zile retur / transport gratuit sus pe site", „bara de sus cu beneficii", „personalizează antetul magazinului", „schimbă aspectul / culorile site-ului", „fă pagina de produs completă", „produsul arată sărac pe site", „adaugă specificații / garanție / FAQ la produs", „pune accesorii compatibile / produse recomandate", „pune un pachet cumpărate frecvent împreună", „adaugă galerie de poze la produs", „pune preț redus / rate / video / certificări pe produs". NU pentru: comenzi online/eMAG/feeds/retururi (→ gestioneaza-ecommerce-emag), portalul clienților de la masă (→ configureaza-portal).
 ---
 
 # Construiește website / magazin online — hands-free, prin conexiune + link direct
@@ -47,6 +47,7 @@ Logo-ul e cel mai des copiat GREȘIT. Reguli:
 | „adaugă o secțiune (produse featured / branduri / avantaje)" | `add_website_section(type, config, pageSlug)` |
 | „bară de anunțuri sus (livrare, reduceri)" | `add_website_section(type:"announcement-bar", config:{messages:[...]})` |
 | „pop-up de abonare / banner de reduceri" | `create_website_promotion(placement: side-modal|banner|header-strip|footer-strip)` |
+| „bară de încredere / trust bar / 14 zile retur + transport gratuit sus pe toate paginile" | `configure_storefront_trust_bar(brandId, pillars:[{icon,text}], position:"above-nav"\|"below-nav")` — piloni retur/transport/fidelizare/rate, pe toate paginile. Iconuri: truck/gift/rotate-ccw/shield/star/credit-card/award/check/clock/heart. `pillars:[]` ascunde bara. Vezi `website-builder.md` → „Bara de încredere". |
 | „schimbă culorile / aspectul" | culoarea vine din brand (`apply_website_template` o preia); fine-tuning prin `update_menu_display_config` |
 | „adaugă variante (mărimi/culori) la produs" | `set_product_variants(productId, variants)` |
 | „TVA-ul e greșit (19%)" | corectează la **21%** (cota standard RO): `update_ecommerce_settings` + produsele (TVA pe produs) |
@@ -72,7 +73,7 @@ Logo-ul e cel mai des copiat GREȘIT. Reguli:
 4. **Hero** pe Acasă (imagine reală).
 5. **Footer + pagini legale** (Despre/Contact/Termeni/Confidențialitate/Livrare/Retur/FAQ, `fillCompanyData`).
 6. **Pagini de produs bogate** (cel puțin pe best-sellers) — vezi secțiunea de mai jos.
-7. **Anunțuri + logo + promoții**.
+7. **Anunțuri + logo + bară de încredere + promoții** — bara de încredere (pilonii „14 zile retur / transport gratuit / fidelizare / rate", pe toate paginile) prin `configure_storefront_trust_bar`; rețeta + exemple în `website-builder.md` → „Bara de încredere".
 8. **Comandă test** (vezi `ecommerce-magazin-online.md`).
 9. **⚠ VERIFICĂ cu `audit_shop_health` + repară** (vezi mai jos) — ÎNAINTE de a-i spune userului că e gata.
 
