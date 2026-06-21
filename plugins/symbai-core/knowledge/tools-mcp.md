@@ -171,7 +171,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_batch_material_readiness` — Audit read-only înainte de pornirea shop-floor: verifică dacă materialele unui lot/operații sunt realmente gata, nu doar existente undeva în stoc. (necesită: batchId)
 - `generate_batch_coa` — Generează Certificatul de Analiză (COA) pentru o șarjă: QC vs specificație, loturi produse, valabilitate, alergeni și verdict conform/neconform. (necesită: batchId)
 - `get_batch_mass_balance` — Bilanț de masă pentru o șarjă: intrări consumate din genealogie vs output bun + scrap + rework, cu warning-uri de unități. (necesită: batchId)
-- `list_quarantine_lots` — Coada de control la recepție / front-door HACCP: loturi de materie primă în carantină, pending QC, blocate sau hold. (parametri opționali: productId)
+- `list_quarantine_lots` — Coada activă de control la recepție / front-door HACCP: loturi de materie primă în carantină, pending QC, blocate sau hold, doar cu cantitate rămasă. (parametri opționali: productId)
 - `list_capa` — Listează CAPA/NCR (neconformități și acțiuni corective/preventive), implicit cele neînchise; filtrează pe status sau severitate. (parametri opționali: status, severity)
 - `get_defect_pareto` — Analiză Pareto a defectelor: tipurile de defecte cele mai frecvente, cantități respinse, procent din total. (parametri opționali: days)
 - `get_equipment_detail` — Obține detalii complete pentru un echipament: capacități per rețetă, zonă, status. (necesită: equipmentId)

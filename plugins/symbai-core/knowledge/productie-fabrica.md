@@ -216,7 +216,7 @@ Fluxul = lanțul de operații prin care trece un produs, cu cerințe, dependenț
 ## Controlul calității (QC, carantină, HACCP)
 Două sisteme paralele: **Quality Holds** (blochezi un LOT) și **QC Inspections** (rezultatul unui test pe un BATCH). Un fix pe unul NU se propagă la celălalt.
 
-- **Front-door HACCP la recepție materie primă**: `list_quarantine_lots` (`productId` opțional) arată coada de loturi în `quarantine` / `pending_qc` / `blocked` / `hold`. Pentru decizie folosește `record_incoming_inspection` (`lotId`, `decision` = `accept`/`quarantine`/`reject`, `notes` opțional) doar după ce ai confirmat lotul și decizia cu utilizatorul. `accept` setează lotul `approved`; `quarantine` și `reject` îl blochează la consum. Dacă lotul e expirat, FEFO îl blochează chiar și după acceptare — nu spune că e consumabil.
+- **Front-door HACCP la recepție materie primă**: `list_quarantine_lots` (`productId` opțional) arată coada activă de loturi în `quarantine` / `pending_qc` / `blocked` / `hold`, doar unde mai există cantitate rămasă. Pentru decizie folosește `record_incoming_inspection` (`lotId`, `decision` = `accept`/`quarantine`/`reject`, `notes` opțional) doar după ce ai confirmat lotul și decizia cu utilizatorul. `accept` setează lotul `approved`; `quarantine` și `reject` îl blochează la consum. Dacă lotul e expirat, FEFO îl blochează chiar și după acceptare — nu spune că e consumabil.
 - **Blocaj / carantină pe lot**: `create_quality_hold` (`lotId`, `eventType` ex. qc_fail/contamination/expiry_risk; opțional `reasonCode`, `notes`, `heldBy`). Lotul devine „hold" — nu mai poate avansa în producție.
 - **Eliberare**: `release_quality_hold` (`holdId`, `releasedBy`; opțional `notes`). Dacă nu mai sunt alte blocaje active pe lot, lotul redevine disponibil.
 - **Listă blocaje active**: `list_quality_holds` (`includeReleased` — implicit doar cele active).
@@ -293,7 +293,7 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 | „Din ce a fost făcut lotul X / de unde vine" | `exec_trace_lot_origin` (`lotId`). |
 | „Unde a ajuns lotul de materie primă Y" | `exec_trace_lot_destination` (`lotId`). |
 | „Pregătesc un recall pe lotul X" | `/loturi-wip` → Genealogie → caută lotul → raport de impact; sau `exec_trace_lot_destination`. |
-| „Ce marfă / loturi așteaptă control la recepție" | `list_quarantine_lots` (`productId` opțional) — arată loturile quarantine/pending_qc/blocked/hold, cu cantitate și expirare. |
+| „Ce marfă / loturi așteaptă control la recepție" | `list_quarantine_lots` (`productId` opțional) — arată loturile active quarantine/pending_qc/blocked/hold, cu cantitate rămasă și expirare. |
 | „Acceptă / respinge / pune în carantină lotul de materie primă" | Confirmă lotul și decizia, apoi `record_incoming_inspection` (`lotId`, `decision`, `notes`). `accept` îl face `approved`, `quarantine`/`reject` îl blochează la consum; loturile expirate rămân blocate de FEFO. |
 | „Blochează lotul la calitate" | `create_quality_hold` (`lotId`, `eventType`). |
 | „Eliberează carantina" | `release_quality_hold` (`holdId`, `releasedBy`). |
