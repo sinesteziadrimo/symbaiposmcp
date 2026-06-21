@@ -33,15 +33,17 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 867 tool-uri** — Citire 356 · Speciale 5 · SQL 3 · Scriere per modul 503 (pe 19 module).
+**TOTAL: 869 tool-uri** — Citire 358 · Speciale 5 · SQL 3 · Scriere per modul 503 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 356 tool-uri
+## Citire (fără permisiune de modul) — 358 tool-uri
 
-### Vânzări, comenzi, casă & financiar — 44
+### Vânzări, comenzi, casă & financiar — 46
 - `get_attribution_ltv_by_channel` — Valoarea pe viață (LTV) a clienților grupată după canalul de achiziție, pe o cohortă de N zile: nr. (parametri opționali: brandId, days)
 - `get_attribution_report` — Raport de atribuire marketing pe canale, pe ultimele N zile: conversii, venituri, cheltuieli (din reclame), CPA și ROAS per canal, conform unui model de atribuire ales (last_click implicit). (parametri opționali: brandId, days, model)
 - `compare_attribution_models` — Compară atribuirea pe modele multiple (last/first/linear/time_decay/position) pentru același interval, ca să nu decizi bugetul pe un singur model. (parametri opționali: brandId, days)
 - `get_marketing_scorecard` — Tablou executiv marketing: venit atribuit, cheltuială reclame, ROAS combinat, canale și LTV:CAC sub 3 pe ultimele N zile. (parametri opționali: brandId, days, model)
+- `get_social_post_performance` — Performanța reală a postărilor publicate pe Facebook/Instagram, citită LIVE din Meta: reach, views, like/comment/share/save. Insights lipsă sunt raportate „indisponibil" cu motiv, nu zero. (parametri opționali: brandId, postId, windowDays, platform, limit)
+- `get_social_top_posts` — Top postări publicate după engagement, reach sau views, măsurate LIVE din Meta; postările fără insights sunt excluse din clasament și numărate separat. (parametri opționali: brandId, n, metric, windowDays, platform, limit)
 - `get_cash_book_day` — Detaliile zilei de casă (deschidere/închidere, totaluri, status, înregistrările) pentru un registru la o dată. (necesită: registerId, businessDate)
 - `get_cash_register_balance` — Soldul curent al unui registru de casă (opțional la o anumită dată) — cât numerar e în casierie acum. (necesită: registerId)
 - `get_cash_register_closure_status` — Arată ce zile sunt închise/deschise/lipsă pentru un registru de casă (registru legal) — util pentru a vedea ce mai e de închis. (necesită: registerId)

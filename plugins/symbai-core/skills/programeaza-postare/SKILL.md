@@ -37,5 +37,6 @@ description: Creează, programează, modifică, aprobă și publică postări pe
 - **Hashtag-uri reutilizabile:** `list_hashtag_groups`, `create_hashtag_group`, `update_hashtag_group`, `delete_hashtag_group` — seturi de hashtag-uri pe care le inserezi în `content`.
 - **Google Business:** pentru postări pe fișa Google (Maps/Search) folosește `gbp_create_post` (vezi skill-ul SEO/Maps) — confirmă conținutul, apare public.
 - Vezi ce e programat: `list_social_posts` (filtrabil pe `status`: scheduled/draft/published și pe `approvalStatus`: pending/approved/rejected).
+- Vezi ce a mers bine după publicare: `get_social_top_posts(metric: "engagement" | "reach" | "views", windowDays?, platform?)` pentru clasament și `get_social_post_performance(postId?)` pentru detaliu. Acestea citesc LIVE din Meta pentru Facebook/Instagram; dacă Meta nu întoarce insights, spune „indisponibil" cu motivul, nu zero.
 - Detalii concept în `knowledge/marketing-social.md`.
 - Necesită scriere pe modulul „Marketing & Social Media"; dacă lipsește, îndrumă spre portal Hub → Acces AI.

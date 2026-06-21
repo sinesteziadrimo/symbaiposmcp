@@ -61,7 +61,7 @@ Cea mai bună postare e adesea momentul real de azi.
 5. `reply_to_conversation({ confirm:true })` [marketing]. La o reclamație publică: răspuns scurt empatic + mută discuția în privat. La o RECENZIE (Google/Trustpilot/Booking): predă-o skill-ului `raspunde-recenzii` (vezi `knowledge/raspunde-recenzii.md`).
 
 ### 5. Buclă lunară de optimizare
-1. `list_social_posts` [citire] — postările din ultimele 90 zile; uită-te după rata de SALVARE și TRIMITERE, nu like-uri.
+1. `get_social_top_posts({ windowDays: 90, metric: "engagement" })` [citire] — top postări publicate, cu metrici live Meta; pentru reach sau views schimbă `metric`. Pentru o postare anume folosește `get_social_post_performance({ postId })`. Dacă Meta marchează insights „indisponibil", explică motivul și nu trata postarea ca zero.
 2. Identifică ce pilon / format / oră câștigă (ex. „Reels de culise marți la 19:00 merg cel mai bine").
 3. Recomandă proprietarului concret: „dublăm Reels-urile de tip culise marți seara".
 4. Ajustează calendarul lunii următoare și `bulk_schedule_social_posts`.
@@ -79,7 +79,8 @@ Cea mai bună postare e adesea momentul real de azi.
 - `bulk_schedule_social_posts({ confirm:true })` [marketing] — programează un LOT întreg de postări dintr-un calendar (cel mai folosit la planul lunar).
 - `approve_social_post({ confirm:true })` [marketing] — aprobă o postare aflată în așteptare ca să intre la programare/publicare; folosește-l pe loturi după revizuire.
 - `publish_social_post`, `update_social_post`, `duplicate_social_post`, `cancel_social_post` [marketing] — publică acum / editează / clonează / anulează o postare programată.
-- `list_social_posts`, `list_social_accounts` [citire] — vezi postările existente și performanța lor, respectiv ce conturi sunt conectate.
+- `list_social_posts`, `list_social_accounts` [citire] — vezi postările existente și ce conturi sunt conectate.
+- `get_social_top_posts`, `get_social_post_performance` [citire] — performanța reală Facebook/Instagram citită live de la Meta; insights lipsă = „indisponibil" cu motiv, nu zero.
 - `gbp_create_post({ confirm:true })` [marketing] — postează pe Google Business Profile (canalul local subevaluat).
 - `boost_post`, `list_boostable_posts` [marketing] — promovare plătită a unei postări organice care a mers bine (intră în zona de reclame — vezi `knowledge/marketing-social.md`).
 
@@ -87,7 +88,7 @@ Cea mai bună postare e adesea momentul real de azi.
 
 - **Ce postez ca să cresc?** Nu poze frumoase la întâmplare. ~60-70% Reels scurte (15-30s), cu cârlig în primele 1-3 secunde, gândite ca cineva să le SALVEZE sau să le TRIMITĂ unei prietene. Like-urile nu mai mișcă reach-ul; trimiterile și salvările da.
 - **Câte hashtag-uri pun?** 3-5 de nișă, în `create_hashtag_group`. Peste 5 pare spam și scade reach-ul. Pune cuvintele-cheie (oraș, bucătărie, preparat) în CAPTION și în alt-text — acolo caută algoritmul în 2026.
-- **De ce să nu mă uit la like-uri?** Pentru că nu sunt semnalul de ranking. Uită-te în `list_social_posts` la salvări și trimiteri și optimizează calendarul după ele.
+- **De ce să nu mă uit la like-uri?** Pentru că nu sunt semnalul de ranking. Uită-te cu `get_social_top_posts(metric:"engagement")` / `get_social_post_performance` la salvări, trimiteri/interacțiuni și reach; dacă Meta nu oferă insights, marchează postarea indisponibilă, nu ca zero.
 - **Când postez?** În jurul deciziilor de masă: 9:00, 12:00-13:00, 18:00-21:00. Dar cel mai bun moment e adesea cel REAL — terasă plină pe soare → declanșează un Reel pe loc (fluxul „Reel din teren").
 - **De unde iau idei care nu sună a robot?** Din datele LIVE: `get_menu_engineering`/`top_produse` (ce se vinde de fapt), `list_offers` (promoțiile reale), `marketing_location_weather` (sezonul). Și MEREU `read_brand_memories` întâi, ca textul să fie pe vocea localului.
 - **Capcană — generezi fără să citești vocea brandului.** Fără `read_brand_memories` postările ies generice și „a robot". Citește-o prima.
