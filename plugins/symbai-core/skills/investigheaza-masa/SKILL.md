@@ -43,6 +43,13 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 ### 6. „Cum s-a plătit nota / cât bacșiș / a fost refund" → `get_order_payments`
 `get_order_payments(orderId: 1234)` — fiecare plată cu metoda, suma, bacșișul, cine a plătit (la split), dacă s-a tipărit fiscal, plus total pe metode.
 
+### 6b. „Bucătăria nu a primit bonul / nu apare pe KDS" → timeline + KDS monitor
+Începe cu `get_order_timeline(orderId)` ca să vezi dacă produsele au fost marcate trimise la bucătărie și dacă există bonuri/tichete. Apoi folosește tool-urile KDS unde există (`list_kds_screens`, `get_kds_order_history`, `get_kds_sessions`, `get_kds_timeline`) sau dă link la Monitorizare KDS din aplicație.
+
+- Dacă produsul apare **nerutat**, problema e tag/rutare: verifică `list_tag_summary`, `list_tag_routing_rules` și pagina Setări → Rutare Taguri.
+- Dacă `order_items.sentToKitchenAt` există, dar lipsesc bonurile KDS pe o locație cu Edge principal, explică: serverul local are o reconciliere automată care recuperează bonurile lipsă după aproximativ 1-2 minute și le trimite idempotent pe KDS/imprimantă.
+- Dacă după câteva minute tot lipsesc, verifică rolul serverului local (principal vs secundar), ecranul KDS oprit/stale și jurnalul de activitate. Nu spune „s-a pierdut definitiv" fără dovadă.
+
 ### 7. Cronologie completă / orice eveniment → `jurnal_activitate`
 `jurnal_activitate` rămâne instrumentul universal când vrei firul pe minute sau cauți ceva ce nu intră în tool-urile de mai sus. Filtre: `masa`, `tipEntitate`+`idEntitate` (ex. `order`/`operation_request`), `cauta` (text liber: nume ospătar, „discount", „anulat"), `categorie`, `perioada`/`startDate`/`endDate`. Citește `detalii` (text pentru oameni) și `modificari` (vechi → nou). Fără perioadă, întoarce cele mai recente potriviri.
 
