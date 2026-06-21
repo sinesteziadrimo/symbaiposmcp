@@ -148,6 +148,33 @@ Aceasta e calea industrială, pe tabletă (`/workstation-tablet`) sau din `/prod
 - **Stoc producție / semipreparate**: `get_production_stock_overview` (`productTypes`) — WIP + produse finite cu cantități/loturi/expirare/rezervări/cerere; `get_semipreparate_stock` () — stoc semifabricate (WIP).
 - Pagina: `/planificare-mps` (taburi Calendar Operații, Planificare MRP, Coproduse & Subproduse, Monitorizare, Trasabilitate, Bottleneck, Productivitate, Loturi Planificate, Flux Fabrică, Configurare).
 
+## Cost de fabricație, MRP multi-nivel și Dosar Electronic de Lot (EBR)
+Acestea sunt capabilitățile „de paritate SAP" — cele care diferențiază Symbai de un POS obișnuit. Sunt esențiale pentru o fabrică reală: BOM pe mai multe niveluri, costing înainte de producție, eliberare de lot cu semnătură QA și trasabilitate inviolabilă.
+
+### Cost de fabricație înainte de producție (ca SAP CK11N)
+- `get_production_cost_estimate` (`recipeId` SAU `productId` SAU `productName`; `quantity` = câte buc/kg de produs finit, default 1) — calculează **costul standard de MATERIALE**: explodează BOM-ul multi-nivel până la materii prime, înmulțește cu prețul de achiziție (`receptionPrice`) și întoarce cost total, cost/unitate, defalcare pe materiale (sortată după valoare), **materialele fără preț** (`materialsWithoutCost` → cost incomplet, flag onest) și **abaterea față de costul stocat pe rețetă** (`variancePct`).
+- ⚠ NU include manoperă/utilități/overhead — doar materiale. Dacă produsele n-au `receptionPrice`, costul iese 0 și e marcat incomplet — completează prețurile de achiziție.
+- Folosește la „cât mă costă să produc 1000 buc din X", „food cost teoretic", „ce marjă am la rețeta Y".
+
+### MRP multi-nivel — necesar de materii prime și auto-explodare SF (ca SAP MD01)
+Două unelte, două scopuri:
+- `get_material_requirements` (`orders` = listă FG cu `quantity` + opțional `recipeId`/`productId`/`dueDate`; sau lipsă → cererea activă din demand; `horizonDays` default 14; `includeSafetyStock` default true) — **necesarul net de materii prime** pentru tot order book-ul: explodează comenzile pe TOATE nivelurile BOM (FG → semipreparate net de stoc → materii prime), adună cererea, o netează față de stoc + stoc de siguranță și întoarce **ce lipsește de aprovizionat** (shortages) + cantitate sugerată + lead time. Read-only (nu mișcă stoc). Răspunde la „am materialele să produc comenzile astea?", „ce trebuie să comand", „necesar aprovizionare producție". E superior lui `get_mps_net_requirements` (single-level) și `run_bom_explosion` (o singură rețetă, un singur nivel).
+- `schedule_production_orders` cu **`explodeMultiLevel: true`** — la programare, explodează automat comenzile de produs finit în **semipreparatele produse intern, NET de stoc**, și le programează ÎNAINTEA produsului finit (termen mai devreme + prioritate urgentă). Fără acest flag (default false), schedulerul programează DOAR fluxul produsului finit — dacă un SF nu e pe stoc, rămâne neprodus. Folosește `explodeMultiLevel: true` la o fabrică cu BOM pe mai multe niveluri unde SF-urile se produc în casă în aceeași planificare.
+- ⚠ Ordonarea SF-înaintea-FG e „soft" (termen + prioritate), nu dependență dură; la cantități care saturează capacitatea, verifică ordinea rezultată.
+
+### Lista de dispecerizare shop-floor (ca SAP CO24)
+- `get_production_dispatch` (`date` o singură zi, SAU `dateFrom`/`dateTo`; default azi → +6 zile) — pentru fiecare **zi × tură × zonă × echipament**: ce operație, ce lot/rețetă/cantitate și **CINE lucrează**. Generată din loturile programate + operațiile fixate (pinned) de scheduler. E vederea pe care șeful de tură o deschide dimineața. Read-only.
+- Diferă de `get_shift_detail` (`shiftId`, `date` → detaliul UNEI ture: roster + KPI loturi) și de `get_factory_dashboard` (KPI agregat live). Pentru „ce are de făcut fiecare echipă mâine" → `get_production_dispatch`.
+
+### Dosar Electronic de Lot (EBR) — eliberare de lot cu semnătură + lanț tamper-evident
+Nivelul pharma/IFS/BRC de trasabilitate: compilezi dosarul complet al unui lot, îl verifici, îl eliberezi cu semnătură QA, iar integritatea e protejată de un lanț de hash-uri inviolabil. Toate cer doar `batchId`.
+- **Compilare**: `build_electronic_batch_record` (`batchId`; `mode` = `full` dosar complet / `exceptions_only` doar deviațiile, rapid pt review; `includeRecall` trasabilitate per lot produs) — antet+rețetă, materiale consumate + loturi, operații cu actuali, QC în proces, predări, loturi produse + hold-uri, deviații, randament/bilanț de masă, dispoziții, integritate lanț.
+- **Triaj deviații** (review-by-exception): `get_batch_deviations` (`batchId`) — QC blocant picat, dispoziții (rework/scrap/carantină), hold-uri, forțări de cantitate, randament în afara toleranței, predări respinse. Fiecare deviație are un **id stabil** folosit la eliberare.
+- **Eliberare cu semnătură**: `release_electronic_batch_record` (`batchId`, `reviewerEmployeeId` = QA care semnează, `decision` = `release`/`reject`/`quarantine`, `exceptionsAcknowledged` = lista id-urilor de deviații confirmate, `comments`) — recompilează EBR-ul, ancorează hash-ul + semnătura (cine+când+decizie) în lanț și setează qcStatus-ul lotului. ⚠ La `release`, TOATE deviațiile blocante trebuie confirmate în `exceptionsAcknowledged`, altfel eliberarea e refuzată.
+- **Verificare integritate**: `verify_batch_audit_chain` (`batchId`, `includeRecords`) — confirmă că nicio înregistrare de siguranță (override FEFO, QC, HACCP) n-a fost modificată/ștearsă/reordonată; `verify_electronic_batch_record` (`batchId`) — recompilează dosarul ELIBERAT și compară hash-ul cu ancora de la eliberare → detectează editări târzii după eliberare.
+- **Anexe**: `get_output_lots_for_batch` (`batchId`) — loturile de produs finit generate (nr lot, cantitate rămasă, QC, expirare); `list_batch_dispositions` (`batchId`) — deciziile QC (rework/scrap/carantină/acceptare) cu cauză rădăcină + cine a autorizat.
+- Folosește la „eliberează lotul X / semnez ca QA", „arată-mi deviațiile lotului", „dosarul complet al lotului pentru audit IFS/BRC", „verifică dacă dosarul a fost modificat", „ce loturi au ieșit din șarja X".
+
 ## Fluxuri tehnologice + versiuni
 Fluxul = lanțul de operații prin care trece un produs, cu cerințe, dependențe, predări, QC per operație. Are **versiuni** (draft → active → archived).
 
@@ -163,6 +190,7 @@ Fluxul = lanțul de operații prin care trece un produs, cu cerințe, dependenț
 - **Ieșiri per operație**: `add_operation_output` (`operationId`, `outputQty` + `productId`, `outputUnit`, tip main_product/co_product/by_product/waste, condiție depozitare); `remove_operation_output` (`outputId`).
 - **QC per operație**: `add_operation_qc` (`operationId`, `controlType` numeric/boolean/text/vizual, `controlName`, valoare țintă, toleranțe, punct de control, procedură eșec); `add_qc_failure_procedure` (`qualityRequirementId`, `name`, `dispositionType` rework/retur/scrap/carantină); `remove_operation_qc` (`qcId`).
 - **Configurare comportament operație** (cele 5 taburi): `configure_operation_start` (verificare materiale, scan container, roluri permise, checklist pre-start), `configure_operation_execution` (mod consum, QC obligatoriu, declarare ieșiri, temperatură, foto, pași), `configure_operation_completion` (metodă completare, scan/etichetă/cântar, auto-consum, cantitate min/max, randament, checklist), `configure_operation_handover` (acțiune post-completare, destinație, scan, semnătură supervizor, notificări).
+- **Verifică ÎNAINTE de activare** (recomandat după `build_complete_flow`): `validate_flow_consistency` (`flowVersionId`) — bilanț materiale, graf dependențe aciclic, câmpuri obligatorii, lanțuri ieșire→intrare complete, operații orfane; nu activa un flux care pică validarea. `calculate_flow_bom` (`flowVersionId`) — BOM-ul agregat din toate operațiile fluxului. `get_flow_ai_context` (`productId`/`productName`) — instrucțiunile AI (flux + per operație) + necesarul de personal; **apelează-l mereu înainte de a planifica** producția unui produs cu flux.
 - **Cu AI**: `/ai-flow-builder` — descrii procesul în chat și AI-ul construiește fluxul. (Cere modul fabrică.)
 - Pagina manuală: `/fluxuri-tehnologice`.
 
@@ -188,6 +216,7 @@ Două sisteme paralele: **Quality Holds** (blochezi un LOT) și **QC Inspections
   - Citește: `list_production_equipment` (`zoneId`, `includeInactive`); `get_equipment_detail` (`equipmentId`) — capacități per rețetă, zonă, status, calibrare.
   - Creează/actualizează: `create_production_equipment` (`name`, `zoneId` + opțional `type`, `category` machine/scale/vehicle/cleaning/temperature/timer/gauge/tool, `status` available/in_use/maintenance, `capacityUnit`, model/serie/producător, `calibrationDate`, `calibrationIntervalDays` pentru HACCP, `ipAddress`/`connectionProtocol` pentru IoT, `allowMultipleOps`); `update_production_equipment` (`equipmentId` + câmpuri).
 - **Capacitate echipament per rețetă**: `set_equipment_recipe_capacity` (`equipmentId`, `recipeId`; opțional `maxQtyPerBatch`, `cycleTimeMinutes`, `setupTimeMinutes`); citește cu `list_equipment_capacities` (`equipmentId`, `recipeId`).
+- **Timpi de changeover (schimbare între produse)**: `create_changeover_rule` (`equipmentId`, `fromProductFamily`, `toProductFamily`, `changeoverMinutes`; opțional `fromRecipeId`/`toRecipeId`, `cleanupType` standard/allergen_safe/full, `allergenRelated`, `requiresFullClean`, `notes`) — cât durează trecerea de la o familie/rețetă la alta pe un echipament; planificatorul îi folosește ca timp de setup între loturi diferite. `update_changeover_rule` (`ruleId` + câmpuri, `active:false` = dezactivează) / `list_changeover_rules` (filtrabil pe echipament/familie/`allergenRelated`). ⚠ Setează changeover-uri cu `allergenRelated:true` + `requiresFullClean:true` între produse cu/fără alergeni — siguranță alimentară.
 - **Rețetă ↔ zonă** (o rețetă poate fi în mai multe zone): `assign_recipe_to_zone` (`recipeId`, `zoneId`) / `unassign_recipe_from_zone`.
 - **Ingredient → gestiune per zonă** (de unde se consumă): `map_zone_ingredient_warehouse` (`zoneId`, `productId`, `warehouseId`); citește cu `list_zone_warehouse_mappings` (`zoneId`).
 - **Ture de producție**:
@@ -253,10 +282,19 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 | „Pune în planul de producție rețeta X, 500 kg pe vineri" | Întâi `get_manufacturing_readiness`, apoi `get_production_schedule_feasibility`; dacă nu e `blocked`, `create_mps_entry` (`scheduledDate`, `plannedQty`) sau `schedule_production_orders` cu `commit:false` pentru preview complet pe echipamente/ture. |
 | „Programează automat comenzile pe echipamente/oameni" | `schedule_production_orders` cu `commit:false` întâi; arată `wouldCreate`, blocajele și capacitatea. Re-rulează cu `commit:true` doar după confirmare explicită. |
 | „Arată-mi programul MPS" | `list_mps_schedule` (`from`, `to`). |
-| „De câte materii prime am nevoie pentru 1000 buc din rețeta X" | `run_bom_explosion` (`recipeId`, `quantity`) — doar previzualizare. |
+| „De câte materii prime am nevoie pentru 1000 buc din rețeta X" | `run_bom_explosion` (`recipeId`, `quantity`) — doar previzualizare, o rețetă, un nivel. |
+| „Ce materii prime îmi trebuie pentru TOATE comenzile / am stoc să le produc" | `get_material_requirements` (`orders` sau cererea din demand) — MRP multi-nivel net de stoc, ce lipsește de comandat. |
+| „Programează comenzile ȘI semipreparatele care nu-s pe stoc" | `schedule_production_orders` cu `explodeMultiLevel: true` (+ `commit:false` întâi pentru preview). |
+| „Cât mă costă să produc 1000 buc din X / food cost teoretic" | `get_production_cost_estimate` (`recipeId`/`productName`, `quantity`). |
+| „Ce are de făcut fiecare echipă/zonă azi/mâine (dispecerizare)" | `get_production_dispatch` (`date` sau `dateFrom`/`dateTo`). |
+| „Eliberez lotul X / semnez ca QA" | `get_batch_deviations` (`batchId`) → confirmi deviațiile blocante → `release_electronic_batch_record` (`batchId`, `reviewerEmployeeId`, `decision`, `exceptionsAcknowledged`). |
+| „Dosarul complet al lotului pentru audit IFS/BRC" | `build_electronic_batch_record` (`batchId`, `mode`=full). |
+| „A fost modificat dosarul/lanțul lotului după eliberare?" | `verify_electronic_batch_record` / `verify_batch_audit_chain` (`batchId`). |
+| „Adaugă zeci de rețete dintr-o dată (setup fabrică)" | `bulk_create_recipes` (listă de rețete) — mult mai rapid decât una câte una. |
 | „Cât stoc de semipreparate am" | `get_semipreparate_stock` / `get_production_stock_overview`. |
 | „Adaugă o zonă de producție / un cuptor" | `create_production_zone` / `create_production_equipment` (`name`, `zoneId`). |
 | „Setează capacitatea cuptorului pentru rețeta X" | `set_equipment_recipe_capacity` (`equipmentId`, `recipeId`, `maxQtyPerBatch`, `cycleTimeMinutes`). |
+| „Cât durează schimbarea pe cuptor între X și Y / changeover cu spălare la alergeni" | `create_changeover_rule` (`equipmentId`, `fromProductFamily`, `toProductFamily`, `changeoverMinutes`, `allergenRelated`). |
 | „Leagă ingredientul de gestiunea din care se consumă" | `map_zone_ingredient_warehouse` (`zoneId`, `productId`, `warehouseId`). |
 | „Creează tura de dimineață 6-14" | `create_production_shift` (`name`, `shortName`, `startTime`, `endTime`). |
 | „Asignează echipa pe ture toată săptămâna" | `bulk_create_shift_assignments` (`shiftId`, `employeeIds`, `dates`). |
