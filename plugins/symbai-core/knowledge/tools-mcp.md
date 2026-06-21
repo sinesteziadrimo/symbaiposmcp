@@ -6,6 +6,7 @@ Modelul de permisiuni al tokenului:
 - **Citire = mereu disponibilă** — listări, căutări, rapoarte, analiză.
 - **Scriere = per modul** — fiecare tool de scriere cere modulul lui bifat pe token (portal Hub → Acces AI); altfel: „permisiune insuficientă".
 - **SQL doar-citire = comutator separat** pe token (SELECT cu protecții).
+- **Secretele nu se expun prin MCP** — payload-urile `data` redactează credentiale/tokenuri/hash-uri: SMTP, portal furnizor, marketplace, OAuth/API delivery, router/UniFi, PIN/parole/CNP/salarii angajați, tokenuri contract/plată/tracking. Dacă userul cere un secret, verifică statusul și du-l la pagina de regenerare/reconectare; nu încerca SQL.
 - **Plafoane (limite) = opționale, per token** — vezi mai jos.
 
 Legendă marcaje: 🔒 = cere `confirm: true` (acțiune periculoasă/ireversibilă) · 🌐 = atinge un serviciu EXTERN (cost / trimitere reală: Meta, ANAF, eMAG, curieri, email, WhatsApp, push).
@@ -227,7 +228,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 ### Rezervări, clienți, loialitate & CRM — 33
 - `check_game_availability` — Verifică disponibilitatea unui joc la o dată/oră/nr jucători. (necesită: gameId, date, time, partySize)
 - `check_marketing_allowed` — Verifică dacă unui client retail i se poate trimite marketing pe un canal: opt-out dur + plafon anti-spam (max N în 30 zile). (necesită: customerId)
-- `export_customer_gdpr_data` — Exportă toate datele personale ale unui CLIENT retail (comenzi, fidelitate, comunicări, consimțăminte) pentru o cerere GDPR (Articol 20). (necesită: customerId)
+- `export_customer_gdpr_data` — Exportă toate datele personale ale unui CLIENT retail (comenzi, fidelitate, comunicări, consimțăminte) pentru o cerere GDPR (Articol 20). Tokenurile publice de tracking ale comenzilor sunt redactate. (necesită: customerId)
 - `export_guest_gdpr_data` — Generează exportul DSAR (toate datele personale) ale unui oaspete hotel pentru o cerere GDPR de acces (Articol 15/20). (necesită: guestProfileId)
 - `find_duplicate_guests` — Găsește profiluri de oaspeți care par duplicate (același email sau telefon), pentru a fi unificate ulterior cu merge_guests. (parametri opționali: brandId, locationId)
 - `gbp_reviews_summary` — Rezumatul recenziilor Google: rating mediu, distribuție pe stele, nr. (parametri opționali: brandId)
@@ -326,7 +327,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_accounting_accounts` — Listează planul de conturi (chart of accounts) disponibil. (necesită: brandId)
 - `list_brands` — Listează toate brandurile ca rezumat slim și sigur: id, nume/cod/slug, culoare/logo, activ, stil/tip business, domenii, mission, email sender și `smtpConfigured`. Nu întoarce JSON-urile grele sau secretele SMTP; pentru voce/strategie folosește `read_brand_memories`, iar pentru configurare detaliată folosește tool-ul dedicat modulului (`get_config_status`, `comms_get_status`, `get_pnl_config` etc.).
 - `list_floor_config_schedules` — Listează programările de plan de sală (ce configurație e activă în fiecare zi a săptămânii) + excepțiile pe dată (override-uri pentru zile speciale: sărbători, evenimente). (parametri opționali: brandId, locationId)
-- `list_locations` — Listează toate locațiile din sistem cu detalii complete: adresă, oraș, brand asociat.
+- `list_locations` — Listează toate locațiile din sistem cu detalii operaționale: adresă, oraș, brand asociat. Credentialele router/UniFi din configurarea tehnică sunt redactate.
 - `list_scale_models` — Listeaza modelele de cantar suportate de Symbai plus modelele cerute spre integrare de acest tenant. Foloseste inainte de configurarea unui cantar sau cand userul intreaba daca modelul lui e suportat.
 - `list_scale_devices` — Listeaza cantarele fizice inregistrate pe instanta, legate de PC-ul cu Print Agent, cu driver, conexiune si ultima stare/citire raportata. (parametri optionali: brandId, locationId)
 - `lookup_company_cui` — Caută datele firmei la ANAF pe baza CUI-ului și le SALVEAZĂ AUTOMAT în organizationSettings. (necesită: cui)
@@ -364,7 +365,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_content_brief` — Întoarce content brief-ul salvat al unui articol (outline H2/H3 + competitori SERP + cuvinte LSI + FAQ + word count țintă). (necesită: postId)
 - `get_day_at_a_glance` — Vederea de ansamblu a UNEI ZILE pentru gazdă/coordonator: toate rezervările din ziua respectivă, plus sloturile de joc, milestone-urile (masă/tort) și jocurile disponibile — totul într-un apel. (necesită: date)
 - `get_deal` — Citește un deal/lead complet după id (toate câmpurile: client, valoare, etapă, status, eveniment, avans, contract, notițe, scor AI, tag-uri, date). (necesită: dealId)
-- `get_event_fiche` — Citește fișa unui EVENIMENT/REZERVARE (dintr-un deal CRM convertit) — secțiunea cerută. (necesită: reservationId, section)
+- `get_event_fiche` — Citește fișa unui EVENIMENT/REZERVARE (dintr-un deal CRM convertit) — secțiunea cerută. Pentru BEO/summary ascunde date sensibile de angajat, contract și linkuri/tokenuri de plată. (necesită: reservationId, section)
 - `get_factory_dashboard` — Obține dashboard-ul fabricii: pipeline loturi, status echipamente, livrări azi/mâine, probleme QC, lipsuri materie primă, KPI-uri globale.
 - `get_keyword_rankings` — Istoricul de poziții al unui cuvânt-cheie urmărit (evoluția în Google pe ultimele N zile). (necesită: id)
 - `get_manufacturing_readiness` — Audit read-only de pregătire fabricație pentru o rețetă/produs: BoM, stoc disponibil, flux tehnologic, echipamente/capacități, resurse/scule/calibre, calibrare echipamente, QC și recomandări înainte d (parametri opționali: recipeId, productId, productName, quantity)
@@ -422,7 +423,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_seo_competitors` — Listează concurenții SEO urmăriți ai brandului cu metricile lor (share of voice = cât din vizibilitatea pe cuvintele tale o iau ei, suprapuneri de cuvinte, poziție medie). (parametri opționali: brandId)
 - `list_seo_keywords` — Listează cuvintele-cheie urmărite ale brandului, cu poziția curentă și anterioară (din rank tracking), volum, dificultate, intenție, ținta de poziție și articolul legat. (parametri opționali: brandId, status, groupId, search)
 - `list_slide_design_presets` — Listeaza preset-urile de DESIGN de slide pe care le aplici cu apply_slide_design: hero-image, bold-stat, kpi-trio, split-compare, bullets-with-image, quote, stat-grid, closing-cta.
-- `list_suppliers` — Listează toți furnizorii din sistem cu detalii: nume, CUI, contact, email, telefon, categorie, tip furnizor. (parametri opționali: query)
+- `list_suppliers` — Listează toți furnizorii din sistem cu detalii: nume, CUI, contact, email, telefon, categorie, tip furnizor. Tokenurile/parolele portalului și cheia marketplace sunt redactate; IBAN-ul rămâne dată operațională de plată. (parametri opționali: query)
 - `list_task_lists` — Listează listele de sarcini (checklist-uri) cu ținta lor funcțională (rol + tură + raion), recurența, ora-limită și culoarea. (parametri opționali: brandId, active, isTemplate)
 - `list_tasks` — Listează sarcinile, cu filtre. (parametri opționali: listId, assignedTo, status, locationId)
 - `list_temperature_logs` — Listează citirile de temperatură din jurnalul HACCP, cu rezumat de CONFORMITATE calculat pe server (câte normale vs în afara pragului). (parametri opționali: locationId, dateFrom, dateTo, aggregate)
@@ -742,7 +743,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_b2b_order` — Creează o comandă B2B (en-gros) cu liniile ei. (necesită: orderNumber, clientId, depotId, deliveryDate)
 - `create_purchase_order` — Creează o comandă de achiziție în stare DRAFT (NU o trimite furnizorului — trimiterea e externă și exclusă din această conexiune; trimite-o manual din aplicație). (necesită: orderNumber, supplierId, orderDate)
 - `create_reception_note` — Creează o notă de recepție (clasifică o diferență la recepție: dispută furnizor / corecție OCR / variație de livrare). (necesită: noteCategory, description)
-- `create_supplier` — Creează un furnizor nou cu date complete (contact, CUI, adresă, termene plată, zile livrare, IBAN) (necesită: name, brandId)
+- `create_supplier` — Creează un furnizor nou cu date complete (contact, CUI, adresă, termene plată, zile livrare, IBAN). Răspunsul nu expune tokenuri/parole de portal sau chei marketplace. (necesită: name, brandId)
 - `create_supplier_product` — Adaugă un produs în catalogul furnizorului (cu preț, unitate, cantitate minimă de comandă) (necesită: supplierId, name)
 - `create_supplier_product_mapping` — Mapează un produs din catalogul furnizorului la un produs intern din Symbai (pentru aprovizionare automată) (necesită: supplierProductId, productId)
 - `enable_supplier_portal` — Activează portalul pentru furnizor și generează link de acces + parolă temporară. (necesită: supplierId)
@@ -750,7 +751,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_b2b_client` — Actualizează un client B2B existent. (necesită: clientId)
 - `update_b2b_order` — Actualizează o comandă B2B (status, dată livrare, observații). (necesită: orderId)
 - `update_reception_note` — Actualizează o notă de recepție existentă (status, rezoluție, descriere). (necesită: noteId)
-- `update_supplier` — Actualizează datele unui furnizor existent (adresă, termeni plată, IBAN, zile livrare, etc.) (necesită: supplierId)
+- `update_supplier` — Actualizează datele unui furnizor existent (adresă, termeni plată, IBAN, zile livrare, etc.). Răspunsul nu expune tokenuri/parole de portal sau chei marketplace. (necesită: supplierId)
 
 ### setari — Setări & Configurare — 109 tool-uri
 - `add_cooling_reading` — Adaugă o citire de temperatură la o sesiune de răcire rapidă în curs. (necesită: sessionId, tempCelsius)
@@ -786,7 +787,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `configure_storefront_trust_bar` — Configureaza bara de incredere a MAGAZINULUI ONLINE (chrome global afisat pe TOATE paginile, sub sau peste meniul de sus) — pilonii de tip 14 zile retur / transport gratuit / fidelizare / rate fara do (necesită: brandId)
 - `create_brand` — Creează un brand nou în sistem. (necesită: name)
 - `create_cleaning_task` — Creează o sarcină de curățenie HACCP (checklist de igienă) (necesită: name, locationId)
-- `create_delivery_channel` — Configurează un canal de livrare (necesită: platform, brandId)
+- `create_delivery_channel` — Configurează un canal de livrare; credentialele API/OAuth/webhook nu sunt întoarse în payload. (necesită: platform, brandId)
 - `create_dynamic_qr_code` — Creează un QR DINAMIC nou: un cod scurt fix care redirecționează (302) la o destinație editabilă. (necesită: title, redirectUrl)
 - `create_floor_config` — Creează o configurație de sală per locație (ex: configurație de iarnă, vară cu terasă, weekend cu mese extra) (necesită: name, brandId, locationId)
 - `create_floor_config_schedule` — Programează o configurație de sală pe o zi a săptămânii per locație (ex: Luni-Vineri = config standard, Weekend = config cu terasă) (necesită: brandId, dayOfWeek, floorConfigId, locationId)

@@ -38,6 +38,14 @@ Cand exista tool dedicat, foloseste tool-ul dedicat, nu SQL si nu click manual:
 
 SQL read-only este fallback pentru intrebari punctuale fara tool dedicat. Nu folosi SQL ca prima optiune cand exista un tool semantic.
 
+## Date Sensibile Si Redactare MCP
+
+MCP lucreaza pe date live, dar nu este un seif de parole. Serverul redacteaza intentionat campurile de tip credential sau secret din payload-ul `data`: parole/hash-uri, tokenuri OAuth/API, chei marketplace, parola SMTP criptata, configuratii router/UniFi, PIN/parola/CNP/salarii angajati, tokenuri de semnare contract si tokenuri publice de plata/tracking.
+
+Daca userul cere un secret in clar, nu incerca SQL sau workaround. Raspunsul corect: "nu pot vedea parola/tokenul in clar; pot verifica daca integrarea este configurata si te duc la pagina unde o regenerezi/reconectezi". Pentru diagnostic foloseste tool-ul semantic (`verifica_integrare`, `comms_get_status`, `list_courier_accounts`, `get_config_status`, `list_locations`, `list_suppliers`) si apoi link vizual prin `gaseste_in_aplicatie`/Chrome daca trebuie reconfigurat.
+
+Exemple utile pentru agenti: `list_brands` arata `smtpConfigured`, nu parola SMTP; `list_locations` poate arata locatia si brandurile, nu credentialele routerului; `list_suppliers` pastreaza date operationale ca CUI/contact/IBAN, dar nu tokenuri/parole de portal; `get_event_fiche` ascunde date sensibile de angajat/contract/plata; `export_customer_gdpr_data` nu expune tokenul public de tracking al comenzilor.
+
 ## Read, Dry-Run, Confirm, Write, Verify
 
 Pentru orice actiune cu efect:

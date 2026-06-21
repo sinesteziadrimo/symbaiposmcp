@@ -107,7 +107,7 @@ Factura intră pe una din cele 4 căi (eFactura/ANAF, poze cu OCR, push din cont
 - `get_stock_levels` — stocul curent per produs din toate gestiunile (are filtru „doar stoc scăzut").
 - `get_semipreparate_stock` — stocul de semipreparate pe loturi, cu valabilitate.
 - `search_products_db` / `get_product_details` — căutare produse și detalii (gestiune, furnizor, rețetă).
-- `list_suppliers` — furnizorii cu CUI, contact, categorie.
+- `list_suppliers` — furnizorii cu CUI, contact, categorie; tokenurile/parolele portalului și cheia marketplace sunt ascunse, iar IBAN-ul rămâne disponibil pentru operațiuni de plată.
 - `analyze_procurement` — analiză aprovizionare: furnizori, prețuri, termene de livrare.
 - `generate_report` — cu tipul `stock_value` (valoarea stocului la cost și la preț de vânzare) sau `food_cost`.
 - `exec_trace_lot_origin` / `exec_trace_lot_destination` — trasabilitatea unui lot (de unde vine / unde a fost consumat).
@@ -116,6 +116,7 @@ Factura intră pe una din cele 4 căi (eFactura/ANAF, poze cu OCR, push din cont
 **Scriere (cer modulul de permisiune pe token):**
 - Modul `produse_meniu`: `create_product`, `update_product`, `bulk_update_products` (inclusiv preț de achiziție, furnizor, TVA), `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`, `set_initial_stock` (stocul inițial al unui produs).
 - Modul `furnizori`: `create_supplier`, `update_supplier`, `create_supplier_product` (produs în catalogul furnizorului), `create_supplier_product_mapping` (mapare produs catalog ↔ produs intern).
+- Răspunsurile de la `create_supplier` / `update_supplier` nu întorc secretele de portal sau marketplace. Dacă userul vrea accesul furnizorului, folosește fluxul de portal/link/regenerare, nu căuta parola în date.
 
 **SQL (doar-citire, cu acordul separat pe token):** `list_database_tables` → `describe_database_table` → `execute_sql_query`.
 

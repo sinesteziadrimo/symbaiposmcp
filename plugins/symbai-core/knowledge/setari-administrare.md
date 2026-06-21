@@ -14,6 +14,7 @@ Modulul acoperă tot ce ține de configurarea și administrarea afacerii în Sym
 - **Domenii de activitate** — profilul afacerii (restaurant, cafenea/bar, hotel, sală evenimente, fabrică, magazin etc.) decide ce module și pagini apar în meniu. Hub-ul poate bloca schimbarea domeniului.
 - **Pagini ascunse per client** — administratorul platformei (Hub) poate ascunde complet anumite pagini sau bloca anumite setări (ex. configurația Viva, domeniul de activitate) pentru un client.
 - **Token Acces AI (MCP)** — token de forma `symbai_mcp_*` generat din portalul Hub, secțiunea „Acces AI (Claude Code)"; permite unui asistent AI extern să citească datele POS și, opțional, să scrie pe module alese. Tokenul se afișează o singură dată la creare.
+- **Secrete prin MCP** — conexiunea AI citește date operaționale, nu parole în clar. Tool-urile ascund credentiale ca SMTP, router/UniFi, OAuth/API, tokenuri de portal sau hash-uri; pentru probleme de conectare verifici statusul și trimiți utilizatorul la pagina de reconfigurare/regenerare.
 - **Jurnal de activitate (audit)** — acțiunile importante (anulări, aprobări, discounturi, modificări de prețuri/setări, plăți) se înregistrează automat cu cine/ce/când și diferențele vechi→nou.
 - **Seat CRM** — accesul la paginile Sales CRM e nominal, per utilizator: angajatul trebuie nominalizat manual în Setări Sales CRM, tab „Useri CRM". Regula se aplică și adminului; un seat se taxează separat prin Hub.
 
@@ -61,7 +62,7 @@ Pașii din meniu se **renumerotează automat** după profilul afacerii (la un re
 ## Tool-uri MCP utile
 
 **Citire (fără permisiune de modul):**
-- `list_brands`, `list_locations` — inventarul brandurilor și locațiilor; de rulat primele în orice sesiune.
+- `list_brands`, `list_locations` — inventarul brandurilor și locațiilor; de rulat primele în orice sesiune. Sunt sigure pentru context: arată date operaționale, nu parole SMTP sau credentiale router/UniFi.
 - `list_vat_rates` — cotele TVA configurate.
 - `list_printers` — imprimantele per locație.
 - `list_entities` — listează rapid orice tip de entitate, inclusiv roluri și angajați.
