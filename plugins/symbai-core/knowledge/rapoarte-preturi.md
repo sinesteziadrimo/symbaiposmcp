@@ -61,6 +61,7 @@ Modulul de rapoarte acoperă tot ce ține de cifre: dashboard-ul de start, rapoa
 
 **P&L prin conexiune (citire, fără permisiune de modul):**
 - `get_pnl` — raportul P&L COMPLET pe perioadă (venituri nete, COGS, profit brut, personal, OpEx, profit net + marje, food/labor/prime cost cu semafor). Cifrele = identice cu pagina `/reports/pnl`. Primul reflex la „arată-mi P&L-ul / care e profitul".
+- Analiza pe produs din `get_pnl` poate fi calibrată din `organization_settings.pnlSettings.productPnl` (praguri + ponderi de alocare). Când explici de ce un produs este roșu / loss-maker sau de ce s-a schimbat marja pe produs, citește `data.productPnl.config`, `methodology`, `warnings` și `reconciliation` înainte să presupui un bug.
 - `compare_pnl_periods` — compară P&L pe mai multe perioade cu profit bridge („de ce s-a schimbat profitul"). `mod`: luna_vs_luna / an_vs_an / ytd / ultimele_3_luni / _6_luni / _12_luni, sau `periods` explicit.
 - `get_pnl_config` — cum e configurat P&L-ul (categorii, grupări, KPI, template-uri, praguri); arată dacă e neconfigurat (risc „Nealocate").
 - `list_pnl_kpis` — KPI-urile definite; cu `evaluate: true` dă valorile live + semafor pe perioadă.

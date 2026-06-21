@@ -61,6 +61,8 @@ Flux:
 2. Apelează tool-ul cu parametrii de filtrare expliciți (`brandId`, `locationId`).
 3. Prezintă doar cifrele pentru unitatea cerută.
 
+Notă MCP: `list_brands` este intenționat un rezumat slim și ne-secret pentru context rapid. Nu te baza pe el pentru configurări adânci, memorie de brand, CRM/email settings sau credențiale; citește tool-ul dedicat (`read_brand_memories`, `get_config_status`, `comms_get_status`, `get_pnl_config` etc.) când ai nevoie de detalii.
+
 ### 2. Arată vizual în Chrome când utilizatorul cere să vadă ceva
 
 Când utilizatorul spune „arată-mi", „du-mă la", „deschide", „vreau să văd în aplicație" sau orice variantă similară:

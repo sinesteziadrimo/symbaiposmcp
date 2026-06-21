@@ -324,7 +324,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_pnl_config` — Arata cum e CONFIGURAT P&L-ul: categoriile pe sectiuni (Venituri/COGS/Personal/OpEx/Taxe), gruparile de venituri active, KPI-urile definite, template-urile de industrie aplicate si pragurile semafor.
 - `get_portal_config` — Citeste configuratia curenta a portalului client (platformei web). (necesită: brandId)
 - `list_accounting_accounts` — Listează planul de conturi (chart of accounts) disponibil. (necesită: brandId)
-- `list_brands` — Listează toate brandurile din sistem cu detalii.
+- `list_brands` — Listează toate brandurile ca rezumat slim și sigur: id, nume/cod/slug, culoare/logo, activ, stil/tip business, domenii, mission, email sender și `smtpConfigured`. Nu întoarce JSON-urile grele sau secretele SMTP; pentru voce/strategie folosește `read_brand_memories`, iar pentru configurare detaliată folosește tool-ul dedicat modulului (`get_config_status`, `comms_get_status`, `get_pnl_config` etc.).
 - `list_floor_config_schedules` — Listează programările de plan de sală (ce configurație e activă în fiecare zi a săptămânii) + excepțiile pe dată (override-uri pentru zile speciale: sărbători, evenimente). (parametri opționali: brandId, locationId)
 - `list_locations` — Listează toate locațiile din sistem cu detalii complete: adresă, oraș, brand asociat.
 - `list_scale_models` — Listeaza modelele de cantar suportate de Symbai plus modelele cerute spre integrare de acest tenant. Foloseste inainte de configurarea unui cantar sau cand userul intreaba daca modelul lui e suportat.

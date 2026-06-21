@@ -22,6 +22,7 @@ Folosește ÎNTÂI tool-urile dedicate de raport (funcționează FĂRĂ acces SQ
 Pentru P&L NU mai trimite doar la pagină — ai tool-uri dedicate care întorc EXACT cifrele din pagina `/reports/pnl`:
 
 - „arată-mi P&L-ul / care e profitul lunii / cum stau cu marja, food cost, prime cost" → **`get_pnl`** (acceptă `perioada` + opțional `brandId`/`locationId`). Întoarce venituri nete, COGS, profit brut, personal, OpEx, profit net + marjă, și food/labor/prime cost cu **semafor verde/galben/roșu** pe pragurile clientului. Explică-i pe scurt ce e bun/rău și de ce.
+- Pentru întrebări despre **marja/profitul pe produs**, citește și `data.productPnl.config`, `methodology`, `warnings` și `reconciliation`: pragurile și ponderile de alocare pot veni din `organization_settings.pnlSettings.productPnl`, deci un produs poate fi roșu din setarea clientului, nu dintr-un bug de calcul.
 - „cum e configurat P&L-ul / ce categorii am / de ce apare la «Nealocate»" → **`get_pnl_config`** (categorii pe secțiuni, grupări de venituri, KPI, template-uri aplicate, praguri).
 - „ce KPI am / arată-mi indicatorii live / care KPI e pe roșu" → **`list_pnl_kpis`** (cu `evaluate: true` calculează valorile live pe perioadă, cu semafor).
 
