@@ -62,7 +62,7 @@ Detaliile complete (proiectare flux, MPS, B2B, QC, recall) sunt în `knowledge/p
 
 Înainte să creezi MPS sau lot pentru o fabrică, rulează `get_manufacturing_readiness` cu `recipeId`/`productId`/`productName` și `quantity`. Dacă întoarce `blocked`, nu scrie nimic până nu rezolvi lipsurile de stoc, unitățile incompatibile, fluxul, echipamentele/capacitatea, sculele/calibrele, calibrarea sau QC-ul. Dacă e `needs_attention`, explică riscurile și cere confirmare înainte de scriere.
 
-Înainte să promiți termen, să creezi MPS sau să programezi mai multe loturi, rulează `get_production_schedule_feasibility` cu intervalul real și lista de comenzi (`orders`). Dacă întoarce `blocked`, nu promite termenul; dacă e `needs_attention`, arată concret ce lipsește (ture, oameni, echipamente, încărcare existentă) și cere confirmare.
+Înainte să promiți termen, să creezi MPS sau să programezi mai multe loturi, rulează `get_production_schedule_feasibility` cu intervalul real și lista de comenzi (`orders`). Dacă întoarce `blocked`, nu promite termenul; dacă e `needs_attention`, arată concret ce lipsește (ture, oameni, echipamente, încărcare existentă) și cere confirmare. Planificatorul exclude automat zilele nelucrătoare / închiderile definite la nivel de fabrică în calendarul de ture; dacă termenul pare sărit, verifică warning-ul cu datele excluse.
 
 Pentru auto-programare pe echipamente/ture/oameni, folosește `schedule_production_orders` cu `commit:false` întâi (preview). Re-rulează cu `commit:true` doar după confirmarea explicită a userului.
 
@@ -70,6 +70,8 @@ După ce lotul a fost creat și are `flowVersionId`, rulează `get_batch_materia
 - `blocked` = deficit real sau risc de unități (`shortage`, `unit_risk`) → nu porni operația.
 - `partial` = materialul există, dar lipsește link-ul explicit de staging/pegging sau lotul sursă upstream nu este finalizat (`needs_staging_link`, `upstream_pending`) → explică lipsa concretă și cere acceptare operațională doar dacă userul vrea să lucreze cu risc controlat.
 - `ready` = lotul are acoperire reală și poți continua shop-floor.
+
+După finalizarea unui lot industrial sau înainte de o livrare B2B/audit, poți produce dovada de calitate direct prin citire: `generate_batch_coa(batchId)` pentru Certificatul de Analiză (QC vs specificație, loturi produse, valabilitate, alergeni, verdict conform/neconform) și `get_batch_mass_balance(batchId)` pentru bilanțul de masă (intrări consumate vs output bun + scrap + rework). Dacă un control QC picat nu e clasificat explicit ca non-blocant, COA îl tratează ca blocant.
 
 Pentru dev/local, dacă userul spune „Senneville”, „ARCA” sau „fabrica locală”, tratează imediat cazul ca **Fabrică** și citește secțiunea „Scenariul local Senneville / ARCA” din `knowledge/productie-fabrica.md`. Scenariul are deja rețete, formule, fluxuri, echipamente, loturi, MPS, QC și B2B; verifică prin citire înainte să creezi sau să finalizezi ceva.
 
@@ -81,7 +83,7 @@ Pentru dev/local, dacă userul spune „Senneville”, „ARCA” sau „fabrica
 - **Container public** — oricine scanează eticheta QR vede pagina publică `/c/:codQR` (locație, istoric, trasabilitate), fără cont. Util pentru inspectori/clienți; ai grijă că e vizibilă oricui are eticheta.
 - **Consumul e definitiv** — după finalizare, lotul consumat și genealogia sunt fixe. O șarjă cu probleme NU se „anulează ca să recuperezi ingredientele"; faci un **lot de retușare (rework)** nou. Oprirea/anularea nu reface stocul deja consumat.
 - **Conversie unități la rețete** — g↔kg și ml↔l se convertesc automat în aceeași familie de unități. **Atenție**: o unitate greșită în rețetă dă food cost / stoc absurd (ordin de ×1000) **fără niciun avertisment** — verifică mereu că unitatea din rețetă e în aceeași familie cu unitatea produsului înainte de a porni producția.
-- **QC hold / carantină** — un lot poate fi blocat la calitate cu motiv: `create_quality_hold` (necesită `lotId`, `eventType`); cât e blocat, containerele lui nu pot avansa/împărți/uni. Eliberezi cu `release_quality_hold` (necesită `holdId`, `releasedBy`). Statusul: `exec_get_lot_qc_status` / `list_quality_holds`.
+- **QC hold / carantină** — un lot poate fi blocat la calitate cu motiv: `create_quality_hold` (necesită `lotId`, `eventType`); cât e blocat, containerele lui nu pot avansa/împărți/uni. La recepția materiei prime folosește front-door HACCP: `list_quarantine_lots` pentru coadă și `record_incoming_inspection(lotId, decision)` pentru accept / carantină / respingere, după ce confirmi lotul și decizia. Eliberezi cu `release_quality_hold` (necesită `holdId`, `releasedBy`). Statusul: `exec_get_lot_qc_status` / `list_quality_holds`.
 
 ## Bucla de lucru (oricare traseu)
 
@@ -108,6 +110,10 @@ Pentru dev/local, dacă userul spune „Senneville”, „ARCA” sau „fabrica
 | „Operatorul declară consumul / output-ul" | Fabrică: `exec_declare_consumption` (`operationExecutionId`, `items`) → `exec_declare_output` (`operationExecutionId`, `qtyGood`). Sau backflush cu `exec_complete_operation`. |
 | „Planifică producția săptămânii / necesar materii prime" | Doar **fabrică** → `get_mps_net_requirements` + `get_manufacturing_readiness` + `get_production_schedule_feasibility`; pentru programare automată folosește `schedule_production_orders` cu `commit:false`, apoi `commit:true` doar după confirmare. După ce lotul e creat, mai treci o dată prin `get_batch_material_readiness`; `knowledge/productie-fabrica.md`. |
 | „De unde vine / unde a ajuns lotul / recall" | `exec_trace_lot_origin` (`lotId`) + `exec_trace_lot_destination` (`lotId`); pagina `/loturi-wip` tab Genealogie. |
+| „Dă-mi COA-ul / certificatul de analiză pentru lot" | Fabrică: `generate_batch_coa(batchId)` — arată QC vs specificație, loturi produse, valabilitate, alergeni și verdict. Pentru semnătură QA folosește EBR/release. |
+| „Bilanț de masă / cât a intrat vs cât a ieșit" | Fabrică: `get_batch_mass_balance(batchId)` — consum intrări din genealogie vs output bun + scrap + rework; dacă sunt unități amestecate, explică warning-ul. |
+| „Ce marfă e în carantină / așteaptă control la recepție" | Fabrică: `list_quarantine_lots` — coada de loturi quarantine/pending_qc/blocked/hold, opțional pe `productId`. |
+| „Acceptă / respinge / pune în carantină lotul de materie primă" | Fabrică: confirmă lotul + decizia, apoi `record_incoming_inspection(lotId, decision, notes?)`; `accept` face lotul `approved`, `quarantine`/`reject` îl blochează la consum. Dacă e expirat, FEFO îl blochează chiar și după acceptare. |
 | „Blochează lotul la calitate / carantină" | `create_quality_hold` (`lotId`, `eventType`); eliberezi cu `release_quality_hold` (`holdId`, `releasedBy`). |
 | „A scăzut stocul din alt lot decât voiam" | Explică FEFO: scanează/alocă explicit lotul dorit înainte de consum; fără alocare merge automat după expirare. |
 | „Nu văd Panou Fabrică / Execuție / MPS / B2B" | Nu e bug — cer **modul fabrică** (Setări → General). În restaurant folosești `/productie-evenimente`. |

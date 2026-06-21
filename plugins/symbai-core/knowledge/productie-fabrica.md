@@ -111,6 +111,8 @@ Aceasta e calea industrială, pe tabletă (`/workstation-tablet`) sau din `/prod
 - **Trasabilitate înapoi** (din ce provine un lot): `exec_trace_lot_origin` (`lotId`) → loturile de intrare, ingredientele, furnizorii.
 - **Trasabilitate înainte** (unde a ajuns): `exec_trace_lot_destination` (`lotId`) → loturile de producție care l-au consumat.
 - **Status calitate al unui lot**: `exec_get_lot_qc_status` (`lotId`) → blocat/eliberat + evenimentele de inspecție.
+- **Certificat de Analiză (COA)**: `generate_batch_coa` (`batchId`) → QC vs specificație, loturi produse, valabilitate, alergeni și verdict conform/neconform. Un control QC picat și neclasificat este tratat ca blocant dacă nu e marcat explicit non-blocant.
+- **Bilanț de masă / randament reconciliat**: `get_batch_mass_balance` (`batchId`) → intrări consumate din genealogie vs output bun + scrap + rework; dacă apar unități amestecate, explică warning-ul și nu transforma manual cifrele.
 - **Recall (retragere)**: din `/loturi-wip` → tab Genealogie cauți lotul după ID/număr și vezi raportul de impact (loturile derivate și produsele afectate). Mecanismul folosește graful de genealogie (traversare în adâncime).
 - ⚠ Doar fluxul **shop-floor** scrie genealogia automat. Un lot finalizat pe motorul simplu poate să nu aibă graf de genealogie — recall industrial complet presupune execuție shop-floor.
 
@@ -127,14 +129,14 @@ Aceasta e calea industrială, pe tabletă (`/workstation-tablet`) sau din `/prod
 - **MPS** (Master Production Schedule) = ce produci, când, pe ce stație, în ce tură.
 - **MRP** = necesarul net de materiale: cerere − stoc existent − deja programat = ce TREBUIE produs/comandat.
 - **Readiness gate** = verificarea obligatorie înainte de planificare/lansare: rețetă + BOM, stoc disponibil, conversii de unități, flux tehnologic activ, echipamente/capacitate, resurse de operație (scule, calibre, testere, grupe de capabilități), calibrare și cerințe QC. Tool: `get_manufacturing_readiness`.
-- **Schedule feasibility gate** = verificarea obligatorie pentru comenzi mari / mai multe loturi înainte de a promite termen sau de a scrie MPS: încarcă turele, operatorii alocați, echipamentele, timpii de operație, capacitățile pe rețetă-echipament și programul deja ocupat. Tool: `get_production_schedule_feasibility`.
+- **Schedule feasibility gate** = verificarea obligatorie pentru comenzi mari / mai multe loturi înainte de a promite termen sau de a scrie MPS: încarcă turele, operatorii alocați, echipamentele, timpii de operație, capacitățile pe rețetă-echipament, programul deja ocupat și zilele nelucrătoare la nivel de fabrică. Tool: `get_production_schedule_feasibility`.
 - **Batch material gate** = verificarea obligatorie după ce lotul există și înainte de pornirea shop-floor: stoc disponibil utilizabil, `batch_material_links`, loturi sursă upstream și riscuri de unități. Tool: `get_batch_material_readiness`.
 - **Bucla planificare:**
   1. **Citește cererea**: `get_orders_summary` (`dateFrom`, `dateTo`, `status` all/open/completed/cancelled, `groupBy` product/order) — ce produse sunt cerute, în ce cantități.
   2. **Citește stocul**: `get_stock_levels` (`productType` raw_material/wip/finished_good/all, `warehouseId`, `onlyLowStock`, `productName`) — stoc curent + prag minim + deficit.
   3. **Calculează necesarul net**: `get_mps_net_requirements` (`horizonDays`) — cerere − stoc − programat, pe orizont.
   4. **Readiness**: `get_manufacturing_readiness` pentru rețeta/produsul propus. Dacă status = `blocked`, nu planifica și explică blocajele, inclusiv scule/calibre necalibrate sau echipamente în mentenanță; dacă status = `needs_attention`, cere confirmare cu riscurile clare.
-  5. **Fezabilitate calendar**: `get_production_schedule_feasibility` (`dateFrom`, `dateTo` sau `horizonDays`, `orders`) — confirmă că loturile încap pe echipamente, ture și oameni. Dacă status = `blocked`, nu promite termen; dacă status = `needs_attention`, arată încărcarea și cere acceptare explicită.
+  5. **Fezabilitate calendar**: `get_production_schedule_feasibility` (`dateFrom`, `dateTo` sau `horizonDays`, `orders`) — confirmă că loturile încap pe echipamente, ture, oameni și zile lucrătoare reale. Zilele de închidere definite la nivel de fabrică în `shift_calendars` (fără `entityId`) sunt excluse; excepțiile pe o stație/echipament anume nu blochează toată fabrica. Dacă status = `blocked`, nu promite termen; dacă status = `needs_attention`, arată încărcarea și cere acceptare explicită.
   6. **Auto-programare sigură**: `schedule_production_orders` cu `commit:false` (default) pentru preview de loturi/MPS/operații fixate; `commit:true` doar după confirmarea explicită a userului.
   7. **Vezi programul**: `list_mps_schedule` (`from`, `to` YYYY-MM-DD) — rețete planificate pe date/ture/stații.
   8. **Adaugă în plan**: `create_mps_entry` (`scheduledDate` + `plannedQty` obligatorii; opțional `stationId`, `recipeId`, `shiftNumber`, `status` draft/confirmed/in_progress/completed/cancelled).
@@ -214,6 +216,7 @@ Fluxul = lanțul de operații prin care trece un produs, cu cerințe, dependenț
 ## Controlul calității (QC, carantină, HACCP)
 Două sisteme paralele: **Quality Holds** (blochezi un LOT) și **QC Inspections** (rezultatul unui test pe un BATCH). Un fix pe unul NU se propagă la celălalt.
 
+- **Front-door HACCP la recepție materie primă**: `list_quarantine_lots` (`productId` opțional) arată coada de loturi în `quarantine` / `pending_qc` / `blocked` / `hold`. Pentru decizie folosește `record_incoming_inspection` (`lotId`, `decision` = `accept`/`quarantine`/`reject`, `notes` opțional) doar după ce ai confirmat lotul și decizia cu utilizatorul. `accept` setează lotul `approved`; `quarantine` și `reject` îl blochează la consum. Dacă lotul e expirat, FEFO îl blochează chiar și după acceptare — nu spune că e consumabil.
 - **Blocaj / carantină pe lot**: `create_quality_hold` (`lotId`, `eventType` ex. qc_fail/contamination/expiry_risk; opțional `reasonCode`, `notes`, `heldBy`). Lotul devine „hold" — nu mai poate avansa în producție.
 - **Eliberare**: `release_quality_hold` (`holdId`, `releasedBy`; opțional `notes`). Dacă nu mai sunt alte blocaje active pe lot, lotul redevine disponibil.
 - **Listă blocaje active**: `list_quality_holds` (`includeReleased` — implicit doar cele active).
@@ -264,11 +267,13 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 - `get_daily_production_summary` (`date` YYYY-MM-DD) — sumarul unei zile (loturi, cantități, QC, waste, angajați activi).
 - `get_yield_trends` (`daysBack`) — trend zilnic yield / waste / rata QC pass.
 - `detect_production_bottlenecks` (`daysAhead` 7–90) — stații supraîncărcate: utilizare vs capacitate (overloaded >100%, high 85–100%, medium 60–85%, low <60%).
+- `generate_batch_coa` (`batchId`) — certificat de analiză pentru o șarjă: QC vs specificație, loturi produse, valabilitate, alergeni și verdict de conformitate.
+- `get_batch_mass_balance` (`batchId`) — bilanț de masă pe șarjă: consumuri din genealogie vs output bun + scrap + rework, plus warning-uri de unități.
 - `get_defect_pareto`, `get_qc_stats`, `get_waste_report`, `get_equipment_utilization` (vezi mai sus).
 
 ## Permisiuni MCP
 - **Citire** (NU cere permisiune de modul): toate `exec_list_*`/`exec_get_*`/`exec_trace_*`/`exec_scan_*`, `list_*`, `get_*`, `run_bom_explosion`.
-- **Scriere** (cer modulul `productie` pe token): `exec_create_batch`/`update`/`start`/`stop`/`resume`/`complete`/`reschedule`, `exec_declare_consumption`/`declare_output`/`correct_quantities`, `exec_start_operation`/`stop_operation`/`complete_operation`/`handover_operation`/`create_handover`, `create_mps_entry`/`update_mps_entry`, `create_production_shift`/`update`/`provisional`, `create_shift_assignment`/`bulk_create_shift_assignments`, `create_quality_hold`/`release_quality_hold`, `create_production_zone`/`update`, `create_production_equipment`/`update`, `set_equipment_recipe_capacity`, `assign_recipe_to_zone`/`unassign`, `map_zone_ingredient_warehouse`, `bulk_create_zones_and_equipment`, `print_production_labels`, toate tool-urile de flux (`create_flow_version`, `build_complete_flow`, `add_flow_operation`, `configure_operation_*`, `add_operation_*` etc.).
+- **Scriere** (cer modulul `productie` pe token): `exec_create_batch`/`update`/`start`/`stop`/`resume`/`complete`/`reschedule`, `exec_declare_consumption`/`declare_output`/`correct_quantities`, `exec_start_operation`/`stop_operation`/`complete_operation`/`handover_operation`/`create_handover`, `create_mps_entry`/`update_mps_entry`, `create_production_shift`/`update`/`provisional`, `create_shift_assignment`/`bulk_create_shift_assignments`, `create_quality_hold`/`release_quality_hold`, `record_incoming_inspection`, `create_production_zone`/`update`, `create_production_equipment`/`update`, `set_equipment_recipe_capacity`, `assign_recipe_to_zone`/`unassign`, `map_zone_ingredient_warehouse`, `bulk_create_zones_and_equipment`, `print_production_labels`, toate tool-urile de flux (`create_flow_version`, `build_complete_flow`, `add_flow_operation`, `configure_operation_*`, `add_operation_*` etc.).
 - **Alte module**: rețete (modul `retete`): `create_recipe`, `update_recipe`, `add_recipe_ingredients`, `bulk_replace_recipe_ingredients`, `add_recipe_outputs`, `set_recipe_labels`, `set_production_sheet_config`. HACCP senzori / curățenie (modul `setari`): `create_haccp_sensor`, `create_cleaning_task`.
 
 ## „Ce-ți cere userul → ce faci" (cheatsheet fabrică)
@@ -287,10 +292,14 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 | „Din ce a fost făcut lotul X / de unde vine" | `exec_trace_lot_origin` (`lotId`). |
 | „Unde a ajuns lotul de materie primă Y" | `exec_trace_lot_destination` (`lotId`). |
 | „Pregătesc un recall pe lotul X" | `/loturi-wip` → Genealogie → caută lotul → raport de impact; sau `exec_trace_lot_destination`. |
+| „Ce marfă / loturi așteaptă control la recepție" | `list_quarantine_lots` (`productId` opțional) — arată loturile quarantine/pending_qc/blocked/hold, cu cantitate și expirare. |
+| „Acceptă / respinge / pune în carantină lotul de materie primă" | Confirmă lotul și decizia, apoi `record_incoming_inspection` (`lotId`, `decision`, `notes`). `accept` îl face `approved`, `quarantine`/`reject` îl blochează la consum; loturile expirate rămân blocate de FEFO. |
 | „Blochează lotul la calitate" | `create_quality_hold` (`lotId`, `eventType`). |
 | „Eliberează carantina" | `release_quality_hold` (`holdId`, `releasedBy`). |
 | „Ce loturi sunt acum în carantină" | `list_quality_holds`. |
 | „Care e statusul QC al lotului X" | `exec_get_lot_qc_status` (`lotId`). |
+| „Dă-mi COA-ul / certificatul de analiză pentru lot" | `generate_batch_coa` (`batchId`) — QC vs specificație, loturi produse, valabilitate, alergeni și verdict. Pentru semnătură QA folosește EBR/release. |
+| „Bilanț de masă / cât a intrat vs cât a ieșit" | `get_batch_mass_balance` (`batchId`) — consum intrări din genealogie vs output bun + scrap + rework; dacă sunt unități amestecate, explică warning-ul. |
 | „Statistici calitate / cele mai dese defecte" | `get_qc_stats` / `get_defect_pareto`. |
 | „Cât rebut/pierderi am avut" | `get_waste_report`. |
 | „Ce trebuie să produc săptămâna asta" | `get_orders_summary` + `get_stock_levels` + `get_mps_net_requirements`, apoi `get_manufacturing_readiness` și `get_production_schedule_feasibility` pe produsele/rețetele care intră în plan. |

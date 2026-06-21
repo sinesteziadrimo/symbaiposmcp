@@ -33,9 +33,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 863 tool-uri** — Citire 353 · Speciale 5 · SQL 3 · Scriere per modul 502 (pe 19 module).
+**TOTAL: 867 tool-uri** — Citire 356 · Speciale 5 · SQL 3 · Scriere per modul 503 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 353 tool-uri
+## Citire (fără permisiune de modul) — 356 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 44
 - `get_attribution_ltv_by_channel` — Valoarea pe viață (LTV) a clienților grupată după canalul de achiziție, pe o cohortă de N zile: nr. (parametri opționali: brandId, days)
@@ -155,7 +155,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `search_products_db` — Caută produse în baza de date după nume, SKU, cod de bare, categorie, tip, sau tag-uri. (parametri opționali: query, productType, storageZoneId, tagNames)
 - `search_products_for_tagging` — Previzualizează ce produse ar fi afectate de un set de filtre, FĂRĂ a asigna vreun tag. (parametri opționali: brandId, menuId, menuName, locationId)
 
-### Producție & trasabilitate — 46
+### Producție & trasabilitate — 49
 - `calculate_flow_bom` — Calculează BOM (Bill of Materials) complet pentru un flux: agregarea tuturor materialelor din toate operațiile. (necesită: flowVersionId)
 - `build_ingredient_declaration` — Construiește declarația de ingrediente pentru etichetă conform EU 1169/2011: rețetă explodată la materii prime, ordine descrescătoare după greutate, QUID/procente și alergeni de declarat. (parametri opționali: recipeId, productId, productName)
 - `exec_get_batch_progress` — Obține progresul complet al unui lot: pași de execuție, procent finalizare, materiale, output, pasul următor. (necesită: batchId)
@@ -167,6 +167,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `exec_list_operation_executions` — Listează execuțiile operațiilor, filtrate după lot sau status. (parametri opționali: batchId, status)
 - `exec_list_shop_floor_events` — Listează evenimentele de pe shop floor: scanări, porniri/opriri operații, declarații consum/output, predări. (parametri opționali: batchId, operationExecutionId, limit)
 - `get_batch_material_readiness` — Audit read-only înainte de pornirea shop-floor: verifică dacă materialele unui lot/operații sunt realmente gata, nu doar existente undeva în stoc. (necesită: batchId)
+- `generate_batch_coa` — Generează Certificatul de Analiză (COA) pentru o șarjă: QC vs specificație, loturi produse, valabilitate, alergeni și verdict conform/neconform. (necesită: batchId)
+- `get_batch_mass_balance` — Bilanț de masă pentru o șarjă: intrări consumate din genealogie vs output bun + scrap + rework, cu warning-uri de unități. (necesită: batchId)
+- `list_quarantine_lots` — Coada de control la recepție / front-door HACCP: loturi de materie primă în carantină, pending QC, blocate sau hold. (parametri opționali: productId)
 - `get_defect_pareto` — Analiză Pareto a defectelor: tipurile de defecte cele mai frecvente, cantități respinse, procent din total. (parametri opționali: days)
 - `get_equipment_detail` — Obține detalii complete pentru un echipament: capacități per rețetă, zonă, status. (necesită: equipmentId)
 - `get_equipment_utilization` — Obține utilizarea echipamentelor: câte loturi procesează, status (disponibil/în uz/mentenanță), capacitate. (parametri opționali: zoneId)
@@ -495,7 +498,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_recipe_labels` — Setează/actualizează etichetele pentru o rețetă. (necesită: recipeId, labels)
 - `update_recipe` — Actualizează o rețetă existentă. (necesită: recipeId)
 
-### productie — Producție — 62 tool-uri
+### productie — Producție — 63 tool-uri
 - `activate_flow_version` — Activează un flux (schimbă statusul din draft → active). (necesită: flowVersionId)
 - `add_flow_operation` — Adaugă o operație nouă într-un flux cu toate câmpurile tab-ului General: nume, ordine, durată, setup, descriere, container, depozitare, produceLot, skipIfStockAvailable, overlapAllowed. (necesită: flowVersionId, name, operationOrder)
 - `add_operation_dependency` — Adaugă o dependență între două operații: FS (Finish-Start), SS (Start-Start), FF (Finish-Finish), SF (Start-Finish) cu lag time. (necesită: flowVersionId, fromOperationId, toOperationId)
@@ -521,6 +524,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_production_zone` — Creează o zonă de producție nouă (ex: Bucătărie Caldă, Patiserie, Preparare Rece). (necesită: name)
 - `create_provisional_shift` — Creează un schimb provizoriu (temporar) pentru o perioadă specifică. (necesită: name, shortName, startTime, endTime, dateFrom, dateTo)
 - `create_quality_hold` — Pune un blocaj de calitate (quality hold) pe un lot de inventar. (necesită: lotId, eventType)
+- `record_incoming_inspection` — Inspecție la recepție pentru lot de materie primă: acceptă, pune în carantină sau respinge lotul; deciziile quarantine/reject blochează consumul. (necesită: lotId, decision)
 - `create_shift_assignment` — Asignează un angajat la o tură de producție într-o anumită zi. (necesită: shiftId, employeeId, date)
 - `exec_complete_batch` — Finalizează un lot de producție (motor simplu) — setează status 'completed' + cantitate reală + data, ȘI postează inventarul: consumă ingredientele (loturi alocate explicit + FEFO) și creează lotul de (necesită: batchId)
 - `exec_complete_operation` — Finalizează o operație cu tot ciclul: auto-consum materii prime (backflush), creare documente consum și output, creare containere, genealogie containere, predare automată și finalizare automată a lotu (necesită: operationExecutionId)
