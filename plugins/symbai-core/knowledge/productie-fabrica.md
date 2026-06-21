@@ -164,6 +164,14 @@ Acestea sunt capabilitățile „de paritate SAP" — cele care diferențiază S
   Întoarce `totalCost`, `totalCostPerUnit`, cost/unitate pe materiale, materialele fără preț și **abaterea față de costul stocat** (`variancePct`). Flag onest în `warnings` când lipsește fluxul (manoperă=0) sau tariful.
 - Folosește la „cât mă costă să produc 1000 buc din X", „food cost teoretic", „cât e manopera", „ce marjă am la rețeta Y".
 
+### Audit SAP-level înainte de ofertă enterprise
+Când userul întreabă realist dacă Symbai poate înlocui SAP/HANA într-o fabrică, nu răspunde din impresii. Rulează audituri read-only peste datele reale:
+- `get_enterprise_control_readiness` — audit trail, change control, aprobări multi-nivel, semnături electronice, EBR/release packet și blocarea lotului la versiuni de formulă/flux.
+- `get_industrial_costing_readiness` — standard cost vs actual cost, varianțe materiale, dovadă de manoperă, overhead/energie și cost centers.
+- `get_procurement_wms_readiness` — contracte furnizori, lead time, MOQ, inbound QC/COA, bin-uri, containere/RF scan și semnale EDI/portal.
+- `get_advanced_planning_readiness` — finite capacity scheduling, what-if, multi-site, ATP/CTP și constrângeri complexe.
+Folosește scorul și `blockers`/`warnings` ca răspuns onest de gap analysis. Dacă un audit e `blocked`, tratează-l ca risc de ofertă, nu ca detaliu cosmetic.
+
 ### MRP multi-nivel — necesar de materii prime și auto-explodare SF (ca SAP MD01)
 Două unelte, două scopuri:
 - `get_material_requirements` (`orders` = listă FG cu `quantity` + opțional `recipeId`/`productId`/`dueDate`; sau lipsă → cererea activă din demand; `horizonDays` default 14; `includeSafetyStock` default true) — **necesarul net de materii prime** pentru tot order book-ul: explodează comenzile pe TOATE nivelurile BOM (FG → semipreparate net de stoc → materii prime), adună cererea, o netează față de stoc + stoc de siguranță și întoarce **ce lipsește de aprovizionat** (shortages) + cantitate sugerată + lead time. Read-only (nu mișcă stoc). Răspunde la „am materialele să produc comenzile astea?", „ce trebuie să comand", „necesar aprovizionare producție". E superior lui `get_mps_net_requirements` (single-level) și `run_bom_explosion` (o singură rețetă, un singur nivel).
