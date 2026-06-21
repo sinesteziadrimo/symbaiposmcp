@@ -22,7 +22,7 @@ Cum verifici rapid local:
 - Dashboard: `get_factory_dashboard`.
 - Plan: `list_mps_schedule`.
 - Loturi: `exec_list_batches`, apoi `exec_get_batch_progress`, `exec_list_operation_executions`, `exec_list_shop_floor_events`.
-- B2B: `list_b2b_orders`, `list_production_demand`.
+- B2B: `list_b2b_orders`.
 - Echipamente/zone: citește paginile **Echipamente & Zone**, **Tabletă Stație**, **Loturi & WIP**, **Scanner Containere** și **Panou Fabrică**.
 
 Regula pentru asistenți: când userul spune „Senneville”, „ARCA” sau „fabrica locală”, pornești pe traseul **Fabrică**. Nu folosi `exec_complete_batch` pentru loturile seeduite cu `flowVersionId`; lucrează și explică prin operații shop-floor, containere, QC, handover, MPS și B2B.
@@ -151,20 +151,35 @@ Aceasta e calea industrială, pe tabletă (`/workstation-tablet`) sau din `/prod
 ## Cost de fabricație, MRP multi-nivel și Dosar Electronic de Lot (EBR)
 Acestea sunt capabilitățile „de paritate SAP" — cele care diferențiază Symbai de un POS obișnuit. Sunt esențiale pentru o fabrică reală: BOM pe mai multe niveluri, costing înainte de producție, eliberare de lot cu semnătură QA și trasabilitate inviolabilă.
 
+> ⚠ **Sunt capabilități recente.** Dacă un tool de mai jos nu apare în lista ta de unelte, întoarce „Tool necunoscut", sau un parametru (ex. `explodeMultiLevel`) pare ignorat, instanța ta de Symbai are nevoie de o actualizare — spune utilizatorului să ceară echipei Symbai actualizarea platformei (`trimite_ticket_symbai`).
+
 ### Cost de fabricație înainte de producție (ca SAP CK11N)
-- `get_production_cost_estimate` (`recipeId` SAU `productId` SAU `productName`; `quantity` = câte buc/kg de produs finit, default 1) — calculează **costul standard de MATERIALE**: explodează BOM-ul multi-nivel până la materii prime, înmulțește cu prețul de achiziție (`receptionPrice`) și întoarce cost total, cost/unitate, defalcare pe materiale (sortată după valoare), **materialele fără preț** (`materialsWithoutCost` → cost incomplet, flag onest) și **abaterea față de costul stocat pe rețetă** (`variancePct`).
-- ⚠ NU include manoperă/utilități/overhead — doar materiale. Dacă produsele n-au `receptionPrice`, costul iese 0 și e marcat incomplet — completează prețurile de achiziție.
-- Folosește la „cât mă costă să produc 1000 buc din X", „food cost teoretic", „ce marjă am la rețeta Y".
+- `get_production_cost_estimate` (`recipeId` SAU `productId` SAU `productName`; `quantity` default 1; opțional `laborRatePerHour`, `machineRatePerHour`, `overheadPercent`) — calculează **costul standard COMPLET**, defalcat pe componente în `costComponents`:
+  - **Material**: BOM multi-nivel explodat la materii prime × `receptionPrice` (inflatat cu `scrap_percent` per ingredient acolo unde e setat — pierderea de proces).
+  - **Manoperă**: din fluxul tehnologic (durate operații × personal recomandat) × tarif orar. Tariful = `laborRatePerHour` dacă-l dai, altfel **media tarifelor orare ale angajaților activi**.
+  - **Utilaj**: minute-mașină × `machineRatePerHour` (amortizare+energie/oră) — dă-l ca să-l incluzi.
+  - **Overhead (regie)**: `overheadPercent` % din material+manoperă+utilaj.
+  Întoarce `totalCost`, `totalCostPerUnit`, cost/unitate pe materiale, materialele fără preț și **abaterea față de costul stocat** (`variancePct`). Flag onest în `warnings` când lipsește fluxul (manoperă=0) sau tariful.
+- Folosește la „cât mă costă să produc 1000 buc din X", „food cost teoretic", „cât e manopera", „ce marjă am la rețeta Y".
 
 ### MRP multi-nivel — necesar de materii prime și auto-explodare SF (ca SAP MD01)
 Două unelte, două scopuri:
 - `get_material_requirements` (`orders` = listă FG cu `quantity` + opțional `recipeId`/`productId`/`dueDate`; sau lipsă → cererea activă din demand; `horizonDays` default 14; `includeSafetyStock` default true) — **necesarul net de materii prime** pentru tot order book-ul: explodează comenzile pe TOATE nivelurile BOM (FG → semipreparate net de stoc → materii prime), adună cererea, o netează față de stoc + stoc de siguranță și întoarce **ce lipsește de aprovizionat** (shortages) + cantitate sugerată + lead time. Read-only (nu mișcă stoc). Răspunde la „am materialele să produc comenzile astea?", „ce trebuie să comand", „necesar aprovizionare producție". E superior lui `get_mps_net_requirements` (single-level) și `run_bom_explosion` (o singură rețetă, un singur nivel).
-- `schedule_production_orders` cu **`explodeMultiLevel: true`** — la programare, explodează automat comenzile de produs finit în **semipreparatele produse intern, NET de stoc**, și le programează ÎNAINTEA produsului finit (termen mai devreme + prioritate urgentă). Fără acest flag (default false), schedulerul programează DOAR fluxul produsului finit — dacă un SF nu e pe stoc, rămâne neprodus. Folosește `explodeMultiLevel: true` la o fabrică cu BOM pe mai multe niveluri unde SF-urile se produc în casă în aceeași planificare.
-- ⚠ Ordonarea SF-înaintea-FG e „soft" (termen + prioritate), nu dependență dură; la cantități care saturează capacitatea, verifică ordinea rezultată.
+- `schedule_production_orders` cu **`explodeMultiLevel: true`** — la programare, explodează automat comenzile de produs finit în **semipreparatele produse intern, NET de stoc** (QC/expirare-aware) și le programează corect față de produsul finit. Fără acest flag (default false), schedulerul programează DOAR fluxul produsului finit — dacă un SF nu e pe stoc, rămâne neprodus. Funcționează și pe cererea din `production_demand` când nu dai comenzi explicite. Folosește-l la o fabrică cu BOM pe mai multe niveluri unde SF-urile se produc în casă în aceeași planificare.
+- **Dependență dură SF→FG**: produsul finit NU pornește până nu se termină toate semipreparatele lui (finish-to-start real pe capacitate). Un SF neprogramabil blochează explicit și produsul finit care depinde de el (nu mai apare „fezabil" fals).
+- **Respectă termenul de valabilitate (feature peste SAP)**: un semipreparat perisabil e programat JIT, cât mai aproape de asamblarea produsului finit — NU se face prea devreme ca să se strice. Câmpul `scheduledAfter` de pe fiecare comandă arată constrângerea aplicată (valabilitate sau dependență de SF). Setează `shelfLife` pe rețeta SF (ex. „48h", „3 zile") ca să funcționeze.
+- **Pegging**: la `commit:true`, fiecare lot de semipreparat e legat în baza de date de lotul produsului finit pe care îl alimentează (genealogie SF→FG) — vezi rețeaua cu `get_order_pegging_impact`.
 
 ### Lista de dispecerizare shop-floor (ca SAP CO24)
 - `get_production_dispatch` (`date` o singură zi, SAU `dateFrom`/`dateTo`; default azi → +6 zile) — pentru fiecare **zi × tură × zonă × echipament**: ce operație, ce lot/rețetă/cantitate și **CINE lucrează**. Generată din loturile programate + operațiile fixate (pinned) de scheduler. E vederea pe care șeful de tură o deschide dimineața. Read-only.
 - Diferă de `get_shift_detail` (`shiftId`, `date` → detaliul UNEI ture: roster + KPI loturi) și de `get_factory_dashboard` (KPI agregat live). Pentru „ce are de făcut fiecare echipă mâine" → `get_production_dispatch`.
+
+### Disponibilitate de promis (ATP, ca SAP) și previziune cerere (PIR)
+- `get_material_availability` (`productIds` opțional; `onlyConstrained` opțional) — **liberul de promis** (free-to-promise) pentru fiecare produs: stoc fizic, stoc net utilizabil (după QC/expirare/rezervat-magazie) și cât e deja **rezervat pentru producție** — apoi `freeToPromise = net − rezervat producție`. Răspunde la „mai am material liber să promit comanda asta?". Pentru a verifica și dacă ai **capacitatea** să produci la timp, rulează `schedule_production_orders` cu `commit:false` (dry-run de capacitate finită = capable-to-promise).
+- `forecast_production_demand` (`lookbackWeeks` default 8, `horizonWeeks` default 4, `method` `moving_average`/`ewma`, `channel` `all`/`pos`/`b2b`) — **previziune de cerere** din istoricul de vânzări (POS + B2B) pentru produsele finite produse intern: cerere săptămânală medie, tendință (medie mobilă/EWMA), variabilitate și **stoc de siguranță recomandat**. Pentru producția pe stoc (make-to-stock): transformă forecastul în loturi cu `schedule_production_orders` sau `create_mps_entry`. Setează `bucPerBax` pe produsele B2B ca prognoza să numere corect cantitățile la bax.
+
+### Declarația de ingrediente pe etichetă (EU 1169/2011)
+- `build_ingredient_declaration` (`recipeId` SAU `productId` SAU `productName`) — explodează rețeta la materii prime, le **ordonează descrescător după greutate**, calculează **procentul fiecăruia (QUID)** și întoarce `declarationText` gata de pus pe etichetă + `allergensToDeclare` (alergenii recursivi ai rețetei, de evidențiat bold). Ingredientele neexprimate în greutate (bucăți/litri) sunt marcate cu warning (nu intră în % până nu le pui în g/kg). Folosește la „lista de ingrediente pentru etichetă", „ordine descrescătoare", „QUID", „ce alergeni declar".
 
 ### Dosar Electronic de Lot (EBR) — eliberare de lot cu semnătură + lanț tamper-evident
 Nivelul pharma/IFS/BRC de trasabilitate: compilezi dosarul complet al unui lot, îl verifici, îl eliberezi cu semnătură QA, iar integritatea e protejată de un lanț de hash-uri inviolabil. Toate cer doar `batchId`.
@@ -285,8 +300,11 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 | „De câte materii prime am nevoie pentru 1000 buc din rețeta X" | `run_bom_explosion` (`recipeId`, `quantity`) — doar previzualizare, o rețetă, un nivel. |
 | „Ce materii prime îmi trebuie pentru TOATE comenzile / am stoc să le produc" | `get_material_requirements` (`orders` sau cererea din demand) — MRP multi-nivel net de stoc, ce lipsește de comandat. |
 | „Programează comenzile ȘI semipreparatele care nu-s pe stoc" | `schedule_production_orders` cu `explodeMultiLevel: true` (+ `commit:false` întâi pentru preview). |
-| „Cât mă costă să produc 1000 buc din X / food cost teoretic" | `get_production_cost_estimate` (`recipeId`/`productName`, `quantity`). |
+| „Cât mă costă să produc 1000 buc din X / food cost / cât e manopera" | `get_production_cost_estimate` (`recipeId`/`productName`, `quantity`, opțional `laborRatePerHour`/`machineRatePerHour`/`overheadPercent`) — material+manoperă+utilaj+overhead. |
+| „Lista de ingrediente / declarația EU 1169 / QUID pentru etichetă" | `build_ingredient_declaration` (`recipeId`/`productId`) — ordine descrescătoare după greutate + % + alergeni. |
 | „Ce are de făcut fiecare echipă/zonă azi/mâine (dispecerizare)" | `get_production_dispatch` (`date` sau `dateFrom`/`dateTo`). |
+| „Mai am material liber să promit comanda asta / cât pot promite" | `get_material_availability` (`productIds` opțional) — free-to-promise; + `schedule_production_orders` `commit:false` pentru capacitate. |
+| „Cât ar trebui să produc pe stoc săptămâna viitoare / previziune cerere" | `forecast_production_demand` (`lookbackWeeks`, `horizonWeeks`, `method`, `channel`). |
 | „Eliberez lotul X / semnez ca QA" | `get_batch_deviations` (`batchId`) → confirmi deviațiile blocante → `release_electronic_batch_record` (`batchId`, `reviewerEmployeeId`, `decision`, `exceptionsAcknowledged`). |
 | „Dosarul complet al lotului pentru audit IFS/BRC" | `build_electronic_batch_record` (`batchId`, `mode`=full). |
 | „A fost modificat dosarul/lanțul lotului după eliberare?" | `verify_electronic_batch_record` / `verify_batch_audit_chain` (`batchId`). |
