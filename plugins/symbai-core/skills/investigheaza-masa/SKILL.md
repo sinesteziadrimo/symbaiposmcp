@@ -26,6 +26,11 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 ### 3. „Ce trebuie să aprob?" → `list_operation_requests`
 `list_operation_requests(status: "pending")` — vezi toate cererile în așteptare cu tot ce-ți trebuie ca să decizi: tip, ospătar, masă, produse, valoare, motiv. Filtre utile: `type` (return/house/discount/customer/...), `employeeName` (toate cererile unui ospătar), `dateFrom`/`dateTo`. Întoarce și un rezumat (câte pe fiecare tip, top aprobatori).
 
+### 3b. „Am conflict de sincronizare / shadow / Viva" → `list_shadow_order_conflicts`
+`list_shadow_order_conflicts(status: "active")` — citește conflictele tehnice cloud-edge din Control Operațional. Sunt separate de cererile normale de aprobare și NU se aprobă cu `respond_operation_request`.
+- Pentru `kind="new_item_on_terminal_parent"`: după 2026-06-21, produsele acoperite de subtotalul încasat se inserează automat; dacă mai vezi `conflictCode="viva_confirmed"`, produsul nou DEPĂȘEȘTE suma de produse acoperită de plata Viva. Explică managerului: „plata Viva e reală și suma e fixată; produsul acesta nu este acoperit de tranzacția confirmată".
+- Workflow: `list_shadow_order_conflicts(orderId?/status:"active")` → dacă e nevoie de povestea notei, `get_order_timeline(orderId)` + `get_order_payments(orderId)` → dă link la Control Operațional (`/operations`) pentru decizie vizuală. Dacă tool-ul nu există încă pe tenant, folosește SQL read-only pe `operation_requests` cu `type='shadow_order_conflict'`.
+
 ### 4. „Aprobă / respinge cererea" → `respond_operation_request`
 `respond_operation_request(requestId: 123, action: "approve", approvedBy: "Nume Manager", note: "…")` — aprobă sau respinge direct. Produce efectele complete (statusul produselor se actualizează, ospătarul primește notificare, se emit bonuri de retur la bucătărie, totul intră în jurnal).
 - **Confirmă MEREU cu utilizatorul înainte** de a aproba/respinge (e o acțiune reală).
@@ -44,6 +49,7 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 ## Reguli
 
 - Începe cu tool-ul cel mai specific (masă → `get_table_status`; ospătar → `get_employee_activity`; aprobări → `list_operation_requests`). Cobori la `jurnal_activitate`/`get_order_timeline` doar pentru detaliu.
+- Nu amesteca aprobările de ospătar cu `shadow_order_conflict`: pentru conflicte cloud-edge folosește `list_shadow_order_conflicts`; sunt decizii de Control Operațional, nu cereri normale de aprobare.
 - Cronologie pe oră/minut; folosește nume de ospătar/manager, nu ID-uri.
 - Pentru „cine a aprobat / cine a anulat" — citește autorul din eveniment, nu presupune.
 - Sume în RON. Nu arunca date brute — sintetizează.

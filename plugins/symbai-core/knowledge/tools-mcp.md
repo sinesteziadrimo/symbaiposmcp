@@ -187,6 +187,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_operation_requests` — Jurnalul cererilor de aprobare din POS — anulări, retururi, discounturi, comps «din partea casei», transferuri de masă/ospătar, împărțiri de notă. (parametri opționali: employeeName, status, type, brandId)
 - `list_provisional_shifts` — Listează schimburile provizorii (temporare) active. (parametri opționali: dateFrom, dateTo)
 - `list_qc_inspections` — Listează inspecțiile de control calitate (QC) — rezultat, tip, defect, lot asociat. (parametri opționali: batchId, result, days, limit)
+- `list_shadow_order_conflicts` — Listează conflictele tehnice cloud-edge din Control Operațional (`shadow_order_conflict`), separate de cererile normale de aprobare. Folosește la conflicte Viva/sync; read-only, rezolvarea rămâne în `/operations`. (parametri opționali: status, orderId, brandId, locationId, dateFrom, dateTo, includeAutoResolvedRecent)
 - `list_shift_assignments` — Listează asignările angajaților la ture de producție, cu detalii angajat și tură. (parametri opționali: date, dateFrom, dateTo, shiftId)
 - `list_shipping_zones` — Listează zonele și tarifele de livrare ale MAGAZINULUI ONLINE (tabela ecommerce shipping_zones, citită de checkout-ul storefront-ului). (parametri opționali: brandId)
 - `list_zone_routing` — Listează rutarea de imprimante și ecrane KDS pe zone (ce imprimantă fiscală / de bon / de bucătărie / de bar și ce ecran KDS de bucătărie/bar primește comenzile fiecărei zone).
