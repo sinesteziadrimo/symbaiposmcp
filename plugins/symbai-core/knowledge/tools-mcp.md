@@ -329,7 +329,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_scale_models` — Listeaza modelele de cantar suportate de Symbai plus modelele cerute spre integrare de acest tenant. Foloseste inainte de configurarea unui cantar sau cand userul intreaba daca modelul lui e suportat.
 - `list_scale_devices` — Listeaza cantarele fizice inregistrate pe instanta, legate de PC-ul cu Print Agent, cu driver, conexiune si ultima stare/citire raportata. (parametri optionali: brandId, locationId)
 - `lookup_company_cui` — Caută datele firmei la ANAF pe baza CUI-ului și le SALVEAZĂ AUTOMAT în organizationSettings. (necesită: cui)
-- `capture_weight` — Citeste ULTIMA greutate raportata de un cantar inregistrat; nu face inca o citire live on-demand de la hardware. (necesită: scaleDeviceId)
+- `capture_weight` — Citeste greutatea unui cantar inregistrat: live on-demand prin Print Agent compatibil cand este conectat, altfel ultima stare raportata. (necesită: scaleDeviceId)
 - `read_brand_memories` — Citește memoriile brandului (brand voice, target audience, visual style, etc.) utile pentru marketing, comunicare și personalizare. (parametri opționali: category)
 - `read_integration_memory_files` — Citește fișierele de memorie ale integrărilor. (parametri opționali: fileType, integrationKey)
 - `request_scale_integration` — Cere echipei Symbai integrarea unui model nou de cantar nesuportat; deschide/reutilizeaza un ticket cu producator, model, protocol si mostra de output. (necesită: manufacturer, model)

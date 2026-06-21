@@ -33,7 +33,7 @@ Greutatea nominală (kg/bucată estimat) pe care o setezi pe produs e doar o est
 - **Vezi ce cântare sunt suportate** și ce ai cerut spre integrare.
 - **Înregistrezi un cântar fizic** legat de PC-ul cu Print Agent (driver + conexiune).
 - **Marchezi produse ca la-kg** (catch-weight), cu preț pe kg și greutate nominală.
-- **Citești ultima greutate** raportată de un cântar.
+- **Citești greutatea** unui cântar: live prin Print Agent când este conectat și compatibil, altfel ultima stare raportată.
 - **Ceri integrarea unui model nou** de cântar dacă nu e încă suportat — se deschide un ticket la echipa Symbai cu producătorul, modelul și o mostră de output; primești o referință (SYM-…) și ești anunțat pe email când e gata.
 
 ## Când ceri un model nou de cântar
@@ -42,6 +42,6 @@ Dacă modelul nu apare ca suportat și nu vorbește protocolul ASCII standard, n
 
 ## Limite curente (onest)
 
-- Citirea **live, la cerere**, direct de la cântar (apeși un buton și-ți arată greutatea pe loc) este în curs de finalizare; până atunci se vede ultima greutate raportată de cântar.
+- Citirea **live, la cerere**, direct de la cântar, merge prin Print Agent compatibil. Dacă agentul este offline, pe o versiune veche sau cântarul nu răspunde în timp util, Symbai cade pe ultima stare raportată.
 - Driverele de cântar sunt marcate „beta" până la validarea pe hardware fizic — pentru un model nou, validarea se face împreună cu prima instalare reală.
 - Ștergerea cântarelor/modelelor se face din aplicație, nu prin conexiune.
