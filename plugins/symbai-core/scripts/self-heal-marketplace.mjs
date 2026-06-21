@@ -63,9 +63,21 @@ try {
   }
   if (!marketplaceDir) ok();
 
-  // Throttle pe baza unui fișier de stare în CLAUDE_PLUGIN_DATA (sau lângă clonă).
-  const dataDir = process.env.CLAUDE_PLUGIN_DATA || path.join(marketplaceDir, ".git");
-  const stampFile = path.join(dataDir, ".symbai-self-heal-stamp");
+  // Throttle pe baza unui fișier de stare în CLAUDE_PLUGIN_DATA (sau lângă clona
+  // de marketplace, în folderul părinte). NU scriem în repo — altfel hook-ul își
+  // murdărește singur clona și apoi refuză reparația ca "local changes".
+  const dataDir = process.env.CLAUDE_PLUGIN_DATA || path.dirname(marketplaceDir);
+  const stampFile = path.join(dataDir, `.symbai-self-heal-${MARKETPLACE_NAME}-stamp`);
+  // stamp() scrie marca de timp DOAR la ieșirile „utile" (am confirmat la-zi sau am
+  // reparat). NU o scriem după fetch, ca un eșec parțial să nu blocheze reparația 6h.
+  const stamp = () => {
+    try {
+      if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+      fs.writeFileSync(stampFile, String(Date.now()));
+    } catch {
+      /* irelevant — throttle e best-effort */
+    }
+  };
   try {
     const last = Number(fs.readFileSync(stampFile, "utf8").trim());
     if (Number.isFinite(last) && Date.now() - last < THROTTLE_MS) ok();
@@ -82,29 +94,26 @@ try {
   }
   if (!remote.includes(UPSTREAM_HINT)) ok();
 
-  // Branch-ul curent (de regulă main).
+  // Branch-ul curent (de regulă main). HEAD detached → reatașăm pe main.
   let branch = "main";
+  let detached = false;
   try {
     branch = git(marketplaceDir, ["rev-parse", "--abbrev-ref", "HEAD"], 5000) || "main";
   } catch {
     /* fallback main */
   }
-  if (branch === "HEAD") branch = "main"; // detached → țintește main
+  if (branch === "HEAD") {
+    branch = "main";
+    detached = true;
+  }
+  // Apărare ieftină: nume de branch suspect → nu atinge nimic.
+  if (!/^[A-Za-z0-9._\/-]+$/.test(branch)) ok();
 
-  // Fetch upstream.
+  // Fetch upstream. NU marcăm stamp pe eșec de rețea — reîncercăm data viitoare.
   try {
     git(marketplaceDir, ["fetch", "origin", branch, "--quiet"], 15000);
   } catch {
-    // Nu marca stamp pe eșec de rețea — reîncercăm data viitoare.
     ok();
-  }
-
-  // Scrie stamp DUPĂ fetch reușit (am atins rețeaua).
-  try {
-    fs.mkdirSync(dataDir, { recursive: true });
-    fs.writeFileSync(stampFile, String(Date.now()));
-  } catch {
-    /* irelevant */
   }
 
   const upstreamRef = `origin/${branch}`;
@@ -118,17 +127,42 @@ try {
   } catch {
     ok();
   }
-  if (head === upstream) ok();
+  // Deja la zi ȘI atașat pe branch → nimic de făcut (marcăm throttle).
+  if (head === upstream && !detached) {
+    stamp();
+    ok();
+  }
+
+  const UPDATED_MSG = {
+    hookSpecificOutput: {
+      additionalContext:
+        "Pachetul Symbai (symbai-core) a fost actualizat automat la ultima versiune. Skill-urile și cunoștințele noi sunt disponibile.",
+    },
+  };
+
+  // HEAD detached: reatașează pe branch ȚINTĂ, dar DOAR dacă working tree-ul e curat.
+  if (detached) {
+    let dirtyD = "x";
+    try {
+      dirtyD = git(marketplaceDir, ["status", "--porcelain"], 5000);
+    } catch {
+      ok();
+    }
+    if (dirtyD) ok();
+    try {
+      git(marketplaceDir, ["checkout", "-B", branch, upstreamRef], 8000);
+      stamp();
+      ok(UPDATED_MSG);
+    } catch {
+      ok();
+    }
+  }
 
   // Încearcă fast-forward (cazul tipic: pur și simplu în urmă).
   try {
-    git(marketplaceDir, ["merge", "--ff-only", upstreamRef, "--quiet"], 8000);
-    ok({
-      hookSpecificOutput: {
-        additionalContext:
-          "Pachetul Symbai (symbai-core) a fost actualizat automat la ultima versiune. Skill-urile și cunoștințele noi sunt disponibile.",
-      },
-    });
+    git(marketplaceDir, ["merge", "--ff-only", upstreamRef], 8000);
+    stamp();
+    ok(UPDATED_MSG);
   } catch {
     /* ff a eșuat → probabil divergent; tratează mai jos */
   }
@@ -140,10 +174,16 @@ try {
   } catch {
     ok();
   }
-  if (dirty) ok(); // are modificări locale → nu atinge, lasă utilizatorul/dev să decidă
+  // Are modificări locale → nu atinge; marcăm throttle (nu se rezolvă singur,
+  // n-are sens să refacem fetch la fiecare pornire).
+  if (dirty) {
+    stamp();
+    ok();
+  }
 
   try {
-    git(marketplaceDir, ["reset", "--hard", upstreamRef, "--quiet"], 8000);
+    git(marketplaceDir, ["reset", "--hard", upstreamRef], 8000);
+    stamp();
     ok({
       hookSpecificOutput: {
         additionalContext:

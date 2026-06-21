@@ -16,6 +16,7 @@ Onboarding = configurarea de la zero (sau completarea) unei instanțe Symbai pen
 8. **Lista de tool-uri din sesiunea TA e sursa de adevăr.** Instanțele se actualizează în valuri: dacă un tool menționat în aceste fișiere lipsește la tine, instanța clientului nu are încă versiunea aceea — folosește alternativa UI indicată. Dacă ai tool-uri noi nemenționate aici, folosește-le conform descrierii lor.
 9. **Ștergeri nu există prin conexiune** — nu promite că „ștergi tu"; ghidează în aplicație (`gaseste_in_aplicatie`).
 10. **Fricțiune văzută = sugestie trimisă**: dacă un tool lipsă sau o limitare te încetinește vizibil, trimite o sugestie cu `trimite_ticket_symbai` (tip `sugestie`, cu `dedupeKey`) și mergi mai departe.
+11. **Pachetul de cunoștințe se ține singur la zi.** La instalare, configul scrie `"autoUpdate": true`, iar pluginul `symbai-core` (v0.22+) are un hook de auto-reparare care își re-sincronizează sursa de pe GitHub la fiecare pornire — clientul NU rămâne blocat pe ghiduri vechi. Dacă totuși observi că ești pe o versiune veche (lipsesc skill-uri/ghiduri pe care le aștepți), invocă skill-ul `symbai-update` (diagnostichează + repară clona de marketplace). Nu cere clientului pași manuali înainte să încerci asta.
 
 ## Fazele, în ordinea dependențelor
 
