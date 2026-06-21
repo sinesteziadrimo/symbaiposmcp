@@ -10,7 +10,7 @@ Totul stă pe pagina **`/haccp`** („HACCP & Siguranță Alimentară"), cu un *
 |---|---|---|
 | `temps` | Jurnal de temperaturi (frigidere, congelatoare, vitrine, echipamente) | `log_temperature_reading`, `list_temperature_logs` |
 | `cleaning` | Checklist de curățenie/igienă (hotă, podea, suprafețe…) cu frecvență și scadență | `complete_cleaning_task`, `list_cleaning_tasks` (+ `create_cleaning_task`) |
-| `incidents` | Registru de incidente (lanț frig, contaminare, expirat, defecțiuni) | `create_haccp_incident`, `resolve_haccp_incident`, `list_haccp_incidents` |
+| `incidents` | Registru de incidente (lanț frig, contaminare, expirat, defecțiuni) + recall | `create_haccp_incident`, `resolve_haccp_incident`, `list_haccp_incidents`, `build_recall_report`, `trace_recall_to_customers` |
 | `sensors` | Senzori de temperatură configurați (cu nume + praguri min/max) | `create_haccp_sensor` |
 | `cooling` | Sesiuni de răcire rapidă (blast chilling) monitorizate | `start_rapid_cooling_session`, `add_cooling_reading`, `list_rapid_cooling_sessions` |
 | `retention` | Probe-martor (mostre păstrate din mâncarea servită) | UI |
@@ -28,7 +28,7 @@ Totul stă pe pagina **`/haccp`** („HACCP & Siguranță Alimentară"), cu un *
 
 **Răcirea rapidă (blast chilling).** HACCP cere ca mâncarea gătită caldă (ciorbe, sosuri, carne) să treacă rapid prin „zona periculoasă" de temperatură — tipic **de la ~60°C la ≤10°C în maximum ~2 ore** — altfel se înmulțesc bacteriile. O sesiune are temperatură de pornire, țintă, limită de timp și un șir de citiri. Când o citire atinge ținta, sesiunea devine automat `completed` (conformă); dacă depășește limita de timp fără să atingă ținta, e `non_compliant`.
 
-**Raportul de retragere (recall).** Dacă un lot e suspect (ex. carne ținută la temperatură greșită), trebuie să știi instant **unde a ajuns**: în ce semipreparate/produse finite a intrat și ce loturi descendente există — ca să le retragi pe toate, nu doar lotul-sursă. `build_recall_report(lotId, direction)` parcurge genealogia: `forward` = doar aval (impactul retragerii), `full` = și amonte (din ce a provenit). Întoarce loturile afectate + produsele distincte. Se cuplează cu `create_haccp_incident` pe același lot. `lotId` vine din modulul de producție/trasabilitate (loturi de la recepție sau din producție).
+**Raportul de retragere (recall).** Dacă un lot e suspect (ex. carne ținută la temperatură greșită), trebuie să știi instant **unde a ajuns**: în ce semipreparate/produse finite a intrat, ce loturi descendente există și ce clienți trebuie notificați. `build_recall_report(lotId, direction)` parcurge genealogia: `forward` = doar aval (impactul retragerii), `full` = și amonte (din ce a provenit). Întoarce loturile afectate + produsele distincte. Pentru pasul „unul înainte" către client folosește `trace_recall_to_customers(lotId)`: lista **EXACTĂ** vine din urma lot→document de ieșire→client; lista **PREZUMTIVĂ** acoperă istoricul fără urmă exactă prin același produs în fereastra lotului și trebuie verificată manual. Se cuplează cu `create_haccp_incident` pe același lot. `lotId` vine din modulul de producție/trasabilitate (loturi de la recepție sau din producție).
 
 ## Cum se leagă de restul platformei
 - **Loturi & trasabilitate** (de unde iei `lotId`, cum curge genealogia) → `productie-trasabilitate.md`.
@@ -37,4 +37,4 @@ Totul stă pe pagina **`/haccp`** („HACCP & Siguranță Alimentară"), cu un *
 - HACCP-ul e **pasul 15 din onboarding** („DSV Chef") — vezi `onboarding/`.
 
 ## Permisiuni
-Citirile (`list_*`, `build_recall_report`) merg mereu. Scrierile (loghează temperatură, incident, bifează curățenie, răcire, creează senzor/sarcină) cer modulul **Setări & Configurare** (`setari`) pe token — exact modulul care guvernează paginile HACCP în UI. „Permisiune insuficientă" → portal Hub → Acces AI. Ștergerea de entități întregi nu e disponibilă prin conexiune (din aplicație).
+Citirile (`list_*`, `build_recall_report`, `trace_recall_to_customers`) merg mereu. Scrierile (loghează temperatură, incident, bifează curățenie, răcire, creează senzor/sarcină) cer modulul **Setări & Configurare** (`setari`) pe token — exact modulul care guvernează paginile HACCP în UI. „Permisiune insuficientă" → portal Hub → Acces AI. Ștergerea de entități întregi nu e disponibilă prin conexiune (din aplicație).

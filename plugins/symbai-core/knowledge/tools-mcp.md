@@ -33,9 +33,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 880 tool-uri** — Citire 363 · Speciale 5 · SQL 3 · Scriere per modul 509 (pe 19 module).
+**TOTAL: 881 tool-uri** — Citire 364 · Speciale 5 · SQL 3 · Scriere per modul 509 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 363 tool-uri
+## Citire (fără permisiune de modul) — 364 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 46
 - `get_attribution_ltv_by_channel` — Valoarea pe viață (LTV) a clienților grupată după canalul de achiziție, pe o cohortă de N zile: nr. (parametri opționali: brandId, days)
@@ -335,13 +335,14 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `request_scale_integration` — Cere echipei Symbai integrarea unui model nou de cantar nesuportat; deschide/reutilizeaza un ticket cu producator, model, protocol si mostra de output. (necesită: manufacturer, model)
 - `view_brand_media` — Arată-ți EFECTIV o imagine din Biblioteca Media (sau de la un URL) ca s-o VEZI și să alegi ce atașezi la o postare. (parametri opționali: mediaAssetId, url)
 
-### Diverse — 88
+### Diverse — 89
 - `analyze_external_website` — Analizeaza read-only un website public si intoarce un source brief pentru a construi/replica rapid site-ul in builder: SEO, logo/favicon, culori, fonturi, navigatie, CTA-uri, imagini/video, sectiuni, (necesită: url)
 - `analyze_food_costs` — Analizează food cost-ul produselor unui brand. (necesită: brandId)
 - `analyze_procurement` — Analizează aprovizionarea unui brand (furnizori, prețuri, lead time-uri). (necesită: brandId)
 - `audit_shop_health` — Auditează SĂNĂTATEA magazinului online al unui brand și întoarce probleme (severity error/warn) + statistici. (necesită: brandId)
 - `audit_website_seo` — Audit SEO complet al SITE-ULUI/magazinului brandului (NU doar un articol de blog — pentru articol folosește seo_audit). (parametri opționali: brandId, maxIssues)
 - `build_recall_report` — Construiește RAPORTUL DE RETRAGERE (recall) pentru un lot — arborele complet de impact într-un singur apel: toate loturile descendente (în ce s-a transformat / unde a ajuns) și, opțional, cele ascende (necesită: lotId)
+- `trace_recall_to_customers` — Recall un-pas-înainte: dat un lot, arată clienții/destinațiile expuse; separă expunerile EXACTE lot→document→client de cele PREZUMTIVE (același produs în fereastra lotului, de verificat manual). (necesită: lotId)
 - `check_efactura_status` 🌐 — Verifică la ANAF starea unei facturi trimise în e-Factura (acceptată / respinsă cu erori / în procesare) și actualizează statusul local. (necesită: invoiceId)
 - `check_contact_frequency_budget` — Verifică pentru un client câte mesaje de marketing a primit în ultimele 24h/7d pe email/SMS/WhatsApp/push și dacă mai poate primi pe fiecare canal. (necesită: customerId)
 - `check_presentation_health` — Verifica SANATATEA unei prezentari FARA s-o modifici (read-only). (necesită: presentationId)
@@ -788,7 +789,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_haccp_sensor` — Creează un senzor HACCP de temperatură (pentru monitorizare frigidere, congelatoare, camere frigorifice) (necesită: name, locationId)
 - `create_kds_screen` — Creează un ecran KDS (Kitchen Display System) (necesită: name, brandId)
 - `create_location` — Creează o locație nouă și o asociază cu unul sau mai multe branduri. (necesită: name)
-- `create_menu_display_config` — Creează o configurare de afișaj meniu pentru POS (POS Mobil Ospătar, POS Bar, POS Recepție, Kiosk, Web). (necesită: brandId, profileType)
+- `create_menu_display_config` — Creează o configurare de afișaj meniu pentru POS (POS Mobil Ospătar, POS Bar, POS Recepție, Kiosk, Web); în `config` poți seta `categoryNavMode` (`flat`/`two-level`/`drill-down`), coloane, imagini și prețuri. (necesită: brandId, profileType)
 - `create_notification_rule` — Creează o regulă de notificare/automatizare (trigger → acțiune). (necesită: name, brandId, triggerType, actionType)
 - `create_payment_method` — Configurează o metodă de plată (necesită: name, type, brandId)
 - `create_physical_menu_design` — Creează un design NOU de meniu fizic (tipărit/PDF) pentru un meniu. (necesită: brandId, menuId, name)
@@ -851,7 +852,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_game_schedule` — Modifică programul unui joc per zi a săptămânii. (necesită: gameId, dayOfWeek, openTime, closeTime)
 - `update_kds_screen` — Actualizează un ecran KDS existent: locație, nume, tip, mod afișare, activ. (necesită: screenId)
 - `update_location` — Actualizează informațiile unei locații existente (necesită: locationId)
-- `update_menu_display_config` — Actualizează o configurare de afișaj meniu existentă (necesită: configId)
+- `update_menu_display_config` — Actualizează o configurare de afișaj meniu existentă; pentru POS mobil trimite `config` complet/îmbinat cu `categoryNavMode`, `searchGridColumns`, `showProductPrice`, `showModalImage` etc. (necesită: configId)
 - `update_pos_device` — Actualizează un PC/terminal POS: nume, IP, locație, casa fiscală implicită (rutare fiscală per terminal), ecran KDS, restricții IP, activare. (necesită: deviceId)
 - `update_printer` — Actualizează o imprimantă EXISTENTĂ (redenumire, IP/port, tip, asociere cu PC-ul, casă fiscală, activare). (necesită: printerId)
 

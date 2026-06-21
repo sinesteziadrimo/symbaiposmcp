@@ -69,9 +69,9 @@ Rețete verificate pe tip: restaurant clasic → maro `#7c2d12`/negru `#0f172a` 
 ### C. Afișajul POS per dispozitiv (opțional) — `create_menu_display_config`
 
 ```json
-{"brandId": 1, "profileType": "kiosk", "name": "Kiosk Standard", "columnsCount": 3, "showImages": true}
+{"brandId": 1, "profileType": "waiter_mobile", "name": "POS Mobil - 2 niveluri", "config": {"gridColumns": 3, "showImages": true, "categoryNavMode": "two-level", "searchGridColumns": 2, "showProductPrice": false}}
 ```
-`brandId` + `profileType` obligatorii (`waiter_mobile | waiter_web | bar_pos | reception_pos | kiosk | delivery`). Idempotent pe profil+nume. ⚠ Asta e cum arată meniul pe ecranele POS/kiosk — **NU e meniul fizic tipăribil** și nu e portalul. Corecții: `update_menu_display_config(configId, ...)`. Creează doar la cerere explicită — valorile implicite ale aplicației sunt rezonabile.
+`brandId` + `profileType` obligatorii (`waiter_mobile | waiter_web | bar_pos | reception_pos | kiosk | delivery`). Idempotent pe profil+nume. ⚠ Asta e cum arată meniul pe ecranele POS/kiosk — **NU e meniul fizic tipăribil** și nu e portalul. Pentru categorii cu subcategorii pe POS mobil, pune în `config.categoryNavMode`: `flat` (toate categoriile), `two-level` (rădăcină + sub-tab-uri) sau `drill-down` (intri în categoria părinte). Expo POS Mobile respectă și opțiunile `showModalImage`, `showProductPrice`, `searchGridColumns`, `searchTextSize`, `uppercaseProducts`, `deviceSize`. Corecții: `update_menu_display_config(configId, { config: ... })`. Creează doar la cerere explicită — valorile implicite ale aplicației sunt rezonabile.
 
 ### D. Jocuri/atracții (doar parcuri, spa, hotel)
 
