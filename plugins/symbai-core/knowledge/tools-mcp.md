@@ -33,9 +33,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 881 tool-uri** — Citire 364 · Speciale 5 · SQL 3 · Scriere per modul 509 (pe 19 module).
+**TOTAL: 882 tool-uri** — Citire 365 · Speciale 5 · SQL 3 · Scriere per modul 509 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 364 tool-uri
+## Citire (fără permisiune de modul) — 365 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 46
 - `get_attribution_ltv_by_channel` — Valoarea pe viață (LTV) a clienților grupată după canalul de achiziție, pe o cohortă de N zile: nr. (parametri opționali: brandId, days)
@@ -161,7 +161,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `search_products_db` — Caută produse în baza de date după nume, SKU, cod de bare, categorie, tip, sau tag-uri. (parametri opționali: query, productType, storageZoneId, tagNames)
 - `search_products_for_tagging` — Previzualizează ce produse ar fi afectate de un set de filtre, FĂRĂ a asigna vreun tag. (parametri opționali: brandId, menuId, menuName, locationId)
 
-### Producție & trasabilitate — 50
+### Producție & trasabilitate — 51
 - `calculate_flow_bom` — Calculează BOM (Bill of Materials) complet pentru un flux: agregarea tuturor materialelor din toate operațiile. (necesită: flowVersionId)
 - `build_ingredient_declaration` — Construiește declarația de ingrediente pentru etichetă conform EU 1169/2011: rețetă explodată la materii prime, ordine descrescătoare după greutate, QUID/procente și alergeni de declarat. (parametri opționali: recipeId, productId, productName)
 - `exec_get_batch_progress` — Obține progresul complet al unui lot: pași de execuție, procent finalizare, materiale, output, pasul următor. (necesită: batchId)
@@ -188,6 +188,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_mps_net_requirements` — Calculeaza necesarul net MPS/MRP: cerere, stoc fizic vs nettable pe loturi FEFO/QC, programat, deficit si recomandare lot-sizing per produs. (parametri opționali: horizonDays)
 - `get_order_pegging_impact` — Rețea de pegging și analiză impact: ce comenzi folosesc un semipreparat/material și ce comenzi cad dacă o sursă întârzie sau lipsește. (parametri opționali: orders, horizonDays, mode, target)
 - `get_production_cost_estimate` — Cost standard complet de producție ca SAP CK11N: material multi-nivel + manoperă + utilaj + overhead, cu cost/unitate și materiale fără preț. (parametri opționali: recipeId, productId, productName, quantity)
+- `get_production_cost_variance` — Abatere standard vs actual pe un lot de producție: compară BOM-ul standard cu consumurile postate, descompune diferența în preț materie primă vs cantitate/randament, marchează loturile incomplete și dă cauza dominantă. (necesită: batchId)
 - `get_production_dispatch` — Lista de dispecerizare shop-floor pe zi/tură/zonă/echipament: ce lot/operație se produce, cantitate și cine lucrează. (parametri opționali: date, dateFrom, dateTo)
 - `get_qc_stats` — Obține statistici QC: rata de pass/fail, tip defecte frecvente, inspecții pe perioadă. (parametri opționali: days)
 - `get_shift_detail` — Obține detaliile complete ale unei ture pentru o zi: angajați, operații, loturi, KPI-uri live (cantități, scrap, completion %). (necesită: shiftId, date)
@@ -574,7 +575,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_flow_operation` — Actualizează câmpurile tab-ului General ale unei operații existente. (necesită: operationId)
 - `update_flow_version` — Actualizeaza metadatele unui flux (nume, versiune, status, notite, reteta sursa, instructiuni AI). (necesită: flowVersionId)
 - `update_mps_entry` — Actualizează o intrare MPS (cantitate, status, stație, tură). (necesită: entryId)
-- `update_capa` — Actualizează o CAPA/NCR: status, cauză rădăcină, acțiuni, responsabil, verificare sau închidere. (necesită: capaId)
+- `update_capa` — Actualizează o CAPA/NCR: status, cauză rădăcină, acțiuni, responsabil, verificare sau închidere. La `status:"closed"` cere cauză, acțiune corectivă, verificare și `closedByEmployeeId`; altfel refuză închiderea. (necesită: capaId)
 - `update_production_equipment` — Actualizează un echipament de producție. (necesită: equipmentId)
 - `update_production_shift` — Actualizează o tură de producție (nume, orar, culoare, activ, eficiență). (necesită: shiftId)
 - `update_production_zone` — Actualizează o zonă de producție. (necesită: zoneId)

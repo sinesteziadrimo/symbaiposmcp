@@ -157,12 +157,13 @@ Acestea sunt capabilitățile „de paritate SAP" — cele care diferențiază S
 
 ### Cost de fabricație înainte de producție (ca SAP CK11N)
 - `get_production_cost_estimate` (`recipeId` SAU `productId` SAU `productName`; `quantity` default 1; opțional `laborRatePerHour`, `machineRatePerHour`, `overheadPercent`) — calculează **costul standard COMPLET**, defalcat pe componente în `costComponents`:
-  - **Material**: BOM multi-nivel explodat la materii prime × `receptionPrice` (inflatat cu `scrap_percent` per ingredient acolo unde e setat — pierderea de proces).
+  - **Material**: BOM multi-nivel explodat la materii prime × `receptionPrice`, cu conversie automată din unitatea rețetei în unitatea de stoc a produsului și cu `scrap_percent` acolo unde e setat — pierderea de proces.
   - **Manoperă**: din fluxul tehnologic (durate operații × personal recomandat) × tarif orar. Tariful = `laborRatePerHour` dacă-l dai, altfel **media tarifelor orare ale angajaților activi**.
   - **Utilaj**: minute-mașină × `machineRatePerHour` (amortizare+energie/oră) — dă-l ca să-l incluzi.
   - **Overhead (regie)**: `overheadPercent` % din material+manoperă+utilaj.
   Întoarce `totalCost`, `totalCostPerUnit`, cost/unitate pe materiale, materialele fără preț și **abaterea față de costul stocat** (`variancePct`). Flag onest în `warnings` când lipsește fluxul (manoperă=0) sau tariful.
 - Folosește la „cât mă costă să produc 1000 buc din X", „food cost teoretic", „cât e manopera", „ce marjă am la rețeta Y".
+- `get_production_cost_variance` (`batchId`) — după ce lotul are consumuri postate, compară **standard vs actual** pe material și răspunde la „de ce a ieșit lotul mai scump/mai ieftin": abatere de **preț** (materia primă a costat altfel decât standardul) vs abatere de **cantitate/randament** (s-a consumat mai mult/puțin decât rețeta pentru cantitatea reală produsă). Pozitiv = nefavorabil, negativ = favorabil. Dacă lotul nu are randament real sau consum postat, răspunsul e marcat ca parțial și trebuie explicat ca atare.
 
 ### Audit SAP-level înainte de ofertă enterprise
 Când userul întreabă realist dacă Symbai poate înlocui SAP/HANA într-o fabrică, nu răspunde din impresii. Rulează audituri read-only peste datele reale:
@@ -230,7 +231,7 @@ Două sisteme paralele: **Quality Holds** (blochezi un LOT) și **QC Inspections
 - **Blocaj / carantină pe lot**: `create_quality_hold` (`lotId`, `eventType` ex. qc_fail/contamination/expiry_risk; opțional `reasonCode`, `notes`, `heldBy`). Lotul devine „hold" — nu mai poate avansa în producție.
 - **Eliberare**: `release_quality_hold` (`holdId`, `releasedBy`; opțional `notes`). Dacă nu mai sunt alte blocaje active pe lot, lotul redevine disponibil.
 - **Listă blocaje active**: `list_quality_holds` (`includeReleased` — implicit doar cele active).
-- **CAPA / NCR (neconformități + acțiuni corective/preventive)**: folosește când problema trebuie urmărită până la cauză-rădăcină, acțiune, verificare și închidere (audit BRC/IFS, reclamații, deviații QC/HACCP recurente). Citește cu `list_capa` (`status` default neînchise, `severity` opțional). Deschizi cu `open_capa` (`title`, opțional `description`, `severity`, `sourceType` = qc_disposition/haccp_incident/complaint/audit/manual, `sourceId`, `ownerEmployeeId`, `dueDate`, `rootCause`, `brandId`) după confirmarea datelor cheie. Actualizezi cu `update_capa` (`capaId`, `status` open/investigating/action/verification/closed/cancelled, `rootCause`, `correctiveAction`, `preventiveAction`, `verificationNote`); la `closed` se setează `closedAt`.
+- **CAPA / NCR (neconformități + acțiuni corective/preventive)**: folosește când problema trebuie urmărită până la cauză-rădăcină, acțiune, verificare și închidere (audit BRC/IFS, reclamații, deviații QC/HACCP recurente). Citește cu `list_capa` (`status` default neînchise, `severity` opțional). Deschizi cu `open_capa` (`title`, opțional `description`, `severity`, `sourceType` = qc_disposition/haccp_incident/complaint/audit/manual, `sourceId`, `ownerEmployeeId`, `dueDate`, `rootCause`, `brandId`) după confirmarea datelor cheie. Actualizezi cu `update_capa` (`capaId`, `status` open/investigating/action/verification/closed/cancelled, `rootCause`, `correctiveAction`, `preventiveAction`, `verificationNote`, `closedByEmployeeId`). La `closed`, tool-ul refuză închiderea dacă lipsesc cauza-rădăcină, acțiunea corectivă, nota de verificare sau persoana care închide; nu raporta CAPA închisă până nu verifici prin `list_capa`.
 - **Inspecții QC**: citești cu `list_qc_inspections` (`batchId`, `result` pass/fail/conditional, `days`, `limit`). Scrii o dovadă de operație cu `record_operation_qc_inspection` (`batchId`, `operationId` sau `qualityRequirementId`, `result`, opțional `measuredValue`, `inspectorId`, `notes`). Pentru controale de temperatură/HACCP pune `measuredValue`; tool-ul o salvează și ca `temperatureC`, astfel încât gate-ul de finalizare o poate folosi.
 - **Statistici QC**: `get_qc_stats` (`days`) — rata pass/fail, top defecte cu frecvență și procent.
 - **Pareto defecte (80/20)**: `get_defect_pareto` (`days`) — tipuri de defecte sortate descrescător, cu rang, cantitate respinsă, % din total, % cumulat. Top 2-3 tipuri cauzează de regulă ~80% din rebuturi.
@@ -310,7 +311,7 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 | „Ce loturi sunt acum în carantină" | `list_quality_holds`. |
 | „Ce CAPA/NCR am deschise" | `list_capa` — implicit arată neînchisele; filtrează cu `status` sau `severity`. |
 | „Deschide o neconformitate / acțiune corectivă" | Confirmă titlu, severitate, sursă, responsabil și termen, apoi `open_capa`. Leagă `sourceType`/`sourceId` la dispoziție QC, incident HACCP, reclamație, audit sau manual. |
-| „Actualizează / închide CAPA" | `update_capa` (`capaId`, `status`, `rootCause`, `correctiveAction`, `preventiveAction`, `verificationNote`). Flux normal: investigating → action → verification → closed. |
+| „Actualizează / închide CAPA" | `update_capa` (`capaId`, `status`, `rootCause`, `correctiveAction`, `preventiveAction`, `verificationNote`, `closedByEmployeeId`). Pentru `closed` sunt obligatorii cauza-rădăcină, acțiunea corectivă, verificarea și persoana care închide; verifici apoi cu `list_capa`. |
 | „Care e statusul QC al lotului X" | `exec_get_lot_qc_status` (`lotId`). |
 | „Dă-mi COA-ul / certificatul de analiză pentru lot" | `generate_batch_coa` (`batchId`) — QC vs specificație, loturi produse, valabilitate, alergeni și verdict. Pentru semnătură QA folosește EBR/release. |
 | „Bilanț de masă / cât a intrat vs cât a ieșit" | `get_batch_mass_balance` (`batchId`) — consum intrări din genealogie vs output bun + scrap + rework; dacă sunt unități amestecate, explică warning-ul. |
@@ -326,6 +327,7 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 | „Ce materii prime îmi trebuie pentru TOATE comenzile / am stoc să le produc" | `get_material_requirements` (`orders` sau cererea din demand) — MRP multi-nivel net de stoc, ce lipsește de comandat. |
 | „Programează comenzile ȘI semipreparatele care nu-s pe stoc" | `schedule_production_orders` cu `explodeMultiLevel: true` (+ `commit:false` întâi pentru preview). |
 | „Cât mă costă să produc 1000 buc din X / food cost / cât e manopera" | `get_production_cost_estimate` (`recipeId`/`productName`, `quantity`, opțional `laborRatePerHour`/`machineRatePerHour`/`overheadPercent`) — material+manoperă+utilaj+overhead. |
+| „De ce a ieșit lotul X mai scump / unde am pierdut bani" | `get_production_cost_variance(batchId)` — standard vs actual pe lot: preț materie primă vs cantitate/randament. Dacă lotul e incomplet, explici că cifrele sunt parțiale. |
 | „Lista de ingrediente / declarația EU 1169 / QUID pentru etichetă" | `build_ingredient_declaration` (`recipeId`/`productId`) — ordine descrescătoare după greutate + % + alergeni. |
 | „Ce are de făcut fiecare echipă/zonă azi/mâine (dispecerizare)" | `get_production_dispatch` (`date` sau `dateFrom`/`dateTo`). |
 | „Mai am material liber să promit comanda asta / cât pot promite" | `get_material_availability` (`productIds` opțional) — free-to-promise; + `schedule_production_orders` `commit:false` pentru capacitate. |
@@ -362,6 +364,7 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 - **De ce `exec_complete_operation` îmi întoarce `qualityGate:true`?** → Operația cere dovadă QC/HACCP/CCP înainte să miște stocul. Citește `violations`, înregistrează dovada lipsă cu `record_operation_qc_inspection` sau deschide/actualizează decizia QA/CAPA pentru neconformitate; nu ocoli gate-ul prin retry.
 - **De ce e diferit `exec_complete_operation` de `exec_declare_consumption`?** → `exec_complete_operation` poate face auto-consum (backflush) + scrie genealogia + creează containere automat; `exec_declare_consumption` e declarare manuală a consumului în timpul operației.
 - **Costul producției apare în rapoarte?** → Da — costul real al producției intră în COGS din P&L.
+- **Vreau să știu de ce un lot a costat mai mult decât trebuia.** → Folosește `get_production_cost_variance(batchId)`: pozitiv = nefavorabil, negativ = favorabil; separă abaterea de preț de abaterea de cantitate/randament. Dacă lipsesc consumurile sau randamentul real, cifrele sunt parțiale.
 - **Clientul/inspectorul poate vedea un container fără cont?** → Da — pagina `/c/:codQR` e publică, se deschide la scanarea etichetei QR.
 
 ## Pentru acces SQL
