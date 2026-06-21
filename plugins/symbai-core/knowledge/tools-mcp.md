@@ -33,9 +33,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 872 tool-uri** — Citire 359 · Speciale 5 · SQL 3 · Scriere per modul 505 (pe 19 module).
+**TOTAL: 880 tool-uri** — Citire 363 · Speciale 5 · SQL 3 · Scriere per modul 509 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 359 tool-uri
+## Citire (fără permisiune de modul) — 363 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 46
 - `get_attribution_ltv_by_channel` — Valoarea pe viață (LTV) a clienților grupată după canalul de achiziție, pe o cohortă de N zile: nr. (parametri opționali: brandId, days)
@@ -310,7 +310,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_hotel_folios` — Listează notele de cont (folios) ale oaspeților cu total consum, total plăți și sold. (parametri opționali: brandId, locationId, status, limita)
 - `list_hotel_rooms` — Listează camerele hotelului cu statusul curent (clean, occupied, dirty, out_of_service etc.) + sumar pe status. (parametri opționali: brandId, locationId, status)
 
-### Brand, locație, integrări & config — 19
+### Brand, locație, integrări & config — 23
 - `browse_brand_media` — Caută în biblioteca media a brandului (poze, video-uri, materiale grafice). (necesită: brandId)
 - `explain_feature` — Explică o funcționalitate Symbai utilizatorului (necesită: feature)
 - `get_accounting_overview` — Prezentare generală a stării contabile: tipuri de produs cu/fără conturi, rezumat plan de conturi, număr înregistrări contabile, configurare sincronizare. (necesită: brandId)
@@ -326,9 +326,13 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_brands` — Listează toate brandurile din sistem cu detalii.
 - `list_floor_config_schedules` — Listează programările de plan de sală (ce configurație e activă în fiecare zi a săptămânii) + excepțiile pe dată (override-uri pentru zile speciale: sărbători, evenimente). (parametri opționali: brandId, locationId)
 - `list_locations` — Listează toate locațiile din sistem cu detalii complete: adresă, oraș, brand asociat.
+- `list_scale_models` — Listeaza modelele de cantar suportate de Symbai plus modelele cerute spre integrare de acest tenant. Foloseste inainte de configurarea unui cantar sau cand userul intreaba daca modelul lui e suportat.
+- `list_scale_devices` — Listeaza cantarele fizice inregistrate pe instanta, legate de PC-ul cu Print Agent, cu driver, conexiune si ultima stare/citire raportata. (parametri optionali: brandId, locationId)
 - `lookup_company_cui` — Caută datele firmei la ANAF pe baza CUI-ului și le SALVEAZĂ AUTOMAT în organizationSettings. (necesită: cui)
+- `capture_weight` — Citeste ULTIMA greutate raportata de un cantar inregistrat; nu face inca o citire live on-demand de la hardware. (necesită: scaleDeviceId)
 - `read_brand_memories` — Citește memoriile brandului (brand voice, target audience, visual style, etc.) utile pentru marketing, comunicare și personalizare. (parametri opționali: category)
 - `read_integration_memory_files` — Citește fișierele de memorie ale integrărilor. (parametri opționali: fileType, integrationKey)
+- `request_scale_integration` — Cere echipei Symbai integrarea unui model nou de cantar nesuportat; deschide/reutilizeaza un ticket cu producator, model, protocol si mostra de output. (necesită: manufacturer, model)
 - `view_brand_media` — Arată-ți EFECTIV o imagine din Biblioteca Media (sau de la un URL) ca s-o VEZI și să alegi ce atașezi la o postare. (parametri opționali: mediaAssetId, url)
 
 ### Diverse — 88
@@ -427,9 +431,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 502 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 509 tool-uri (gated de writeModules pe token)
 
-### produse_meniu — Produse & Meniuri — 62 tool-uri
+### produse_meniu — Produse & Meniuri — 63 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
 - `answer_bulk_import_question` — Raspunde la O intrebare de clarificare dintr-o sesiune de import (echivalentul unui click pe optiune in pagina de import, dar prin conexiune). (necesită: sessionId, questionId, optionId)
 - `apply_menu_prices` — Actualizează prețurile meniu items în bulk. (necesită: menuId, prices)
@@ -478,6 +482,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_menu_category_ids` — Setează care categorii RĂDĂCINĂ apar într-un meniu (coloana menus.category_ids) — înlocuiește COMPLET lista. (necesită: menuId, categoryIds)
 - `set_product_86` — Marchează un produs ca INDISPONIBIL («86» — termen din bucătărie pentru 'nu mai avem'). (necesită: productId)
 - `set_product_allergens` — Setează alergenii unui produs (necesită: productId, allergenIds)
+- `set_product_catch_weight` — Marcheaza/dezactiveaza un produs ca greutate variabila: numarat pe bucata, valorizat/vandut la kg real cantarite; seteaza greutate nominala si pret pe kg cand e cazul. (necesită: productId)
 - `set_product_bundle` — Creeaza/actualizeaza un pachet «Cumparate frecvent impreuna» (FBT) pe pagina de produs din magazinul online — produsul PRINCIPAL plus produsele din pachet, cu discount optional pe total. (necesită: brandId, primaryProductId, bundleItemIds)
 - `set_product_image` — Setează imaginea unui produs dintr-un URL public (ex. (necesită: productId, imageUrl)
 - `set_product_nutrition` — Setează manual valorile nutriționale ale unui produs (per 100g, conform EU 1169/2011) — energie (kcal/kJ), grăsimi, din care saturate, glucide, din care zaharuri, proteine, sare, fibre. (necesită: productId)
@@ -505,7 +510,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_recipe_labels` — Setează/actualizează etichetele pentru o rețetă. (necesită: recipeId, labels)
 - `update_recipe` — Actualizează o rețetă existentă. (necesită: recipeId)
 
-### productie — Producție — 65 tool-uri
+### productie — Producție — 66 tool-uri
 - `activate_flow_version` — Activează un flux (schimbă statusul din draft → active). (necesită: flowVersionId)
 - `add_flow_operation` — Adaugă o operație nouă într-un flux cu toate câmpurile tab-ului General: nume, ordine, durată, setup, descriere, container, depozitare, produceLot, skipIfStockAvailable, overlapAllowed. (necesită: flowVersionId, name, operationOrder)
 - `add_operation_dependency` — Adaugă o dependență între două operații: FS (Finish-Start), SS (Start-Start), FF (Finish-Finish), SF (Start-Finish) cu lag time. (necesită: flowVersionId, fromOperationId, toOperationId)
@@ -553,6 +558,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `exec_validate_scan` — Validează un scan QR în context: verifică dacă containerul este corect pentru operația/lotul curent. (necesită: qrCode, context)
 - `map_zone_ingredient_warehouse` — Asociază un ingredient (produs) cu o gestiune specifică pentru o zonă de producție. (necesită: zoneId, productId, warehouseId)
 - `print_designed_label` — Printează o etichetă de producție pe baza unui ȘABLON de design din Materiale grafice (tip 'label': cod de bare, lot, termen de valabilitate, alergeni, gramaj etc.). (necesită: brandId)
+- `print_catch_weight_label` — Printeaza eticheta unui produs catch-weight cu greutatea reala in codul de bare GS1-128; poate tipari sau intoarce PDF. (necesită: productId, weightKg)
 - `print_production_labels` — Trimite comanda de printare etichete de producție pentru un lot sau rețetă. (necesită: printerId)
 - `open_capa` — Deschide o CAPA/NCR pentru neconformitate: cauză rădăcină, acțiune corectivă/preventivă, responsabil, severitate și termen. (necesită: title)
 - `release_quality_hold` — Eliberează un blocaj de calitate (quality hold). (necesită: holdId, releasedBy)
@@ -738,7 +744,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_reception_note` — Actualizează o notă de recepție existentă (status, rezoluție, descriere). (necesită: noteId)
 - `update_supplier` — Actualizează datele unui furnizor existent (adresă, termeni plată, IBAN, zile livrare, etc.) (necesită: supplierId)
 
-### setari — Setări & Configurare — 107 tool-uri
+### setari — Setări & Configurare — 109 tool-uri
 - `add_cooling_reading` — Adaugă o citire de temperatură la o sesiune de răcire rapidă în curs. (necesită: sessionId, tempCelsius)
 - `add_physical_menu_page_element` — Adaugă un element FREEFORM pe o pagină (Imagine/Text/Separator/Formă) — peste produse. (necesită: configId, pageIndex, element)
 - `add_presentation_library_item` — Adaugă un element NOU în bibliotecă (durere/soluție/întrebare/dovadă/obiecție/calcul). (necesită: presentationId, kind, item)
@@ -789,6 +795,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_pos_device` — Înregistrează un PC/terminal POS nou (tabela devices). (necesită: name)
 - `create_presentation_from_template` — Creează o prezentare NOUĂ într-un brand, clonând fie un ȘABLON built-in (templateKey — vezi list_presentation_templates), fie o prezentare EXISTENTĂ; poate seta și `coverImageUrl` / `coverImageObjectPosition` pentru ecranul de start + primul slide. (necesită: title)
 - `create_printer` — Configurează o imprimantă (termică, fiscală, de rețea) (necesită: name, type, brandId)
+- `create_scale_device` — Inregistreaza un cantar fizic pe instanta, legat de PC-ul cu Print Agent; foloseste driver + conexiune seriala/TCP si confirma cu list_scale_devices. (necesită: name)
 - `create_tag_routing_rule` — Creeaza o regula de rutare la nivel de LOCATIE in tag_routing_rules (FALLBACK in routing-resolver — folosita doar daca tagul nu are override pe zona). (parametri opționali: tagId, tagName, printerId, printerName)
 - `delete_floor_config_date_override` — Șterge o excepție de dată (override) pentru planul de sală (sub-entitate). (necesită: overrideId)
 - `delete_floor_config_schedule` — Șterge o programare de plan de sală pe zi a săptămânii (sub-entitate, nu o configurație întreagă). (necesită: scheduleId)
@@ -807,6 +814,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `remove_physical_menu_page_element` — Șterge un element freeform de pe o pagină, după id (din add_physical_menu_page_element sau get_physical_menu_config section='page'). (necesită: configId, pageIndex, elementId)
 - `remove_presentation_library_item` — Șterge un element din biblioteca prezentării (durere/soluție/etc.). (necesită: presentationId, kind, itemId)
 - `reorder_physical_menu_categories` — Reordonează categoriile (sortOrder + ordinea blocurilor PE FIECARE pagină). (necesită: configId, orderedCategoryIds)
+- `register_scale_model` — Inregistreaza sau actualizeaza un model de cantar in catalogul instantei, mapat la un driver incorporat; pentru modele nesuportate foloseste request_scale_integration. (necesită: manufacturer, model)
 - `resolve_haccp_incident` — Marchează un incident HACCP ca REZOLVAT și consemnează măsura corectivă. (necesită: incidentId, resolution)
 - `save_presentation` — UPSERT o prezentare completă: dacă `presentation.id` există pe brand o ÎNLOCUIEȘTE integral, altfel o adaugă (generează id dacă lipsește). (necesită: presentation)
 - `seed_reservation_settings` — Configurează automat setările de rezervări recomandate pe tipul de business (restaurant, bar, cafenea, hotel, etc.) (necesită: brandId, businessType)
