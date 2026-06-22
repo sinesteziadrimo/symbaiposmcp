@@ -10,7 +10,7 @@ Codul real este sursa de adevar: verifica mereu `app.json`, `package.json`, `src
 |---|---|---|---|---|---|
 | `expo-mobile/` | `Symbai POS` | aplicatia nativa POS pentru ospatari, bar, receptie si operatiuni la masa | `com.symbai.waiter` | `com.symbai.waiter` | `symbai-viva-callback` |
 | `expo-portal/` | `Symbai Portal` | aplicatia clientului: meniu, comenzi, cont, activitati/portal clienti | `com.symbai.portal` | `com.symbai.portal` | `symbai-portal` |
-| `expo-sales/` | `Symbai Staff` | aplicatia angajatilor: livratori, agenti teren, CRM/vanzari, task-uri | `com.symbai.staff` | `com.symbai.staff` | `symbai-staff` |
+| `expo-sales/` | `Symbai Staff` | aplicatia angajatilor: livratori, agenti teren, CRM/vanzari, task-uri, productie/fabrica si containere QR | `com.symbai.staff` | `com.symbai.staff` | `symbai-staff` |
 
 `expo-sales` este doar numele tehnic al folderului. In UI, documentatie client-facing si preview-uri foloseste **Symbai Staff** sau **Aplicatie Staff**, nu "Expo Sales".
 
@@ -45,7 +45,7 @@ Aceeasi pagina are doua configurari diferite si Claude trebuie sa le separe clar
 | Card / dialog | Pentru cine | Skill corect | Tool-uri |
 |---|---|---|---|
 | `Configurare Platforma Clienti` | clientii publici: portal, QR, meniu, comenzi, jocuri | `configureaza-portal` | `get_portal_config`, `configure_portal_*`, `configure_portal_qr`, `spotlight_portal_tab` |
-| `In Aplicatie Staff` | angajati: livratori, agenti teren, CRM, task-uri, receptie, marfa | `configureaza-aplicatie-staff` | UI/Chrome; nu exista tool MCP dedicat pentru acest dialog in catalogul curent |
+| `In Aplicatie Staff` | angajati: livratori, agenti teren, CRM, task-uri, receptie, marfa, fabrica/containere QR | `configureaza-aplicatie-staff` | UI/Chrome; nu exista tool MCP dedicat pentru acest dialog in catalogul curent |
 
 ### In Aplicatie Staff / Symbai Staff
 
@@ -73,6 +73,17 @@ Preseturi verificate in cod (`shared/expo-sales-profile.ts`):
 | `7. Vanzari / CRM cu vizite` | `sales_field` | CRM teren, traseu zilnic, check-in si vizite |
 
 Feature-uri toggle: `tasks`, `stockReceiving`, `kitchenPickup`, `reception`, `deliveries`, `deliverySales`, `salesCrm`, `fieldVisits`, `messages`, `reports`, `callDesk`.
+
+### Runtime actual in Symbai Staff
+
+Ce vede angajatul in aplicatia nativa depinde de profilul rezolvat din rol/feature-uri:
+
+- **Ziua mea / Sarcini**: rolurile cu `tasks` vad feed-ul din `/api/my-tasks`, grupat pe intarziate / azi / urmatoarele / generale / finalizate azi. Deep link-uri utile: `symbai-staff://tasks` si `symbai-staff://task/<taskId>`. Bifarea poate cere dovada foto, nota, numar sau semnatura.
+- **Fabrica**: rolurile cu productie/factoryOps vad tabul **Fabrica** cu operatii active, QC/hold, imprimante, retete si scanare. Dintr-o operatie se poate deschide rularea pe mobil (`symbai-staff://operation/<batchId>`) ca operatorul sa porneasca/opreasca, sa declare consum/output, QC si predare, dupa fluxul shop-floor.
+- **Container nou + QR**: in tabul de etichete din Fabrica, operatorul poate crea un container fizic (`tray`, `box`, `crate`, `pallet`) cu cantitate/unitate/conditii de pastrare optionale, apoi genereaza QR si printeaza eticheta. App-ul incearca intai sablonul de eticheta din Materiale grafice, apoi cade pe eticheta simpla de container.
+- **Detaliu container**: scanarea sau `symbai-staff://container/<qrCode>` deschide detaliul bogat din `/api/container-info`: produs, lot, materiale, zona, echipament, istoric scanari si predari in asteptare. De aici operatorul poate printa, avansa etapa, imparti containerul, marca problema QC sau accepta/respinge predarea.
+
+Pentru agenti, explica simplu: MCP-ul poate citi/scrie datele de productie si sarcini, dar actiunile fizice de teren (scanare camera, printare eticheta, split/advance container, accept predare) se fac in **Symbai Staff** sau in scannerul web, nu din chat. Pentru dovada vizuala nativa foloseste emulatorul Android si screenshot; pentru dialogul de configurare din POS web foloseste Chrome pe `/menu/platforms`.
 
 Preview-ul de livrator este clickabil si trebuie explicat ca o simulare realista: `Traseu`, `Suna`, `Problema`, `Pornesc cursa`, `Am ajuns`, `Poza`, `Incasez`, `Marchez livrata`, `Reiau simularea`. Pentru `driver_basic`, app-ul este livrator-focused: primul tab este `Livrari`, CRM-ul nu apare si `Mai mult` este ascuns.
 

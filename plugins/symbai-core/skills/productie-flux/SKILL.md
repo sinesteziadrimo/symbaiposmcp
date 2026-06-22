@@ -48,7 +48,7 @@ Bucla de lucru tipică:
 NU-l duci pe restaurant prin operații/stații/MPS — nici nu le vede în meniu.
 
 ### Traseul Fabrică (mod fabrică)
-Flux pe operații, execuție pe stații, planificare și trasabilitate fină. Pagini: **Fluxuri Tehnologice** (`/fluxuri-tehnologice`), **AI Flow Builder** (`/ai-flow-builder`), **Echipamente & Zone** (`/production/equipment-zones`), **Plan Fabrică 2D** (`/factory-floor-plan`), **Execuție Producție** (`/production`), **Tabletă Stație** (`/workstation-tablet`), **Scanner Containere** (`/production/scanner`), **Planificare MPS/MRP** (`/planificare-mps`), **Panou Fabrică** (`/factory-dashboard`), **Loturi & WIP** (`/loturi-wip`), **Comenzi B2B** (`/b2b-orders`), **HACCP** (`/haccp`).
+Flux pe operații, execuție pe stații, planificare și trasabilitate fină. Pagini: **Fluxuri Tehnologice** (`/fluxuri-tehnologice`), **AI Flow Builder** (`/ai-flow-builder`), **Echipamente & Zone** (`/production/equipment-zones`), **Plan Fabrică 2D** (`/factory-floor-plan`), **Execuție Producție** (`/production`), **Tabletă Stație** (`/workstation-tablet`), **Scanner Containere** (`/production/scanner`), **Symbai Staff** (app mobila pentru operator: sarcini, operatii, containere QR), **Planificare MPS/MRP** (`/planificare-mps`), **Panou Fabrică** (`/factory-dashboard`), **Loturi & WIP** (`/loturi-wip`), **Comenzi B2B** (`/b2b-orders`), **HACCP** (`/haccp`).
 
 Diferența-cheie de execuție față de restaurant: **în fabrică, lotul trebuie să aibă flowVersionId atașat** (flux tehnologic), și **NU-l finalizezi cu exec_complete_batch** — operatorul lucrează **operație cu operație**. Pe fiecare operație:
 - **Pornește**: `exec_start_operation` (necesită `batchId`, `flowOperationId`; opțional `employeeId` pentru audit).
@@ -57,7 +57,7 @@ Diferența-cheie de execuție față de restaurant: **în fabrică, lotul trebui
   - **Declarare manuală**: `exec_declare_consumption` (necesită `operationExecutionId`, `items`) — operatorul declară (sau scanează) exact loturile care intră, **ca să fie legată corect genealogia** → apoi `exec_declare_output` (necesită `operationExecutionId`, `qtyGood`; plus rebut / de retușat). Dacă lotul ales încalcă FEFO, MCP nu forțează abaterea doar cu `overrideReason`; alege lotul corect sau trimite userul în UI la manager/QA autorizat.
   - **QC/HACCP înainte de finalizare**: dacă operația are QC obligatoriu, CCP sau temperatură obligatorie, citește cerințele cu `list_operation_qc(operationId)` și consemnează dovada cu `record_operation_qc_inspection(batchId, operationId/qualityRequirementId, result, measuredValue?, inspectorId?)` înainte de `exec_complete_operation`. Confirmă valorile cu operatorul/userul; nu inventa rezultate QC.
 - **Predă** la stația următoare: `exec_handover_operation` (necesită `fromOperationExecutionId`, `toFlowOperationId`).
-- Containerele se scanează pe `/production/scanner`: `exec_scan_container` (necesită `qrCode`), `exec_validate_scan` (necesită `qrCode`, `context`).
+- Containerele se scanează pe `/production/scanner` sau in **Symbai Staff**: `exec_scan_container` (necesită `qrCode`), `exec_validate_scan` (necesită `qrCode`, `context`). In app exista si `Container nou + QR` pentru recipient fizic + eticheta, plus detaliu container (`symbai-staff://container/<qrCode>`) cu print, advance, split, QC flag si accept/respinge predare.
 
 Detaliile complete (proiectare flux, MPS, B2B, QC, recall) sunt în `knowledge/productie-fabrica.md`.
 
@@ -105,7 +105,7 @@ Pentru dev/local, dacă userul spune „Senneville”, „ARCA” sau „fabrica
 - **Nu inventa NIMIC** — nici cantități, nici pierderi, nici valori QC, nici randamente, nici tool-uri sau câmpuri. Ce lipsește, întrebi sau lași gol.
 - **Întâi detectează modul, apoi rutează.** Nu da pași de fabrică unui restaurant și invers — confuzia e cauza #1 de „nu văd pagina" și de „nu se aplică". Dacă lotul e creat cu flowVersionId, trebuie shop-floor. Fără flux, `exec_complete_batch` finalizează + consumă + creează produsul finit, dintr-un pas.
 - **Permisiuni**: pentru scrieri ai nevoie de modulul `productie` pe token (calitate și execuție incluse), `retete` pentru rețetele-suport, `setari` pentru HACCP. „Permisiune insuficientă" → explică activarea din **Hub → Acces AI**.
-- **Ce NU se poate prin conexiune**: ștergerea de entități întregi și acțiunile fizice pe containere (scanare/split/merge/predări) se fac **din aplicație** — trimite userul acolo. Fluxurile tehnologice se pot crea/edita prin tool-uri MCP, dar agentul nu setează coordonate x/y; citește graful cu `get_flow_graph`, editează semantica, apoi cheamă `auto_arrange_diagram`.
+- **Ce NU se poate prin conexiune**: ștergerea de entități întregi și acțiunile fizice pe containere (camera, print, split/merge, avansare etapă, acceptare predări) se fac **din aplicație** — Scanner Containere web sau Symbai Staff. Prin MCP verifici dupa aceea cu `exec_scan_container` / `exec_get_container_info` / `exec_list_handovers`. Fluxurile tehnologice se pot crea/edita prin tool-uri MCP, dar agentul nu setează coordonate x/y; citește graful cu `get_flow_graph`, editează semantica, apoi cheamă `auto_arrange_diagram`.
 
 ## Ce-ți cere userul → ce faci (cheatsheet)
 

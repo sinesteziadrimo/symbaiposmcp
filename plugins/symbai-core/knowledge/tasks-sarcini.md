@@ -7,6 +7,7 @@
 Sistemul de sarcini are **două fețe** care nu trebuie confundate:
 - **Managerul construiește** listele de sarcini din `/staff` → tabul **Sarcini & Liste** (cine, ce, când, cu ce dovadă).
 - **Angajatul vede și bifează** sarcinile lui din `/my-tasks` (Sarcinile Mele), grupate pe Întârziate / Azi / Următoarele.
+- Pe mobil, aceeasi logica apare in **Symbai Staff** la **Ziua mea / Sarcini** (`symbai-staff://tasks` si `symbai-staff://task/<taskId>`). Dovada foto/nota/numar/semnatura se ataseaza din app; prin MCP verifici cu `get_my_tasks` / `get_task`.
 
 Schimbarea cea mai importantă față de vechiul model: o listă cu o **ȚINTĂ** (rol + tură + raion) apare **automat** la angajații care sunt în tură azi și se potrivesc țintei — nu mai trebuie să atribui manual fiecărei persoane. Vechiul model lega lista de un rol/tură doar „decorativ" (nu filtra nimic); acum ținta chiar decide cine vede sarcina.
 
@@ -43,6 +44,11 @@ Schimbarea cea mai importantă față de vechiul model: o listă cu o **ȚINTĂ*
 - tabul **„Finalizate"**: ce a bifat azi (numără ȘI sarcinile atribuite, ȘI cele generale făcute de el);
 - fiecare sarcină arată **DE CE** o vede: „Atribuit ție" / „Rolul tău · tura de azi" / „Liber";
 - taburile **„Toate"** și **„Liste"** apar doar celor cu permisiune de vizualizare totală / management.
+
+**Angajatul pe mobil — Symbai Staff**:
+- pentru rolurile cu `tasks`, primul tab poate fi **Azi** sau **Sarcini**; datele sunt aceleasi ca in `/my-tasks`;
+- deep link-uri utile pentru notificari si testare: `symbai-staff://tasks` si `symbai-staff://task/<taskId>`;
+- dovada cu poza se face nativ din telefon. Nu incerca sa simulezi poza din MCP: completezi/bifezi prin `complete_task` doar cand userul a furnizat dovada sau cand task-ul nu cere poza.
 
 ## Modelul de vizibilitate — în cuvinte simple
 
