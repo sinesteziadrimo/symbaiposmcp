@@ -22,11 +22,13 @@ Orchestrator „lider + lucrători", condus de o **coadă durabilă pe disc**, N
   "header": { "productsTarget": 4400, "productsWritten": 0, "imagesWritten": 0, "categoriesDone": 0 },
   "queue": { "pending": 4400, "in_progress": 0, "done": 0, "failed": 0, "dead_letter": 0 },
   "parity": { "lastVerdict": "INCOMPLETE", "missingCount": null, "coverage": null },
+  "fidelity": { "lastVerdict": "INCOMPLETE", "score": null },
+  "coverage": { "lastVerdict": "INCOMPLETE", "categories": null, "blog": null, "pages": null },
   "turnsSinceProgress": 0, "startedAt": "ISO", "lastUpdatedAt": "ISO"
 }
 ```
 
-**`.pending-clone-<sessionId>`** — flag-ul: există cât timp `queue.pending+in_progress > 0` SAU `parity.lastVerdict != COMPLETE`. Hook-ul Stop îl citește.
+**`.pending-clone-<sessionId>`** — flag-ul: există cât timp `queue.pending+in_progress > 0` SAU oricare din cele 3 porți (`parity`/`fidelity`/`coverage`) are `lastVerdict != COMPLETE`. Hook-ul Stop îl citește.
 
 > Coada efectivă a paginilor e deja persistentă pe SERVER (`list_clone_crawl_pages`). `progress.json` e oglinda ta locală + poarta hook-urilor. Pentru cataloage uriașe NU descărca toată lista în context — cere loturi prin `offset`/`limit` și ține doar agregatele în `progress.json`.
 
@@ -48,17 +50,17 @@ Scalează numărul de loturi/sub-agenți la mărimea măsurată în Faza 0. Thro
 - **Magento/OpenCart fără feed** → numără „N produse/rezultate" pe paginile de listing ale categoriilor root (`get_cached_page` pe URL-uri de categorie) și însumează unic; compară cu numărul din sitemap. Scrie rezultatul în `manifest.secondSignal`. Dacă cele două sunt în 5% → tratează ca de încredere; altfel best-effort + spune userului.
 - **Niciun semnal** (`no_independent_count`, sitemap lipsă) → crawl-ul pe server va folosi link-crawl; numitorul rămâne nesigur → raport best-effort onest, NU „gata".
 
-## Rubrica verificatorului (poarta de paritate)
-Verificatorul e ADVERSARIAL: verdict implicit INCOMPLET; treaba lui e să REFUTE completitudinea. Rulează cu context izolat, vede DOAR numitorul + citirile locale + rubrica (nu raționamentul lucrătorului).
-- **Acoperire produse**: `clone_parity_diff(jobId, brandId)` → `pass`, `missingCount`, `missingSample`, `coverageVsDenominator`. PASS cere `pass:true`.
-- **Câmpuri per produs**: `audit_shop_health` fără `error`; poze ≥90%; categorii fără goale/plate; TVA ∈ {0,11,21}.
-- **Ierarhie**: numărul de categorii cu `parent_id` ≈ sursă; root-uri rezonabile (nu 215 plate).
-- **Blog/legale**: `list_blog_posts` ≈ `totals.blog`; paginile legale există.
+## Rubrica verificatorului (cele 3 porți obiective)
+Verificatorul e ADVERSARIAL: verdict implicit INCOMPLET; treaba lui e să REFUTE completitudinea. Rulează cu context izolat, vede DOAR numitorul + citirile locale + rubrica (nu raționamentul lucrătorului). Toate trei porțile sunt OBIECTIVE (set-diff de chei / scor pe eșantion), nu opinie:
+- **Poarta 1 — acoperire produse**: `clone_parity_diff(jobId, brandId)` → `pass`, `missingCount`, `missingSample`, `coverageVsDenominator`. PASS cere `pass:true`.
+- **Poarta 2 — calitate produse (adâncime)**: `clone_fidelity_audit(jobId, brandId)` → `fidelityScore`, `fieldScores` (name/image/description/price/category), `worstSample`, `unauditedFields`, `flags`. PASS cere `pass:true` (fiecare câmp prezent-în-sursă ≥90%). ÎNLOCUIEȘTE verificarea „pe ochi" a pozelor/descrierilor.
+- **Poarta 3 — non-produs**: `clone_coverage_audit(jobId, brandId)` → coverage per dimensiune (categorii/blog/pagini legale) + `missingSample`. PASS cere fiecare dimensiune cu sursă ≥95%. ÎNLOCUIEȘTE numărătoarea aproximativă blog/legale/ierarhie.
+- **Câmpuri reziduale**: `audit_shop_health` fără `error`; TVA ∈ {0,11,21}.
 - **Fiecare FAIL → un rând de remediere** cu URL/SKU exact + câmpul lipsă. Niciodată „continuă" gol.
-- **Anti-rubber-stamp**: poarta e ARITMETICĂ (set-diff de chei), nu opinie. Verificatorul poate ADĂUGA eșecuri, nu scoate. Ține 5-10 SKU-uri „ancoră" verificate manual care trebuie regăsite mereu.
+- **Anti-rubber-stamp**: porțile ADAUGĂ eșecuri, nu scot. Ține 5-10 SKU-uri „ancoră" verificate manual care trebuie regăsite mereu.
 
 ## „Nu te opri" — trei straturi
-1. **Bucla din sesiune** (`/loop` auto-paced, sau bucla manuală a liderului): la fiecare trezire re-citește `progress.json`; dacă mai există pending sau `lastVerdict!=COMPLETE`, trimite următorul lot. Se termină DOAR nelansând următoarea trezire când paritatea trece.
+1. **Bucla din sesiune** (`/loop` auto-paced, sau bucla manuală a liderului): la fiecare trezire re-citește `progress.json`; dacă mai există pending sau oricare din cele 3 porți are `lastVerdict!=COMPLETE`, trimite următorul lot. Se termină DOAR nelansând următoarea trezire când TOATE trei porțile trec (parity + fidelity + coverage).
 2. **Agent programat durabil** (cross-sesiune — owner-ul a închis laptopul): folosește skill-ul `schedule` / `mcp__scheduled-tasks__create_scheduled_task` ca să relansezi acest skill la fiecare ~30-60 min cât timp `progress.json` arată pending; se auto-șterge când `lastVerdict=COMPLETE`. `/loop` + cache-ul Workflow NU supraviețuiesc ferestrei închise — ASTA e coloana vertebrală reală pentru „ore nesupravegheat".
 3. **Hook Stop** (podeaua dură, opțional, vezi `installa-hook-stop` mai jos): blochează închiderea cât timp `.pending-clone-<sid>` există. OBLIGATORIU: respectă `stop_hook_active` (dacă e true → permite oprirea, anti-buclă), arată mereu o ACȚIUNE concretă executabilă (următorul rând), și un PLAFON: dacă `turnsSinceProgress` depășește N fără creștere în `done`, trece la advisory (permite oprirea) + raport INCOMPLET. Progres, nu perfecțiune, trebuie să fie mereu atins într-o tură.
 

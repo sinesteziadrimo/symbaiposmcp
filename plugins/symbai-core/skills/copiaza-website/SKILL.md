@@ -14,17 +14,19 @@ Proprietarul vrea site-ul lui (sau unul pe care îl deține/administrează) copi
 2. `../construieste-website/SKILL.md` — EXECUTORUL (cum scrii efectiv în Symbai: produse, categorii, hero, footer, PDP). Acest skill îl ORCHESTREAZĂ.
 3. `../../knowledge/website-copy-intake.md` + `../../knowledge/website-builder-pdp.md` — paritate vizuală + pagina de produs bogată.
 
-## Cele 6 unelte de copiere pe server (noi)
+## Cele 8 unelte de copiere pe server (noi)
 Crawl-ul greu rulează pe **server** (owner-ul poate închide laptopul) — tu doar mapezi din cache și verifici:
 - **`discover_site_inventory(url)`** — numitorul ONEST: numără produse/categorii/blog/pagini din surse independente (sitemap-index + feed Shopify/WooCommerce + header X-WP-Total). Întoarce `productDenominator` + `denominatorConfident`. **Rulează ÎNTÂI.**
 - **`start_site_clone_crawl(url, brandId)`** — pornește copierea pe server (fundal, politicos, anti-429, cache + extracție JSON-LD). Întoarce `jobId`.
 - **`get_clone_crawl_status(jobId)`** — progres (cache/procesate/descoperite), denominator, dead-letter.
 - **`list_clone_crawl_pages(jobId, type, status, limit, offset)`** — coada de lucru: toate URL-urile tipizate (product/category/blog/legal/page) cu status. **Sursa adevărului pentru „ce mai am de făcut".**
 - **`get_cached_page(jobId, url)`** — conținut + date structurate extrase pentru O pagină (nume, SKU, preț, preț vechi, poze, descriere, breadcrumb). De aici mapezi un produs/pagină în Symbai, fără re-descărcare.
-- **`clone_parity_diff(jobId, brandId)`** — POARTA: compară SETUL de produse-sursă (chei SKU) cu cele importate → întoarce **ID-urile care LIPSESC**. PASS doar dacă `denominatorConfident` ȘI nu lipsește nimic.
+- **`clone_parity_diff(jobId, brandId)`** — POARTA 1 (acoperire produse): compară SETUL de produse-sursă (chei SKU) cu cele importate → întoarce **ID-urile care LIPSESC**. PASS doar dacă `denominatorConfident` ȘI nu lipsește nimic.
+- **`clone_fidelity_audit(jobId, brandId, sampleSize?)`** — POARTA 2 (calitate produse, adâncime): eșantion din TOT catalogul, comparat CÂMP-CU-CÂMP cu importul (nume/poze/descriere/preț/categorie) → `fidelityScore` + `fieldScores` + `worstSample` (ce câmp lipsește, pe ce produs) + `flags`. „Gata" cere și fidelitate, nu doar SKU prezent.
+- **`clone_coverage_audit(jobId, brandId)`** — POARTA 3 (tot ce NU e produs): set-diff pe **categorii / blog / pagini legale** sursă vs importat → coverage + `missingSample` per dimensiune. O migrare reală aduce și astea, nu doar catalogul.
 
 ## ⚠ Reguli NON-NEGOCIABILE (din ele vine corectitudinea)
-1. **„Gata" NU înseamnă „pare copiat".** „Gata" = `clone_parity_diff` întoarce `pass:true` (numitor sigur + 0 ID-uri lipsă) ȘI `audit_shop_health` fără `error`. Niciodată pe baza impresiei tale.
+1. **„Gata" NU înseamnă „pare copiat".** „Gata" = TOATE trei porțile `pass:true` — `clone_parity_diff` (0 produse lipsă, numitor sigur) ȘI `clone_fidelity_audit` (câmpurile produselor transferate, fiecare câmp prezent-în-sursă ≥90%) ȘI `clone_coverage_audit` (categorii/blog/pagini legale migrate) — PLUS `audit_shop_health` fără `error`. Niciodată pe baza impresiei tale.
 2. **Numitorul mai întâi.** Dacă `denominatorConfident:false`, NU începe să declari progres procentual fals. Obține un al doilea semnal (vezi harness.md §Numitor) sau spune-i EXPLICIT userului „best-effort, denominator nesigur (motiv)" — nu ascunde.
 3. **Cheia de identitate = SKU / handle / slug-sursă, NU numele.** Setează `products.sku` = cheia sursă la import (`bulk_create_products(sku=<cheie>)`). Altfel `bulk_create_products` deduplică pe NUME și îmbină tăcut produse distincte → pierdere de date care „trece" la numărătoare.
 4. **Niciodată tot catalogul într-o singură trecere.** Descompune în loturi mici (≤25 produse / 1 pagină) date la **sub-agenți** (Task tool) cu context curat; tu (liderul) ții doar coada + tally-ul, nu HTML-ul paginilor.
@@ -50,16 +52,21 @@ Crawl-ul greu rulează pe **server** (owner-ul poate închide laptopul) — tu d
 7. Buclă: `list_clone_crawl_pages(jobId, type:"product", status:"cached", limit, offset)` → ia un lot de ~25. Dă-l unui **sub-agent** (Task) cu instrucțiune strictă: pentru fiecare URL → `get_cached_page` → `bulk_create_products(sku=cheia sursă, name, description, vat:21, ...)` + `set_product_image/bulk_set_product_images` + `add_menu_item(productBrand, ...)`; întoarce DOAR `{lot, produseScrise, pozeScrise, eșecuri[]}`. Apoi categorii (ierarhie din breadcrumb → `bulk_reparent_menu_categories` + `set_products_menu_category`), blog (`bulk_create_blog_posts`), legale (`set_website_legal_page`), footer/branding.
 8. După fiecare lot, actualizează `progress.json`. Liderul citește doar header-ul + cere următorul lot — nu încarcă tot catalogul în context.
 
-### Faza 4 — Verifică (poarta de paritate)
-9. **`clone_parity_diff(jobId, brandId)`**. Dacă `pass:false`: pentru fiecare ID din `missingSample` → `get_cached_page` → re-importă. Re-rulează până `pass:true`. Apoi **`audit_shop_health(brandId)`** → repară toate `error`, re-rulează până curat.
+### Faza 4 — Verifică (cele 3 porți obiective, în ordine)
+9. **Poarta 1 — acoperire produse: `clone_parity_diff(jobId, brandId)`**. Dacă `pass:false`: pentru fiecare ID din `missingSample` → `get_cached_page` → re-importă. Re-rulează până `pass:true`.
+9b. **Poarta 2 — calitate produse: `clone_fidelity_audit(jobId, brandId)`**. Pentru fiecare intrare din `worstSample` (produs + câmpuri lipsă) → `get_cached_page(jobId, url)` → completează câmpul: poze (`set_product_image`/`bulk_set_product_images`), descriere/preț-vechi/specs (`update_menu_item`/`add_menu_item`), categorie (`set_products_menu_category`). Re-rulează până `pass:true`. Citește `flags`: `unreadable_source_pages_*` → re-citește sursa; `price_currency_mismatch_suspected` → verifică valuta; `unaudited_fields_*` → câmp absent în sursă (nimic de făcut).
+9c. **Poarta 3 — non-produs: `clone_coverage_audit(jobId, brandId)`**. Pentru fiecare `missingSample` per dimensiune → importă din `get_cached_page`: categorii (`create_menu_category`/`bulk_reparent_menu_categories`), blog (`bulk_create_blog_posts`), pagini legale (`set_website_legal_page`). Re-rulează până fiecare dimensiune ≥95%.
+9c-arbore. **Arbore categorii (advisory): `clone_category_tree_audit(jobId, brandId)`**. `pass` poate fi `null` (sursă fără breadcrumb-uri = neauditabil, OK). Dacă `pass:false` sau `flatteningDetected:true`: pentru fiecare `missingEdgesSample` (`parent>child`) → `create_menu_category` (categoriile lipsă) + `bulk_reparent_menu_categories` (leagă copil→părinte, ca arborele să nu fie plat). Re-rulează până `pass` ∈ {`true`, `null`}.
+9c-branding. **Branding (advisory): `clone_branding_audit(jobId, brandId)`**. `pass` poate fi `null` (sursă fără semnale vizuale). Dacă `pass:false`: din `data.source` → `update_brand(brandId, logo=<source>, color=<themeColor>, name?)` + `brandIdentity` (logos/colors/socialMedia); contactul (telefon/email/adresă din `data.source`) → `update_location`. Re-rulează până `pass` ∈ {`true`, `null`}.
+9d. **`audit_shop_health(brandId)`** → repară toate `error`, re-rulează până curat.
 
 ### Faza 5 — Nu te opri până nu e gata
-10. Buclă până: coada goală (0 pending în `list_clone_crawl_pages`) ȘI `clone_parity_diff pass:true` ȘI `audit_shop_health` fără `error`.
+10. Buclă până: coada goală (0 pending în `list_clone_crawl_pages`) ȘI cele 3 porți `pass:true` (`clone_parity_diff` + `clone_fidelity_audit` + `clone_coverage_audit`) ȘI `audit_shop_health` fără `error`.
 11. **Pentru rulare pe ore, nesupravegheat** (owner-ul a plecat): instalează un agent programat care reia skill-ul cât timp mai există pending (vezi `references/harness.md` §Nu-te-opri + skill-ul `schedule`). Hook-ul Stop (dacă e instalat) e podeaua dură. `/loop` e bucla din sesiune.
 12. Re-citește `progress.json` la fiecare reluare; revendică rândurile `in_progress` rămase blocate înapoi la `pending`.
 
 ## Raport onest (la final)
-Nu spune „gata" decât la PASS real. Raportează: produse importate / numitor, poze %, categorii, blog, ID-uri pe dead-letter (cu motiv: 404/login/fără preț), și ce a rămas NESIGUR. Dacă numitorul a fost nesigur, spune-o. Rezumă userului 3-4 lucruri cheie făcute, în limbaj de business.
+Nu spune „gata" decât la PASS real pe TOATE trei porțile. Raportează: produse importate / numitor + `fidelityScore` (calitate câmpuri, din Poarta 2) + acoperirea non-produs (categorii/blog/pagini legale, din Poarta 3), poze %, ID-uri pe dead-letter (cu motiv: 404/login/fără preț), și ce a rămas NESIGUR. Dacă numitorul a fost nesigur, spune-o. Rezumă userului 3-4 lucruri cheie făcute, în limbaj de business.
 
 ## Capcane (vezi și harness.md)
 - Site fără sitemap (unele OpenCart) → `discover_site_inventory` întoarce 0 cu `no_independent_count`. NU înseamnă „site gol" — înseamnă „nu pot stabili scopul din sitemap"; pornește crawl-ul (folosește link-crawl/categorii) și marchează numitorul nesigur.
