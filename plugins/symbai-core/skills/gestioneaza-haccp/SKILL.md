@@ -53,7 +53,7 @@ Userul (proprietar/bucătar-șef/manager) vrea să țină evidența HACCP fără
 ## Legături
 - Doctrina Chrome (deep-link, screenshot = livrabil, click pe element doar la nevoie, fallback fără extensie) → `knowledge/condu-chrome.md`.
 - Concepte HACCP (jurnale, praguri, răcire rapidă, recall) → `knowledge/haccp.md`.
-- Loturi & trasabilitate (de unde vine `lotId`, cum se leagă recall-ul de producție) → `knowledge/productie-trasabilitate.md` + skill-ul `productie-flux`.
+- Loturi & trasabilitate (de unde vine `lotId`, cum se leagă recall-ul de producție) → `knowledge/productie-fabrica.md` / `knowledge/productie-restaurant.md` (după modul clientului) + skill-ul `productie-flux`.
 - Rețete/alergeni (siguranța alimentară pe produs) → skill-ul `adauga-produs-reteta`; recepția mărfii (loturi la intrare) → skill-ul `receptie-factura-furnizor`.
 - E pasul 15 din onboarding („DSV Chef" — compliance HACCP) — vezi `onboarding/harta-pasi-wizard.md`.
 - Blocaj (ceva ce nu se poate prin conexiune) → `trimite_ticket_symbai` (sugestie) + ghidează în app.

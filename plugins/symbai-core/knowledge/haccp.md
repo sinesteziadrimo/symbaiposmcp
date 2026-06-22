@@ -31,7 +31,7 @@ Totul stă pe pagina **`/haccp`** („HACCP & Siguranță Alimentară"), cu un *
 **Raportul de retragere (recall).** Dacă un lot e suspect (ex. carne ținută la temperatură greșită), trebuie să știi instant **unde a ajuns**: în ce semipreparate/produse finite a intrat, ce loturi descendente există și ce clienți trebuie notificați. `build_recall_report(lotId, direction)` parcurge genealogia: `forward` = doar aval (impactul retragerii), `full` = și amonte (din ce a provenit). Întoarce loturile afectate + produsele distincte. Pentru pasul „unul înainte" către client folosește `trace_recall_to_customers(lotId)`: lista **EXACTĂ** vine din urma lot→document de ieșire→client; lista **PREZUMTIVĂ** acoperă istoricul fără urmă exactă prin același produs în fereastra lotului și trebuie verificată manual. Se cuplează cu `create_haccp_incident` pe același lot. `lotId` vine din modulul de producție/trasabilitate (loturi de la recepție sau din producție).
 
 ## Cum se leagă de restul platformei
-- **Loturi & trasabilitate** (de unde iei `lotId`, cum curge genealogia) → `productie-trasabilitate.md`.
+- **Loturi & trasabilitate** (de unde iei `lotId`, cum curge genealogia) → `productie-fabrica.md` sau `productie-restaurant.md`, în funcție de modul clientului.
 - **Recepția mărfii** creează loturi la intrare → `intrari-marfa-receptie.md` / skill `receptie-factura-furnizor`.
 - **Rețete & alergeni** (siguranța pe produs) → `produse-meniu-retete.md` / skill `adauga-produs-reteta`.
 - HACCP-ul e **pasul 15 din onboarding** („DSV Chef") — vezi `onboarding/`.
