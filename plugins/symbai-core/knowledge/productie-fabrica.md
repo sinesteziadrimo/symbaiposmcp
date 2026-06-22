@@ -6,29 +6,6 @@
 ## Pe scurt — ce e o fabrică în Symbai
 Modul fabrică transformă Symbai într-un mini-MES/ERP de producție: planifici ce produci (MPS/MRP din comenzi B2B + cereri interne), execuți pe stații de lucru cu tabletă (shop-floor), urmărești fiecare lot de la materie primă la produs finit (genealogie + recall), controlezi calitatea (carantină, inspecții, HACCP), urmărești echipamente/zone/ture și livrezi clienților business (B2B picking + expediere). Totul cu trasabilitate de container cu cod QR și KPI live (Yield, OEE, FPY, On-Time, Waste).
 
-## Scenariul local Senneville / ARCA (seed demo)
-În dezvoltare locală, fabrica demo **Senneville ARCA Factory** (`brandId=40`, cod `arca-factory-40`) trebuie tratată ca un client industrial real, nu ca date de prezentare superficiale. Seed-ul este incremental și idempotent: dacă baza există deja, el o îmbogățește în loc să sară peste scenariu.
-
-Ce conține scenariul local:
-- 47 materii prime, 26 semifabricate și 30 produse finite.
-- 56 rețete active, cu versiuni de formulă, linii de formulă, randament, termen de valabilitate, depozitare, etichete și fișă tehnologică.
-- 56 fluxuri tehnologice active, cu operații pe zone/stații, dependențe, materiale, ieșiri, resurse, QC, HACCP, checklists, handover și stage templates.
-- 9 zone de fabrică, 19 echipamente, 8 stații, 5 ecrane de stație și 5 grupe de capabilități.
-- Capacități pe echipament-rețetă, reguli de changeover, mapări zonă-gestiune pentru ingrediente, ture, angajați și alocări pe schimburi.
-- 35 loturi de producție cu execuții pe operații, evenimente shop-floor, inspecții QC, măsurători echipament, containere QR, loturi WIP/final, MPS, planned lots și praguri WIP.
-- 3 comenzi B2B, 21 cereri de producție și o rută frigorifică de livrare.
-
-Cum verifici rapid local:
-- Dashboard: `get_factory_dashboard`.
-- Plan: `list_mps_schedule`.
-- Loturi: `exec_list_batches`, apoi `exec_get_batch_progress`, `exec_list_operation_executions`, `exec_list_shop_floor_events`.
-- B2B: `list_b2b_orders`.
-- Echipamente/zone: citește paginile **Echipamente & Zone**, **Tabletă Stație**, **Loturi & WIP**, **Scanner Containere** și **Panou Fabrică**.
-
-Regula pentru asistenți: când userul spune „Senneville”, „ARCA” sau „fabrica locală”, pornești pe traseul **Fabrică**. Nu folosi `exec_complete_batch` pentru loturile seeduite cu `flowVersionId`; lucrează și explică prin operații shop-floor, containere, QC, handover, MPS și B2B.
-
-Notă de audit local: în unele baze dev vechi, coloana fizică `products.brand_id` poate lipsi deși schema aplicației o cunoaște. Pentru auditul scenariului Senneville, ancorează produsele prin `recipes.brand_id = 40` și prin `recipe.product_id`.
-
 ## Cum activezi modul fabrică și ce deblochează
 - **Unde**: Setări → General (Date Companie) → secțiunea „Domenii de Activitate". Bifezi **„Fabrică alimentară"** sau **„Fabrică nealimentară"** → modul devine automat „fabrică". (Bifând „Sală evenimente" obții modul „restaurant & evenimente", un nivel intermediar.)
 - **Ce deblochează modul fabrică** (pagini vizibile DOAR în acest mod):
@@ -165,15 +142,6 @@ Acestea sunt capabilitățile „de paritate SAP" — cele care diferențiază S
 - Folosește la „cât mă costă să produc 1000 buc din X", „food cost teoretic", „cât e manopera", „ce marjă am la rețeta Y".
 - `get_production_cost_variance` (`batchId`) — după ce lotul are consumuri postate, compară **standard vs actual** pe material și răspunde la „de ce a ieșit lotul mai scump/mai ieftin": abatere de **preț** (materia primă a costat altfel decât standardul) vs abatere de **cantitate/randament** (s-a consumat mai mult/puțin decât rețeta pentru cantitatea reală produsă). Pozitiv = nefavorabil, negativ = favorabil. Dacă lotul nu are randament real sau consum postat, răspunsul e marcat ca parțial și trebuie explicat ca atare.
 
-### Audit SAP-level înainte de ofertă enterprise
-Când userul întreabă realist dacă Symbai poate înlocui SAP/HANA într-o fabrică, nu răspunde din impresii. Rulează audituri read-only peste datele reale:
-- `get_enterprise_control_readiness` — audit trail, change control, aprobări multi-nivel, semnături electronice, EBR/release packet și blocarea lotului la versiuni de formulă/flux.
-- `get_industrial_costing_readiness` — standard cost vs actual cost, varianțe materiale, dovadă de manoperă, overhead/energie și cost centers.
-- `get_procurement_wms_readiness` — contracte furnizori, lead time, MOQ, inbound QC/COA, bin-uri, containere/RF scan și semnale EDI/portal.
-- `get_retail_distribution_readiness` — audit retail enterprise pentru comenzi B2B: WMS/picking pe stoc real, paletizare, SSCC GS1, GLN/GTIN, lot+expirare și preview DESADV/ASN.
-- `get_advanced_planning_readiness` — finite capacity scheduling, what-if, multi-site, ATP/CTP și constrângeri complexe.
-Folosește scorul și `blockers`/`warnings` ca răspuns onest de gap analysis. Dacă un audit e `blocked`, tratează-l ca risc de ofertă, nu ca detaliu cosmetic.
-
 ### MRP multi-nivel — necesar de materii prime și auto-explodare SF (ca SAP MD01)
 Două unelte, două scopuri:
 - `get_material_requirements` (`orders` = listă FG cu `quantity` + opțional `recipeId`/`productId`/`dueDate`; sau lipsă → cererea activă din demand; `horizonDays` default 14; `includeSafetyStock` default true) — **necesarul net de materii prime** pentru tot order book-ul: explodează comenzile pe TOATE nivelurile BOM (FG → semipreparate net de stoc → materii prime), adună cererea, o netează față de stoc + stoc de siguranță și întoarce **ce lipsește de aprovizionat** (shortages) + cantitate sugerată + lead time. Read-only (nu mișcă stoc). Răspunde la „am materialele să produc comenzile astea?", „ce trebuie să comand", „necesar aprovizionare producție". E superior lui `get_mps_net_requirements` (single-level) și `run_bom_explosion` (o singură rețetă, un singur nivel).
@@ -221,6 +189,7 @@ Fluxul = lanțul de operații prin care trece un produs, cu cerințe, dependenț
 - **QC per operație**: `add_operation_qc` (`operationId`, `controlType` numeric/boolean/text/vizual, `controlName`, valoare țintă, toleranțe, punct de control, procedură eșec); `add_qc_failure_procedure` (`qualityRequirementId`, `name`, `dispositionType` rework/retur/scrap/carantină); `remove_operation_qc` (`qcId`).
 - **Configurare comportament operație** (cele 5 taburi): `configure_operation_start` (verificare materiale, scan container, roluri permise, checklist pre-start), `configure_operation_execution` (mod consum, QC obligatoriu, declarare ieșiri, temperatură, foto, pași), `configure_operation_completion` (metodă completare, scan/etichetă/cântar, auto-consum, cantitate min/max, randament, checklist), `configure_operation_handover` (acțiune post-completare, destinație, scan, semnătură supervizor, notificări).
 - **Diagrama vizuală**: agentul nu setează coordonate x/y. Bucla sigură este `get_flow_graph` → modifici doar semantica (operații, materiale, output-uri, dependențe, QC) → `auto_arrange_diagram(flowVersionId, laneBy:"zone"|"equipment"|"none")` → `validate_flow_consistency`. Deschide pagina `/fluxuri-tehnologice` cu browser/Chrome doar când userul cere dovadă vizuală sau când trebuie verificat layout-ul pe ecran.
+- **Experiența vizuală pentru user**: diagrama se aranjează **singură**, curat, de la stânga la dreapta în ordinea pașilor — nimeni nu mută căsuțe manual, iar o diagramă editată de AI iese mereu ordonată. În pagina Fluxuri Tehnologice există butonul **„Aranjează automat"** și un selector de **benzi (swimlanes)**: poți grupa pașii **după zonă** (bucătărie caldă/rece, cofetărie) sau **după echipament**, ca să vezi clar unde se face fiecare etapă. Tot pe diagramă e butonul **„Explică-mi"** — un tur ghidat pas cu pas care explică tot procesul în limbaj simplu, de la materia primă la produsul finit (bun pentru a înțelege repede un produs nou sau a-l arăta echipei).
 - **Verifică ÎNAINTE de activare** (recomandat după `build_complete_flow`): `validate_flow_consistency` (`flowVersionId`) — bilanț materiale, graf dependențe aciclic, câmpuri obligatorii, lanțuri ieșire→intrare complete, operații orfane; nu activa un flux care pică validarea. `calculate_flow_bom` (`flowVersionId`) — BOM-ul agregat din toate operațiile fluxului. `get_flow_ai_context` (`productId`/`productName`) — instrucțiunile AI (flux + per operație) + necesarul de personal; **apelează-l mereu înainte de a planifica** producția unui produs cu flux.
 - **Cu AI**: `/ai-flow-builder` — descrii procesul în chat și AI-ul construiește fluxul. (Cere modul fabrică.)
 - Pagina manuală: `/fluxuri-tehnologice`.
@@ -286,6 +255,9 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 - `generate_batch_coa` (`batchId`) — certificat de analiză pentru o șarjă: QC vs specificație, loturi produse, valabilitate, alergeni și verdict conform/neconform/indeterminat; fără QC, nu certifica lotul ca fiind conform.
 - `get_batch_mass_balance` (`batchId`) — bilanț de masă pe șarjă: consumuri din genealogie vs output bun + scrap + rework, plus warning-uri de unități sau de lipsă date; `yieldPercent:null` = indisponibil, nu 0% real.
 - `get_defect_pareto`, `get_qc_stats`, `get_waste_report`, `get_equipment_utilization` (vezi mai sus).
+
+### Explică-mi ziua de producție (rezumat narativ pentru owner)
+Când userul întreabă „cum a mers producția azi", „povestește-mi ziua de producție" sau „explică-mi ce se întâmplă în fabrică", rulează `explain_production_day` (`date` opțional, implicit azi). Întoarce povestea zilei pas cu pas, în limbaj simplu pe românește: (1) privire de ansamblu (loturi în lucru / finalizate, rată de calitate), (2) ce se produce și cine lucrează pe ture/zone, (3) producția zilei (cantități, randament), (4) puncte de atenție (controale de calitate, loturi în carantină, echipamente oprite). Owner-ul primește tot tabloul într-un singur loc, fără să se uite prin rapoarte. (Diferit de butonul „Explică-mi" din diagramă, care explică *fluxul* unui produs; acesta explică *ziua* întregii fabrici.)
 
 ## Permisiuni MCP
 - **Citire** (NU cere permisiune de modul): toate `exec_list_*`/`exec_get_*`/`exec_trace_*`/`exec_scan_*`, `list_*`, `get_*`, `run_bom_explosion`.
