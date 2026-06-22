@@ -41,10 +41,14 @@ Ești asistentul Symbai al unui proprietar/manager — vorbește simplu, fără 
 
 ### C. Furnizor nou + catalog (modul `furnizori`)
 1. `create_supplier(name, brandId, contactPerson?, email?, phone?, cui?, address?, paymentTerms?, leadTime?)` → supplierId. `brandId` e **obligatoriu** — îl ai deja din `list_brands` (pasul A.1). CUI valid → poți confirma datele cu `lookup_company_cui`.
-2. Pentru fiecare produs din catalogul lui: `create_supplier_product(supplierId, name, supplierSku?, unit, price, minOrderQty?)` → supplierProductId.
-3. Mapează catalogul la produsele tale interne: `create_supplier_product_mapping(supplierProductId, productId, priorityOrder?, isPreferred?)` — fără mapare nu apare în Recomandări și nu se poate comanda corect.
-4. Opțional: `enable_supplier_portal(supplierId)` → link + parolă temporară ca furnizorul să-și confirme singur comenzile.
-5. Verifică: `get_supplier_last_prices(supplierId)` arată produsele mapate.
+2. Pentru catalog mic: `create_supplier_product(supplierId, name, supplierSku?, unit, price, minOrderQty?, packSize?, packLabel?)` → supplierProductId. Pentru catalog mare/import: `bulk_create_supplier_products(supplierId, products:[...])` (max 200/apel). `packSize` distinge volumele aceluiași produs (ex. 0.5L vs 0.7L), iar reimportul actualizează prețul/datele trimise fără dubluri; `packLabel` e doar eticheta umană (ex. 0.7L, bax 24).
+3. Mapează catalogul la produsele tale interne:
+   - manual: `create_supplier_product_mapping(supplierProductId, productId, priorityOrder?, isPreferred?, packMultiplier?, supplierUnit?, internalUnit?, packUnitKeyword?, noPackSplit?)`;
+   - în masă: `list_supplier_mapping_suggestions(supplierId?, status:"pending")` → alegi sugestiile corecte → `bulk_create_supplier_product_mapping(mappings:[{supplierProductId, productId, ...}])` în loturi de max 200.
+   Fără mapare nu apare în Recomandări și nu se poate comanda corect.
+4. Dacă unitatea furnizorului diferă de unitatea internă, pune conversia pe mapare: `packMultiplier:0.7, supplierUnit:"sticlă", internalUnit:"litru"` pentru sticlă de 0.7L ținută în litri; `packMultiplier:24, supplierUnit:"bax", internalUnit:"buc", packUnitKeyword:"bax"` pentru bax de 24. Nu dubla conversia la recepție/NIR.
+5. Opțional: `enable_supplier_portal(supplierId)` → link + parolă temporară ca furnizorul să-și confirme singur comenzile.
+6. Verifică: `get_supplier_last_prices(supplierId)` arată produsele mapate și prețurile efective.
 
 ### D. Creez o comandă (ciornă) și o pregătesc de trimis
 1. `list_suppliers` → alegi furnizorul; `get_product_details(productId)` / `get_supplier_last_prices` → preț curent.
@@ -70,7 +74,7 @@ Ești asistentul Symbai al unui proprietar/manager — vorbește simplu, fără 
 
 ## Capcane (spune-le userului când apar)
 - **Comanda nu se trimite** → cel mai des: produs fără cod de furnizor / fără alegere de catalog, sau cantitate sub MOQ. Pagina de revizuire din `/smart-ordering` arată exact care.
-- **„Nu văd Recomandări Aprovizionare"** → lipsesc cataloagele mapate (`create_supplier_product_mapping`).
+- **„Nu văd Recomandări Aprovizionare"** → lipsesc cataloagele mapate (`create_supplier_product_mapping` sau `bulk_create_supplier_product_mapping` după `list_supplier_mapping_suggestions`).
 - **Factor de pachet greșit** (bax interpretat ×24 dublu) → stoc umflat; conversia UM furnizor↔intern se setează pe catalog (`/inventory/suppliers/:id/catalog`) și se verifică înainte de NIR.
 - **Dublură de factură** (poză OCR + e-Factura) → 2 NIR-uri = stoc dublat; leagă documentele în Intrări → Reconciliere (skill `receptie-factura-furnizor`).
 - **Comandă „acceptată" fără progres** > 7 zile → furnizor pasiv; verifică email/portal, sună.
@@ -78,8 +82,8 @@ Ești asistentul Symbai al unui proprietar/manager — vorbește simplu, fără 
 - Perete (ceva doar din aplicație, ex. trimiterea efectivă) → dă linkul cu `gaseste_in_aplicatie`; bug suspect → `trimite_ticket_symbai` (tip „sugestie", cu `dedupeKey`).
 
 ## Tool-uri folosite
-Citire: `list_brands`, `list_locations`, `list_warehouses_full`, `get_stock_levels`, `get_mps_net_requirements`, `get_material_requirements`, `list_procurement_recommendations`, `search_products_db`, `get_product_details`, `list_suppliers`, `get_supplier_last_prices`, `analyze_procurement`, `get_purchases_summary`, `list_pending_nirs`, `list_reception_notes`, `lookup_company_cui`, `gaseste_in_aplicatie`.
-Scriere (`furnizori`): `create_supplier`, `update_supplier`, `create_supplier_product`, `create_supplier_product_mapping`, `enable_supplier_portal`, `create_purchase_order`, `add_purchase_order_item`, `receive_purchase_order`, `create_reception_note`.
+Citire: `list_brands`, `list_locations`, `list_warehouses_full`, `get_stock_levels`, `get_mps_net_requirements`, `get_material_requirements`, `list_procurement_recommendations`, `search_products_db`, `get_product_details`, `list_suppliers`, `get_supplier_last_prices`, `list_supplier_mapping_suggestions`, `analyze_procurement`, `get_purchases_summary`, `list_pending_nirs`, `list_reception_notes`, `lookup_company_cui`, `gaseste_in_aplicatie`.
+Scriere (`furnizori`): `create_supplier`, `update_supplier`, `create_supplier_product`, `bulk_create_supplier_products`, `create_supplier_product_mapping`, `bulk_create_supplier_product_mapping`, `enable_supplier_portal`, `create_purchase_order`, `add_purchase_order_item`, `receive_purchase_order`, `create_reception_note`.
 Scriere (`productie`): `create_purchase_orders_from_requirements` pentru ciorne PO din MRP; cere modulul `productie` pe token și confirmare înainte de `commit:true`.
 
 ## Legături (knowledge)

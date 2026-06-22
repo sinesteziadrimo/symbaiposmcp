@@ -1,0 +1,41 @@
+{
+  "name": "symbai-supplier",
+  "version": "0.1.0+codex.20260622214000",
+  "description": "Asistentul Symbai Supplier pentru Codex: skill-uri si knowledge pentru portalul de furnizori B2B MCP-first.",
+  "author": {
+    "name": "Symbai",
+    "email": "support@symbai.app",
+    "url": "https://symbai.app"
+  },
+  "homepage": "https://github.com/sinesteziadrimo/symbaimemory#readme",
+  "repository": "https://github.com/sinesteziadrimo/symbaimemory",
+  "license": "MIT",
+  "keywords": [
+    "symbai",
+    "supplier",
+    "furnizor",
+    "b2b",
+    "wholesale",
+    "mcp",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Symbai Supplier",
+    "shortDescription": "Lucreaza in portalul furnizorului Symbai din Codex.",
+    "longDescription": "Skill-uri si cunostinte pentru produse, clienti B2B, comenzi, stocuri, preturi, livrari, facturare, CRM si marketing in Symbai Supplier. Conectarea MCP live se configureaza din aplicatia de furnizor.",
+    "developerName": "Symbai",
+    "category": "Productivity",
+    "capabilities": [
+      "Knowledge",
+      "Workflow",
+      "MCP"
+    ],
+    "defaultPrompt": [
+      "Conecteaza-ma la Symbai Supplier.",
+      "Arata-mi comenzile B2B de azi.",
+      "Explica-mi cum schimb statusul unei comenzi in siguranta."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

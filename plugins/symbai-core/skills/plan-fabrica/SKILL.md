@@ -17,6 +17,7 @@ Planul 2D este un editor vizual DEDICAT fabricii (separat de Plan Sală de resta
 - Vrea să vadă pe plan **ce e stocat unde**, **pe ce lucrează fiecare utilaj** și **ce operatori/angajați sunt în zonă**.
 - Vrea rafturi/bin-uri, etichete QR pentru zone sau o pagină mobilă unde operatorul vede conținutul live al unei zone scanate.
 - Vrea să importe un plan scanat/imagine de fundal sau să deseneze rapid camere/ziduri în editor.
+- Vrea „ce rulează acum în fabrică" direct pe harta halei: operații active, loturi, operatori și containere pe utilaje.
 
 ## Reguli de aur
 1. **Limbaj de manager, zero jargon** — „pune cuptorul lângă zona de frământare", nu termeni tehnici sau nume de fișiere/funcții.
@@ -52,13 +53,15 @@ Tipuri de obiecte: `production_equipment`, `production_zone`, `warehouse`, `stor
 
 **Pas 7 — Simulare layout (decizie, fără salvare).** Dacă userul vrea „să vedem dacă mutăm utilajul X", folosește browser-control în `/factory-floor-plan`: apasă **Simulare**, mută utilaje/zone, setează drumuri/zi și lei/oră, apoi arată screenshot cu distanța fluxului și economia/costul estimat. Modul acesta nu salvează nimic; dacă userul aprobă, abia atunci aplici mutările prin `update_factory_object` și verifici cu `get_factory_plan`.
 
+**Pas 7b — Live Fabrică (execuție curentă pe plan).** Dacă userul întreabă „ce rulează acum pe utilaje / unde e lotul / cine lucrează", deschide `/factory-floor-plan`, activează **Live Fabrică** și arată screenshot cu planul plus panoul „Acum în fabrică". UI-ul face polling ușor din `/api/factory-floor/live-execution` și suprapune operațiile pe echipamente: status, lot, produs, cantități, operatori de tură/execuție și containere aflate pe utilaj/zonă. Este read-only, nu salvează layout. Pentru cifre sau audit, verifică și prin tool-uri de citire (`get_production_dispatch`, `exec_list_active_operations`, `exec_get_batch_progress`, `get_factory_plan`), apoi explică diferența: planul arată locul fizic, dispatch-ul arată programarea/execuția.
+
 **Pas 8 — Metadate HACCP (opțional, dar valoros).** La zone poți seta clasa de aer (grade_a…d), zona de igienă (high_care/low_care/raw/waste), alergeni și interval de temperatură — colorează zonele și ajută la verificarea separării. Folosește `update_factory_object` sau câmpurile din `build_factory_floor`.
 
 **Pas 9 — Verifică + arată.** `get_factory_plan` → confirmă obiectele, conexiunile și datele LIVE: status echipament, fluxurile care folosesc fiecare utilaj și câte operații are azi, rolul/turele de azi pentru operatori, stocul real pe fiecare zonă de depozitare + agregat pe magazie. Apoi `gaseste_in_aplicatie("plan fabrica 2D")` / deschide `/factory-floor-plan` în browser și fă screenshot. Dacă pornești dintr-o diagramă de producție, echipamentele au scurtătura **Vezi pe plan**; când diagrama/API-ul îți dă `factoryPlanId`, folosește URL-ul exact `/factory-floor-plan?plan=<planId>&focusEquipment=<equipmentId>` ca să deschizi planul corect cu utilajul selectat și centrat. Dacă nu ai `planId`, fallback-ul `/factory-floor-plan?focusEquipment=<equipmentId>` caută utilajul în primul plan încărcat.
 
 ## Cum se leagă de restul
 - **Magazii ↔ zone de depozitare ↔ stoc:** o magazie pusă pe plan arată stocul agregat al tuturor zonelor ei; o zonă de depozitare arată ce produse și ce cantități sunt acolo acum.
-- **Echipamente ↔ fluxuri/diagrame:** un echipament pus pe plan arată pe ce fluxuri tehnologice lucrează și ce operații are programate azi. Din diagrama de producție există link **Vezi pe plan**. Când știi planul, URL-ul preferat este `/factory-floor-plan?plan=<planId>&focusEquipment=<equipmentId>`; fără `planId`, `/factory-floor-plan?focusEquipment=<equipmentId>` rămâne fallback și selectează/centrează utilajul în primul plan încărcat. Pentru a edita fluxul în sine folosește skill-ul `productie-flux` (operații, dependențe, diagrama vizuală).
+- **Echipamente ↔ fluxuri/diagrame:** un echipament pus pe plan arată pe ce fluxuri tehnologice lucrează și ce operații are programate azi; în **Live Fabrică** vezi ce rulează chiar acum pe echipament, cu lot/operator/container. Din diagrama de producție există link **Vezi pe plan**. Când știi planul, URL-ul preferat este `/factory-floor-plan?plan=<planId>&focusEquipment=<equipmentId>`; fără `planId`, `/factory-floor-plan?focusEquipment=<equipmentId>` rămâne fallback și selectează/centrează utilajul în primul plan încărcat. Pentru a edita fluxul în sine folosește skill-ul `productie-flux` (operații, dependențe, diagrama vizuală).
 - **Operatori ↔ personal/ture:** un operator pus pe plan este un angajat real (`employee`), nu o etichetă desenată. `get_factory_plan` arată rolul și câte ture are azi; pentru schimbări de personal/ture folosește skill-ul `gestioneaza-personal`.
 - **Nivele/etaje:** pune fiecare obiect pe nivelul lui; conexiunile se văd pe nivelul activ.
 
@@ -70,3 +73,4 @@ Tipuri de obiecte: `production_equipment`, `production_zone`, `warehouse`, `stor
 - Să promiți cifre din desen — pentru decizii, citește stocul/producția prin tool-uri, nu doar din badge-urile vizuale.
 - Să confunzi Plan Fabrică 2D cu Plan Sală (restaurant) — sunt editoare separate.
 - Să salvezi o simulare fără confirmare — modul **Simulare** e doar probă vizuală. Mutările reale se aplică separat, după acord.
+- Să tratezi **Live Fabrică** ca sursă de scriere — este doar overlay read-only pe execuție curentă. Pentru modificări reale pornești/oprești operații cu tool-urile `exec_*` sau schimbi layout-ul cu `update_factory_object`, după confirmare.

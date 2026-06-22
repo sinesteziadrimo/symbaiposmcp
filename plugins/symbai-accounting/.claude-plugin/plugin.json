@@ -1,0 +1,10 @@
+{
+  "name": "symbai-accounting",
+  "description": "Asistentul Symbai Accounting pentru Claude Code: skill-uri pas-cu-pas + cunoștințe client-facing pentru contabilitate (facturi, note contabile, declarații, parteneri, stocuri, salarizare, bancă) și catalogul de tool-uri MCP live. Lucrează MCP-first, cu confirmări pe acțiunile ireversibile și verificare prin citire.",
+  "version": "0.1.0",
+  "author": { "name": "Symbai", "email": "support@symbai.app" },
+  "homepage": "https://github.com/sinesteziadrimo/symbaimemory#readme",
+  "repository": "https://github.com/sinesteziadrimo/symbaimemory",
+  "license": "MIT",
+  "keywords": ["symbai", "accounting", "contabilitate", "efactura", "anaf", "mcp", "erp"]
+}
