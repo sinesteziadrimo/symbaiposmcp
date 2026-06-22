@@ -24,7 +24,7 @@ Un owner de fabrică vrea să „vadă" hala: unde stă fiecare utilaj, pe unde 
 - **Magazie → stoc agregat:** o magazie pusă pe plan arată cantitatea totală și numărul de produse din toate zonele ei de depozitare.
 - **Zonă de depozitare → stoc real:** arată exact ce produse și ce cantități sunt acolo acum.
 - **Echipament → fluxuri + azi:** un echipament arată pe ce fluxuri tehnologice (rețete/produse) lucrează și câte operații are programate azi. Statusul lui (liber / în lucru / mentenanță) apare ca un punct colorat.
-- **Diagrame de producție:** echipamentele și zonele de pe plan sunt aceleași entități care apar în diagramele de flux de producție — planul arată locul FIZIC, diagrama arată SECVENȚA operațiilor. Din diagrama de producție poți apăsa **Vezi pe plan** pe un echipament; pagina se deschide ca `/factory-floor-plan?focusEquipment=<equipmentId>` și selectează utilajul pe plan.
+- **Diagrame de producție:** echipamentele și zonele de pe plan sunt aceleași entități care apar în diagramele de flux de producție — planul arată locul FIZIC, diagrama arată SECVENȚA operațiilor. Din diagrama de producție poți apăsa **Vezi pe plan** pe un echipament; când planul este cunoscut, pagina se deschide ca `/factory-floor-plan?plan=<planId>&focusEquipment=<equipmentId>` și selectează utilajul pe planul corect. Fallback-ul `/factory-floor-plan?focusEquipment=<equipmentId>` rămâne util când agentul nu are `planId`.
 
 ## Glosar rapid
 - **Nivel / etaj** — un strat al planului; comuți între ele cu tab-urile de sus.
