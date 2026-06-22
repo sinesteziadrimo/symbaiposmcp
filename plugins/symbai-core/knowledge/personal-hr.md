@@ -38,7 +38,7 @@ Pagini „personale" (pentru orice angajat logat):
 - **Cererile Mele (/my-leave-requests)** — angajatul își vede cererile de concediu, trimite cereri noi (tip, interval, motiv) și poate anula o cerere cât timp e încă în așteptare; vede nota managerului la aprobare/respingere.
 
 Setări și pagini conexe:
-- **Beneficii Personal (/settings/staff-benefits)** — comutator global de activare + 3 taburi: **Reguli** (cine primește, la ce produse, ce valoare), **Buget per angajat** (buget individual care înlocuiește bugetul standard al regulii) și **Istoric** (registrul consumului, cu link spre raportul /reports/staff-benefits). Fiecare regulă salvată are panoul „Stare regulă" care îți spune exact de ce nu se poate aplica acum.
+- **Beneficii Personal (/settings/staff-benefits)** — comutator global de activare + 3 taburi: **Reguli** (cine primește, la ce produse, ce valoare), **Buget per angajat** (buget individual care înlocuiește bugetul standard al regulii) și **Istoric** (registrul consumului, cu link spre raportul /reports/staff-benefits). Fiecare regulă salvată are panoul „Stare regulă" care îți spune exact de ce nu se poate aplica acum. → ghidul complet (discovery cu owner-ul, configurare pas-cu-pas și **de ce NU se folosește discount/„din partea casei" pentru consumul angajaților, ci acest canal**) e în `beneficiu-personal.md`.
 - **AI Angajați (/ai-angajati)** — asistentul AI de HR: răspunde la întrebări despre echipă, ture, contracte și Codul muncii (ex. calcul ore suplimentare) și poate adăuga/actualiza/importa angajați prin conversație.
 
 ## Fluxuri frecvente

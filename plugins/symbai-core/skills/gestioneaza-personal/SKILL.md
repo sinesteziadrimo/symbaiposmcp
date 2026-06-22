@@ -1,11 +1,11 @@
 ---
 name: gestioneaza-personal
-description: Gestionează personalul în Symbai — angajați, roluri & permisiuni, ture cu raionul corect pentru rutarea comenzilor QR, Program Salon, contracte și salarizare, schimbarea unității. Folosește la „adaugă angajat", „setează rol/permisiuni", „modifică permisiuni", „programează tură", „pune ospătarul pe raion", „de ce nu intră comanda QR la ospătar", „program salon", „fă contract angajat", „schimbă unitatea", „adaugă PIN/parolă angajat".
+description: Gestionează personalul în Symbai — angajați, roluri & permisiuni, ture cu raionul corect pentru rutarea comenzilor QR, Program Salon, contracte și salarizare, beneficii de masă pentru personal (mâncare/băutură gratis/redus cu buget) și schimbarea unității. Folosește la „adaugă angajat", „setează rol/permisiuni", „modifică permisiuni", „programează tură", „pune ospătarul pe raion", „de ce nu intră comanda QR la ospătar", „program salon", „fă contract angajat", „schimbă unitatea", „adaugă PIN/parolă angajat", „beneficiu personal", „masa personalului", „ospătarii/bucătarii mănâncă gratis", „dau mâncare la angajați", „buget de masă pentru echipă", „să le dau discount la mâncare?", „de ce nu se aplică beneficiul".
 ---
 
 # Gestionează personalul — angajați, roluri, ture, raioane, contracte
 
-Citește întâi `knowledge/agent-operare-avansata.md` pentru standardul de execuție sigură, apoi `knowledge/personal-hr.md` (modal de tură câmp-cu-câmp, Program Salon, ladderul de rutare QR, unitatea) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`. Pentru sarcini & checklist-uri vezi skill-ul separat `gestioneaza-sarcini`. Turele de **producție** (fabrică) sunt alt concept — nu le confunda.
+Citește întâi `knowledge/agent-operare-avansata.md` pentru standardul de execuție sigură, apoi `knowledge/personal-hr.md` (modal de tură câmp-cu-câmp, Program Salon, ladderul de rutare QR, unitatea) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`. Pentru **beneficii de masă personal** (mâncare/băutură gratis/redus cu buget + de ce NU discount/din partea casei) citește `knowledge/beneficiu-personal.md` și vezi (g) mai jos. Pentru sarcini & checklist-uri vezi skill-ul separat `gestioneaza-sarcini`. Turele de **producție** (fabrică) sunt alt concept — nu le confunda.
 
 **Tot ce e scriere cere modulul `personal` pe token.** Context mereu întâi: `list_brands` + `list_locations` (ai nevoie de brandId/locationId). Roluri: `list_entities(entityType:"roles", brandId)`. Stare curentă: `get_staff_overview(brandId, locationId)`.
 
@@ -55,6 +55,17 @@ Pregătire aranjamente (dacă lipsesc): `create_floor_zone` → `bulk_create_flo
 
 Selectorul de unitate (sus, valabil pe TOATE paginile, nu doar /staff) filtrează lista de personal și contextul. **Comutarea unității nu se face prin MCP** (e stare de browser) — rețeta canonică (dropdown prin Chrome, recomandat; sau URL `?unit=brandId-locationId`; gotcha userMutated; id-uri din `list_brands`/`list_locations`) e în `knowledge/navigare.md`, secțiunea „Schimbarea unității active". Aici, doar contextul HR: ca să CITEȘTI personalul unei unități fără să comuți, `get_staff_overview(brandId, locationId)`.
 
+## (g) Beneficii de masă pentru personal (mâncare/băutură gratis/redus)
+
+Detaliile complete (discovery cu owner, configurare câmp-cu-câmp, cum aplică ospătarul, cum citești rapoartele) sunt în `knowledge/beneficiu-personal.md`. Esențialul:
+
+1. **Întâi explică regula de aur:** consumul angajaților trece DOAR prin „Beneficiu personal", NU prin „Reducere" și NU prin „Din partea casei". Reducerea/comp scad VENITUL (sunt pentru clienți); beneficiul personal intră pe linia de **cost de personal**, cu registru per angajat și buget. Canalul greșit corupe P&L-ul și rapoartele (vânzări subevaluate, comp umflat, zero atribuire/buget).
+2. **Fă discovery înainte de configurare:** cine consumă (toți/rol/nominal), ce produse (tot meniul/mâncare/categorie), cum (gratis cu buget / preț special / procent), cât (buget/perioadă + la depășire blochează/avertizează/permite), când (oricând / doar la lucru), cine aplică (self/manager). Apoi **propune** un setup și confirmă cifrele înainte să scrii.
+3. **BENEFICIAR ≠ APLICATOR:** beneficiarul mănâncă, aplicatorul pune beneficiul pe notă. Confuzia asta e cea mai frecventă.
+4. **MCP** (dacă tool-urile sunt active pe instanță): citire `list_staff_benefit_rules`, `diagnose_staff_benefit_rule` („de ce nu se aplică"), `get_staff_benefit_budget`, `get_staff_benefit_report`; scriere `create_staff_benefit_rule`, `update_staff_benefit_rule`, `set_staff_benefit_employee_budget`, `toggle_staff_benefits`. Lipsesc pe server vechi → **fallback la pagină** `/settings/staff-benefits`.
+5. **Aplicarea pe o notă rămâne în POS** (acțiune de ospătar: masă → 3 puncte → „Beneficiu Personal"); prin conexiune o explici, n-o faci.
+6. **„Nu se aplică" = aproape mereu CONFIG, nu defect.** Verifică în panoul „Stare regulă" / cu `diagnose_staff_benefit_rule`: rol beneficiar ∈ permise, la lucru dacă se cere, produs în scope, buget neepuizat, aplicator permis.
+
 ## Click-paths în aplicație (extensia Chrome, când MCP nu acoperă)
 
 După ce userul e logat în aplicația lui:
@@ -63,6 +74,7 @@ După ce userul e logat în aplicația lui:
 - Ture: `/staff` (Planificator Ture) → celulă goală → completezi Angajat/Dată/Ore/Aranjament Sală/**Secțiune Atribuită**/Status → „Salvează și Publică Program".
 - Program Salon: `/staff?tab=floor-schedule` → per zi alegi aranjament + preset QR per raion; excepții pe dată.
 - Contracte: `/staff?tab=contracts`.
+- Beneficii Personal: `/settings/staff-benefits` → comutator global + tab Reguli (creează/editează) → la POS, aplicarea pe masă din „Acțiuni Masă" (3 puncte) → „Beneficiu Personal".
 
 ## „De ce comanda QR nu intră la ospătarul corect?" — diagnostic
 
