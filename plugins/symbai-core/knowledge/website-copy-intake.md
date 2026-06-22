@@ -1,6 +1,6 @@
 # Website copy intake si paritate vizuala
 
-> ⚠ Pentru un site MARE / catalog mare / „copiaza TOT site-ul" foloseste skill-ul `copiaza-website` (orchestrare pe ore + coada durabila + sub-agenti + verificare obiectiva). Acolo scopul real vine din `discover_site_inventory` (sitemap + feed platforma), crawl-ul ruleaza pe server prin `start_site_clone_crawl`, mapezi din `get_cached_page` si declari „gata" doar cand `clone_parity_diff` da `pass:true`. Ghidul de mai jos ramane pentru INTAKE rapid (site mic/mediu) si pentru regulile de paritate vizuala.
+> ⚠ Pentru un site MARE / catalog mare / „copiaza TOT site-ul" foloseste skill-ul `copiaza-website` (orchestrare pe ore + coada durabila + sub-agenti + verificare obiectiva). Acolo scopul real vine din `discover_site_inventory` (sitemap + feed platforma), crawl-ul ruleaza pe server prin `start_site_clone_crawl`, mapezi din `get_cached_page` si declari „gata" doar cand trec toate portile: `clone_parity_diff`, `clone_fidelity_audit` si `clone_coverage_audit` dau `pass:true`. `clone_fidelity_audit` verifică și specs PDP + variantele produselor, nu doar nume/poze/preț. Ghidul de mai jos ramane pentru INTAKE rapid (site mic/mediu) si pentru regulile de paritate vizuala.
 
 Foloseste acest ghid cand proprietarul cere: "copiaza site-ul X", "fa site-ul ca X", "adu-mi site-ul existent pe Symbai" sau cand trebuie reprodus local un website public in NexusPOS.
 

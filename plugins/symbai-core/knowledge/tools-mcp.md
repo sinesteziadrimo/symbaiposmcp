@@ -337,14 +337,18 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `request_scale_integration` — Cere echipei Symbai integrarea unui model nou de cantar nesuportat; deschide/reutilizeaza un ticket cu producator, model, protocol si mostra de output. (necesită: manufacturer, model)
 - `view_brand_media` — Arată-ți EFECTIV o imagine din Biblioteca Media (sau de la un URL) ca s-o VEZI și să alegi ce atașezi la o postare. (parametri opționali: mediaAssetId, url)
 
-### Diverse — 89
+### Diverse — 93
 - `analyze_external_website` — Analizeaza read-only un website public si intoarce un source brief pentru a construi/replica rapid site-ul in builder: SEO, logo/favicon, culori, fonturi, navigatie, CTA-uri, imagini/video, sectiuni, (necesită: url). NOTĂ: vede maxim 24 de pagini — pentru COPIEREA COMPLETĂ a unui site mare folosește uneltele de mai jos + skill-ul `copiaza-website`.
 - `discover_site_inventory` — Numitorul ONEST înainte de copiere: numără produse/categorii/blog/pagini din surse independente (sitemap-index + feed Shopify/WooCommerce + X-WP-Total), nu din ce vede agentul. Întoarce productDenominator + denominatorConfident (ca să nu declari «gata» la 20%). (necesită: url)
 - `start_site_clone_crawl` — Pornește copierea pe SERVER a unui site întreg (fundal, politicos anti-429, cache + extracție JSON-LD) — owner-ul poate închide laptopul. Întoarce jobId. (necesită: url; opțional brandId)
 - `get_clone_crawl_status` — Starea unui crawl de copiere: pagini cache/procesate/descoperite, denominator, dead-letter. (necesită: jobId)
 - `list_clone_crawl_pages` — Coada de lucru a copierii: URL-uri tipizate (product/category/blog/legal/page) + status, paginat/filtrabil. (necesită: jobId)
-- `get_cached_page` — Conținutul cache-uit + datele structurate extrase pentru O pagină (nume, SKU, preț, preț vechi, poze, descriere, breadcrumb). (necesită: jobId, url)
+- `get_cached_page` — Conținutul cache-uit + datele structurate extrase pentru O pagină (nume, SKU, preț, preț vechi, poze, descriere, breadcrumb, specs PDP, variantCount). (necesită: jobId, url)
 - `clone_parity_diff` — POARTA de completitudine: compară setul de produse-sursă (chei SKU) cu cele importate → ID-urile care LIPSESC (nu un procent). PASS doar dacă numitorul e sigur ȘI nu lipsește nimic. (necesită: jobId, brandId)
+- `clone_fidelity_audit` — POARTA 2 pentru copiere website: eșantionează catalogul și compară câmp-cu-câmp produsele importate cu sursa (nume, poze, descriere, preț, categorie, specs PDP, variante); întoarce fidelityScore, fieldScores, worstSample, unauditedFields și flags. (necesită: jobId, brandId)
+- `clone_coverage_audit` — POARTA 3 pentru copiere website: verifică acoperirea non-produs (categorii, blog, pagini legale) prin set-diff sursă vs Symbai; PASS cere cel puțin 95% pe fiecare dimensiune existentă în sursă. (necesită: jobId, brandId)
+- `clone_category_tree_audit` — Audit advisory pentru copiere website: compară relațiile părinte-copil din breadcrumb-urile sursei cu ierarhia de categorii Symbai și detectează catalogul aplatizat. (necesită: jobId, brandId)
+- `clone_branding_audit` — Audit advisory pentru copiere website: compară semnalele vizuale din sursă (logo/ogImage/theme-color/titlu) cu brandul Symbai ca să prinzi logo/culoare/nume netransferate. (necesită: jobId, brandId)
 - `analyze_food_costs` — Analizează food cost-ul produselor unui brand. (necesită: brandId)
 - `analyze_procurement` — Analizează aprovizionarea unui brand (furnizori, prețuri, lead time-uri). (necesită: brandId)
 - `audit_shop_health` — Auditează SĂNĂTATEA magazinului online al unui brand și întoarce probleme (severity error/warn) + statistici. (necesită: brandId)

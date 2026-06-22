@@ -1,7 +1,7 @@
 {
   "name": "symbai-core",
   "description": "Asistentul Symbai pentru Claude Code: skill-uri pas-cu-pas + biblioteca de cunoștințe client-facing pentru modulele Symbai, aplicațiile native Expo și tool-urile MCP live. Lucrează MCP-first cu date live, confirmări sigure și verificare prin citire.",
-  "version": "0.22.14",
+  "version": "0.22.15",
   "author": { "name": "Symbai", "email": "support@symbai.app" },
   "homepage": "https://github.com/sinesteziadrimo/symbaimemory#readme",
   "repository": "https://github.com/sinesteziadrimo/symbaimemory",

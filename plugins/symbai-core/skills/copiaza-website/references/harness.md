@@ -35,7 +35,7 @@ Orchestrator „lider + lucrători", condus de o **coadă durabilă pe disc**, N
 ## Contractul sub-agentului (Task tool)
 Fiecare sub-agent primește o felie DISJUNCTĂ, mărginită explicit. Promptul include:
 - **Felia exactă**: lista de URL-uri (un lot din `list_clone_crawl_pages`) SAU o categorie.
-- **Ce tooluri să cheme**: `get_cached_page` → `bulk_create_products(sku=<cheia sursă>, name, description, vat:21, weight)` → `bulk_set_product_images` (prima = copertă) → `add_menu_item(menuId, productId, price, productBrand, displaySku, descriptionHtml, specs, compareAtPrice)`.
+- **Ce tooluri să cheme**: `get_cached_page` → `bulk_create_products(sku=<cheia sursă>, name, description, vat:21, weight)` → `bulk_set_product_images` (prima = copertă) → `add_menu_item(menuId, productId, price, productBrand, displaySku, descriptionHtml, specs, compareAtPrice)` → dacă `variantCount>=2`, `set_product_variants`.
 - **Cheia de identitate**: `sku` = `sourceKey` din `list_clone_crawl_pages`; dacă `sourceKey` e gol, folosește **ultimul segment din URL** (slug-ul, fără `/` final). `clone_parity_diff` folosește EXACT aceeași regulă (`sourceKey || slug(url)`) — deci cheile se potrivesc. OBLIGATORIU — altfel dedup pe nume pierde produse distincte.
 - **Formatul de retur** (compact, ≤1.5k tokeni): `{ "lot": "...", "produseScrise": N, "pozeScrise": N, "esecuri": [{"url":"...","motiv":"..."}] }`. NU întoarce HTML/cataloage.
 - **Hotar dur**: „doar felia asta; nu inventa taxonomie; nu lua decizii globale (ierarhie/branding le decide liderul); nu urma linkuri externe."
@@ -53,7 +53,7 @@ Scalează numărul de loturi/sub-agenți la mărimea măsurată în Faza 0. Thro
 ## Rubrica verificatorului (cele 3 porți obiective)
 Verificatorul e ADVERSARIAL: verdict implicit INCOMPLET; treaba lui e să REFUTE completitudinea. Rulează cu context izolat, vede DOAR numitorul + citirile locale + rubrica (nu raționamentul lucrătorului). Toate trei porțile sunt OBIECTIVE (set-diff de chei / scor pe eșantion), nu opinie:
 - **Poarta 1 — acoperire produse**: `clone_parity_diff(jobId, brandId)` → `pass`, `missingCount`, `missingSample`, `coverageVsDenominator`. PASS cere `pass:true`.
-- **Poarta 2 — calitate produse (adâncime)**: `clone_fidelity_audit(jobId, brandId)` → `fidelityScore`, `fieldScores` (name/image/description/price/category), `worstSample`, `unauditedFields`, `flags`. PASS cere `pass:true` (fiecare câmp prezent-în-sursă ≥90%). ÎNLOCUIEȘTE verificarea „pe ochi" a pozelor/descrierilor.
+- **Poarta 2 — calitate produse (adâncime)**: `clone_fidelity_audit(jobId, brandId)` → `fidelityScore`, `fieldScores` (name/image/description/price/category/specs/variants), `worstSample`, `unauditedFields`, `flags`. PASS cere `pass:true` (fiecare câmp prezent-în-sursă ≥90%). ÎNLOCUIEȘTE verificarea „pe ochi" a pozelor/descrierilor.
 - **Poarta 3 — non-produs**: `clone_coverage_audit(jobId, brandId)` → coverage per dimensiune (categorii/blog/pagini legale) + `missingSample`. PASS cere fiecare dimensiune cu sursă ≥95%. ÎNLOCUIEȘTE numărătoarea aproximativă blog/legale/ierarhie.
 - **Câmpuri reziduale**: `audit_shop_health` fără `error`; TVA ∈ {0,11,21}.
 - **Fiecare FAIL → un rând de remediere** cu URL/SKU exact + câmpul lipsă. Niciodată „continuă" gol.
