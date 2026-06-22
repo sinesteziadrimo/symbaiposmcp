@@ -45,11 +45,11 @@ Tipuri de obiecte: `production_equipment`, `production_zone`, `warehouse`, `stor
 
 **Pas 5 — Metadate HACCP (opțional, dar valoros).** La zone poți seta clasa de aer (grade_a…d), zona de igienă (high_care/low_care/raw/waste), alergeni și interval de temperatură — colorează zonele și ajută la verificarea separării. Folosește `update_factory_object` sau câmpurile din `build_factory_floor`.
 
-**Pas 6 — Verifică + arată.** `get_factory_plan` → confirmă obiectele, conexiunile și datele LIVE: status echipament, fluxurile care folosesc fiecare utilaj și câte operații are azi, stocul real pe fiecare zonă de depozitare + agregat pe magazie. Apoi `gaseste_in_aplicatie("plan fabrica 2D")` / deschide `/factory-floor-plan` în browser și fă screenshot.
+**Pas 6 — Verifică + arată.** `get_factory_plan` → confirmă obiectele, conexiunile și datele LIVE: status echipament, fluxurile care folosesc fiecare utilaj și câte operații are azi, stocul real pe fiecare zonă de depozitare + agregat pe magazie. Apoi `gaseste_in_aplicatie("plan fabrica 2D")` / deschide `/factory-floor-plan` în browser și fă screenshot. Dacă pornești dintr-o diagramă de producție, echipamentele au scurtătura **Vezi pe plan**; poți folosi și URL-ul `/factory-floor-plan?focusEquipment=<equipmentId>` ca să deschizi planul direct cu utilajul selectat și centrat.
 
 ## Cum se leagă de restul
 - **Magazii ↔ zone de depozitare ↔ stoc:** o magazie pusă pe plan arată stocul agregat al tuturor zonelor ei; o zonă de depozitare arată ce produse și ce cantități sunt acolo acum.
-- **Echipamente ↔ fluxuri/diagrame:** un echipament pus pe plan arată pe ce fluxuri tehnologice lucrează și ce operații are programate azi. Pentru a edita fluxul în sine folosește skill-ul `productie-flux` (operații, dependențe, diagrama vizuală).
+- **Echipamente ↔ fluxuri/diagrame:** un echipament pus pe plan arată pe ce fluxuri tehnologice lucrează și ce operații are programate azi. Din diagrama de producție există link **Vezi pe plan**, iar URL-ul `/factory-floor-plan?focusEquipment=<equipmentId>` selectează și centrează utilajul în planul 2D. Pentru a edita fluxul în sine folosește skill-ul `productie-flux` (operații, dependențe, diagrama vizuală).
 - **Nivele/etaje:** pune fiecare obiect pe nivelul lui; conexiunile se văd pe nivelul activ.
 
 ## Greșeli de evitat
