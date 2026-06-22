@@ -16,6 +16,7 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 - Întreabă de **consumul zilnic** ("de ce a scăzut/n-a scăzut stocul după vânzare").
 - Mută marfă între depozite (**transfer**), scoate marfă (pierdere/casare/furt) sau cere **raport de stoc**.
 - Vrea **trasabilitate**: din ce lot/furnizor a venit marfa, unde s-a consumat.
+- Vrea rafturi/bin-uri în magazie, etichete QR pentru zone sau să vadă pe telefon ce este într-o zonă scanată.
 
 ## Reguli de aur
 1. **Limbaj de manager, zero jargon** — "depozit/gestiune", "numărare fizică", "marfă care expiră", nu termeni tehnici.
@@ -25,6 +26,7 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 5. **Transferurile și ieșirile de stoc se fac prin MCP** — `create_inventory_document` e motorul canonic de stoc: ieșiri cu `docType` CONSUMPTION/WASTE/THEFT/ADJUSTMENT_MINUS/RETURN_OUT/SALE_ISSUE (dă `warehouseFromId`), transfer cu `warehouseFromId`+`warehouseToId`. Obligatoriu și `docType`, `docNo`, `docDate` (YYYY-MM-DD) + `lines` (fiecare linie cere `productId`+`qty`). Cu `autoPost:true`+`confirm:true` mișcă stocul real ireversibil (confirmă întâi cu clientul), altfel rămâne DRAFT și îl postezi cu `post_inventory_document`. Ștergerea de entități întregi rămâne doar din aplicație. Verifică mereu rezultatul cu tool-urile de citire.
 6. **Stoc ciudat (negativ, prea mic, diferențe mari) = aproape mereu rețetă greșită, unități amestecate (kg vs buc) sau consum negenerat** — verifică `get_daily_consumption_status` înainte de a trage concluzii.
 7. **Inventarierea se limiteaza strict la gestiunile alese** — cand ajuti cu `/inventory-check`, lista de produse trebuie sa vina din stoc live in gestiunea aleasa sau din produse stocabile cu zona asignata acelei gestiuni. Nu ghida clientul sa numere produse nestocabile, servicii sau produse finite de reteta in Zone & Amplasare.
+8. **Rafturi/QR = Plan Fabrică 2D + Warehouse Hub** — pentru fabrici, rack-urile, etichetele QR și pagina mobilă de zonă se operează din `/factory-floor-plan`, după ce ai verificat datele live prin MCP.
 
 ## Fluxul (pași numerotați cu tool-urile MCP)
 
@@ -62,6 +64,12 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 **G. Trasabilitate marfă (din ce lot a venit / unde s-a dus)**
 1. `exec_trace_lot_origin` cu `lotId` → furnizor, dată intrare, cost.
 2. `exec_trace_lot_destination` cu `lotId` → unde/ în ce bon s-a consumat; `exec_get_lot_qc_status` dacă lotul e blocat la calitate.
+
+**H. Rafturi și QR de zonă**
+1. Verific structura live: `list_warehouses_full`, `list_storage_zones_full`, apoi stocul cu `get_stock_levels` și loturile cu `list_lots` când contează expirarea/trasabilitatea.
+2. Dacă userul vrea doar zone simple, creez prin MCP cu `create_storage_zone` sau `bulk_create_storage_zones` (confirm când sunt multe zone sau schimb structura existentă).
+3. Pentru rack/bin-uri vizuale și etichete QR, deschid `/factory-floor-plan`, selectez magazia sau zona de depozitare, intru în **Vezi depozitul** și folosesc **Raft** sau **Etichete QR**. Aici folosesc `browser:control-in-app-browser` sau `chrome:control-chrome` dacă trebuie dovadă vizuală, print sau verificare pe sesiunea logată.
+4. Explic simplu rezultatul: "Am pregătit etichetele QR pentru zone; când scanezi codul de pe raft, se deschide `/scan/zone/:id` și vezi stocul live din zona respectivă."
 
 ## Tool-uri folosite
 - **Citire (oricând):** `get_stock_levels`, `get_warehouse_products_summary`, `list_warehouses_full`, `list_storage_zones_full`, `get_daily_consumption_status`, `get_production_stock_overview`, `get_semipreparate_stock`, `list_lots`, `search_products_db`, `get_product_details`, `generate_report`, `exec_trace_lot_origin`, `exec_trace_lot_destination`, `exec_get_lot_qc_status`, `jurnal_activitate`, `gaseste_in_aplicatie`.

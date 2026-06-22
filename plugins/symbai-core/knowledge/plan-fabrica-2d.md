@@ -26,6 +26,7 @@ Un owner de fabrică vrea să „vadă" hala: unde stă fiecare utilaj, unde luc
 ## Cum se leagă de restul (informații vii)
 - **Magazie → stoc agregat:** o magazie pusă pe plan arată cantitatea totală și numărul de produse din toate zonele ei de depozitare.
 - **Zonă de depozitare → stoc real:** arată exact ce produse și ce cantități sunt acolo acum.
+- **Warehouse Hub pe plan:** când selectezi o magazie sau o zonă de depozitare în `/factory-floor-plan`, panoul **Vezi depozitul** deschide hub-ul cu taburi Stoc, Zone, Mișcări, Intrări, Ieșiri și Loturi. Pentru rafturi folosești butonul **Raft** (creează rack/bin-uri), iar **Etichete QR** generează etichete scanabile; scanarea duce operatorul pe pagina mobilă `/scan/zone/:id`, cu stocul live al zonei.
 - **Echipament → fluxuri + azi:** un echipament arată pe ce fluxuri tehnologice (rețete/produse) lucrează și câte operații are programate azi. Statusul lui (liber / în lucru / mentenanță) apare ca un punct colorat.
 - **Operator → rol + ture azi:** un operator legat de un angajat arată rolul și câte ture are azi; pentru editarea programului folosește zona de Personal/Ture, nu planul.
 - **Diagrame de producție:** echipamentele și zonele de pe plan sunt aceleași entități care apar în diagramele de flux de producție — planul arată locul FIZIC, diagrama arată SECVENȚA operațiilor. Din diagrama de producție poți apăsa **Vezi pe plan** pe un echipament; când planul este cunoscut, pagina se deschide ca `/factory-floor-plan?plan=<planId>&focusEquipment=<equipmentId>` și selectează utilajul pe planul corect. Fallback-ul `/factory-floor-plan?focusEquipment=<equipmentId>` rămâne util când agentul nu are `planId`.
@@ -43,6 +44,7 @@ Un owner de fabrică vrea să „vadă" hala: unde stă fiecare utilaj, unde luc
 - „Am o poză cu planul halei, trasează peste ea." → setează `levels[].bgUrl` cu `update_factory_plan` sau deschide UI-ul și folosește **Plan de fond** + **Creează sală**.
 - „Pune operatorii pe plan." → verifică `list_employees`, apoi `place_factory_object` / `build_factory_floor` cu `objectType:"operator"` și `entityName`/`entityId` de angajat.
 - „Ce e stocat în zona X?" / „cât stoc are magazia?" → se vede pe obiectul respectiv (stoc real / agregat).
+- „Printează etichete QR pentru rafturi/zone." → verifică întâi gestiunile și zonele (`list_warehouses_full`, `list_storage_zones_full`, `get_stock_levels`), apoi deschide `/factory-floor-plan`, selectează magazia/zona, folosește **Vezi depozitul** → **Etichete QR**. Dacă userul are nevoie de dovadă vizuală sau print, folosește `browser:control-in-app-browser` sau `chrome:control-chrome` pe sesiunea logată și arată screenshot cu etichetele sau pagina `/scan/zone/:id`.
 - „Pe ce lucrează cuptorul?" → echipamentul arată fluxurile care îl folosesc + operațiile de azi.
 - „Vreau două etaje." → planul suportă nivele; pui fiecare obiect pe nivelul lui.
 

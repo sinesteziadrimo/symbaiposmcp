@@ -28,6 +28,7 @@ Modulul acoperă tot drumul mărfii: intrarea (facturi de la furnizori → recep
 - **Panou Inventar** (`/inventory`) — tabloul de bord al stocului: valoare totală stoc, alerte de stoc, mișcări recente, pierderi (waste), plus ghid „Gestiune & Stocuri".
 - **Magazii & Produse** (`/warehouse-products`) — administrezi magaziile și zonele de depozitare (creare, editare, culoare, cod) și vezi produsele din fiecare, cu căutare după nume/SKU; la ștergerea unei gestiuni, produsele ei pot fi mutate în alta.
 - **Inventar Multi-Sursă** (`/inventory/msi`) — pentru vânzări online/ecommerce cu mai multe depozite: reguli de alocare automată pe surse, rezervări cu termen, backorder/preorder, expediții împărțite, webhooks, vizibilitate storefront.
+- **Plan Fabrică 2D / Warehouse Hub** (`/factory-floor-plan`) — pentru fabrici, selectezi o magazie sau zonă de depozitare pe plan și intri în **Vezi depozitul**: taburi Stoc, Zone, Mișcări, Intrări, Ieșiri și Loturi, plus **Raft** pentru rack/bin-uri și **Etichete QR** pentru coduri care se scanează pe mobil la `/scan/zone/:id`.
 
 ### Intrări (recepție marfă)
 - **Intrări** (`/stock-entries`) — pagina „Intrări Marfă" cu 5 taburi: Facturi Furnizori, Avize & Draft, Reconciliere, Recepții (NIR), Producție. De aici creezi NIR-ul (alegi factura sursă + depozitul de recepție) și poți tipări „Nota de recepție și constatare de diferențe".
@@ -99,6 +100,9 @@ Factura intră pe una din cele 4 căi (eFactura/ANAF, poze cu OCR, push din cont
 **7b. Necesar producție (MRP) → ciorne PO**
 Pentru fabrici, folosește `create_purchase_orders_from_requirements(commit:false, mode:"strict")` ca preview al lipsurilor MRP transformate în comenzi furnizor: alege furnizori pe strategie, aplică MOQ/pachete și semnalează materiale nemapate/ambigue. După confirmarea explicită a userului, `commit:true` creează comenzi **DRAFT** idempotente; trimiterea către furnizor rămâne în `/smart-ordering` sau `/purchase-orders/:id`.
 
+**7c. Rafturi și etichete QR pentru zone**
+Verifici întâi structura cu `list_warehouses_full` și `list_storage_zones_full`. Pentru zone simple poți folosi `create_storage_zone` / `bulk_create_storage_zones`; pentru rack/bin-uri și print QR deschizi `/factory-floor-plan`, selectezi magazia/zona, **Vezi depozitul** → **Raft** sau **Etichete QR**. Scanarea unui QR deschide `/scan/zone/:id`, unde operatorul vede stocul live al zonei.
+
 **8. Furnizor nou**
 `/suppliers` → „Adaugă Furnizor Nou" (sau îi trimiți link de înregistrare publică `/supplier-register`) → îi încarci catalogul în `/inventory/suppliers/:id/catalog` (manual sau import PDF) → mapezi produsele de catalog la produsele tale interne → poți comanda din Hub Aprovizionare; opțional îi activezi Portalul de Furnizor.
 
@@ -137,7 +141,7 @@ Pentru fabrici, folosește `create_purchase_orders_from_requirements(commit:fals
 - **De ce diferă costul (COGS) de cel din rețetă?** Costul raportat e cel „realizat" — din loturile FIFO efectiv consumate, la prețurile lor reale de intrare — nu cel teoretic din rețetă.
 - **Cantitate × preț nu bate cu totalul liniei de factură.** Normal la penalități/abonamente: valoarea totală a liniei e autoritară, recepția folosește totalul real.
 - **De ce e blocată trimiterea comenzii către furnizor?** Există produse fără cod de furnizor sau fără o alegere de catalog rezolvată — pagina îți arată exact care; rezolvă-le și retrimite.
-- **De ce nu văd Recomandări Aprovizionare?** E nevoie de produse de furnizor (cataloage) asociate cu produsele tale din inventar — fără mapări nu există ce compara.
+- **De ce nu văd Recomandări Aprovizionare?** E nevoie de produse de furnizor (cataloage) asociate cu produsele tale din inventar — fără mapări nu există ce compara. Dacă `list_procurement_recommendations` întoarce zero rezultate cu `pragConfigurate: 0`, problema este că lipsesc pragurile/stocurile minime de reaprovizionare, nu că stocul este sigur.
 - **Pierderile apar în profit?** Doar tipurile de fișe de ieșire marcate că afectează P&L; poți avea și tipuri „neutre". Configurarea tipurilor e în `/stock-exits`.
 - **Stoc absurd (negativ sau uriaș) la un ingredient?** Verifică unitățile de măsură: rețeta în grame/ml vs produsul în kg/l — conversia trebuie să fie corectă; după corectare, reprocesează perioada.
 - **NIR-uri „uitate" în ciornă?** Bannerul din `/purchases` le arată și permite postarea în masă; și `/inventory/inbox-quality` semnalează NIR-urile ciornă mai vechi de 7 zile.
