@@ -2,6 +2,10 @@
 
 Orchestrator „lider + lucrători", condus de o **coadă durabilă pe disc**, NU de contextul agentului. Liderul (sesiunea principală) ține planul + tally-ul mic; extragerea/scrierea pe pagină merg la **sub-agenți** cu context curat care întorc rezumate de 1-2k tokeni.
 
+## Cadență cu userul (mod IMPLICIT)
+Vezi protocolul generic în `../../../knowledge/lucru-incremental-verificat.md`; aici e instanțierea pentru clonare.
+Implicit, contractul pe tură e: **o sarcină mică → explică în business → execută → verifică prin read-back (+ vizual la pagini) → arată rezultatul → propune URMĂTOAREA sarcină → oprește-te** și aștepți „continuă/da". Cele trei straturi „Nu te opri" (`/loop` în sesiune, agentul programat, hook-ul Stop) sunt **ARMATE DOAR în modul autonom OPT-IN** — implicit stau OPRITE. Coada durabilă de mai jos e tally-ul tău; ea NU autorizează rularea non-stop fără ca userul s-o ceară.
+
 ## Starea durabilă: `.symbai-clone/<host>/`
 
 **`manifest.json`** (inventarul GOLD — scris o dată în Faza 0, NICIODATĂ micșorat de lucrător):

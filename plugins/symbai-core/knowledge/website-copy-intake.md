@@ -32,8 +32,9 @@ Pentru fiecare URL copiat, noteaza rapid:
 - **Hero:** imagine/video, badge, titlu, subtitlu, CTA, culoare overlay/card.
 - **Structura componentelor:** ordinea exacta: text+imagine, carduri, preturi, galerie, video, formular, FAQ, rich text, contact.
 - **Texte:** nu rezuma agresiv. Pastreaza titlurile si paragrafele principale; daca o sectiune are CTA/copy secundar, include-l.
-- **Asset-uri:** imaginea principala a fiecarei sectiuni, nu doar un asset generic refolosit peste tot.
-- **Interactivitate:** slider cu sageti/dots, dropdown de meniu, nav sticky, formulare, scroll anchors, carduri clickabile.
+- **Asset-uri:** imaginea principala a fiecarei sectiuni, nu doar un asset generic refolosit peste tot. Probeaza TOATE campurile de imagine ale unei componente (nu doar `image`: si `imageMask`/`picture`/`backgroundImage`) inainte sa o declari "fara poza".
+- **Recenzii/testimoniale:** pot fi DOAR imagini (screenshot-uri de review, fara text) — pastreaza-le ca galerie de imagini; nu lasa un filtru pe text sa arunce sectiunea intreaga.
+- **Interactivitate:** slider cu sageti/dots, dropdown de meniu, nav sticky, formulare, scroll anchors, carduri clickabile, animatii reveal-on-scroll (sectiunile care apar/aluneca la derulare) — noteaza-le si reprodu-le, nu livra o pagina statica.
 - **SEO:** titlu/meta description/canonical pentru pagina, plus slug-ul neschimbat.
 
 Regula de oprire: inainte sa spui "am copiat pagina", compara numarul de sectiuni extrase cu numarul de componente locale. Daca local ai 2-3 blocuri si sursa are 10+, munca NU este gata.

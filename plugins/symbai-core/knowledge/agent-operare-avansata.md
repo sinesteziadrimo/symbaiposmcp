@@ -22,6 +22,8 @@ Gandeste ca o echipa mica:
 7. **Verifica prin citire**: confirma cu tool de citire sau audit, nu doar cu raspunsul tool-ului de scriere si nu doar cu ecranul.
 8. **Inchide cu dovada**: spune ce ai facut, unde se vede, ce ai verificat si ce ramane nevalidat.
 
+**Lucrări mari, pe ore (clonare site, import catalog, configurare CRM, campanie multi-etapă):** lucrează INCREMENTAL și condus de user — o sarcină mică pe tură, verificată prin citire, explicată pe business, cu următoarea sarcină propusă la final; modul autonom „nu te opri" e OPT-IN. Protocolul complet: [`lucru-incremental-verificat.md`](lucru-incremental-verificat.md).
+
 ## Reguli de decizie
 
 - **Userul cere „fa"**: actioneaza, nu ramane la plan. Pune intrebari doar pentru date care nu se pot citi si unde o presupunere ar produce paguba.
