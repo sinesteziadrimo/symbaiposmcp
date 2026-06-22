@@ -43,7 +43,7 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 
 **C. Setez stoc inițial pentru un produs nou**
 1. Confirm produsul cu `search_products_db` / `get_product_details`.
-2. `set_initial_stock` cu `productId` + `quantity` (necesită modul produse_meniu).
+2. `set_initial_stock` cu `productId` + `quantity` și, dacă știi gestiunea, `warehouseId` (necesită modul produse_meniu). Dacă tool-ul spune că produsul are stoc în mai multe gestiuni și cere `warehouseId`, nu reîncerca în orb: rulează `list_warehouses_full` / `get_stock_levels(productName)` ca să alegi gestiunea corectă, confirmă cu userul, apoi reapelează cu `warehouseId`.
 
 **D. Consum zilnic (cum scade stocul din vânzări)**
 1. `get_daily_consumption_status` cu `date` → ce s-a consumat, ce nu s-a generat încă, produse vândute fără rețetă.
@@ -54,8 +54,8 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 2. Verific cu `get_stock_levels` (sursa scade, destinația crește) și `jurnal_activitate` (filtru pe categoria de stoc) ca să confirm că transferul s-a înregistrat.
 
 **F. Sumar/raport pe gestiune**
-1. `get_warehouse_products_summary` cu `warehouseId` → nr. produse, categorii, valoare în lei.
-2. `get_stock_levels` cu `warehouseId` pentru lista completă; `generate_report` cu `reportType: "stock_value"` pentru valoare la cost și la preț.
+1. `get_warehouse_products_summary` cu `warehouseId` → nr. produse și categorii din gestiune; include produsele cu gestiune-casă, legături product-warehouse și stoc real deja existent.
+2. `get_stock_levels` cu `warehouseId` pentru lista filtrată pe acea gestiune (nu tot catalogul cu 0); `generate_report` cu `reportType: "stock_value"` pentru valoare la cost și la preț.
 3. `list_lots` cu `warehouseId` pentru loturi + date de expirare; `list_warehouses_full` / `list_storage_zones_full` pentru structura depozitelor.
 4. Producție (semipreparate/finite): `get_production_stock_overview`, `get_semipreparate_stock`.
 

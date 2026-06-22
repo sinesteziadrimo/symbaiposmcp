@@ -106,8 +106,8 @@ Pentru fabrici, folosește `create_purchase_orders_from_requirements(commit:fals
 
 **Citire (fără permisiune de modul):**
 - `list_warehouses_full` / `list_storage_zones_full` — gestiunile și zonele de depozitare.
-- `get_warehouse_products_summary` — câte produse și pe ce categorii are o gestiune.
-- `get_stock_levels` — stocul curent per produs din toate gestiunile (are filtru „doar stoc scăzut").
+- `get_warehouse_products_summary` — câte produse și pe ce categorii are o gestiune; apartenența include gestiunea-casă a produsului, linkurile product-warehouse și stocul real deja existent.
+- `get_stock_levels` — stocul curent per produs; cu `warehouseId` întoarce doar produsele prezente/configurate în acea gestiune, nu tot catalogul cu 0.
 - `get_semipreparate_stock` — stocul de semipreparate pe loturi, cu valabilitate.
 - `get_material_requirements` — necesar MRP multi-nivel pentru producție, read-only; folosește-l înainte de a genera ciorne PO din lipsuri.
 - `search_products_db` / `get_product_details` — căutare produse și detalii (gestiune, furnizor, rețetă).
@@ -118,7 +118,7 @@ Pentru fabrici, folosește `create_purchase_orders_from_requirements(commit:fals
 - `jurnal_activitate` (categoria INVENTORY) — cine a făcut ce pe stoc: ajustări, ștergeri, modificări.
 
 **Scriere (cer modulul de permisiune pe token):**
-- Modul `produse_meniu`: `create_product`, `update_product`, `bulk_update_products` (inclusiv preț de achiziție, furnizor, TVA), `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`, `set_initial_stock` (stocul inițial al unui produs).
+- Modul `produse_meniu`: `create_product`, `update_product`, `bulk_update_products` (inclusiv preț de achiziție, furnizor, TVA), `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`, `set_initial_stock` (stocul inițial al unui produs; dă `warehouseId` când produsul are/poate avea stoc în mai multe gestiuni).
 - Modul `furnizori`: `create_supplier`, `update_supplier`, `create_supplier_product` (produs în catalogul furnizorului), `create_supplier_product_mapping` (mapare produs catalog ↔ produs intern).
 - Modul `productie`: `create_purchase_orders_from_requirements` creează ciorne PO din necesarul MRP după preview (`commit:false`) și confirmare (`commit:true`).
 - Răspunsurile de la `create_supplier` / `update_supplier` nu întorc secretele de portal sau marketplace. Dacă userul vrea accesul furnizorului, folosește fluxul de portal/link/regenerare, nu căuta parola în date.
@@ -130,6 +130,7 @@ Pentru fabrici, folosește `create_purchase_orders_from_requirements(commit:fals
 - **De ce nu pot crea NIR-ul?** NIR-ul se creează doar legat de o factură sursă, iar toate liniile facturii trebuie să fie mapate pe produse interne. Verifică maparea în `/inventory/ai-review`.
 - **Am introdus avizul — de ce nu a intrat marfa în stoc?** Recepția pe aviz intră marfa în stoc doar când documentul e postat; recepțiile rămase în ciornă nu mișcă stocul (le vezi în Avize & Draft și în bannerul din `/purchases`, de unde le poți posta). Iar avizul rămâne „neînchis" până îl legi de factura oficială în tabul Reconciliere.
 - **De ce nu scade stocul când vând un produs?** Cel mai des: produsul nu are rețetă sau rețeta nu e legată de produs. Caută-l în `/daily-consumption`, tabul Consum Temporar, și folosește meniul de remediere, apoi „Reprocesează acest produs".
+- **`set_initial_stock` îmi cere `warehouseId`.** Produsul are stoc real în mai multe gestiuni și sistemul nu ghicește. Citește gestiunile cu `list_warehouses_full` și stocul pe produs cu `get_stock_levels(productName)`, confirmă gestiunea cu utilizatorul, apoi reapelează `set_initial_stock(productId, quantity, warehouseId)`.
 - **De ce apar produse din alta gestiune in inventar?** Verifica daca inventarul a fost creat pe gestiunea corecta si daca produsele au stoc live acolo sau zona de depozitare asignata acelei gestiuni. Produsele nu trebuie incluse doar din mapari istorice; daca vezi produse fara stoc si fara zona in gestiunea inventariata, e o problema de scoping si trebuie investigata pe `stock_count_sessions`, `stock_count_items`, `warehouse_stock`, `storage_zones` si `products.storage_zone_id`.
 - **De ce nu apare o zona in trimiterea catre numarator?** Zona trebuie sa apartina uneia dintre gestiunile sesiunii. Daca zona a fost creata dupa pornirea inventarului, este eligibila pentru linkul de numarare; pentru produse/asteptat in sesiunea principala foloseste si "Actualizeaza Stocuri".
 - **Am corectat rețetele, dar rapoartele arată tot vechiul food cost.** Corectarea rețetei nu rescrie trecutul — rulează Reprocesarea pe perioada afectată din `/daily-consumption`.

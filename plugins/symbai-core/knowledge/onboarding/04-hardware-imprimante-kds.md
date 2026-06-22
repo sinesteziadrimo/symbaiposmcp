@@ -56,7 +56,7 @@ Ordinea dependențelor: **PC-uri (UI) → casă fiscală (UI) → imprimante de 
 Nu există tool-uri pentru a înregistra PC-uri, a descărca pachetul de instalare sau a desemna PC-ul Server. Vezi secțiunea „Ce se face DOAR din aplicație".
 
 ### Pas 2 — Casa de marcat fiscală: recomandă aplicația
-`create_printer` acceptă `type: "fiscal"`, dar scrie în baza de date DOAR `name`, `type`, `ipAddress`, `locationId` — NU poate seta la care PC e cablul casei și nici marca (Datecs/Daisy), deci casa creată prin MCP rămâne o **cocă nefuncțională** până e completată din aplicație. Nu o crea prin MCP — ghidează utilizatorul să o adauge din wizard-ul aplicației (pasul 8) sau din Setări → Imprimante, unde dialogul îl întreabă exact: cum o numim, ce marcă e, la care PC e cablul.
+`create_printer` acceptă `type: "fiscal"` și salvează nume/tip/IP/brand/locație, dar NU poate seta la care PC e cablul casei și nici marca (Datecs/Daisy), deci casa creată prin MCP rămâne o **cocă nefuncțională** până e completată din aplicație. Nu o crea prin MCP — ghidează utilizatorul să o adauge din wizard-ul aplicației (pasul 8) sau din Setări → Imprimante, unde dialogul îl întreabă exact: cum o numim, ce marcă e, la care PC e cablul.
 
 ### Pas 3 — Imprimantele termice de rețea: prin MCP
 Pentru fiecare secție cu imprimantă (bucătărie, bar, grill):
@@ -66,7 +66,7 @@ create_printer({
   name: "Bucătărie",          // numele secției — IMPORTANT: să semene cu eticheta (vezi Pas 5)
   type: "kitchen",             // bon de secție (ce folosește și wizard-ul); "receipt"=bon client, "label"=etichete
   ipAddress: "192.168.1.50",  // IP-ul imprimantei în rețeaua locală — cere-l explicit
-  brandId: 1,                  // obligatoriu în schemă (din list_brands)
+  brandId: 1,                  // imprimanta aparține acestui brand; la multi-brand folosește brandIds explicit
   locationId: 2                // din list_locations — pune-l MEREU, altfel imprimanta plutește fără locație
 })
 ```
@@ -103,7 +103,7 @@ Imprimantele și ecranele create de tine prin MCP **apar în wizard** (pașii ci
 
 ## Verificare la final
 
-1. `list_printers({ locationId })` — apar: casa fiscală (`type: "fiscal"`) + câte o imprimantă per secție, fiecare cu IP. Zero duplicate.
+1. `list_printers({ locationId, brandId })` — apar: casa fiscală (`type: "fiscal"`) + câte o imprimantă per secție, fiecare cu IP și brandul corect. Zero duplicate.
 2. `list_entities({ entityType: "kds_screens" })` — ecranele planificate există, fiecare cu `locationId` setat.
 3. `list_tag_summary` — etichetele de secție există și au produse asignate.
 4. Cu SQL: `SELECT t.name, r.printer_id, r.screen_ids FROM tag_routing_rules r JOIN tags t ON t.id=r.tag_id` — fiecare etichetă folosită pe produse are o destinație; `SELECT name, is_server, print_agent_status FROM devices` — există exact un PC Server activ per locație (garantat și de un index unic în baza de date).
@@ -115,7 +115,8 @@ Imprimantele și ecranele create de tine prin MCP **apar în wizard** (pașii ci
 - **Ecran creat ≠ ecran funcțional.** Un ecran fără regulă de rutare etichetă→ecran nu primește NICIO comandă — pare instalat, dar e gol. La fel imprimantele de secție. Rutarea (UI-only) e parte obligatorie din fază, nu opțional.
 - **Nu încerca să „repari" un ecran principal gol prin MCP.** Un ecran de tip „principal" (master) fără ecrane de secție legate afișează ALB intenționat. Prin MCP creezi doar ecrane de stație (default-ul corect); topologia cu ecran principal se configurează din fluxul ghidat al aplicației.
 - **Casa de marcat: doar Datecs și Daisy** se conectează direct (driverul nativ). Altă marcă (Tremol, Custom...) = configurare avansată din Setări, după onboarding — nu promite că merge din wizard și nu o crea prin MCP.
-- **`brandId` e cerut de schema tool-urilor, dar `locationId` e cel care contează** — handler-ele de `create_printer`/`create_kds_screen` folosesc efectiv doar numele, tipul, IP-ul și locația. Trece TOTUȘI ambele; fără `locationId` explicit entitatea rămâne fără locație și rutarea per-locație nu o găsește.
+- **`create_printer` onorează brandul acum** — `brandId` face imprimanta a acelui brand (iar `brandIds` permite mai multe branduri). Pune TOTUȘI și `locationId`: brandul decide vizibilitatea, locația decide unde se rutează și unde se testează.
+- **Casa fiscală implicită pe locație** — dacă ai deja o imprimantă fiscală funcțională și locația trebuie să o folosească drept fallback, poți seta `update_location({ locationId, defaultFiscalPrinterId })`; apoi verifici cu `list_locations` / pagina Setări. Pentru terminale/PC-uri proprii rămâne `update_pos_device`.
 - **Imprimanta creată prin MCP nu are PC gestionar asociat** (parametrul nu există în tool). În aplicație, dialogul wizard-ului o leagă automat de PC-ul Server. După creare prin MCP, cere utilizatorului testul „Testează" din aplicație; dacă nu răspunde, verificați împreună în Setări → Imprimante că e gestionată de PC-ul Server.
 - **Rutarea e legată de locație** — la multi-locație, nu lega etichetele unei locații de ecranele alteia (comenzile ar „sări" între localuri). Fiecare regulă se face cu locația ei.
 - **Numele = cheia rutării automate.** Etichetă „Bucătărie" + imprimantă „Bucătărie" + ecran „Ecran Bucătărie" → „Leagă automat" le unește singur. Nume divergente („Food", „Imprimanta 1") = legare manuală, bucată cu bucată.
