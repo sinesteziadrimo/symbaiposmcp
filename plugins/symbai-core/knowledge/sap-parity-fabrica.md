@@ -8,7 +8,7 @@ Regula de aur: **răspunde onest**. Dacă Symbai face echivalentul, arată tool-
 | SAP (tcod) | Ce e | Symbai |
 |---|---|---|
 | C201/C202 Master Recipe, CS01 BOM | rețetă cu faze/operații + listă materiale | **Fluxuri Tehnologice** (`/fluxuri-tehnologice`, `/ai-flow-builder`) + rețete; `list_recipes`, `build_complete_flow`, `add_operation_material/_output` |
-| CR01 Work Center / Resource | stație, capacitate, tarif | **Echipamente & Zone** (`/production/equipment-zones`); `list_production_zones`, `list_production_equipment`, `set_equipment_recipe_capacity` |
+| CR01 Work Center / Resource | stație, capacitate, tarif | **Echipamente & Zone** (`/production/equipment-zones`); `list_production_zones`, `list_production_equipment`, `assign_flow_to_equipment` pentru productivitate pe operații de flux, `set_equipment_recipe_capacity` pentru capacitate per rețetă |
 | CO01/CO40 Process Order, COR1 | lansare ordin de producție | `exec_create_batch` (cu `flowVersionId` pt fabrică); `schedule_production_orders` (auto pe echipamente/ture, `commit:false`→preview) |
 | CO11N Confirmation + backflush | confirmare operație + consum auto | `exec_complete_operation` (backflush BOM, creează consum/output/containere/genealogie dintr-un pas) sau manual `exec_declare_consumption`→`exec_declare_output` |
 | MD61 PIR (cerere planificată) | plan make-to-stock | `forecast_production_demand` (PIR din vânzări POS + B2B) |
