@@ -34,9 +34,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 971 tool-uri** — Citire 419 · Speciale 5 · SQL 3 · Scriere per modul 544 (pe 19 module).
+**TOTAL: 973 tool-uri** — Citire 420 · Speciale 5 · SQL 3 · Scriere per modul 545 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 419 tool-uri
+## Citire (fără permisiune de modul) — 420 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 45
 - `compare_attribution_models` — Compară modelele de atribuire (last_click/first_click/linear/time_decay/position) pe canale: venit + conversii + ROAS per model. (parametri opționali: brandId, days)
@@ -353,7 +353,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `request_scale_integration` — CERE echipei Symbai integrarea unui model NOU de cântar care nu e încă suportat. (necesită: manufacturer, model)
 - `view_brand_media` — Arată-ți EFECTIV o imagine din Biblioteca Media (sau de la un URL) ca s-o VEZI și să alegi ce atașezi la o postare. (parametri opționali: mediaAssetId, url)
 
-### Diverse — 122
+### Diverse — 123
 - `analyze_external_website` — Analizeaza read-only un website public si intoarce un source brief pentru a construi/replica rapid site-ul in builder: SEO, logo/favicon, culori, fonturi, navigatie, CTA-uri, imagini/video, sectiuni, (necesită: url)
 - `analyze_food_costs` — Analizează food cost-ul produselor unui brand. (necesită: brandId)
 - `analyze_procurement` — Analizează aprovizionarea unui brand (furnizori, prețuri, lead time-uri). (necesită: brandId)
@@ -422,6 +422,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_task` — Detaliile unei sarcini (după taskId): status, prioritate, atribuire, scadență (dată + oră), tipul de dovadă cerută, dacă cere verificare, plus lista din care face parte. (necesită: taskId)
 - `get_task_dashboard` — Dashboard manager: pentru fiecare listă din scope, numărul sarcinilor de AZI pe status (de făcut / în lucru / gata / întârziate) + procent finalizare. (parametri opționali: brandId, locationId, date)
 - `get_waste_report` — Obține raportul de pierderi (waste): evenimente waste, cantități, tipuri, per lot sau global. (parametri opționali: days, batchId)
+- `get_website_page` — Citește configul LIVE al unei pagini din Website Builder: fără `pageSlug`/`pageId` întoarce indexul paginilor + `navbar` + `global`; cu slug/id întoarce componentele cu `id`, `type`, `visible` și `config` complet. Folosește-l după `set_website_page_content`, `add_website_section`, `set_website_theme` sau `update_website_navigation` ca read-back, în loc de SELECT direct în `menu_display_configs`. (necesită: brandId; parametri opționali: pageSlug, pageId, configId)
 - `list_ad_accounts` — Listează conturile de reclame Meta (Facebook/Instagram) conectate pentru un brand: id intern (folosit la boost), numele contului, pagina, moneda și statusul. (parametri opționali: brandId)
 - `list_ad_campaigns` — Listează campaniile publicitare Meta ale unui brand cu status (pending_review/active/paused/error/completed), buget zilnic, obiectiv și perioadă. (parametri opționali: brandId, status, limit)
 - `list_b2b_client_depots` — Listeaza punctele de livrare/depozitele unui client B2B, inclusiv GLN ship-to si coduri EDI. (necesită: clientId)
@@ -483,7 +484,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 544 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 545 tool-uri (gated de writeModules pe token)
 
 ### produse_meniu — Produse & Meniuri — 63 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
@@ -1011,7 +1012,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_delivery_zone` — Modifică o zonă de livrare existentă (taxe, praguri, ore, contur, activare). (necesită: id)
 - `update_vehicle` — Modifică un vehicul din flotă (număr, tip, status, capacitate, șofer alocat). (necesită: id)
 
-### ecommerce — Magazin Online — 18 tool-uri
+### ecommerce — Magazin Online — 19 tool-uri
 - `add_website_section` — Adaugă (sau actualizează prin sectionId) o secțiune pe o pagină a website-ului magazinului — homepage implicit — FĂRĂ a înlocui restul paginii (spre deosebire de set_website_page_content). (necesită: brandId, type, config)
 - `apply_website_template` — Reconstruiește structura unui website EXISTENT dintr-un template, cu date REALE (categorii reale în meniu/footer, contact din firmă, pagini cablate la produse/meniu). (necesită: brandId)
 - `create_discount_code` — Creează un cod de reducere pentru magazinul online (ex: VARA10 = 10% reducere). (necesită: code, type)
@@ -1025,10 +1026,11 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_website_footer` — Setează footer-ul website-ului magazinului: date de contact (adresă/telefon/email/program), rețele sociale, coloane de linkuri, copyright. (necesită: brandId)
 - `set_website_legal_page` — Setează textul REAL al unei pagini legale a magazinului, per brand (Despre/Contact/Termeni/Confidențialitate/Livrare/Retur/FAQ). (necesită: brandId, slug, title, bodyParagraphs)
 - `set_website_page_content` — Editează o pagină din website-ul magazinului (din config.pages): titlu, vizibilitate sau blocurile (components). (necesită: brandId)
+- `set_website_theme` — Setează identitatea vizuală globală a website-ului (`config.global`): culori, fonturi, siteName, tagline și darkMode. Folosește-l pentru potrivire de brand/copie fidelă; nu setează `customCss` (intenționat, pentru siguranță). (necesită: brandId)
 - `update_discount_code` — Actualizează un cod de reducere existent — ex: dezactivează-l (active=false), schimbă valoarea, data expirării sau limita de utilizări. (necesită: id)
 - `update_ecommerce_order_status` 🔒 🌐 — Schimbă statusul unei comenzi din magazinul online (pending/processing/paid/shipped/delivered/cancelled/returned). (necesită: id, status)
 - `update_ecommerce_settings` — Actualizează setările magazinului online (pereche de scriere pentru get_ecommerce_settings). (parametri opționali: brandId, currency, defaultVatRate, taxInclusive)
-- `update_website_navigation` — Editează meniul (navbar) website-ului magazinului. (necesită: brandId)
+- `update_website_navigation` — Editează meniul (navbar) website-ului magazinului: `items[]` pentru structură completă, `rebuildCategoriesFromCatalog:true` pentru categorii reale sau `navbarSettings{}` pentru setări precum ascunderea CTA/search/login, transparent/sticky/logoText. (necesită: brandId)
 - `upsert_custom_website_component` — Adauga sau actualizeaza o componenta custom in Website Builder, randata pe site-ul public ca HTML + CSS scoped. (necesită: brandId)
 
 ### emag — eMAG Marketplace — 2 tool-uri

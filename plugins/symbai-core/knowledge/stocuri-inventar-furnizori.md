@@ -55,6 +55,7 @@ Modulul acoperă tot drumul mărfii: intrarea (facturi de la furnizori → recep
 - La "Produse alese manual", cautarea si filtrele respecta gestiunile inventarului. Poti filtra dupa cautare text, tag, furnizor, tip produs si TVA; "Select all" si "Deselect all" actioneaza doar pe rezultatul filtrat curent (ex. cauti "bere" si selectezi toate berile gasite).
 - Butonul de trimitere de langa "Inventar Mobil" creeaza link pentru un numarator. Poti aloca produse filtrate sau una/mai multe zone de depozitare, poti trimite prin WhatsApp/email sau copia linkul, si poti decide daca numaratorul are voie sa caute produse extra. In modal apar doar numele zonelor de depozitare, fara repetarea gestiunii; zonele adaugate dupa pornirea inventarului sunt eligibile daca apartin gestiunilor inventarului.
 - Persoana care intra pe linkul mobil vede doar produsele sau zonele primite. Daca "poate numara si alte produse" este activ, cautarea extra ramane limitata la gestiunea aleasa si la produse numarabile.
+- Stergerea unei sesiuni de inventar din aplicatie curata si contributiile numaratorilor inainte de item-uri; daca un tenant inca primeste eroare 500 la stergere dupa numarare, trateaz-o ca build/deploy vechi sau incident de investigat, nu ca limitare functionala.
 
 ### Consum
 - **Consum Zilnic** (`/daily-consumption`) — consumul automat de materii prime din comenzile finalizate; 4 taburi: Sumar Consum, Bonuri de Consum, Consum Temporar (produse vândute fără rețetă), Istoric Reprocesări. Tot aici e reprocesarea pe perioadă (job pe fundal) și meniul de remediere per produs.

@@ -105,8 +105,10 @@ Comenzi uzuale, rulate in folderul app-ului afectat:
 ```powershell
 npx.cmd tsc -p tsconfig.json --noEmit --pretty false
 npx.cmd expo prebuild --platform android --no-install
-npx.cmd expo start --android
+npx.cmd expo run:android
 ```
+
+`expo-mobile` are scripturile `android`/`ios` pe `expo run:*` (dev-client/native), nu pe Expo Go. Pentru schimbări native (splash, secure-store backup rules, deep links, pluginuri, plăți, notificări) folosește `expo run:android` sau Gradle/EAS; `expo start` singur nu validează resursele native generate.
 
 Pentru Android build real foloseste EAS sau Gradle dupa prebuild, in functie de task. Pentru iOS nativ real este nevoie de macOS/Xcode sau EAS Build; pe Windows nu promite testare iOS nativa locala.
 
