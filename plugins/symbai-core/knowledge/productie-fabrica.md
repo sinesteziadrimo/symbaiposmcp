@@ -111,8 +111,8 @@ Aceasta e calea industrială, pe tabletă (`/workstation-tablet`) sau din `/prod
 - **Trasabilitate înapoi** (din ce provine un lot): `exec_trace_lot_origin` (`lotId`) → loturile de intrare, ingredientele, furnizorii.
 - **Trasabilitate înainte** (unde a ajuns): `exec_trace_lot_destination` (`lotId`) → loturile de producție care l-au consumat.
 - **Status calitate al unui lot**: `exec_get_lot_qc_status` (`lotId`) → blocat/eliberat + evenimentele de inspecție.
-- **Certificat de Analiză (COA)**: `generate_batch_coa` (`batchId`) → QC vs specificație, loturi produse, valabilitate, alergeni și verdict conform/neconform. Un control QC picat și neclasificat este tratat ca blocant dacă nu e marcat explicit non-blocant.
-- **Bilanț de masă / randament reconciliat**: `get_batch_mass_balance` (`batchId`) → intrări consumate din genealogie vs output bun + scrap + rework; dacă apar unități amestecate, explică warning-ul și nu transforma manual cifrele.
+- **Certificat de Analiză (COA)**: `generate_batch_coa` (`batchId`) → QC vs specificație, loturi produse, valabilitate, alergeni și verdict conform/neconform/indeterminat. Fără rezultate QC verdictul este `indeterminat` cu warning, nu „conform"; un control QC picat și neclasificat este tratat ca blocant dacă nu e marcat explicit non-blocant.
+- **Bilanț de masă / randament reconciliat**: `get_batch_mass_balance` (`batchId`) → intrări consumate din genealogie vs output bun + scrap + rework; dacă lipsesc consumul/output-ul/genealogia, `yieldPercent:null` înseamnă „bilanț indisponibil", nu randament 0%. Dacă apar unități amestecate, explică warning-ul și nu transforma manual cifrele.
 - **Recall (retragere)**: din `/loturi-wip` → tab Genealogie cauți lotul după ID/număr și vezi raportul de impact (loturile derivate și produsele afectate). Prin MCP: `build_recall_report(lotId, direction:"full")` pentru impact pe loturi/produse, apoi `trace_recall_to_customers(lotId)` pentru lista de clienți de notificat. Marchează clar **EXACT** vs **PREZUMTIV**: prezumtiv înseamnă același produs în fereastra lotului, fără urmă lot→document, deci se verifică manual.
 - ⚠ Doar fluxul **shop-floor** scrie genealogia automat. Un lot finalizat pe motorul simplu poate să nu aibă graf de genealogie — recall industrial complet presupune execuție shop-floor.
 
@@ -279,8 +279,8 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 - `get_daily_production_summary` (`date` YYYY-MM-DD) — sumarul unei zile (loturi, cantități, QC, waste, angajați activi).
 - `get_yield_trends` (`daysBack`) — trend zilnic yield / waste / rata QC pass.
 - `detect_production_bottlenecks` (`daysAhead` 7–90) — stații supraîncărcate: utilizare vs capacitate (overloaded >100%, high 85–100%, medium 60–85%, low <60%).
-- `generate_batch_coa` (`batchId`) — certificat de analiză pentru o șarjă: QC vs specificație, loturi produse, valabilitate, alergeni și verdict de conformitate.
-- `get_batch_mass_balance` (`batchId`) — bilanț de masă pe șarjă: consumuri din genealogie vs output bun + scrap + rework, plus warning-uri de unități.
+- `generate_batch_coa` (`batchId`) — certificat de analiză pentru o șarjă: QC vs specificație, loturi produse, valabilitate, alergeni și verdict conform/neconform/indeterminat; fără QC, nu certifica lotul ca fiind conform.
+- `get_batch_mass_balance` (`batchId`) — bilanț de masă pe șarjă: consumuri din genealogie vs output bun + scrap + rework, plus warning-uri de unități sau de lipsă date; `yieldPercent:null` = indisponibil, nu 0% real.
 - `get_defect_pareto`, `get_qc_stats`, `get_waste_report`, `get_equipment_utilization` (vezi mai sus).
 
 ## Permisiuni MCP
@@ -313,8 +313,8 @@ Pagina `/factory-dashboard` (taburi Vedere generală, Live, Alerte, Lipsuri, Blo
 | „Deschide o neconformitate / acțiune corectivă" | Confirmă titlu, severitate, sursă, responsabil și termen, apoi `open_capa`. Leagă `sourceType`/`sourceId` la dispoziție QC, incident HACCP, reclamație, audit sau manual. |
 | „Actualizează / închide CAPA" | `update_capa` (`capaId`, `status`, `rootCause`, `correctiveAction`, `preventiveAction`, `verificationNote`, `closedByEmployeeId`). Pentru `closed` sunt obligatorii cauza-rădăcină, acțiunea corectivă, verificarea și persoana care închide; verifici apoi cu `list_capa`. |
 | „Care e statusul QC al lotului X" | `exec_get_lot_qc_status` (`lotId`). |
-| „Dă-mi COA-ul / certificatul de analiză pentru lot" | `generate_batch_coa` (`batchId`) — QC vs specificație, loturi produse, valabilitate, alergeni și verdict. Pentru semnătură QA folosește EBR/release. |
-| „Bilanț de masă / cât a intrat vs cât a ieșit" | `get_batch_mass_balance` (`batchId`) — consum intrări din genealogie vs output bun + scrap + rework; dacă sunt unități amestecate, explică warning-ul. |
+| „Dă-mi COA-ul / certificatul de analiză pentru lot" | `generate_batch_coa` (`batchId`) — QC vs specificație, loturi produse, valabilitate, alergeni și verdict. Dacă verdictul e `indeterminat`, spune că lipsesc rezultatele QC și nu prezenta lotul ca fiind conform. Pentru semnătură QA folosește EBR/release. |
+| „Bilanț de masă / cât a intrat vs cât a ieșit" | `get_batch_mass_balance` (`batchId`) — consum intrări din genealogie vs output bun + scrap + rework; dacă `yieldPercent:null`, explică lipsa de date/genealogie în loc să spui randament 0%. |
 | „Statistici calitate / cele mai dese defecte" | `get_qc_stats` / `get_defect_pareto`. |
 | „Cât rebut/pierderi am avut" | `get_waste_report`. |
 | „Ce trebuie să produc săptămâna asta" | `get_orders_summary` + `get_stock_levels` + `get_mps_net_requirements`, apoi `get_manufacturing_readiness` și `get_production_schedule_feasibility` pe produsele/rețetele care intră în plan. |

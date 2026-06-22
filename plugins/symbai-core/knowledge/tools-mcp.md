@@ -174,8 +174,8 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `exec_list_operation_executions` — Listează execuțiile operațiilor, filtrate după lot sau status. (parametri opționali: batchId, status)
 - `exec_list_shop_floor_events` — Listează evenimentele de pe shop floor: scanări, porniri/opriri operații, declarații consum/output, predări. (parametri opționali: batchId, operationExecutionId, limit)
 - `get_batch_material_readiness` — Audit read-only înainte de pornirea shop-floor: verifică dacă materialele unui lot/operații sunt realmente gata, nu doar existente undeva în stoc. (necesită: batchId)
-- `generate_batch_coa` — Generează Certificatul de Analiză (COA) pentru o șarjă: QC vs specificație, loturi produse, valabilitate, alergeni și verdict conform/neconform. (necesită: batchId)
-- `get_batch_mass_balance` — Bilanț de masă pentru o șarjă: intrări consumate din genealogie vs output bun + scrap + rework, cu warning-uri de unități. (necesită: batchId)
+- `generate_batch_coa` — Generează Certificatul de Analiză (COA) pentru o șarjă: QC vs specificație, loturi produse, valabilitate, alergeni și verdict conform/neconform/indeterminat. Fără rezultate QC nu certifică fals conformitatea; întoarce warnings pentru QC lipsă sau loturi de ieșire lipsă. (necesită: batchId)
+- `get_batch_mass_balance` — Bilanț de masă pentru o șarjă: intrări consumate din genealogie vs output bun + scrap + rework, cu warning-uri de unități; dacă nu există consum/output/genealogie raportează `yieldPercent:null`, nu randament 0% real. (necesită: batchId)
 - `list_quarantine_lots` — Coada activă de control la recepție / front-door HACCP: loturi de materie primă în carantină, pending QC, blocate sau hold, doar cu cantitate rămasă. (parametri opționali: productId)
 - `list_capa` — Listează CAPA/NCR (neconformități și acțiuni corective/preventive), implicit cele neînchise; filtrează pe status sau severitate. (parametri opționali: status, severity)
 - `get_defect_pareto` — Analiză Pareto a defectelor: tipurile de defecte cele mai frecvente, cantități respinse, procent din total. (parametri opționali: days)
@@ -337,7 +337,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `request_scale_integration` — Cere echipei Symbai integrarea unui model nou de cantar nesuportat; deschide/reutilizeaza un ticket cu producator, model, protocol si mostra de output. (necesită: manufacturer, model)
 - `view_brand_media` — Arată-ți EFECTIV o imagine din Biblioteca Media (sau de la un URL) ca s-o VEZI și să alegi ce atașezi la o postare. (parametri opționali: mediaAssetId, url)
 
-### Diverse — 93
+### Diverse — 94
 - `analyze_external_website` — Analizeaza read-only un website public si intoarce un source brief pentru a construi/replica rapid site-ul in builder: SEO, logo/favicon, culori, fonturi, navigatie, CTA-uri, imagini/video, sectiuni, (necesită: url). NOTĂ: vede maxim 24 de pagini — pentru COPIEREA COMPLETĂ a unui site mare folosește uneltele de mai jos + skill-ul `copiaza-website`.
 - `discover_site_inventory` — Numitorul ONEST înainte de copiere: numără produse/categorii/blog/pagini din surse independente (sitemap-index + feed Shopify/WooCommerce + X-WP-Total), nu din ce vede agentul. Întoarce productDenominator + denominatorConfident (ca să nu declari «gata» la 20%). (necesită: url)
 - `start_site_clone_crawl` — Pornește copierea pe SERVER a unui site întreg (fundal, politicos anti-429, cache + extracție JSON-LD) — owner-ul poate închide laptopul. Întoarce jobId. (necesită: url; opțional brandId)
@@ -345,11 +345,12 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_clone_crawl_pages` — Coada de lucru a copierii: URL-uri tipizate (product/category/blog/legal/page) + status, paginat/filtrabil. (necesită: jobId)
 - `get_cached_page` — Conținutul cache-uit + datele structurate extrase pentru O pagină (nume, SKU, preț, preț vechi, poze, descriere, breadcrumb, specs PDP, variantCount). (necesită: jobId, url)
 - `clone_parity_diff` — POARTA de completitudine: compară setul de produse-sursă (chei SKU) cu cele importate → ID-urile care LIPSESC (nu un procent). PASS doar dacă numitorul e sigur ȘI nu lipsește nimic. (necesită: jobId, brandId)
-- `clone_fidelity_audit` — POARTA 2 pentru copiere website: eșantionează catalogul și compară câmp-cu-câmp produsele importate cu sursa (nume, poze, descriere, preț, categorie, specs PDP, variante); întoarce fidelityScore, fieldScores, worstSample, unauditedFields și flags. (necesită: jobId, brandId)
+- `clone_fidelity_audit` — POARTA 2 pentru copiere website: eșantionează catalogul și compară câmp-cu-câmp produsele importate cu sursa (nume, poze, galerie, descriere, preț, categorie, specs PDP, variante); întoarce fidelityScore, fieldScores, worstSample, unauditedFields și flags. `fieldScores.gallery` cere ca produsele cu 2+ poze în sursă să aibă cel puțin 50% din galerie în `products.imageUrls`; `low_gallery_fidelity` nu se ignoră. (necesită: jobId, brandId)
 - `clone_coverage_audit` — POARTA 3 pentru copiere website: verifică acoperirea non-produs (categorii, blog, pagini legale) prin set-diff sursă vs Symbai; PASS cere cel puțin 95% pe fiecare dimensiune existentă în sursă. (necesită: jobId, brandId)
 - `clone_category_tree_audit` — Audit advisory pentru copiere website: compară relațiile părinte-copil din breadcrumb-urile sursei cu ierarhia de categorii Symbai și detectează catalogul aplatizat. (necesită: jobId, brandId)
 - `clone_branding_audit` — Audit advisory pentru copiere website: compară semnalele vizuale din sursă (logo/ogImage/theme-color/titlu) cu brandul Symbai ca să prinzi logo/culoare/nume netransferate. (necesită: jobId, brandId)
 - `clone_redirect_map` — Continuitate SEO la migrare website: dry-run apoi, cu `apply:true`, scrie redirecturi 301 din URL-urile vechi produs/categorie spre noile URL-uri Symbai, după ce porțile de import au trecut. (necesită: jobId, brandId)
+- `clone_audit_all` — Verdict complet într-un singur apel pentru migrare website: rulează parity + fidelity + coverage + category tree + branding, întoarce `pass`, `hardPass`, `erroredGates`, sumar per-poartă și remedieri. Read-only; orice poartă cu `error` blochează PASS. Pentru 301 rulează separat `clone_redirect_map` după PASS. (necesită: jobId, brandId)
 - `analyze_food_costs` — Analizează food cost-ul produselor unui brand. (necesită: brandId)
 - `analyze_procurement` — Analizează aprovizionarea unui brand (furnizori, prețuri, lead time-uri). (necesită: brandId)
 - `audit_shop_health` — Auditează SĂNĂTATEA magazinului online al unui brand și întoarce probleme (severity error/warn) + statistici. (necesită: brandId)
