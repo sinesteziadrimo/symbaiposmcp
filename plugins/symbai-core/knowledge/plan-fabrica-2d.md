@@ -4,7 +4,7 @@ Planul 2D al fabricii este harta vizuală a halei: un desen la scară reală pe 
 
 Pentru fluxul pas-cu-pas de construire vezi skill-ul `plan-fabrica`. Pentru contextul general de fabrică (cele două motoare de producție, fluxuri tehnologice, MPS/MRP, HACCP) vezi `productie-fabrica.md`.
 
-Tool-uri MCP recomandate, în ordine: `list_factory_plans` / `create_factory_plan` pentru plan, `get_factory_plan_palette` pentru entitățile reale disponibile (inclusiv operatori), `build_factory_floor` pentru construire rapidă din obiecte + conexiuni, `update_factory_plan` pentru nivele/imagine de fundal (`levels[].bgUrl`), apoi `get_factory_plan` pentru verificare live.
+Tool-uri MCP recomandate, în ordine: `list_factory_plans` / `create_factory_plan` pentru plan, `get_factory_plan_palette` pentru entitățile reale disponibile (inclusiv operatori), `build_factory_floor` pentru construire rapidă din obiecte + conexiuni, `place_factory_object` / `update_factory_object` cu `meta` pentru pereți/rafturi, `update_factory_plan` pentru nivele/imagine de fundal (`levels[].bgUrl`), apoi `get_factory_plan` pentru verificare live.
 
 ## De ce există
 Un owner de fabrică vrea să „vadă" hala: unde stă fiecare utilaj, unde lucrează oamenii, pe unde curge marfa, ce e stocat unde, ce zone sunt „curate" (high-care) și care „murdare" (materii prime / deșeuri). Planul 2D dă această imagine, legată de datele reale — nu e un desen mort, ci o oglindă vie a fabricii.
@@ -17,7 +17,7 @@ Un owner de fabrică vrea să „vadă" hala: unde stă fiecare utilaj, unde luc
   - **Magazie** — un depozit real (cu cod, locație).
   - **Zonă de depozitare** — o sub-zonă a unei magazii (raft/secțiune) unde stă marfa.
   - **Operator** — un angajat real pus pe plan (`objectType:"operator"`; MCP îl mapează la `employee`, sau trimiți explicit `entityType:"employee"`), cu rol și turele de azi la citire.
-  - **Generice** — perete, ușă, culoar, obiect custom (fără entitate reală, doar desen).
+  - **Generice** — perete, ușă, culoar, obiect custom (fără entitate reală, doar desen). Pentru pereți/rafturi structurale folosește `meta`: perete `{kind:"wall", thicknessCm, wallType, openings:[{kind:"door"|"window", t, widthCm, sillCm?}]}`, raft custom `{kind:"shelf", bays, shelfLevels, depthCm}`.
 - **Conexiune (flux)** — o săgeată între două obiecte care arată cum curge ceva: **material** (marfa de la o stație la alta), **conveior**, **personal** (traseu oameni), **utilitate**. Aceasta e „spaghetti diagram"-ul fizic al halei.
 - **Metadate HACCP** — pe zone poți marca: clasa de aer (grad A–D), zona de igienă (high-care / low-care / materii prime / deșeuri), alergenii și intervalul de temperatură. Colorează zonele și ajută la verificarea separării de risc.
 - **Imagine de fond / trasare peste plan** — fiecare nivel poate avea `bgUrl`, un plan scanat sau o imagine peste care trasezi ziduri și obiecte în UI. În editor există și modul **Creează sală** pentru desenat camere/ziduri prin drag; prin MCP creezi aceleași ziduri ca obiecte `wall`.
@@ -36,12 +36,14 @@ Un owner de fabrică vrea să „vadă" hala: unde stă fiecare utilaj, unde luc
 - **Grilă / snap** — aliniere automată a obiectelor la o rețea (ex. la fiecare 10 cm).
 - **Paletă** — lista entităților reale disponibile de pus pe plan; cele deja puse sunt marcate.
 - **Plan de fond** — imagine de fundal pe nivel (`bgUrl`), utilă când clientul are o schiță sau un plan scanat.
+- **Simulare layout** — modul UI „Simulare" din `/factory-floor-plan` permite mutarea utilajelor fără salvare și calculează distanța fluxului, impactul pe transport și cost lunar estimat (drumuri/zi + tarif lei/oră). E pentru decizie și dovadă vizuală, nu scrie în baza de date.
 - **Obiect orfan** — un obiect a cărui entitate reală a fost ștearsă din sistem; apare cu avertisment (planul nu se strică, dar îl poți curăța).
 - **high-care / low-care** — zone cu risc mic / mai mare de contaminare; nu se amestecă cu materii prime sau deșeuri.
 
 ## Întrebări tipice ale clientului
 - „Desenează-mi hala cu cuptorul, frământarea, ambalarea și magazia, și leagă fluxul." → vezi skill-ul `plan-fabrica`.
 - „Am o poză cu planul halei, trasează peste ea." → setează `levels[].bgUrl` cu `update_factory_plan` sau deschide UI-ul și folosește **Plan de fond** + **Creează sală**.
+- „Vreau să testez dacă mutăm cuptorul lângă ambalare / care layout e mai eficient." → deschide `/factory-floor-plan`, apasă **Simulare**, mută utilajele, setează drumuri/zi și lei/oră, apoi arată screenshot cu distanța/costul actual vs simulat. Nu folosi `update_factory_object` pentru această probă până nu confirmă clientul că vrea să salveze layout-ul.
 - „Pune operatorii pe plan." → verifică `list_employees`, apoi `place_factory_object` / `build_factory_floor` cu `objectType:"operator"` și `entityName`/`entityId` de angajat.
 - „Ce e stocat în zona X?" / „cât stoc are magazia?" → se vede pe obiectul respectiv (stoc real / agregat).
 - „Printează etichete QR pentru rafturi/zone." → verifică întâi gestiunile și zonele (`list_warehouses_full`, `list_storage_zones_full`, `get_stock_levels`), apoi deschide `/factory-floor-plan`, selectează magazia/zona, folosește **Vezi depozitul** → **Etichete QR**. Dacă userul are nevoie de dovadă vizuală sau print, folosește `browser:control-in-app-browser` sau `chrome:control-chrome` pe sesiunea logată și arată screenshot cu etichetele sau pagina `/scan/zone/:id`.

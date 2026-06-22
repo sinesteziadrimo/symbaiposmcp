@@ -48,7 +48,7 @@ Le pui pe etichetă din butonul „Câmp dinamic" din editor (sau le scrii direc
 
 ## Tool-uri MCP utile (ce poți face direct pentru user)
 - **`print_designed_label({ brandId, recipeId? / batchId? / productId?, designId?, printerId?, copies?, output? })`** — printează eticheta. Dacă NU dai `designId`, alege automat eticheta implicită legată de rețetă/produs (sau cea implicită pe brand). `output` poate fi `auto` (ZPL la imprimantă), `pdf` (întoarce PDF) sau lași gol. Pentru un lot, dă `batchId` — completează singur lotul/data/valabilitatea.
-- `list_printers({ brandId?, locationId? })` — vezi imprimantele configurate (tip, stare, IP). Pentru etichete cauți tipul „Etichete".
+- `list_printers({ brandId?, locationId? })` — vezi imprimantele configurate (tip, IP, stare LIVE). Pentru etichete cauți tipul „Etichete"; `status:"online"` înseamnă că poate tipări acum, `offline`/`unassigned` înseamnă că trebuie rezolvat PC-ul/Print Agentul sau folosit PDF.
 - `list_material_designs({ brandId, type:'label' })` — șabloanele de etichetă existente.
 - `list_material_templates()` + `create_material_from_template(...)` + tool-urile de editare — pentru a DESENA/ajusta eticheta (vezi `materiale-grafice.md`, modul declarativ, fără clickuri).
 - `list_recipes` / `get_recipe_labels` / `set_recipe_labels` — rețetele și etichetele/valabilitatea legate de ele.
@@ -59,7 +59,7 @@ Le pui pe etichetă din butonul „Câmp dinamic" din editor (sau le scrii direc
 - „Vreau X copii" → `copies` în `print_designed_label`.
 - „Dă-mi un PDF cu eticheta" → `print_designed_label({ ..., output:'pdf' })`.
 - „Setează eticheta asta ca implicită pentru rețeta Y" → din Materiale Grafice, pe etichetă, „Setează ca etichetă implicită" (UI). (Asistentul ghidează userul — legarea se face din aplicație.)
-- „Nu am imprimantă de etichete / nu iese pe Zebra" → verifici cu `list_printers` (există una de tip Etichete, pe rețea, cu IP, activă?). Dacă nu, ghidezi: Setări → Imprimante → adaugă „Imprimantă Etichete". Vezi `echipamente-kds-imprimante.md`.
+- „Nu am imprimantă de etichete / nu iese pe Zebra" → verifici cu `list_printers` (există una de tip Etichete, pe rețea, cu IP și `status:"online"`?). Dacă lipsește sau e `offline`/`unassigned`, ghidezi: Setări → Imprimante → adaugă/leagă „Imprimantă Etichete" și verifică PC-ul cu Print Agent. Vezi `echipamente-kds-imprimante.md`.
 - „Unde fac etichete?" → `gaseste_in_aplicatie("etichete")` (du-l în Materiale Grafice → Etichete) sau `gaseste_in_aplicatie("printează etichetă")` (Producție).
 
 ## Reguli & capcane (cele care contează)

@@ -35,7 +35,7 @@ Utilizatorul e om de business, nu tehnic. Numele de tool-uri și termenii intern
 **Citește automat, fără să întrebi:**
 1. `list_locations` — id-urile locațiilor; o singură locație activă = nu mai întrebi „pentru care local".
 2. `list_brands` — brandId pentru parametrii obligatorii.
-3. `list_printers` (cu `locationId`) — ce imprimante/case există DEJA. Critic: `create_printer` NU verifică duplicate (vezi Capcane).
+3. `list_printers` (cu `locationId` și `brandId`) — ce imprimante/case există DEJA și starea lor live. `status` = live (`online`/`offline`/`unassigned`/`mobile_local`), `statusConfigurat` = valoarea salvată în configurare. Critic: `create_printer` NU verifică duplicate (vezi Capcane).
 4. `list_entities` cu `entityType: "kds_screens"` — ecranele existente (nu există un `list_kds_screens` dedicat).
 5. `list_tags` + `list_tag_summary` — există etichete pe produse? Fără etichete, rutarea n-are pe ce să se sprijine → întoarce-te la faza Etichete întâi.
 6. Cu SQL activ: `execute_sql_query` pe `devices` (PC-urile: nume, `is_server`, `print_agent_status`) și `tag_routing_rules` (ce e deja legat).
@@ -71,7 +71,7 @@ create_printer({
 })
 ```
 
-Default-urile din baza de date sunt corecte pentru imprimante de rețea (conexiune network, port 9100). După creare, **confirmă prin `list_printers`**, nu prin interfață. Apoi cere utilizatorului să apese „Testează" pe cardul imprimantei în aplicație — verifică conexiunea cu imprimanta (NU scoate hârtie). Testul care chiar scoate hârtie e butonul „Test" din Setări → Imprimante (trimite un job de probă real).
+Default-urile din baza de date sunt corecte pentru imprimante de rețea (conexiune network, port 9100). După creare, **confirmă prin `list_printers`**, nu prin interfață: apar numele/IP-ul/brandul, dar `status` poate fi `unassigned` până când imprimanta e legată de PC-ul Server în aplicație. Apoi cere utilizatorului să apese „Testează" pe cardul imprimantei în aplicație — verifică conexiunea cu imprimanta (NU scoate hârtie). Testul care chiar scoate hârtie e butonul „Test" din Setări → Imprimante (trimite un job de probă real).
 
 ### Pas 4 — Ecranele de bucătărie (opțional): prin MCP
 ```
@@ -103,7 +103,7 @@ Imprimantele și ecranele create de tine prin MCP **apar în wizard** (pașii ci
 
 ## Verificare la final
 
-1. `list_printers({ locationId, brandId })` — apar: casa fiscală (`type: "fiscal"`) + câte o imprimantă per secție, fiecare cu IP și brandul corect. Zero duplicate.
+1. `list_printers({ locationId, brandId })` — apar: casa fiscală (`type: "fiscal"`) + câte o imprimantă per secție, fiecare cu IP și brandul corect. Zero duplicate. Pentru imprimante funcționale, `status` trebuie să fie `online`; `offline`/`unassigned` înseamnă PC/Print Agent/legare incompletă, chiar dacă `statusConfigurat` arată „online".
 2. `list_entities({ entityType: "kds_screens" })` — ecranele planificate există, fiecare cu `locationId` setat.
 3. `list_tag_summary` — etichetele de secție există și au produse asignate.
 4. Cu SQL: `SELECT t.name, r.printer_id, r.screen_ids FROM tag_routing_rules r JOIN tags t ON t.id=r.tag_id` — fiecare etichetă folosită pe produse are o destinație; `SELECT name, is_server, print_agent_status FROM devices` — există exact un PC Server activ per locație (garantat și de un index unic în baza de date).
@@ -118,6 +118,7 @@ Imprimantele și ecranele create de tine prin MCP **apar în wizard** (pașii ci
 - **`create_printer` onorează brandul acum** — `brandId` face imprimanta a acelui brand (iar `brandIds` permite mai multe branduri). Pune TOTUȘI și `locationId`: brandul decide vizibilitatea, locația decide unde se rutează și unde se testează.
 - **Casa fiscală implicită pe locație** — dacă ai deja o imprimantă fiscală funcțională și locația trebuie să o folosească drept fallback, poți seta `update_location({ locationId, defaultFiscalPrinterId })`; apoi verifici cu `list_locations` / pagina Setări. Pentru terminale/PC-uri proprii rămâne `update_pos_device`.
 - **Imprimanta creată prin MCP nu are PC gestionar asociat** (parametrul nu există în tool). În aplicație, dialogul wizard-ului o leagă automat de PC-ul Server. După creare prin MCP, cere utilizatorului testul „Testează" din aplicație; dacă nu răspunde, verificați împreună în Setări → Imprimante că e gestionată de PC-ul Server.
+- **`status` din `list_printers` este LIVE acum.** Nu-l confunda cu `statusConfigurat`: dacă vezi `unassigned`, imprimanta nu are PC gestionar; dacă vezi `offline`, PC-ul/Print Agentul nu răspunde. Pentru detalii despre PC-uri folosește SQL pe `devices` sau `list_pos_devices`, dar pentru primul diagnostic de imprimantă ajunge `list_printers`.
 - **Rutarea e legată de locație** — la multi-locație, nu lega etichetele unei locații de ecranele alteia (comenzile ar „sări" între localuri). Fiecare regulă se face cu locația ei.
 - **Numele = cheia rutării automate.** Etichetă „Bucătărie" + imprimantă „Bucătărie" + ecran „Ecran Bucătărie" → „Leagă automat" le unește singur. Nume divergente („Food", „Imprimanta 1") = legare manuală, bucată cu bucată.
 - **După scriere, confirmă prin tool de citire, NU prin interfață** — browserul utilizatorului are cache și arată datele noi abia după refresh. Dacă utilizatorul zice „nu văd imprimanta", cere-i un refresh înainte să presupui că scrierea a eșuat; nu repeta scrierea, nu raporta bug.
