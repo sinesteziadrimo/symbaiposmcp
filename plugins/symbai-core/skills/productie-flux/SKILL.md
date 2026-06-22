@@ -65,6 +65,8 @@ Detaliile complete (proiectare flux, MPS, B2B, QC, recall) sunt în `knowledge/p
 
 Înainte să promiți termen, să creezi MPS sau să programezi mai multe loturi, rulează `get_production_schedule_feasibility` cu intervalul real și lista de comenzi (`orders`). Dacă întoarce `blocked`, nu promite termenul; dacă e `needs_attention`, arată concret ce lipsește (ture, oameni, echipamente, încărcare existentă) și cere confirmare. Planificatorul exclude automat zilele nelucrătoare / închiderile definite la nivel de fabrică în calendarul de ture; dacă termenul pare sărit, verifică warning-ul cu datele excluse.
 
+Pentru cerere de tip make-to-stock (produci pe stoc, nu doar pe comandă fermă), estimează întâi cererea cu `forecast_production_demand` (PIR — proiecție din istoricul vânzărilor POS + comenzile B2B), apoi treci cifrele în MPS. Iar înainte să promiți un material sau un termen, `get_material_availability` îți arată cât e **liber de promis** (ATP / free-to-promise) dintr-un material: stoc disponibil minus rezervările deja alocate altor loturi — ca să nu promiți de două ori din aceeași cantitate.
+
 Pentru auto-programare pe echipamente/ture/oameni, folosește `schedule_production_orders` cu `commit:false` întâi (preview). Re-rulează cu `commit:true` doar după confirmarea explicită a userului.
 
 După ce lotul a fost creat și are `flowVersionId`, rulează `get_batch_material_readiness` (`batchId`, opțional `operationId`) înainte de `exec_start_operation`. Interpretează strict:
@@ -73,6 +75,8 @@ După ce lotul a fost creat și are `flowVersionId`, rulează `get_batch_materia
 - `ready` = lotul are acoperire reală și poți continua shop-floor.
 
 După finalizarea unui lot industrial sau înainte de o livrare B2B/audit, poți produce dovada de calitate direct prin citire: `generate_batch_coa(batchId)` pentru Certificatul de Analiză (QC vs specificație, loturi produse, valabilitate, alergeni, verdict conform/neconform) și `get_batch_mass_balance(batchId)` pentru bilanțul de masă (intrări consumate vs output bun + scrap + rework). Dacă un control QC picat nu e clasificat explicit ca non-blocant, COA îl tratează ca blocant.
+
+Înainte de a produce (sau pentru o ofertă de preț B2B), `get_production_cost_estimate` (cu `recipeId`/`productId`/`productName` + `quantity`) dă costul standard COMPLET — materiale (+ scrap) + manoperă (durate flux × tarif orar) + utilaj + overhead, defalcat pe componente; e calculația de cost de PLAN, pe care după producție o compari cu realul prin `get_production_cost_variance`. Pentru eticheta produsului finit conform Reg. UE 1169/2011, `build_ingredient_declaration` (cu `productId`/`recipeId`) generează declarația de ingrediente în ordine descrescătoare după greutate, cu QUID% și alergenii evidențiați (inclusiv cei moșteniți recursiv din semipreparate) — text gata de pus pe etichetă.
 
 Pentru dev/local, dacă userul spune „Senneville”, „ARCA” sau „fabrica locală”, tratează imediat cazul ca **Fabrică** și citește secțiunea „Scenariul local Senneville / ARCA” din `knowledge/productie-fabrica.md`. Scenariul are deja rețete, formule, fluxuri, echipamente, loturi, MPS, QC și B2B; verifică prin citire înainte să creezi sau să finalizezi ceva.
 
@@ -111,6 +115,8 @@ Pentru dev/local, dacă userul spune „Senneville”, „ARCA” sau „fabrica
 | „Operațiile pentru produsul Y / fă-mi fluxul" | Doar **fabrică** → `knowledge/productie-fabrica.md` (proiectare flux, `/fluxuri-tehnologice` sau `/ai-flow-builder`). Dacă folosești `build_complete_flow`, trimite materiale/output-uri complete: `requirementType`, `outputUnit`, `sourceOperationIndex`, `targetOperationIndex`; nu inventa ID-uri de operații înainte de creare. |
 | „Operatorul declară consumul / output-ul" | Fabrică: `exec_declare_consumption` (`operationExecutionId`, `items`) → `exec_declare_output` (`operationExecutionId`, `qtyGood`) → `record_operation_qc_inspection` dacă operația cere QC/HACCP/temperatură → `exec_complete_operation`. Sau backflush cu `exec_complete_operation` dacă nu lipsește dovada QC. |
 | „Planifică producția săptămânii / necesar materii prime" | Doar **fabrică** → `get_mps_net_requirements` + `get_manufacturing_readiness` + `get_production_schedule_feasibility`; pentru programare automată folosește `schedule_production_orders` cu `commit:false`, apoi `commit:true` doar după confirmare. După ce lotul e creat, mai treci o dată prin `get_batch_material_readiness`; `knowledge/productie-fabrica.md`. |
+| „Ce să produc pe stoc / estimează cererea" | Fabrică (make-to-stock): `forecast_production_demand` — PIR din vânzări POS + B2B; treci cifrele în MPS. |
+| „Cât pot promite din materialul X / e liber de promis" | Fabrică: `get_material_availability` — ATP/free-to-promise = stoc − rezervări producție; nu promite din ce e deja alocat. |
 | „De unde vine / unde a ajuns lotul / recall" | `exec_trace_lot_origin` (`lotId`) + `exec_trace_lot_destination` (`lotId`); pentru clienți expuși: `trace_recall_to_customers(lotId)`; pagina `/loturi-wip` tab Genealogie. |
 | „Dă-mi COA-ul / certificatul de analiză pentru lot" | Fabrică: `generate_batch_coa(batchId)` — arată QC vs specificație, loturi produse, valabilitate, alergeni și verdict. Pentru semnătură QA folosește EBR/release. |
 | „Bilanț de masă / cât a intrat vs cât a ieșit" | Fabrică: `get_batch_mass_balance(batchId)` — consum intrări din genealogie vs output bun + scrap + rework; dacă sunt unități amestecate, explică warning-ul. |
@@ -124,6 +130,8 @@ Pentru dev/local, dacă userul spune „Senneville”, „ARCA” sau „fabrica
 | „Numărul de lot apare de mai multe ori" | Normal — identificatorul unic e codul QR al containerului, nu numărul lotului. |
 | „Food cost / stoc absurd la producție" | Verifică unitatea rețetei vs unitatea produsului (g/kg, ml/l) — unitate greșită = eroare tăcută ×1000. |
 | „De ce a ieșit lotul mai scump / unde am pierdut bani" | `get_production_cost_variance(batchId)` — standard vs actual pe lot, cu abatere de preț vs cantitate/randament; dacă lotul e incomplet, nu prezenta cifrele ca finale. |
+| „Cât mă costă să produc X / ofertă de preț" | Fabrică: `get_production_cost_estimate` (`recipeId`/`productId` + `quantity`) — cost standard complet (materiale+scrap+manoperă+utilaj+overhead), defalcat; calculația de PLAN, comparată după producție cu variance. |
+| „Eticheta cu ingrediente / alergeni (UE 1169)" | Fabrică: `build_ingredient_declaration` (`productId`/`recipeId`) — ingrediente în ordine descrescătoare după greutate + QUID% + alergeni (inclusiv din semipreparate), text gata de etichetă. |
 | „Nu reușesc cu exec_complete_batch" | Verifică dacă lotul are `flowVersionId` (flux atașat) — dacă da, trebuie shop-floor (exec_start_operation + declare_consumption/output + exec_complete_operation). exec_complete_batch e blocat pentru loturi cu flux. |
 
 ## Legături
