@@ -20,7 +20,7 @@ Ghidul complet e în pluginul curent, folderul `knowledge/onboarding/` (17 fiși
 
 ## Cum conduci onboarding-ul (bucla per sesiune)
 
-1. **Inventar**: `list_brands`, `list_locations`, `get_config_status(brandId)`. Dacă există un fișier local de progres (`symbai-onboarding-progres.md`) dintr-o sesiune anterioară — citește-l și continuă de unde ai rămas.
+1. **Inventar**: `list_brands`, `list_locations`, `get_config_status(brandId)`. Dacă există un fișier local de progres (`symbai-onboarding-progres.md`) dintr-o sesiune anterioară — citește-l și continuă de unde ai rămas. La conturile noi, domeniile de activitate pot veni deja din Hub (alegerea făcută la signup); verifică Setări → General înainte să întrebi „ce tip de business e?". Dacă POS le afișează ca preluate din Hub, explică faptul că sunt precompletate și pot fi ajustate local dacă Hub-ul nu le-a blocat.
 2. **Orientare cu utilizatorul** (o singură rundă de întrebări): ce fel de business e (restaurant/cafenea/hotel/fabrică/magazin...), are date de migrat din vechiul sistem (fișiere Excel/CSV — unde pe calculator)?, ce urgență are (deschide curând → fazele minime întâi).
 3. **Propune planul**: fazele relevante pentru businessul lui, în ordinea din `00-plan-general.md`, cu împărțirea onestă „fac eu" / „rămâne la tine în aplicație". Cere-i să bifeze modulele de scriere pe token (portal Hub → Acces AI) — lista exactă e în plan.
 4. **Execută fază cu fază**: Read pe fișierul fazei → citirile automate → întrebările minime → o confirmare → execuție → verificare prin citire → raport scurt și treci mai departe. Nu re-deschide decizii deja confirmate.

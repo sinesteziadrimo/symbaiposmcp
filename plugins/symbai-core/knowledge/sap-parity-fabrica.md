@@ -37,7 +37,7 @@ Regula de aur: **răspunde onest**. Dacă Symbai face echivalentul, arată tool-
 | MIGO / goods receipt + NIR | recepție marfă pe lot | `create_reception_note` / NIR din factură; `create_nir_from_invoice` |
 | MB52/MMBE stock overview | stoc pe gestiune/lot | `get_stock_levels`, `list_lots`, `get_warehouse_products_summary` |
 | MSC1N Batch master | lot cu caracteristici | `lots` (data fab./valabilitate, status QC, cost) — FEFO încorporat |
-| ME21N PO + ME2M | comandă furnizor | `create_purchase_order`, `receive_purchase_order`, `analyze_procurement` |
+| ME21N PO + ME2M | comandă furnizor | `create_purchase_order`, `receive_purchase_order`, `analyze_procurement`; din MRP: `create_purchase_orders_from_requirements(commit:false→preview, commit:true→DRAFT PO)` |
 
 ## CO-PC — cost de producție
 | SAP | Ce e | Symbai |
@@ -48,7 +48,7 @@ Regula de aur: **răspunde onest**. Dacă Symbai face echivalentul, arată tool-
 
 ## PM — mentenanță · SD/EDI · etichetare · HACCP
 - **PM (IW31 work order / downtime):** `create_equipment_downtime`/`list_equipment_downtime`; plannerul exclude echipamentul în mentenanță. (Gap: OEE dedicat — azi utilizare/downtime brut, `get_equipment_utilization`.)
-- **SD + EDI retail (DESADV/ASN/SSCC):** distribuție B2B retail (GS1 SSCC, ASN, conformitate) prin modulul B2B. (Gap onest: **transport EDI real X12/EDIFACT AS2/SFTP** — nu; se generează datele/etichetele, integrarea cu VAN/partener se face separat.)
+- **SD + EDI retail (DESADV/ASN/SSCC):** distribuție B2B retail prin `get_retail_distribution_readiness` (audit GLN/GTIN/stoc/loturi/paletizare) și `generate_b2b_retail_shipment_plan` (plan intern WMS/SSCC/ASN). (Gap onest: **transport EDI real X12/EDIFACT AS2/SFTP/VAN** — nu; se pregătesc datele/etichetele și statusul `ready_to_send`, integrarea cu VAN/partener se face separat.)
 - **Etichetă produs finit (EU 1169/2011):** `build_ingredient_declaration` (ingrediente desc. după greutate + QUID% + alergeni recursivi); etichete producție `print_production_labels`, `print_designed_label`.
 - **HACCP / food safety:** CCP temperatură, blast-chill, recall — vezi skill-ul `gestioneaza-haccp` (temperaturi, incidente, răcire rapidă, recall→client).
 

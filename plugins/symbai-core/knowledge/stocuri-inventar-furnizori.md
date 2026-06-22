@@ -96,6 +96,9 @@ Factura intră pe una din cele 4 căi (eFactura/ANAF, poze cu OCR, push din cont
 **7. Comandă de aprovizionare**
 `/smart-ordering` → „Generează Comenzi (Draft)" (din predicție/necesar) sau comandă manuală → revizuiești → „Confirmă & Trimite" (trimiterea e blocată dacă există produse fără cod de furnizor / fără alegere de catalog) → urmărești comanda în `/purchase-orders/:id` → la livrare înregistrezi recepția și eventualele dispute.
 
+**7b. Necesar producție (MRP) → ciorne PO**
+Pentru fabrici, folosește `create_purchase_orders_from_requirements(commit:false, mode:"strict")` ca preview al lipsurilor MRP transformate în comenzi furnizor: alege furnizori pe strategie, aplică MOQ/pachete și semnalează materiale nemapate/ambigue. După confirmarea explicită a userului, `commit:true` creează comenzi **DRAFT** idempotente; trimiterea către furnizor rămâne în `/smart-ordering` sau `/purchase-orders/:id`.
+
 **8. Furnizor nou**
 `/suppliers` → „Adaugă Furnizor Nou" (sau îi trimiți link de înregistrare publică `/supplier-register`) → îi încarci catalogul în `/inventory/suppliers/:id/catalog` (manual sau import PDF) → mapezi produsele de catalog la produsele tale interne → poți comanda din Hub Aprovizionare; opțional îi activezi Portalul de Furnizor.
 
@@ -106,6 +109,7 @@ Factura intră pe una din cele 4 căi (eFactura/ANAF, poze cu OCR, push din cont
 - `get_warehouse_products_summary` — câte produse și pe ce categorii are o gestiune.
 - `get_stock_levels` — stocul curent per produs din toate gestiunile (are filtru „doar stoc scăzut").
 - `get_semipreparate_stock` — stocul de semipreparate pe loturi, cu valabilitate.
+- `get_material_requirements` — necesar MRP multi-nivel pentru producție, read-only; folosește-l înainte de a genera ciorne PO din lipsuri.
 - `search_products_db` / `get_product_details` — căutare produse și detalii (gestiune, furnizor, rețetă).
 - `list_suppliers` — furnizorii cu CUI, contact, categorie; tokenurile/parolele portalului și cheia marketplace sunt ascunse, iar IBAN-ul rămâne disponibil pentru operațiuni de plată.
 - `analyze_procurement` — analiză aprovizionare: furnizori, prețuri, termene de livrare.
@@ -116,6 +120,7 @@ Factura intră pe una din cele 4 căi (eFactura/ANAF, poze cu OCR, push din cont
 **Scriere (cer modulul de permisiune pe token):**
 - Modul `produse_meniu`: `create_product`, `update_product`, `bulk_update_products` (inclusiv preț de achiziție, furnizor, TVA), `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`, `set_initial_stock` (stocul inițial al unui produs).
 - Modul `furnizori`: `create_supplier`, `update_supplier`, `create_supplier_product` (produs în catalogul furnizorului), `create_supplier_product_mapping` (mapare produs catalog ↔ produs intern).
+- Modul `productie`: `create_purchase_orders_from_requirements` creează ciorne PO din necesarul MRP după preview (`commit:false`) și confirmare (`commit:true`).
 - Răspunsurile de la `create_supplier` / `update_supplier` nu întorc secretele de portal sau marketplace. Dacă userul vrea accesul furnizorului, folosește fluxul de portal/link/regenerare, nu căuta parola în date.
 
 **SQL (doar-citire, cu acordul separat pe token):** `list_database_tables` → `describe_database_table` → `execute_sql_query`.

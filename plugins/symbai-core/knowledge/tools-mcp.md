@@ -34,11 +34,11 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 882 tool-uri** — Citire 365 · Speciale 5 · SQL 3 · Scriere per modul 509 (pe 19 module).
+**TOTAL: 890 tool-uri** — Citire 368 · Speciale 5 · SQL 3 · Scriere per modul 514 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 365 tool-uri
+## Citire (fără permisiune de modul) — 368 tool-uri
 
-### Vânzări, comenzi, casă & financiar — 46
+### Vânzări, comenzi, casă & financiar — 47
 - `get_attribution_ltv_by_channel` — Valoarea pe viață (LTV) a clienților grupată după canalul de achiziție, pe o cohortă de N zile: nr. (parametri opționali: brandId, days)
 - `get_attribution_report` — Raport de atribuire marketing pe canale, pe ultimele N zile: conversii, venituri, cheltuieli (din reclame), CPA și ROAS per canal, conform unui model de atribuire ales (last_click implicit). (parametri opționali: brandId, days, model)
 - `compare_attribution_models` — Compară atribuirea pe modele multiple (last/first/linear/time_decay/position) pentru același interval, ca să nu decizi bugetul pe un singur model. (parametri opționali: brandId, days)
@@ -64,6 +64,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_subscriptions_dashboard` — KPI-urile afacerii de abonamente: MRR, ARR, ARPU, LTV, rată de churn, număr active/total, coadă de recuperare plată (dunning), defalcare pe status. (parametri opționali: brandId)
 - `get_vehicle_expenses` — Raport cheltuieli per vehicul pe interval: km parcurși, cost combustibil, RON/km, litri/100km, număr ture. (parametri opționali: brandId, locationId, from, to)
 - `jurnal_activitate` — Citește jurnalul de activitate (audit log) al aplicației — CINE a făcut CE și CÂND: anulări de comenzi, aprobări/respingeri, reduceri (discount), transferuri de produse/mese, retururi, oferit-gratis ( (parametri opționali: cauta, categorie, tipEntitate, idEntitate)
+- `list_b2b_client_depots` — Listează punctele de livrare/depourile unui client B2B, inclusiv GLN ship-to și coduri EDI. (necesită: clientId)
 - `list_b2b_orders` — Listează comenzile B2B (en-gros). (parametri opționali: clientId, status, deliveryDate, limit)
 - `list_cash_book_entries` — Listează operațiunile dintr-un registru de casă (încasări, plăți, depuneri/ridicări bancă) pe o perioadă. (parametri opționali: registerId, dateFrom, dateTo, entryType)
 - `list_cash_pending_operations` — Listează operațiunile de numerar netrecute încă în registrul de casă pentru o zi (ture de închis, tranzacții financiare). (necesită: registerId, businessDate)
@@ -162,7 +163,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `search_products_db` — Caută produse în baza de date după nume, SKU, cod de bare, categorie, tip, sau tag-uri. (parametri opționali: query, productType, storageZoneId, tagNames)
 - `search_products_for_tagging` — Previzualizează ce produse ar fi afectate de un set de filtre, FĂRĂ a asigna vreun tag. (parametri opționali: brandId, menuId, menuName, locationId)
 
-### Producție & trasabilitate — 51
+### Producție & trasabilitate — 53
 - `calculate_flow_bom` — Calculează BOM (Bill of Materials) complet pentru un flux: agregarea tuturor materialelor din toate operațiile. (necesită: flowVersionId)
 - `build_ingredient_declaration` — Construiește declarația de ingrediente pentru etichetă conform EU 1169/2011: rețetă explodată la materii prime, ordine descrescătoare după greutate, QUID/procente și alergeni de declarat. (parametri opționali: recipeId, productId, productName)
 - `exec_get_batch_progress` — Obține progresul complet al unui lot: pași de execuție, procent finalizare, materiale, output, pasul următor. (necesită: batchId)
@@ -182,6 +183,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_equipment_detail` — Obține detalii complete pentru un echipament: capacități per rețetă, zonă, status. (necesită: equipmentId)
 - `get_equipment_utilization` — Obține utilizarea echipamentelor: câte loturi procesează, status (disponibil/în uz/mentenanță), capacitate. (parametri opționali: zoneId)
 - `get_flow_ai_context` — Obtine context AI complet pentru un produs cu flux tehnologic: instructiuni AI (flow-level + per operatie) si necesar personal (staffMin/staffMax/staffRecommended per operatie). (parametri opționali: productId, productName)
+- `get_flow_graph` — Citește un flux tehnologic ca graf coordinate-free: operații, dependențe, lane-uri pe zone/echipamente și sumar; folosește-l înainte de editări de flux. (parametri opționali: flowVersionId, productId, productName)
 - `get_flow_version_detail` — Obține detaliile complete ale unui flux: operații, dependențe, materiale, ieșiri, QC — totul într-un singur apel. (necesită: flowVersionId)
 - `forecast_production_demand` — Previziune cerere de producție make-to-stock din istoricul POS + B2B: cerere săptămânală, tendință, variabilitate și stoc de siguranță recomandat. (parametri opționali: productIds, lookbackWeeks, horizonWeeks, method, channel)
 - `get_material_availability` — ATP/free-to-promise: stoc fizic, stoc net utilizabil, rezervări de producție și cât mai poate fi promis fără să calci peste plan. (parametri opționali: productIds, onlyConstrained)
@@ -191,6 +193,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_production_cost_estimate` — Cost standard complet de producție ca SAP CK11N: material multi-nivel la cost stoc canonic avg/FIFO + manoperă + utilaj + overhead, cu cost/unitate și materiale fără preț. (parametri opționali: recipeId, productId, productName, quantity)
 - `get_production_cost_variance` — Abatere standard vs actual pe un lot de producție: compară BOM-ul standard cu consumurile postate, descompune diferența în preț materie primă vs cantitate/randament, marchează loturile incomplete și dă cauza dominantă. (necesită: batchId)
 - `get_production_dispatch` — Lista de dispecerizare shop-floor pe zi/tură/zonă/echipament: ce lot/operație se produce, cantitate și cine lucrează. (parametri opționali: date, dateFrom, dateTo)
+- `get_retail_distribution_readiness` — Audit read-only pentru distribuție retail enterprise: WMS/picking, paletizare, SSCC GS1, GLN/GTIN, lot+expirare și preview DESADV/ASN. (parametri opționali: deliveryDate, orderId, brandId, locationId)
 - `get_qc_stats` — Obține statistici QC: rata de pass/fail, tip defecte frecvente, inspecții pe perioadă. (parametri opționali: days)
 - `get_shift_detail` — Obține detaliile complete ale unei ture pentru o zi: angajați, operații, loturi, KPI-uri live (cantități, scrap, completion %). (necesită: shiftId, date)
 - `get_shift_history` — Obține istoricul productivității pe ture: matrice zile × ture cu operații, cantități, scrap, eficiență, timp mediu. (parametri opționali: daysBack)
@@ -528,7 +531,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_recipe_labels` — Setează/actualizează etichetele pentru o rețetă. (necesită: recipeId, labels)
 - `update_recipe` — Actualizează o rețetă existentă. (necesită: recipeId)
 
-### productie — Producție — 66 tool-uri
+### productie — Producție — 68 tool-uri
 - `activate_flow_version` — Activează un flux (schimbă statusul din draft → active). (necesită: flowVersionId)
 - `add_flow_operation` — Adaugă o operație nouă într-un flux cu toate câmpurile tab-ului General: nume, ordine, durată, setup, descriere, container, depozitare, produceLot, skipIfStockAvailable, overlapAllowed. (necesită: flowVersionId, name, operationOrder)
 - `add_operation_dependency` — Adaugă o dependență între două operații: FS (Finish-Start), SS (Start-Start), FF (Finish-Finish), SF (Start-Finish) cu lag time. (necesită: flowVersionId, fromOperationId, toOperationId)
@@ -539,6 +542,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `archive_flow_version` — Arhivează un flux tehnologic. (necesită: flowVersionId)
 - `assign_recipe_to_zone` — Asociază o rețetă cu o zonă de producție. (necesită: recipeId, zoneId)
 - `auto_chain_operations` — Creează automat dependențe FS (Finish-Start) secvențiale pentru toate operațiile unui flux, în ordinea lor. (necesită: flowVersionId)
+- `auto_arrange_diagram` — Aranjează automat diagrama unui flux după editări semantice; nu primește coordonate x/y, doar layout intent. (necesită: flowVersionId)
 - `build_complete_flow` — Construiește un flux tehnologic complet dintr-un singur apel: creează fluxul, operațiile, materialele (cu productName auto-rezolvare), output-urile, QC checks, dependențele. (necesită: operations)
 - `bulk_create_shift_assignments` — Asignează mai mulți angajați la o tură pe mai multe zile (combinații). (necesită: shiftId, employeeIds, dates)
 - `bulk_create_zones_and_equipment` — Creează mai multe zone de producție cu echipamente dintr-o dată. (necesită: zones)
@@ -550,6 +554,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_flow_version` — Creează un flux tehnologic nou pentru un produs. (parametri opționali: productId, productName, name, versionNumber)
 - `create_mps_entry` — Creează o intrare în planul master de producție (MPS). (necesită: scheduledDate, plannedQty)
 - `create_production_equipment` — Adaugă un echipament nou într-o zonă de producție. (necesită: name, zoneId)
+- `create_purchase_orders_from_requirements` — Transformă lipsurile MRP în comenzi furnizor DRAFT, cu dry-run implicit (`commit:false`), alegere furnizor, MOQ/pachet și idempotency la `commit:true`. (parametri opționali: orders, horizonDays, supplierStrategy, mode, commit, brandId, locationId, warehouseId)
 - `create_production_shift` — Creează o tură de producție nouă (ex: Dimineață 06:00-14:00). (necesită: name, shortName, startTime, endTime)
 - `create_production_zone` — Creează o zonă de producție nouă (ex: Bucătărie Caldă, Patiserie, Preparare Rece). (necesită: name)
 - `create_provisional_shift` — Creează un schimb provizoriu (temporar) pentru o perioadă specifică. (necesită: name, shortName, startTime, endTime, dateFrom, dateTo)
@@ -753,10 +758,11 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_product_type_accounts_per_unit` — Setează/modifică conturile contabile ale unui tip de produs DOAR pentru o anumită unitate (brand+locație). (necesită: productTypeId, brandId, locationId, accounts)
 - `void_cash_book_entry` — Anulează (stornează) o operațiune dintr-un registru de casă, cu motiv obligatoriu — NU șterge, păstrează trasabilitatea legală. (necesită: entryId, reason)
 
-### furnizori — Furnizori — 16 tool-uri
+### furnizori — Furnizori — 19 tool-uri
 - `add_purchase_order_item` — Adaugă o linie de produs la o comandă de achiziție DRAFT (cantitate + preț unitar). (necesită: orderId, quantity, unitPrice)
 - `bulk_create_supplier_products` — Adaugă MAI MULTE produse în catalogul unui furnizor într-un singur apel (versiunea în masă a create_supplier_product). (necesită: supplierId, products)
 - `create_b2b_client` — Creează un client B2B (en-gros). (necesită: companyName)
+- `create_b2b_client_depot` — Creează un punct de livrare/depou pentru un client B2B, inclusiv GLN ship-to și profil retail/EDI. (necesită: clientId, name)
 - `create_b2b_client_product` — Adaugă un produs contractat pentru un client B2B (preț negociat per client). (necesită: clientId, productId, unitPrice)
 - `create_b2b_order` — Creează o comandă B2B (en-gros) cu liniile ei. (necesită: orderNumber, clientId, depotId, deliveryDate)
 - `create_purchase_order` — Creează o comandă de achiziție în stare DRAFT (NU o trimite furnizorului — trimiterea e externă și exclusă din această conexiune; trimite-o manual din aplicație). (necesită: orderNumber, supplierId, orderDate)
@@ -765,8 +771,10 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_supplier_product` — Adaugă un produs în catalogul furnizorului (cu preț, unitate, cantitate minimă de comandă) (necesită: supplierId, name)
 - `create_supplier_product_mapping` — Mapează un produs din catalogul furnizorului la un produs intern din Symbai (pentru aprovizionare automată) (necesită: supplierProductId, productId)
 - `enable_supplier_portal` — Activează portalul pentru furnizor și generează link de acces + parolă temporară. (necesită: supplierId)
+- `generate_b2b_retail_shipment_plan` — Generează și salvează intern planul WMS/SSCC/ASN pentru o comandă B2B retail; NU trimite EDI extern. (necesită: orderId)
 - `receive_purchase_order` 🔒 — Înregistrează o recepție pe o comandă de achiziție (cine a recepționat + notă). (necesită: orderId)
 - `update_b2b_client` — Actualizează un client B2B existent. (necesită: clientId)
+- `update_b2b_client_depot` — Actualizează un punct de livrare/depou B2B, inclusiv GLN/cod EDI/profil retail. (necesită: depotId)
 - `update_b2b_order` — Actualizează o comandă B2B (status, dată livrare, observații). (necesită: orderId)
 - `update_reception_note` — Actualizează o notă de recepție existentă (status, rezoluție, descriere). (necesită: noteId)
 - `update_supplier` — Actualizează datele unui furnizor existent (adresă, termeni plată, IBAN, zile livrare, etc.). Răspunsul nu expune tokenuri/parole de portal sau chei marketplace. (necesită: supplierId)

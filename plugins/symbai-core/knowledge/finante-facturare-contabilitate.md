@@ -56,7 +56,7 @@ Modulul Finanțe acoperă banii afacerii de la sertarul de numerar până la bal
 3. **Ai greșit o operațiune de casă**: nu o ștergi — folosești butonul de stornare de pe rând; se creează operațiunea inversă, ziua rămâne corectă net (ca pe formularul legal). Zilele deja închise se redeschid doar de admin/contabil.
 4. **Configurezi casieriile prima dată (sau după o locație nouă)**: /finance/cash-registers → alegi modul de organizare (firmă / locație / brand×locație) → „Aplică & generează" sau „Regenerează casieriile".
 5. **Salvezi raportul Z al zilei**: /finance/fiscal-reports → tab Rapoarte → „Extrage raport din casă" (sau upload manual XML semnat ANAF dacă a fost emis pe casă) → verifici în tab-ul Reconciliere Z ↔ POS dacă bate cu vânzările.
-6. **Emiți factură către o firmă**: factura se emite din bon/comandă, manual, din folio de hotel sau ca storno din retur; cumpărătorul poate fi firmă salvată (căutare ANAF după CUI), firmă ad-hoc fără salvare sau persoană fizică. Anularea unei facturi creează automat factura storno cu sume negative. Pentru e-Factura: conectezi SPV o dată, apoi upload manual sau automat, cu urmărirea termenului de 5 zile.
+6. **Emiți factură către o firmă**: factura se emite din bon/comandă, manual, din folio de hotel sau ca storno din retur; cumpărătorul poate fi firmă salvată (căutare ANAF după CUI), firmă ad-hoc fără salvare sau persoană fizică. Anularea unei facturi creează automat factura storno cu sume negative. Pentru e-Factura: conectezi SPV o dată, apoi upload manual sau automat, cu urmărirea termenului de 5 zile. În detaliul unei facturi emise din POS, modalul arată și **Detalii operaționale / Jurnalul notei**: masa, ospătarul, orele deschidere/închidere/plată, plățile, produsele, aprobările și auditul notei; folosește-l când userul întreabă „din ce notă vine factura asta?".
 7. **Imporți datele de la contabil**: /accounting-import → tragi fișierele în wizard → tipul e detectat automat → verifici maparea coloanelor → validare → import; istoricul rămâne în tab-ul dedicat.
 8. **Contract + avans pentru un eveniment**: /contracts → alegi șablonul → „Contract Nou" cu semnatarii → „Trimite Contract" → clientul semnează pe pagina publică → plătește avansul pe linkul /plata primit; pe pagina de plată vede „Așteptare contract" până semnează.
 
@@ -75,6 +75,7 @@ Modulul Finanțe acoperă banii afacerii de la sertarul de numerar până la bal
 - `jurnal_activitate` — cine a făcut ce (categorie FINANCE sau Contracte): închideri, stornări, aprobări.
 - `generate_report` — raport rapid: sumar vânzări, valoare stoc, food cost.
 - `list_entities` — listări rapide (ex. facturi) pe brand.
+- `get_fiscal_invoice_details` — detaliul facturii și liniile ei; pentru jurnal operațional complet pe nota POS legată de factură, deschide detaliul facturii în `/finance` sau folosește `get_order_timeline` dacă ai `orderId`.
 
 **SQL (necesită toggle-ul SQL pe token):** `list_database_tables` → `describe_database_table` → `execute_sql_query` (doar SELECT) — pentru întrebări la care rapoartele de mai sus nu ajung.
 
