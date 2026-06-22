@@ -634,7 +634,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_capa` — Actualizează o acțiune CAPA: schimbă statusul (investigating/action/verification/closed/cancelled), adaugă cauză rădăcină, acțiune corectivă/preventivă, responsabil, termen, notă de verificare. (necesită: capaId)
 - `update_changeover_rule` — Modifică o regulă de changeover existentă (timp, tip curățare, alergeni, activă/dezactivată). (necesită: ruleId)
 - `update_factory_object` — Editează un obiect: poziție (x/y), dimensiuni, rotație, nivel, etichetă, culoare, `icon`/URL imagine, status, HACCP (airClass/hygieneZone/allergens/temp), capacitate. (necesită: objectId)
-- `update_factory_plan` — Editează metadatele unui plan: nume, nivele (etaje), nivelul activ, grila (cm pentru snap). Pentru imagine de fond, păstrează lista `levels` și setează `bgUrl` pe nivelul dorit. (necesită: planId)
+- `update_factory_plan` — Editează metadatele unui plan: nume, nivele (etaje), nivelul activ, grila (cm pentru snap). Pentru imagine de fond, păstrează lista `levels` și setează `levels[].bgUrl` pe nivelul dorit. (necesită: planId)
 - `update_flow_operation` — Actualizează câmpurile tab-ului General ale unei operații existente. (necesită: operationId)
 - `update_flow_version` — Actualizeaza metadatele unui flux (nume, versiune, status, notite, reteta sursa, instructiuni AI). (necesită: flowVersionId)
 - `update_mps_entry` — Actualizează o intrare MPS (cantitate, status, stație, tură). (necesită: entryId)
