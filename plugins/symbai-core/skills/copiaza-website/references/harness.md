@@ -51,7 +51,8 @@ Scalează numărul de loturi/sub-agenți la mărimea măsurată în Faza 0. Thro
 - **Niciun semnal** (`no_independent_count`, sitemap lipsă) → crawl-ul pe server va folosi link-crawl; numitorul rămâne nesigur → raport best-effort onest, NU „gata".
 
 ## Rubrica verificatorului (cele 3 porți obiective)
-Verificatorul e ADVERSARIAL: verdict implicit INCOMPLET; treaba lui e să REFUTE completitudinea. Rulează cu context izolat, vede DOAR numitorul + citirile locale + rubrica (nu raționamentul lucrătorului). Toate trei porțile sunt OBIECTIVE (set-diff de chei / scor pe eșantion), nu opinie:
+Verificatorul e ADVERSARIAL: verdict implicit INCOMPLET; treaba lui e să REFUTE completitudinea. Rulează cu context izolat, vede DOAR numitorul + citirile locale + rubrica (nu raționamentul lucrătorului). Toate porțile sunt OBIECTIVE (set-diff de chei / scor pe eșantion), nu opinie.
+> ⚡ **Scurtătură 1-apel**: `clone_audit_all(jobId, brandId)` rulează TOATE porțile de mai jos și întoarce `pass` consolidat + sumar per-poartă + remedieri (hard gates = parity+fidelity+coverage; tree+branding advisory; orice poartă cu `error` 💥 anulează PASS). Bun pentru verdictul rapid; pentru remediere țintită folosește tot porțile individuale de mai jos.
 - **Poarta 1 — acoperire produse**: `clone_parity_diff(jobId, brandId)` → `pass`, `missingCount`, `missingSample`, `coverageVsDenominator`. PASS cere `pass:true`.
 - **Poarta 2 — calitate produse (adâncime)**: `clone_fidelity_audit(jobId, brandId)` → `fidelityScore`, `fieldScores` (name/image/description/price/category/specs/variants), `worstSample`, `unauditedFields`, `flags`. PASS cere `pass:true` (fiecare câmp prezent-în-sursă ≥90%). ÎNLOCUIEȘTE verificarea „pe ochi" a pozelor/descrierilor.
 - **Poarta 3 — non-produs**: `clone_coverage_audit(jobId, brandId)` → coverage per dimensiune (categorii/blog/pagini legale) + `missingSample`. PASS cere fiecare dimensiune cu sursă ≥95%. ÎNLOCUIEȘTE numărătoarea aproximativă blog/legale/ierarhie.
