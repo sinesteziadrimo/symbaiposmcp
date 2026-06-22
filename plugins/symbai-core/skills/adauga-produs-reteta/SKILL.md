@@ -17,7 +17,7 @@ Regula de bază peste tot: **nu inventa NIMIC** — nici prețuri, nici gramaje,
 
 1. **Întreabă userul de unde vin datele**: website-ul restaurantului? PDF cu meniul? Excel/export din vechiul POS? poze? pagina de Glovo/Wolt? Cere-i fișierele direct în chat.
 2. **Website**: ia conținutul URL-ului. Dacă HTML-ul vine gol → e un SPA (React/Angular/Vue); **caută API-ul din spate** — platformele de meniu au de regulă un endpoint JSON public (exemplu real: SmartMenu servește totul din Firebase Realtime DB, `https://smart-menu-...firebasedatabase.app/restaurant-menus/{slug}.json` → categorii → produse, cu name/price/description/weight/allergens/imageUrl per produs). Dacă nu găsești API-ul, cere userului un export sau screenshot-uri — nu ghici conținutul.
-3. **Per produs vrei**: nume, preț, categorie/secție (bucătărie vs bar), descriere, gramaj, alergeni, poză (URL), **slug-ul SEO din URL** (ultimul segment, ex. `site.ro/scaun-auto-0-13-kg` → `scaun-auto-0-13-kg`), și pentru băuturi: cum se vinde (sticlă întreagă vs porție turnată).
+3. **Per produs vrei**: nume, preț, categorie/secție (bucătărie vs bar), descriere, gramaj, alergeni, poză (URL), **slug-ul SEO din URL** (ultimul segment, ex. `site.ro/scaun-auto-0-13-kg` → `scaun-auto-0-13-kg`), codurile de scanner dacă există (`sku`, `barcode`, `ean` — critic la retail), și pentru băuturi: cum se vinde (sticlă întreagă vs porție turnată).
    - **Slug-ul sursă**: la magazine care se MUTĂ pe Symbai, trimite slug-ul vechi ca arg `slug` la `add_menu_item`/`bulk_add_menu_items` (și `create_menu_category`) ca să PĂSTREZI URL-urile indexate (continuitate SEO, fără 404). Dacă nu-l trimiți, platforma generează automat unul curat din nume. Detalii: `knowledge/onboarding/02d-import-surse-externe.md` → „Slug-ul SEO din URL-ul sursei".
 4. **Inventariază ce lipsește** și pune userului **UN singur set compact de întrebări**, nu câte una pe rând.
 5. Alternativă in-app (propune-o când userul are PDF/poze/Excel și preferă să nu treci tu prin MCP): paginile `/menu/import-pdf` (extrage produse + prețuri + poze + design) și `/ai-bulk-import` (Excel cu mapare AI) fac importul direct în aplicație.
@@ -57,7 +57,7 @@ Construiește tabelul complet ÎNAINTE de orice scriere și arată-l userului: n
 ## Faza 4 — Execută în ordinea corectă
 
 1. **Categoriile de meniu întâi** (la import): `create_menu_category` per secție (Gustări, Cocktailuri, Vin Alb…), ierarhic cu `parentId` unde are sens (Bar > Bere). E idempotentă pe (nume, brand) și se atașează automat la meniurile brandului.
-2. **Materiile prime apoi** (`bulk_create_products` cu type + unit + vat + warehouseId + description + weight), apoi produsele vândute.
+2. **Materiile prime apoi** (`bulk_create_products` cu type + unit + vat + warehouseId + description + weight + `sku`/`barcode`/`ean` dacă sursa le are), apoi produsele vândute. Pentru retail, codurile de bare/EAN se pun la creare/import; altfel scannerul POS/inventar nu are ce potrivi.
 3. ⚠ **Dedupe silențios cu success:true**: `create_product` / `create_menu` / `create_menu_category` / `create_tag` / `create_allergen` întorc entitatea EXISTENTĂ dacă numele/perechea există — parametrii tăi NU se aplică pe ea. Citește răspunsul, nu doar status-ul.
 4. **Rețete** (modul `retete`): `create_recipe` cu **productId EXPLICIT mereu** (fără el → match PARȚIAL pe nume sau auto-creează un produs nou greșit). `add_recipe_ingredients` cu **productId, nu productName** (typo la nume → auto-creează un raw_material dublură). Înainte de fiecare ingredient verifică `products.unit` al lui — cantitatea rețetei trebuie în aceeași familie de unități. `yield` gol = 1; „50 porții" = 50.
 5. **În meniu, complet dintr-un apel**: `add_menu_item(menuId, productId, price, name, menuCategoryId, description, gramaj, sortOrder)` — pune prețul, categoria, descrierea și gramajul deodată. E UPSERT (dacă produsul e deja în meniu, câmpurile se aplică pe item-ul existent); numele afișat ia implicit numele produsului. Categoria se oglindește automat și pe produs. Prețul de vânzare se setează DOAR aici.
@@ -71,7 +71,7 @@ Construiește tabelul complet ÎNAINTE de orice scriere și arată-l userului: n
 
 ## Faza 5 — Verifică prin CITIRE (niciodată prin UI)
 
-- `list_menu_items(menuId)` — numărul și prețurile vs sursă.
+- `list_menu_items(menuId)` — numărul și prețurile vs sursă. Pentru meniuri mari folosește `export_menu(menuId, "markdown"|"csv")` ca tabel complet sau paginează `list_menu_items` cu `categoryId`/`limit`/`offset`; răspunsul compact automat nu conține toate detaliile enriched.
 - `list_untagged_products` — niciun produs nou fără tag de rutare.
 - `analyze_recipes(brandId)` — rețete incomplete / ingrediente lipsă.
 - `analyze_food_costs` sau `generate_report(food_cost)` — un cost absurd (150%+) = aproape sigur unitate greșită în rețetă.

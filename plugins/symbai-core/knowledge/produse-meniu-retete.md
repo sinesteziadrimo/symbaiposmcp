@@ -107,7 +107,8 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 ## Tool-uri MCP utile
 
 **Citire (fără permisiune de modul):**
-- `list_menus`, `list_menu_items`, `list_menu_categories` — meniurile, articolele și categoriile, cu prețuri.
+- `list_menus`, `list_menu_items`, `list_menu_categories` — meniurile, articolele și categoriile, cu prețuri. Pentru meniuri mari, `list_menu_items` face compact automat; cere `categoryId`/`limit`/`offset` pentru pagini sau folosește `export_menu`.
+- `export_menu(menuId, format)` — export tabelar complet al meniului (csv/tsv/markdown/json) cu calea ierarhică a categoriei, produs, preț, TVA și disponibilitate. E cea mai bună citire pentru audit, comparație cu sursa sau predare către user.
 - `search_products_db`, `get_product_details` — căutare în catalog și fișa completă a unui produs (taguri, gestiune, rețetă).
 - `list_recipes`, `get_recipe_details`, `list_recipe_ingredients`, `run_bom_explosion` — rețete, ingrediente, necesar de materii prime la o cantitate dată. Dacă userul întreabă pe un brand/unitate anume, dă `brandId`: `list_recipes` întoarce rețetele acelui brand + rețetele globale (`brandId` gol), nu tot tenantul.
 - `analyze_food_costs`, `analyze_recipes`, `generate_report` (tip `food_cost`) — analiza costurilor și completitudinii rețetelor. Pentru `analyze_recipes`, folosește `brandId` explicit; cifrele sunt pe brand + globale, nu agregate peste toate brandurile.
@@ -117,7 +118,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - `gaseste_in_aplicatie` — link direct către orice pagină.
 
 **Scriere (cer modulul de permisiune `produse_meniu` pe token):**
-- `create_product`, `update_product`, `bulk_create_products`, `bulk_update_products` — catalog (prețul de vânzare NU se pune aici).
+- `create_product`, `update_product`, `bulk_create_products`, `bulk_update_products` — catalog (prețul de vânzare NU se pune aici). La retail/import păstrează codurile sursă: `sku`, `barcode`, `ean` pe `create_product`/`bulk_create_products` și `update_product` unde trebuie corectate.
 - `create_menu`, `update_menu`, `add_menu_item`, `update_menu_item`, `bulk_update_menu_item_prices`, `apply_menu_prices`, `auto_create_menu_from_products` — meniuri și prețuri de vânzare.
 - `create_vat_rate`, `auto_assign_vat_batch` — TVA (clasificare automată cu AI).
 - `create_tag`, `update_tag`, `assign_tag`, `bulk_assign_tag`, `bulk_remove_tag`, `auto_tag_from_menu_categories` — etichete.
@@ -148,6 +149,7 @@ Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (șter
 
 **⚠ Capcane de tool-uri (verificate în cod):**
 - `add_menu_item` e UPSERT: dacă produsul e deja în meniu, câmpurile trimise se aplică pe item-ul existent (nu mai e „există deja, ignorat"). Numele afișat ia implicit numele produsului dacă nu trimiți `name`.
+- La meniuri mari, nu cere tot meniul enriched dintr-un singur `list_menu_items`: fără `limit` și peste prag răspunsul devine compact automat. Pentru un tabel complet folosește `export_menu`; pentru detalii folosește `categoryId`/`limit`/`offset` sau `compact:false` pe o pagină mică.
 - `set_product_image`: URL-ul trebuie PUBLIC (http/https, nu IP intern); imaginea se descarcă și se optimizează — dacă URL-ul pică, dă eroare clară, nu poză moartă.
 - Dedupe silențios cu success: `create_product` (nume exact), `create_menu`, `create_tag`, `create_allergen`, `create_menu_category` (nume+brand) întorc entitatea existentă FĂRĂ a aplica parametrii trimiși — caută înainte, citește răspunsul.
 - `create_recipe`: dă MEREU `productId` explicit (altfel match parțial pe nume sau auto-creează produs nou). `add_recipe_ingredients`: folosește `productId`, nu `productName` (typo = produs raw_material auto-creat).
@@ -171,6 +173,7 @@ Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (șter
 - **Am două produse aproape identice în catalog.** Nu le șterge manual — folosește Unifică Duplicate, care păstrează vânzările, stocul (adunat), rețeta și locul în meniu.
 - **Produsul nou nu iese la imprimantă/KDS.** Aproape sigur n-are tag de rutare sau are un tag NOU fără regulă: bonul se creează „unrouted" (nu se printează, nu apare pe niciun ecran, fără eroare). Dă-i tagul EXISTENT al secției (`list_tag_summary` arată convenția clientului); pentru tag nou, regula se creează în Setări → Imprimante.
 - **Cum pun categorie/descriere/gramaj/poză la import prin asistent?** Categoria: `create_menu_category` (o dată per secție) + `menuCategoryId` pe `add_menu_item`. Descrierea și gramajul: direct pe `add_menu_item`/`update_menu_item` (sau `description`/`weight` pe produs). Poza: `set_product_image` cu URL public. Toate se văd după un refresh al paginii.
+- **Am produse de retail cu scanner.** La import nu pierde codurile: trimite `sku`, `barcode` și/sau `ean` pe `create_product`/`bulk_create_products`; dacă lipsesc, scannerul nu are ce potrivi ulterior chiar dacă produsul există în meniu.
 
 ## Pentru acces SQL
 

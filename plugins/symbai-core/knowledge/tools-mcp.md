@@ -34,9 +34,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 970 tool-uri** — Citire 418 · Speciale 5 · SQL 3 · Scriere per modul 544 (pe 19 module).
+**TOTAL: 971 tool-uri** — Citire 419 · Speciale 5 · SQL 3 · Scriere per modul 544 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 418 tool-uri
+## Citire (fără permisiune de modul) — 419 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 45
 - `compare_attribution_models` — Compară modelele de atribuire (last_click/first_click/linear/time_decay/position) pe canale: venit + conversii + ROAS per model. (parametri opționali: brandId, days)
@@ -85,7 +85,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `top_produse` — Cele mai vândute produse pe o perioadă — cantitate vândută, încasări, în câte bonuri a apărut și ponderea în venituri. (parametri opționali: perioada, startDate, endDate, brandId)
 - `vanzari_in_timp` — Distribuția vânzărilor în timp pe o perioadă, pentru a vedea tiparul și orele/zilele de vârf. (parametri opționali: perioada, startDate, endDate, brandId)
 
-### Produse, meniu, rețete & stoc — 79
+### Produse, meniu, rețete & stoc — 80
 - `analyze_recipes` — Analizează rețetele unui brand (completitudine, costuri, ingrediente lipsă). (necesită: brandId)
 - `detect_production_bottlenecks` — Detectează blocajele (bottlenecks) în producție: stații supraîncărcate, utilizare vs capacitate, pe orizont temporal. (parametri opționali: daysAhead)
 - `discover_site_inventory` — Descoperă scopul ADEVĂRAT al unui site înainte de copiere: numără produse/categorii/blog/pagini din surse independente (sitemap-index + feed-ul platformei Shopify/WooCommerce + X-WP-Total), nu din ce (necesită: url)
@@ -103,6 +103,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_game_slots` — Obține toate sloturile disponibile pentru un joc la o dată specifică. (necesită: gameId, date)
 - `get_lot_details` — Detaliile unui lot anume (cantitate rămasă, cost, status QC, document sursă, expirare). (necesită: lotId)
 - `get_menu_engineering` — Clasifică produsele din meniu pe cele 4 cadrane clasice de «menu engineering», pe baza vânzărilor reale și a marjei: ⭐ Vedete (se vând mult + profit bun — protejează-le), 🐎 Cai de povară (se vând mul (parametri opționali: brandId, menuId, period)
+- `export_menu` — Exportă un meniu întreg ca tabel (Categorie cu cale ierarhică, Produs, Preț, TVA, Disponibil) în csv/tsv/markdown/json. Folosește-l pentru audit/import/revizie pe meniuri mari, în loc să reconstruiești manual din categorii + item-uri. (necesită: menuId; parametri opționali: format, includeUnavailable)
 - `get_output_lots_for_batch` — Loturile de produs finit generate de un lot de producție (inventory_lots cu parentOrderId=batchId): număr lot, produs, cantitate rămasă, status QC, data fabricației, expirare. (necesită: batchId)
 - `get_physical_menu_config` — Citește configul unui design de meniu fizic, pe secțiuni (ca să nu explodezi contextul): fără section = setări GLOBALE (toate câmpurile scalare top-level: culori, fonturi, margini, columns, copertă, Q (necesită: configId)
 - `get_physical_menu_item` — Inspectează produse dintr-un design de meniu fizic: poziția în categorie, sortOrder și MĂRIMEA pozei (mare/mică/ascunsă, după photoLayout). (necesită: configId)
@@ -133,7 +134,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_hotel_reservations` — Listează rezervările de cazare ale hotelului (cele mai recente întâi). (parametri opționali: brandId, locationId, status, limita)
 - `list_lots` — Listează loturile de stoc (FIFO/FEFO), opțional filtrate pe depozit și/sau produs. (parametri opționali: warehouseId, productId, limit)
 - `list_menu_categories` — Listează toate categoriile de meniu pentru un brand sau meniu specific, cu numărul de produse din fiecare categorie. (parametri opționali: brandId, menuId)
-- `list_menu_items` — Listează produsele dintr-un meniu specific cu categoria de meniu și zona de depozitare. (necesită: menuId)
+- `list_menu_items` — Listează produsele dintr-un meniu specific cu categoria de meniu și zona de depozitare. La meniuri mari răspunde compact automat; folosește `categoryId`/`limit`/`offset` pentru paginare sau `export_menu` pentru tabel complet. (necesită: menuId; parametri opționali: categoryId, limit, offset, compact)
 - `list_menus` — Listează toate meniurile din sistem cu status și brand. (parametri opționali: brandId)
 - `list_pending_nirs` — Listează recepțiile (NIR-uri) create dar NEPOSTATE pe stoc (status DRAFT/PENDING) — ce așteaptă postarea pe stoc. (parametri opționali: warehouseId, supplierId, brandId, locationId)
 - `list_physical_menu_designs` — Listează designurile de MENIU FIZIC (tipărit/PDF) ale unui brand: configId, nume, meniu, format, nr. (parametri opționali: brandId, menuId)
@@ -496,7 +497,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `bulk_add_menu_items` — Adaugă în masă mai multe produse într-un meniu cu preț (versiunea bulk a add_menu_item). (necesită: menuId, items)
 - `bulk_assign_tag` — Asignează un tag la TOATE produsele/entitățile care corespund filtrelor date. (necesită: tagId)
 - `bulk_create_menus` — Creează mai multe meniuri dintr-o dată (un meniu per brand). (necesită: menus)
-- `bulk_create_products` — Creează mai multe produse deodată (eficient pentru import). (necesită: brandId, products)
+- `bulk_create_products` — Creează mai multe produse deodată (eficient pentru import). La retail/import păstrează și `sku`, `barcode`, `ean` dacă există, ca scanarea la inventar/POS să funcționeze. (necesită: brandId, products)
 - `bulk_create_storage_zones` — Creează mai multe sub-zone de depozitare într-o magazie (ex: frigider, raft). (necesită: brandId, storageZones)
 - `bulk_optimize_category_seo` — Pune slug-uri SEO pe TOATE categoriile fără slug dintr-un brand, deodată (determinist, fără AI, fără cost). (parametri opționali: brandId, dryRun, limit)
 - `bulk_optimize_product_seo` — Optimizează SEO pe MULTE produse deodată: generează descrieri unice (orientate pe beneficii, română cu diacritice, anti-duplicat) + slug-uri ASCII. (parametri opționali: brandId, mode, slugsOnly, dryRun)
@@ -510,7 +511,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_allergen` — Creează un alergen (ex: Gluten, Lactate, Ouă) (necesită: name, brandId)
 - `create_menu` — Creează un meniu nou (principal, bar, livrare, kiosk). (necesită: name, brandId)
 - `create_menu_category` — Creează o categorie de meniu (ex. (necesită: name, brandId)
-- `create_product` — Creează un produs nou. (necesită: name, brandId)
+- `create_product` — Creează un produs nou. Acceptă opțional `sku`, `barcode`, `ean`; la retail nu le omite dacă sursa le are. (necesită: name, brandId)
 - `create_redirect` — Creează un redirect 301 (permanent, implicit) sau 302 (temporar) de la un URL VECHI la unul NOU pe site-ul brandului. (necesită: sourcePath, targetPath)
 - `create_storage_zone` — Creează o sub-zonă de depozitare într-o magazie (ex: frigider, raft, congelator). (necesită: name, brandId)
 - `create_tag` — Creează o etichetă (tag) pentru gruparea produselor — folosit pentru rutare imprimante/KDS, grupare stocuri, filtrare meniu (necesită: name, brandId)
@@ -544,7 +545,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_menu_category` — Actualizează o categorie de meniu existentă: redenumire (name), re-parentare (parentId — numărul părintelui din același brand, sau null pentru rădăcină), sortOrder, color. (necesită: categoryId)
 - `update_menu_category_fields` — Modifică o categorie de meniu existentă — field-setter generic: trimite DOAR câmpurile de schimbat (name, color, icon, parentId, sortOrder, brandId, imageUrl). (necesită: categoryId)
 - `update_menu_item` — Actualizează un menu item: preț, nume, disponibilitate, categorie, descriere, gramaj, ordine + câmpuri de MAGAZIN ONLINE (reducere, brand, material, vârstă, video, certificări). (necesită: brandId, menuItemId)
-- `update_product` — Actualizează un produs existent (TVA, categorie, furnizor, tip, cont contabil, receptionPrice, etc.). (necesită: productId)
+- `update_product` — Actualizează un produs existent (TVA, categorie, furnizor, tip, cont contabil, receptionPrice, SKU/barcode/EAN etc.). (necesită: productId)
 - `update_storage_zone` — Actualizează o zonă de depozitare existentă (sub-zonă opțională din magazie). (necesită: storageZoneId)
 - `update_tag` — Actualizează o etichetă existentă (nume, culoare, descriere) (necesită: tagId)
 - `update_warehouse` — Actualizează o gestiune existentă: redenumire, schimbare tag, mutare pe altă locație, activare/dezactivare. (necesită: warehouseId)
