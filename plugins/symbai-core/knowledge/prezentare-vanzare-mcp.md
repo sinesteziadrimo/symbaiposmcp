@@ -48,7 +48,7 @@ Forma unui câmp (CONFIRMATĂ):
   "helpText": "Răspunsul ridică automat durerea potrivită în prezentare.",
   "sourceFromLead": "customer.companyName",    // opțional: auto-import din lead (customer.* / deal.*)
   "options": [
-    { "id": "see_profit", "label": "📊 Să văd profitul real pe canal / locație" },
+    { "id": "see_profit", "label": "📊 Să văd profitul real pe canal / locație", "imageUrl": "https://...", "imageObjectPosition": "50% 35%" },
     { "id": "one_app",    "label": "🧩 Să nu mai jonglez cu mai multe aplicații" }
   ],
   "painTriggers": [
@@ -57,6 +57,8 @@ Forma unui câmp (CONFIRMATĂ):
   ]
 }
 ```
+
+`imageUrl` / `imageObjectPosition` sunt opționale pe orice `PresentationOption`. În special la wishlist-ul `icon-cards`, poza devine fundal full-bleed al cardului; fără poză, cardul folosește gradient + icon. Pentru opțiuni de discovery normale, folosește poza doar dacă ajută vizual, nu ca decor generic.
 
 ### painTrigger — mecanismul răspuns→durere (același la introFields ȘI la discovery questions)
 - `mode: "direct"` — 🎯 **Sigură**: durerea intră garantat. Câmp: `intensityWhenMet` (1–10). (la scoring: MAX cu alte semnale directe)
@@ -149,6 +151,8 @@ Confirmă în Preview: alegi acel răspuns → trebuie să apară slide-ul dedic
   "tiers": [{
     "id": "tier_pro", "icon": "⚡", "name": "...", "color": "#8b5cf6", "price": 280,
     "billingPeriod": "month",                       // "one-time" | "month" | "year" | "custom"
+    "revenuePercent": 0.2,                           // opțional: "+ 0,2% din încasări" lângă prețul fix
+    "revenuePercentLabel": "din încasări",           // opțional; lipsă = "din încasări"
     "cardStyle": "spotlight",                        // "minimal" | "glass" | "gradient" | "spotlight"
     "ribbon": { "text": "BEST VALUE", "gradient": "linear-gradient(90deg,#8b5cf6,#d946ef)" },
     "description": "...", "highlights": ["...", "..."],
@@ -159,6 +163,7 @@ Confirmă în Preview: alegi acel răspuns → trebuie să apară slide-ul dedic
 }]
 ```
 ⚠ **Iconițele de pe ofertă/semnale de încredere se randează ca TEXT BRUT** — pune EMOJI direct (`"icon": "🚀"`, `"🛡️"`), NU nume de iconițe (`"Rocket"` ar apărea literal pe slide). (Excepție: bullet-ele de pe `followUpSlide` folosesc nume Lucide — acolo motorul le rezolvă în iconițe.)
+✅ **Preț hibrid în ofertă:** `revenuePercent` / `revenuePercentLabel` se afișează ca rând separat pe tier și lângă totalul fix selectat. Nu îl include manual în `price`: procentul depinde de cifra clientului și se explică prin calculul `comparative-list` cu `symbaiRevenuePercent`.
 ⚠ **Verticalele clonate (`sala_evenimente`/`catering`/`servicii`) vin cu 0 oferte** — creezi `offers[]` de la zero.
 
 ## FLUX → `flowV2` (CONFIRMATĂ — povestea: ce pași sunt activi + câte elemente)
@@ -185,6 +190,12 @@ Pe un calcul de tip **Listă cheltuieli** (`comparative-list`) ai 3 câmpuri noi
 - **`currentCostOnly: true`** — ascunde coloana „Cu Symbai" + prețul; arată DOAR cât plătește clientul ACUM (total lună/an/5 ani). Strategic: arăți costul lui actual ÎNAINTE de a-i spune prețul tău.
 - **`placement: "before-offer" | "after-offer"`** — în ce etapă apare calculul. Lipsă/`before-offer` = înainte de ofertă (default). `after-offer` = doar în etapa nouă de după ofertă (trebuie ȘI `flowV2.calculationAfterOffer.enabled:true`).
 - **`comparativeItemsFromCalculationId: "<id-calc-faza-1>"`** — calculul de fază 2 (după ofertă) **reia cheltuielile** pe care agentul le-a introdus LIVE în calculul de fază 1, și acum arată economia vs prețul Symbai. (1 nivel, nu urmărește lanțuri.)
+
+Pentru preț hibrid **abonament + comision** (2026-06-23), același `comparative-list` mai acceptă:
+- **`symbaiCostCurrency: "RON" | "EUR"`** — moneda costului fix; `"EUR"` se convertește în lei.
+- **`symbaiEurRate`** — cursul €→lei pentru costul fix; lipsă = fallback motor (~5).
+- **`symbaiRevenuePercent`** — procent din vânzările estimate (0,2 înseamnă 0,2%, nu 20%).
+- **`revenueEstimateLabel`**, **`revenueEstimateDefault`**, **`revenueEstimatePeriod: "month" | "year"`** — câmpul live pe slide. Agentul îl poate modifica în rulare; engine-ul calculează lunar: `cost fix + procent × vânzări estimate`.
 
 **Rețeta cerută de clienți (calc înainte fără preț → ofertă → economie după):**
 1. Faza 1 (before): un `comparative-list` cu `currentCostOnly:true`, `placement:"before-offer"` → arată „cât plătești acum".
@@ -304,10 +315,15 @@ Forma unei condiții: `{ fieldId, op, value }` — `fieldId` = id-ul întrebări
 { "id": "calc_costuri_parc", "kind": "comparative-list", "title": "Cât te costă acum haosul de rezervări",
   "currentCostOnly": false,                                  // true = ascunde prețul Symbai (faza „doar costul actual")
   "placement": "before-offer",                              // sau "after-offer"
+  "symbaiCost": 99, "symbaiCostCurrency": "EUR", "symbaiEurRate": 5,
+  "symbaiRevenuePercent": 0.2, "revenueEstimateLabel": "Estimat vânzări lunare",
+  "revenueEstimateDefault": 200000, "revenueEstimatePeriod": "month",
   "categories": [ { "id": "cat_apps", "icon": "📋", "label": "Aplicații separate",
     "suggestions": [ { "name": "Soft rezervări", "estimatedCost": 200 } ] } ] }
 ```
 Apoi `flowV2.calculation = { enabled:true, calculationId:"calc_costuri_parc" }`. (Formula matematică: `kind:"formula"` cu `inputs:[{key,sourceKey,defaultValue,label}]` + `formula` + `outputTemplate` — inputurile iau cifrele din răspunsuri prin `sourceKey`.)
+
+Explicație user-facing pentru exemplul de mai sus: „La 200.000 lei vânzări estimate/lună, costul e 99€ × 5 = 495 lei fix + 0,2% × 200.000 = 400 lei, deci 895 lei/lună." Nu prezenta procentul ca taxă ascunsă; arată formula pe slide.
 
 ### Întrebarea-ancoră (pusă MEREU)
 Nu are buton în UI — se setează prin MCP: pune `"discoveryAnchor": true` pe întrebarea-pilon (de regulă cea de profit/financiară). Ea e exceptată de la dedup și apare la fiecare prospect.

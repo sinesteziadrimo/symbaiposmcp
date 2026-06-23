@@ -24,10 +24,10 @@ Structura clasică **problemă → agitare → soluție → dovadă → ofertă*
 4. **Discovery — rezumat** — „Iată ce am înțeles din răspunsurile tale…": confirmă prospectului că a fost ascultat, listează tipologia detectată + top 3-5 dureri. (Notă: e element de RULARE/UI, nu un pas configurabil din Flux — nu-l căuta ca „stage".)
 5. **Punte „de la negativ la pozitiv"** — slide-pivot emoțional „De la probleme la posibilități": pornește afișând DOAR coloana problemelor („afli profitul abia de la contabil", „food cost din instinct"…); la primul „Înainte" se dezvăluie coloana-oglindă cu soluția („vezi profitul în timp real"…). Apoi un slide-wishlist „**Ce ai bifa primul?**" — prospectul (sau vânzătorul) bifează ce și-ar dori; bifele ADAUGĂ durerea aferentă în pool-ul de candidați (deci soluția bifată ajunge în deck chiar dacă tipologia nu o avea „dominantă"). Atenție la tipuri: slide-ul-punte „De la probleme la posibilități" e `type:"info"` (bloc comparison + reveal în pași), iar slide-ul wishlist „Ce ai bifa primul?" e `type:"question"` cu `questionType:"multiselect"` și **painTriggers PE opțiuni** (NU richContent). Ambele se editează inline în pasul Tranziție, dar sunt tipuri diferite. ⚠ Pe un șablon clonat, painTriggers-ele wishlist-ului pointează la painId-uri HoReCa — relegă-le la durerile tale.
 6. **Bucla Durere → Soluție** (top 3 dureri) — inima prezentării. Pentru fiecare durere prioritară: întâi DUREREA (reformulată cum o trăiește el, cu o cifră-șoc), apoi imediat SOLUȚIA care o rezolvă, demonstrată **LIVE pe platforma reală** (buton „🎬 Vezi LIVE"), nu doar promis verbal.
-7. **Calcul revelator** — cifre interactive: „cât plătești ACUM pe 5-8 softuri separate vs o singură platformă". Momentul de șoc financiar.
+7. **Calcul revelator** — cifre interactive: „cât plătești ACUM pe 5-8 softuri separate vs o singură platformă". Momentul de șoc financiar. Pentru oferte cu preț hibrid, calculatorul poate include un câmp live „estimat vânzări" și explică formula **cost fix (RON sau €→lei) + procent × vânzări estimate**; agentul ajustează estimatul în fața prospectului, nu ascunde matematica.
 8. **Dovezi (case studies)** — 1-3 studii de caz reale, alese automat pe tipul de afacere + ORAȘUL prospectului + durerile confirmate („un loc ca al tău, din orașul tău, a obținut X"). Dovada locală bate dovada generică.
 9. **Calcul ROI + costul inacțiunii** — al doilea calcul, de încheiere: recuperarea investiției + cât pierde dacă AMÂNĂ (slider 6/12/24 luni). Creează urgență.
-10. **Ofertă personalizată** — pachete de preț (ex. un model în 3 trepte) cu unul marcat „recomandat" după tipologie, add-on-uri bifabile, semnale de încredere (garanție, fără contract pe termen lung), trimitere pe email/WhatsApp. (Prețurile/pachetele le pui pe businessul owner-ului — nu inventa cifre. Iconițele de pe ofertă se randează ca TEXT BRUT → folosește EMOJI „🚀", nu nume de iconițe „Rocket". Verticalele clonate vin cu 0 oferte — le creezi de la zero.)
+10. **Ofertă personalizată** — pachete de preț (ex. un model în 3 trepte) cu unul marcat „recomandat" după tipologie, add-on-uri bifabile, semnale de încredere (garanție, fără contract pe termen lung), trimitere pe email/WhatsApp. (Prețurile/pachetele le pui pe businessul owner-ului — nu inventa cifre. Iconițele de pe ofertă se randează ca TEXT BRUT → folosește EMOJI „🚀", nu nume de iconițe „Rocket". Verticalele clonate vin cu 0 oferte — le creezi de la zero.) Tier-urile pot afișa separat „+ X% din încasări" pe lângă abonamentul fix; procentul apare lângă total, dar nu se adună în totalul fix deoarece depinde de cifra reală a clientului.
 11. **Închidere (CTA)** — un singur pas concret de făcut acum (pornește pilotul, rezervă kickoff).
 
 **Obiecțiile NU sunt o etapă fixă** — se tratează LIVE, când prospectul ezită: vânzătorul marchează obiecția pe panoul lui și poate afișa pe ecranul prospectului răspunsul pregătit + dovada potrivită.
@@ -82,17 +82,17 @@ Deasupra taburilor, un **antet fix**: nume prezentare, titlu ecran de start, sub
 
 Taburile, în ordinea poveștii:
 
-1. **Flux ✨** — tabul „acasă". Aici construiești POVESTEA ca o secvență de pași (Deschidere → Întrebări → Trecerea de la probleme la soluții → Dureri & soluții → Calcul revelator → Obiecții → Dovezi → Ofertă). Fiecare pas e un card cu comutator on/off și două explicații: „**Clientul vede:**" și „**Tu (din telefon):**". Setezi câte elemente apar (câte dureri, câte dovezi), reguli „apare doar dacă…" și mai multe/mai puține după tipologie. Tot aici editezi inline cele două slide-uri de tranziție (coloanele Acum↔Cu noi și wishlist-ul).
+1. **Flux ✨** — tabul „acasă". Aici construiești POVESTEA ca o secvență de pași (Deschidere → Întrebări → Trecerea de la probleme la soluții → Dureri & soluții → Calcul revelator → Obiecții → Dovezi → Ofertă). Fiecare pas e un card cu comutator on/off și două explicații: „**Clientul vede:**" și „**Tu (din telefon):**". Setezi câte elemente apar (câte dureri, câte dovezi), reguli „apare doar dacă…" și mai multe/mai puține după tipologie. Tot aici editezi inline cele două slide-uri de tranziție (coloanele Acum↔Cu noi și wishlist-ul). Wishlist-ul în stil `icon-cards` acceptă poză pe fiecare opțiune; poza apare full-bleed în card, cu overlay și hover.
 2. **Intro** — câmpurile completate ÎNAINTE de prezentare; pot fi obligatorii sau auto-completate din lead. Sub fiecare opțiune, legi durerile declanșate (🎯/➕/🔍).
 3. **Discovery** — întrebările puse prospectului. Fiecare poate fi „pe ecran" (o vede el) sau „doar telefon". Sub fiecare răspuns, legi durerile/tipologia.
 4. **Dureri** — problemele prospectului, fiecare legată de soluția care o rezolvă și de tipurile de client la care apare.
 5. **Soluții** — ce faci pentru client; fiecare legată de durerile pe care le rezolvă, cu galerie media, KPI și tur live.
 6. **Tipologii** — segmentele de clienți + regulile după care prezentarea ghicește tipul.
 7. **Tema** — fonturi + culori + dimensiuni (preset-uri „1 click" sau personalizat). Se aplică tuturor prezentărilor brandului.
-8. **Calcule** — formule de economie/ROI/cost al inacțiunii/recuperare, cu cifre interactive alimentate din răspunsuri.
+8. **Calcule** — formule de economie/ROI/cost al inacțiunii/recuperare, cu cifre interactive alimentate din răspunsuri. Pentru `comparative-list`, prețul Symbai poate fi pur fix sau hibrid: `symbaiCostCurrency`/`symbaiEurRate` pentru €→lei, plus `symbaiRevenuePercent` și `revenueEstimate*` pentru procent din vânzările estimate.
 9. **Obiecții** — ezitările + răspunsul pregătit (legate de dureri); plus câmpul opțional „Garanție afișată clientului".
 10. **Dovezi** — case studies/testimoniale/cifre, cu durerile/soluțiile/tipurile/orașul pentru care sunt relevante (selecție automată).
-11. **Oferte** — pachete de preț + add-on-uri + canale de trimitere + automatizări post-trimitere.
+11. **Oferte** — pachete de preț + add-on-uri + canale de trimitere + automatizări post-trimitere. Un singur tier se centrează vizual; la 2 tier-uri layoutul rămâne echilibrat. `revenuePercent`/`revenuePercentLabel` afișează „+ X% din încasări" ca rând separat.
 12. **Preview** — rulează prezentarea LIVE pe datele draft, cu testare rapidă pe scenarii (Restaurant clasic / Conservator / Expansion / Newbie) — vezi ce tipologie se detectează și câte slide-uri ies, fără să salvezi.
 
 ## Coach Agent + cum rulezi în fața prospectului
@@ -139,6 +139,8 @@ Metodologia se copiază 1:1 în orice vertical. Pașii:
 - **Verticalele clonate sunt SCHELETE**: `sala_evenimente`/`catering`/`servicii` au ~5 dureri, ~1 dovadă, 0 oferte. Nu le „doar ajusta" — pornește de la **gold-standard ca STRUCTURĂ** și rescrie conținutul pe businessul owner-ului (altfel vinzi software de restaurant unui client de nunți).
 - **Reveal ≠ followUpSlide**: „text peste slide" vs „slide întreg separat". Owner-ul care cere slide educațional după un răspuns vrea followUpSlide.
 - **Emoji, nu nume de iconițe**: pe ofertă/semnale de încredere iconițele se randează literal — pune „🚀", nu „Rocket".
+- **Preț hibrid transparent**: când folosești abonament + comision, arată în calcul estimatul de vânzări și formula fix + procent; nu ascunde procentul în totalul fix și nu inventa cifra de vânzări.
+- **Wishlist cu poze**: cardurile icon-cards pot avea `imageUrl`; folosește poze reale care arată beneficiul bifat de prospect, altfel lasă cardul fără poză.
 
 ## Cross-link-uri
 
