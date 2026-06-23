@@ -38,7 +38,7 @@ Fișiere de referință transversale: `agent-operare-avansata.md` (standardul de
 
 ## Ecosistemul Symbai (în afara instanței POS)
 
-- **Portalul Hub** (`hub.symbai.app`) — contul clientului la Symbai: abonament, facturile Symbai, contracte și secțiunea **Acces AI** (de unde se generează tokenul conexiunii MCP și se instalează acest plugin). Întrebări despre abonament/factura Symbai → portalul Hub, nu aplicația POS.
+- **Portalul Hub** (`hub.symbai.app`) — contul clientului la Symbai: abonament, facturile Symbai, contracte și secțiunea **Acces AI** (de unde se generează tokenul conexiunii MCP și se instalează acest plugin). Hub-ul este și sursa versiunii publice pentru clienții POS noi; dacă un cont abia creat pare pe build vechi, verifică versiunea/provisioning-ul în Hub înainte să tratezi lipsa funcțiilor ca problemă de configurare în POS. Întrebări despre abonament/factura Symbai → portalul Hub, nu aplicația POS.
 - **Symbai Supplier** — platforma furnizorilor; un furnizor conectat primește comenzile direct, iar cataloagele se sincronizează automat.
 - **Serverul local (edge)** — un calculator în restaurant care ține POS-ul funcțional și imprimarea bonurilor chiar și fără internet. Detalii în `echipamente-kds-imprimante.md`.
 
