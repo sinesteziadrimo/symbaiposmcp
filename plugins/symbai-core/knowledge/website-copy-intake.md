@@ -47,7 +47,7 @@ Capcane reale care au stricat o clona (drimoland.ro, Strapi/Next). Bifeaza-le pe
 - **Link-uri in corpul rich-text / `descriptionHtml` / `custom-html`** NU trec prin localizatorul de href → rescrie-le MANUAL la slug-ul intern (altfel clickul pleaca de pe clona).
 - **Recenzii doar-imagine** (`reviewItems[]` fara text, screenshot in `authorPicture`) → `gallery`, nu testimoniale goale. Recenzii cu text+poza → `testimonials` cu stil valid (`cards`, `carousel`, `minimal`, `magazine`, `masonry`, `bubbles`) sau `custom-html` scoped pentru layout image-top fidel; nu folosi `style:"photo"` pentru testimonials.
 - **Tabele de pret** (`PriceSection.priceItems[]`) → componenta `pricing`. **Liste „scroll list"** (`ScrollListSection`): itemele in `boxes[].boxCards[]`, poza de sectiune in `backgroundImage`. **`ProductsList`** ca sectiune de pagina → imaginea de `menu`.
-- **Navbar = meniul REAL** al sursei (itemi de top + dropdown-uri + href-uri), reconstruit 1:1 cu `update_website_navigation items[]` (`children[]` = dropdown). Nu lasa lista auto „o intrare per pagina". Ascunde butonul CTA din dreapta daca originalul n-are: `navbarSettings:{ctaButton:{visible:false}}`.
+- **Navbar = meniul REAL** al sursei (itemi de top + dropdown-uri + href-uri), reconstruit 1:1 cu `update_website_navigation items[]` (`children[]` = dropdown). Nu lasa lista auto „o intrare per pagina". Ascunde butonul CTA din dreapta daca originalul n-are: `navbarSettings:{ctaButton:{visible:false}}`. Daca originalul are sidebar stanga, foloseste `navbarSettings:{style:"sidebar-left", sidebarBg, sidebarTextColor, socialLinks:[...]}`; nu construi sidebar-ul ca bloc custom separat.
 - **NU activa „extra"-uri decorative implicite** pe care sursa nu le are: blog `showSidebar`/newsletter, badge „Popular"/„Recomandat", toggle de facturare, „featured hero". Un element IN PLUS strica fidelitatea la fel ca unul lipsa.
 - **Fiecare ruta randeaza continutul EI** (acasa ≠ meniu; `/blog` = listarea blogului). Fallback tacut la home = pagina LIPSA. Verifica prin **citire** (`get_website_page`) + **vizual in Chrome** langa original; re-importa dupa ORICE fix de mapare inainte de re-verificare.
 
@@ -76,7 +76,7 @@ Reviewerul refuza PASS daca blogul sursa are articole, dar local exista doar pag
 
 - **URL map / SEO:** pastreaza slug-urile canonice din `crawl.urlMap` si `crawl.canonicalSlugs`. Nu schimba `/meniu`, `/blog`, `/galerie`, pagini de atractii/programe sau pagini indexate deja.
 - **Header:** logo lizibil, favicon, culori reale, meniu top-level, dropdown/mega-menu, CTA-uri.
-- **Hero slider:** toate slide-urile importante, imagine/video, culoare card/overlay, text, CTA label, CTA destinatie, puncte si sageti.
+- **Hero slider:** toate slide-urile importante, imagine/video, culoare card/overlay, text, CTA label, CTA destinatie, CTA secundar/tertiar daca exista (`showTertiaryCta` + `tertiaryCtaText`), puncte si sageti.
 - **Pagini:** homepage, meniu/catalog, atractii/servicii, blog, galerie, contact/footer, rezervari/evenimente daca exista. Pentru fiecare pagina mare, pastreaza toate sectiunile principale, nu doar primele componente vizibile in primul viewport.
 - **Blog/articole:** total articole sursa vs total articole Symbai, slug-uri si canonical pastrate, imagini de coperta, date de publicare si pagina `/blog` cu `blog-listing`. Nu lasa articole placeholder sau rezumate in locul continutului real.
 - **Meniu/produse:** toate categoriile, toate produsele, pozele produselor, pretul, gramajul si detaliile nutritionale/alergeni daca exista. Bara orizontala de categorii ramane sticky, marcheaza categoria activa, se recentreaza la scroll si click-ul pe categorie deruleaza la sectiunea corecta.
@@ -93,7 +93,7 @@ Foloseste pentru site-uri cu hero pe imagine si card text colorat peste imagine,
 Campuri utile:
 
 - La nivel de componenta: `contentBoxStyle:"source-card"`, `contentBoxOpacity`, `sourceCardMaxWidth`, `sourceTitleSize`, `showArrows`, `showDots`, `activeDotColor`, `minHeight`.
-- Pe fiecare slide: `boxColor`, `boxTextColor`, `buttonColor`, `buttonTextColor`, `imageUrl`, `ctaText`, `ctaUrl`.
+- Pe fiecare slide: `boxColor`, `boxTextColor`, `buttonColor`, `buttonTextColor`, `imageUrl`, `ctaText`, `ctaUrl`, optional `secondaryCtaText`/`secondaryCtaUrl` si `tertiaryCtaText`/`tertiaryCtaUrl` cand sursa are 2-3 butoane.
 
 Nu reduce un slider real la un singur banner. Daca sursa are 5-6 slide-uri cu CTA-uri diferite, pastreaza-le.
 

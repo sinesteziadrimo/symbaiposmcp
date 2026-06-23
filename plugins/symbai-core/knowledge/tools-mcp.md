@@ -34,7 +34,7 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 988 tool-uri** — Citire 427 · Speciale 5 · SQL 3 · Scriere per modul 553 (pe 19 module).
+**TOTAL: 990 tool-uri** — Citire 427 · Speciale 5 · SQL 3 · Scriere per modul 555 (pe 19 module).
 
 ## Citire (fără permisiune de modul) — 427 tool-uri
 
@@ -491,7 +491,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 553 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 555 tool-uri (gated de writeModules pe token)
 
 ### produse_meniu — Produse & Meniuri — 63 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
@@ -1028,7 +1028,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_delivery_zone` — Modifică o zonă de livrare existentă (taxe, praguri, ore, contur, activare). (necesită: id)
 - `update_vehicle` — Modifică un vehicul din flotă (număr, tip, status, capacitate, șofer alocat). (necesită: id)
 
-### ecommerce — Magazin Online — 18 tool-uri
+### ecommerce — Magazin Online — 20 tool-uri
 - `add_website_section` — Adaugă (sau actualizează prin sectionId) o secțiune pe o pagină a website-ului magazinului — homepage implicit — FĂRĂ a înlocui restul paginii (spre deosebire de set_website_page_content). (necesită: brandId, type, config)
 - `apply_website_template` — Reconstruiește structura unui website EXISTENT dintr-un template, cu date REALE (categorii reale în meniu/footer, contact din firmă, pagini cablate la produse/meniu). (necesită: brandId)
 - `create_discount_code` — Creează un cod de reducere pentru magazinul online (ex: VARA10 = 10% reducere). (necesită: code, type)
@@ -1042,6 +1042,8 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_website_footer` — Setează footer-ul website-ului magazinului: date de contact (adresă/telefon/email/program), rețele sociale, coloane de linkuri, copyright. (necesită: brandId)
 - `set_website_legal_page` — Setează textul REAL al unei pagini legale a magazinului, per brand (Despre/Contact/Termeni/Confidențialitate/Livrare/Retur/FAQ). (necesită: brandId, slug, title, bodyParagraphs)
 - `set_website_page_content` — Editează o pagină din website-ul magazinului (din config.pages): titlu, vizibilitate sau blocurile (components). (necesită: brandId)
+- `set_website_pages` — Bulk: creează/actualizează MAI MULTE pagini într-un singur apel (clone-friendly, evită N apeluri set_website_page_content). (necesită: brandId, pages)
+- `set_website_theme` — Setează identitatea vizuală a storefront-ului (config.global): culori (primaryColor/secondaryColor/accentColor/backgroundColor/textColor), fonturi (fontFamily, headingFont), siteName, tagline, darkMod (necesită: brandId)
 - `update_discount_code` — Actualizează un cod de reducere existent — ex: dezactivează-l (active=false), schimbă valoarea, data expirării sau limita de utilizări. (necesită: id)
 - `update_ecommerce_order_status` 🔒 🌐 — Schimbă statusul unei comenzi din magazinul online (pending/processing/paid/shipped/delivered/cancelled/returned). (necesită: id, status)
 - `update_ecommerce_settings` — Actualizează setările magazinului online (pereche de scriere pentru get_ecommerce_settings). (parametri opționali: brandId, currency, defaultVatRate, taxInclusive)
