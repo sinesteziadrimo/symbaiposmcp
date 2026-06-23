@@ -34,19 +34,17 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 985 tool-uri** — Citire 425 · Speciale 5 · SQL 3 · Scriere per modul 552 (pe 19 module).
+**TOTAL: 988 tool-uri** — Citire 427 · Speciale 5 · SQL 3 · Scriere per modul 553 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 425 tool-uri
+## Citire (fără permisiune de modul) — 427 tool-uri
 
-### Vânzări, comenzi, casă & financiar — 48
+### Vânzări, comenzi, casă & financiar — 45
 - `compare_attribution_models` — Compară modelele de atribuire (last_click/first_click/linear/time_decay/position) pe canale: venit + conversii + ROAS per model. (parametri opționali: brandId, days)
 - `get_attribution_ltv_by_channel` — Valoarea pe viață (LTV) a clienților grupată după canalul de achiziție, pe o cohortă de N zile: nr. (parametri opționali: brandId, days)
 - `get_attribution_report` — Raport de atribuire marketing pe canale, pe ultimele N zile: conversii, venituri, cheltuieli (din reclame), CPA și ROAS per canal, conform unui model de atribuire ales (last_click implicit). (parametri opționali: brandId, days, model)
 - `get_cash_book_day` — Detaliile zilei de casă (deschidere/închidere, totaluri, status, înregistrările) pentru un registru la o dată. (necesită: registerId, businessDate)
 - `get_cash_register_balance` — Soldul curent al unui registru de casă (opțional la o anumită dată) — cât numerar e în casierie acum. (necesită: registerId)
 - `get_cash_register_closure_status` — Arată ce zile sunt închise/deschise/lipsă pentru un registru de casă (registru legal) — util pentru a vedea ce mai e de închis. (necesită: registerId)
-- `get_channel_pnl` — P&L de distribuție pe CANAL de clienți (ex. supermarketuri vs magazine proprii vs HoReCa): marjă reală full-cost, reconciliată. (parametri opționali: perioada, startDate, endDate, brandId, locationId)
-- `get_customer_pnl` — P&L de distribuție pe CLIENT: marjă reală full-cost pe fiecare client/supermarket/magazin, nu doar venit. (parametri opționali: perioada, startDate, endDate, brandId, locationId)
 - `get_ecommerce_order` — Detaliile unei comenzi din magazinul online: status, plată, totaluri, adresă/AWB, jaloane (plătită/expediată/livrată) și articolele comandate. (necesită: id)
 - `get_email_conversion_attribution` — Conversii si venit atribuit emailurilor din POS: comenzi + rezervari legate de click-uri email, cu funnel complet pana la converted. (parametri opționali: brandId, campaignId)
 - `get_end_of_day_report` — Rezumat consolidat de sfârșit de zi pentru o dată/locație: total brut, TVA, reduceri, bacșiș, defalcare pe metode de plată, pe ospătar și comenzi anulate. (parametri opționali: date, locationId)
@@ -62,7 +60,6 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_order_timeline` — Povestea COMPLETĂ a unei comenzi într-un singur rezultat, secționat: (1) antet (masă, ospătar, client, status, totaluri), (2) produsele comenzii (cu statusul fiecărei linii — activ/anulat/returnat/tra (necesită: orderId)
 - `get_orders_summary` — Sumar comenzi pe o perioadă — câte comenzi, ce produse și în ce cantități (agregat). (parametri opționali: dateFrom, dateTo, status, groupBy)
 - `get_subscriptions_dashboard` — KPI-urile afacerii de abonamente: MRR, ARR, ARPU, LTV, rată de churn, număr active/total, coadă de recuperare plată (dunning), defalcare pe status. (parametri opționali: brandId)
-- `get_supplier_pnl` — P&L/risc pe FURNIZOR: spend, concentrare, materiale cu sursă unică și sensibilitate la scumpire 5%/10%. (parametri opționali: perioada, startDate, endDate, brandId, locationId)
 - `get_vehicle_expenses` — Raport cheltuieli per vehicul pe interval: km parcurși, cost combustibil, RON/km, litri/100km, număr ture. (parametri opționali: brandId, locationId, from, to)
 - `jurnal_activitate` — Citește jurnalul de activitate (audit log) al aplicației — CINE a făcut CE și CÂND: anulări de comenzi, aprobări/respingeri, reduceri (discount), transferuri de produse/mese, retururi, oferit-gratis ( (parametri opționali: cauta, categorie, tipEntitate, idEntitate)
 - `list_b2b_orders` — Listează comenzile B2B (en-gros). (parametri opționali: clientId, status, deliveryDate, limit)
@@ -170,7 +167,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `search_products_db` — Caută produse în baza de date după nume, SKU, cod de bare, categorie, tip, sau tag-uri. (parametri opționali: query, productType, storageZoneId, tagNames)
 - `search_products_for_tagging` — Previzualizează ce produse ar fi afectate de un set de filtre, FĂRĂ a asigna vreun tag. (parametri opționali: brandId, menuId, menuName, locationId)
 
-### Producție & trasabilitate — 49
+### Producție & trasabilitate — 51
 - `build_electronic_batch_record` — Compilează Dosarul Electronic de Lot (EBR / Electronic Batch Record) complet pentru un lot, din toate datele legate de lot: antet+rețetă, materiale consumate+loturi, operații cu actuali, QC în proces, (necesită: batchId)
 - `calculate_flow_bom` — Calculează BOM (Bill of Materials) complet pentru un flux: agregarea tuturor materialelor din toate operațiile. (necesită: flowVersionId)
 - `exec_get_batch_progress` — Obține progresul complet al unui lot: pași de execuție, procent finalizare, materiale, output, pasul următor. (necesită: batchId)
@@ -190,6 +187,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_equipment_utilization` — Obține utilizarea echipamentelor: câte loturi procesează, status (disponibil/în uz/mentenanță), capacitate. (parametri opționali: zoneId)
 - `get_flow_ai_context` — Obtine context AI complet pentru un produs cu flux tehnologic: instructiuni AI (flow-level + per operatie) si necesar personal (staffMin/staffMax/staffRecommended per operatie). (parametri opționali: productId, productName)
 - `get_flow_graph` — Citește un flux tehnologic ca GRAF coordinate-free: noduri = operații, muchii = dependențe, benzi = zone. (parametri opționali: flowVersionId, productId, productName)
+- `get_flow_staffing_rollup` — Roll-up 'cine poate face acest flux': pe fiecare operatie x faza, rolurile + oamenii nominali + cati pot face in total + status acoperire (covered/thin/uncovered), plus uniunea pe flux si lista operat (necesită: flowVersionId)
 - `get_flow_version_detail` — Obține detaliile complete ale unui flux: operații, dependențe, materiale, ieșiri, QC — totul într-un singur apel. (necesită: flowVersionId)
 - `get_mps_net_requirements` — Calculeaza necesarul net MPS/MRP: cerere, stoc fizic vs nettable pe loturi FEFO/QC, programat, deficit si recomandare lot-sizing per produs. (parametri opționali: horizonDays)
 - `get_qc_stats` — Obține statistici QC: rata de pass/fail, tip defecte frecvente, inspecții pe perioadă. (parametri opționali: days)
@@ -207,9 +205,10 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_operation_dependencies` — Listează toate dependențele unui flux. (necesită: flowVersionId)
 - `list_operation_materials` — Listează cerințele de material ale unei operații sau ale întregului flux. (parametri opționali: operationId, flowVersionId)
 - `list_operation_outputs` — Listează ieșirile unei operații sau ale întregului flux. (parametri opționali: operationId, flowVersionId)
+- `list_operation_phase_qualifications` — Listeaza calificarile pe faze ale unei operatii (roluri + oameni nominali, cu nume). (necesită: operationId)
 - `list_operation_qc` — Listează cerințele QC ale unei operații. (necesită: operationId)
 - `list_operation_requests` — Jurnalul cererilor de aprobare din POS — anulări, retururi, discounturi, comps «din partea casei», transferuri de masă/ospătar, împărțiri de notă. Nu include `shadow_order_conflict`; pentru conflicte cloud-edge/Viva foloseste `list_shadow_order_conflicts`. (parametri opționali: employeeName, status, type, brandId)
-- `list_operator_equipment` — Listeaza specializarile operator-utilaj. (parametri opționali: employeeId, equipmentId)
+- `list_operator_equipment` — Listează specializările operator↔utilaj. (parametri opționali: employeeId, equipmentId)
 - `list_provisional_shifts` — Listează schimburile provizorii (temporare) active. (parametri opționali: dateFrom, dateTo)
 - `list_qc_inspections` — Listează inspecțiile de control calitate (QC) — rezultat, tip, defect, lot asociat. (parametri opționali: batchId, result, days, limit)
 - `list_shift_assignments` — Listează asignările angajaților la ture de producție, cu detalii angajat și tură. (parametri opționali: date, dateFrom, dateTo, shiftId)
@@ -228,14 +227,14 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_staff_benefit_budget` — Arată bugetul de beneficiu personal al unui angajat pe perioada curentă (cât are, cât a consumat, cât a rămas) pentru fiecare regulă de tip buget. (necesită: employeeId)
 - `get_staff_benefit_report` — Raportul de consum al beneficiilor personal (feed pentru P&L): cât s-a consumat pe interval, grupat pe angajat/regulă/produs/zi, cu nume reale. (parametri opționali: from, to, groupBy, brandId)
 - `get_staff_overview` — Citeste un rezumat complet al personalului: angajati, roluri, ture viitoare, liste sarcini, pontaje. (necesită: brandId)
-- `get_staffing_coverage` — Verifica acoperirea cu personal calificat pe o zi: operatii programate pe utilaje vs operatori specializati si prezenti pe tura. (parametri opționali: date)
+- `get_staffing_coverage` — ACOPERIRE PERSONAL pe o zi: pentru fiecare operație fixată, confruntă cerința (utilaj + nivel minim operator) cu oferta (operatorii specializați care sunt pe tură, cu certificare validă) si listeaza G (parametri opționali: date)
 - `list_contract_templates` — Listeaza sabloanele de contract (modulul /contracts) — documente HTML reutilizabile cu {{variabile}}, folosite ca baza pentru documente de export/semnare. (parametri opționali: brandId, active)
 - `list_employee_contracts` — Listează contractele de muncă ale angajaților (CIM/PFA/Zilier) cu alocările multi-locație (procent sau sumă fixă) și bonusurile aferente. (parametri opționali: employeeId, active)
 - `list_employees` — Listează angajații activi cu nume, rol (+ brandul rolului), departament, poziție, salariu orar și brand/locație primară + acces multi-brand/multi-locație. (parametri opționali: includeInactive, department, brandId)
 - `list_leave_requests` — Listează cererile de concediu/învoire ale angajaților, cu tip, perioadă, motiv și status (în așteptare/aprobat/respins/anulat). (parametri opționali: employeeId, brandId, status)
 - `list_staff_benefit_rules` — Listează regulile de beneficiu personal (mâncarea/băutura angajaților: reducere %, sumă fixă, preț special sau buget) cu valoarea, beneficiarul, produsele acoperite și dacă funcția e activă global. (parametri opționali: brandId, locationId)
 
-### Rezervări, clienți, loialitate & CRM — 40
+### Rezervări, clienți, loialitate & CRM — 41
 - `check_game_availability` — Verifică disponibilitatea unui joc la o dată/oră/nr jucători. (necesită: gameId, date, time, partySize)
 - `check_marketing_allowed` — Verifică dacă unui client retail i se poate trimite marketing pe un canal: opt-out dur + plafon anti-spam (max N în 30 zile). (necesită: customerId)
 - `export_customer_gdpr_data` — Exportă toate datele personale ale unui CLIENT retail (comenzi, fidelitate, comunicări, consimțăminte) pentru o cerere GDPR (Articol 20). (necesită: customerId)
@@ -246,6 +245,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_crm_settings` — Citește configurarea CRM-ului de vânzări a unui brand (brands.crmSettings): vertical, tab-uri vizibile, funcții activate, pipeline-uri, integrări. (parametri opționali: brandId)
 - `get_customer_email_segments` — Numără clienții activi și etichetele (tag-urile) lor — util pentru a estima audiența unei campanii pe etichete. (parametri opționali: brandId)
 - `get_customer_loyalty` — Punctele, nivelul și ultimele tranzacții de fidelitate ale unui client POS. (necesită: customerId)
+- `get_customer_pnl` — P&L de DISTRIBUȚIE pe CLIENT pentru fabrici: marja REALĂ full-cost (venit − cost marfă − manoperă − regie) pe fiecare client/supermarket/magazin, nu doar venitul. (parametri opționali: perioada, startDate, endDate, brandId)
 - `get_customer_timeline` — Cronologia unui client: comunicări (email/SMS/WhatsApp), rezervări/evenimente și task-uri CRM, ordonate descrescător în timp. (necesită: customerId)
 - `get_game_details` — Obține detalii complete despre un joc: informații de bază, program pe zile, prețuri, excepții de date, rezervări existente. (necesită: gameId)
 - `get_guest_loyalty_detail` — Detaliul de fidelitate al unui oaspete anume: puncte curente/lifetime, tier, segment RFM, ultimele tranzacții de puncte (ledger) și răscumpărările. (necesită: guestProfileId)
@@ -358,7 +358,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `request_scale_integration` — CERE echipei Symbai integrarea unui model NOU de cântar care nu e încă suportat. (necesită: manufacturer, model)
 - `view_brand_media` — Arată-ți EFECTIV o imagine din Biblioteca Media (sau de la un URL) ca s-o VEZI și să alegi ce atașezi la o postare. (parametri opționali: mediaAssetId, url)
 
-### Diverse — 123
+### Diverse — 125
 - `analyze_external_website` — Analizeaza read-only un website public si intoarce un source brief pentru a construi/replica rapid site-ul in builder: SEO, logo/favicon, culori, fonturi, navigatie, CTA-uri, imagini/video, sectiuni, (necesită: url)
 - `analyze_food_costs` — Analizează food cost-ul produselor unui brand. (necesită: brandId)
 - `analyze_procurement` — Analizează aprovizionarea unui brand (furnizori, prețuri, lead time-uri). (necesită: brandId)
@@ -386,6 +386,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_ad_campaign_status` — Verifică statusul unei campanii reîmprospătând din Meta (effective_status + motiv de respingere dacă a fost refuzată). (necesită: campaignId)
 - `get_advanced_planning_readiness` — Audit read-only pentru planificare grea: finite capacity scheduling, what-if, multi-site, ATP/CTP si constrangeri complexe. (parametri opționali: dateFrom, dateTo, horizonDays, daysAhead)
 - `get_cached_page` — Conținutul cache-uit + datele structurate extrase pentru O pagină (nume, SKU, preț, preț vechi, poze, descriere, breadcrumb, FAQ din JSON-LD). (necesită: jobId, url)
+- `get_channel_pnl` — P&L de DISTRIBUȚIE pe CANAL (grup de clienti) pentru fabrici: compara marja reala full-cost intre canale — ex. (parametri opționali: perioada, startDate, endDate, brandId)
 - `get_clone_crawl_status` — Starea unui crawl de copiere: câte pagini descoperite/cache/eșuate, procent, denominator de încredere, dead-letter. (necesită: jobId)
 - `get_content_brief` — Întoarce content brief-ul salvat al unui articol (outline H2/H3 + competitori SERP + cuvinte LSI + FAQ + word count țintă). (necesită: postId)
 - `get_day_at_a_glance` — Vederea de ansamblu a UNEI ZILE pentru gazdă/coordonator: toate rezervările din ziua respectivă, plus sloturile de joc, milestone-urile (masă/tort) și jocurile disponibile — totul într-un apel. (necesită: date)
@@ -395,7 +396,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_factory_cost_controlling` — Controlling industrial SAP-like pe LOT: standard vs actual pentru MATERIAL, MANOPERA si OVERHEAD/regie. (necesită: batchId)
 - `get_factory_dashboard` — Obține dashboard-ul fabricii: pipeline loturi, status echipamente, livrări azi/mâine, probleme QC, lipsuri materie primă, KPI-uri globale.
 - `get_factory_monthly_close` — Pachet read-only de inchidere lunara industriala: agregare pe luna a costului standard vs actual pentru material/manopera/overhead, top abateri favorabile/nefavorabile, loturi incomplete si checklist (necesită: month)
-- `get_factory_plan` — Citește un plan complet: meta (nivele, grilă) + obiecte (cu nume real, orfan și date LIVE: echipamente cu status/fluxuri/operații azi/operatori calificați; zone cu responsabili; operatori cu rol, ture (necesită: planId)
+- `get_factory_plan` — Citește un plan complet: meta (nivele, grilă) + obiectele (cu nume real, orfan, și date LIVE: status echipament + fluxuri care îl folosesc + operații azi; stoc real pe zone/magazii; rol și ture azi pe (necesită: planId)
 - `get_factory_plan_palette` — Listează entitățile REALE disponibile pentru a fi puse pe plan (zone de producție, echipamente, magazii, zone de depozitare și operatori/angajați activi), marcând care sunt deja plasate. (necesită: planId)
 - `get_industrial_costing_readiness` — Audit read-only de costing industrial: standard cost vs actual cost, varianta material, dovezi pentru manopera, energie/overhead si cost centers. (parametri opționali: recipeId, batchId)
 - `get_keyword_rankings` — Istoricul de poziții al unui cuvânt-cheie urmărit (evoluția în Google pe ultimele N zile). (necesită: id)
@@ -406,7 +407,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_my_tasks` — Sarcinile vizibile unui angajat în ziua dată, grupate Întârziate → Azi → Viitoare + Generale (libere) + Finalizate azi. (necesită: employeeId)
 - `get_nutrition_gaps` — Arată ce ingrediente ale unui produs NU au încă valori nutriționale completate — adică ce te împiedică să rulezi recalc_product_nutrition cu succes. (necesită: productId)
 - `get_offer_scorecard` — Verdictul «Păstrează / Oprește» pentru o ofertă (auto-discount de pe bon) — a meritat sau nu, în lei, ONEST. (necesită: offerId)
-- `get_operator_assignments` — Detaliul unui operator: utilaje pe care e specializat, zone de care raspunde, tura/statia din ziua aleasa si operatiile de azi pe utilajele lui. (necesită: employeeId)
+- `get_operator_assignments` — Detaliul unui operator: utilajele pe care e specializat, zonele de care răspunde, tura + stația de azi și CE ARE DE FĂCUT azi (operațiile fixate pe utilajele lui). (necesită: employeeId)
 - `get_pnl` — Raportul P&L (profit si pierdere) COMPLET pe o perioada, gata de aratat si explicat in chat: venituri nete, COGS, profit brut + marja, cost personal, OpEx, profit operational, profit net + marja neta, (parametri opționali: perioada, startDate, endDate, brandId)
 - `get_pnl_snapshot` — Citeste un P&L salvat (snapshot): totalurile inghetate + ajustarile manuale si efectul lor. (necesită: snapshotId)
 - `get_presentation` — Citește o prezentare salvată — implicit un REZUMAT (meta + numărători). (necesită: presentationId)
@@ -423,6 +424,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_seo_provider_status` — Spune ce surse de date SEO sunt LIVE pentru brand: provider de volume keyword (DataForSEO/SerpAPI plătit) DA/NU, Search Console conectat DA/NU, provideri de research web (Tavily/Perplexity/Firecrawl) (parametri opționali: brandId)
 - `get_served_meals` — Registrul «mese servite» (meniuri/pachete vândute ca produs finit, cu cost reconciliat ulterior din fișe de consum sau din P&L-ul unui eveniment legat). (parametri opționali: status, brandId, locationId, from)
 - `get_social_top_posts` — Top N postări publicate după engagement (sau reach/views), măsurate LIVE de la Meta. Postarile fara insights sunt excluse si numarate separat, nu clasate ca zero. (parametri opționali: brandId, n, metric, windowDays)
+- `get_supplier_pnl` — P&L pe FURNIZOR: cat din achizitii (cost marfa) vine de la fiecare furnizor, concentrarea (% din total), materialele cu sursa unica (fara alternativa) si sensibilitatea la o scumpire (cat profit pierz (parametri opționali: perioada, startDate, endDate, brandId)
 - `get_table_status` — «Ce se întâmplă pe masa X ACUM» — într-un singur apel. (necesită: tableName)
 - `get_table_unpaid_total` — Pentru o masă, suma rămasă de plată pe comenzile active, cu defalcare per comandă. (necesită: tableId)
 - `get_task` — Detaliile unei sarcini (după taskId): status, prioritate, atribuire, scadență (dată + oră), tipul de dovadă cerută, dacă cere verificare, plus lista din care face parte. (necesită: taskId)
@@ -489,7 +491,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 552 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 553 tool-uri (gated de writeModules pe token)
 
 ### produse_meniu — Produse & Meniuri — 63 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
@@ -568,7 +570,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_recipe_labels` — Setează/actualizează etichetele pentru o rețetă. (necesită: recipeId, labels)
 - `update_recipe` — Actualizează o rețetă existentă. (necesită: recipeId)
 
-### productie — Producție — 87 tool-uri
+### productie — Producție — 91 tool-uri
 - `activate_flow_version` — Activează un flux (schimbă statusul din draft → active). (necesită: flowVersionId)
 - `add_flow_operation` — Adaugă o operație nouă într-un flux cu toate câmpurile tab-ului General: nume, ordine, durată, setup, descriere, container, depozitare, produceLot, skipIfStockAvailable, overlapAllowed. (necesită: flowVersionId, name, operationOrder)
 - `add_operation_dependency` — Adaugă o dependență între două operații: FS (Finish-Start), SS (Start-Start), FF (Finish-Finish), SF (Start-Finish) cu lag time. (necesită: flowVersionId, fromOperationId, toOperationId)
@@ -576,11 +578,12 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `add_operation_output` — Adaugă o ieșire la o operație: produs principal, co-produs, sub-produs sau deșeu. (necesită: operationId, outputQty)
 - `add_operation_qc` — Adaugă o cerință de control calitate la o operație: tip control (numeric/boolean/text/vizual), valoare țintă, toleranțe, blocare. (necesită: operationId, controlType, controlName)
 - `add_qc_failure_procedure` — Adaugă o procedură de eșec QC: severitate, dispoziție (rework/retur/scrap/carantină), escalare, instrucțiuni. (necesită: qualityRequirementId, name, dispositionType)
+- `apply_flow_phase_defaults_to_operations` — Coboara calificarile implicite ale fluxului pe toate operatiile care nu au deja rand pe acea faza (cascada). (necesită: flowVersionId)
 - `archive_flow_version` — Arhivează un flux tehnologic. (necesită: flowVersionId)
 - `assign_flow_to_equipment` — Asignează un flux tehnologic (versiune de flux) la un echipament cu productivitate. (necesită: equipmentId, flowVersionId)
-- `assign_operator_to_equipment` — Marcheaza un operator ca specializat/calificat pe un utilaj. (necesită: employeeId, equipmentId)
-- `assign_operator_to_shift` — Asigneaza un operator pe o tura la o data si, optional, il fixeaza pe utilaj/zona/rol. (necesită: employeeId, shiftId, date)
-- `assign_operator_to_zone` — Adauga sau scoate un operator din lista responsabililor unei zone, fara sa atinga ceilalti responsabili. (necesită: employeeId, zoneId)
+- `assign_operator_to_equipment` — Marcheaza un operator ca specializat/calificat pe un utilaj (jumatatea 'oferta' a competentelor - perechea cererii operationResourceRequirements.skillMinLevel). (necesită: employeeId, equipmentId)
+- `assign_operator_to_shift` — Asigneaza un operator pe o tura la o data, optional fixat pe un utilaj/zona/rol (pin de planificare - 'pe ce lucreaza'). (necesită: employeeId, shiftId, date)
+- `assign_operator_to_zone` — Adaugă (sau scoate) un operator din responsabilii unei zone de producție, fără a atinge ceilalți. (necesită: employeeId, zoneId)
 - `assign_recipe_to_zone` — Asociază o rețetă cu o zonă de producție. (necesită: recipeId, zoneId)
 - `auto_arrange_diagram` — Aranjează AUTOMAT diagrama unui flux (layout curat ELK, benzi pe zonă/echipament). (necesită: flowVersionId)
 - `auto_chain_operations` — Creează automat dependențe FS (Finish-Start) secvențiale pentru toate operațiile unui flux, în ordinea lor. (necesită: flowVersionId)
@@ -638,12 +641,15 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `remove_operation_dependency` — Șterge o dependență între operații. (necesită: dependencyId)
 - `remove_operation_material` — Șterge o cerință de material de la o operație. (necesită: materialId)
 - `remove_operation_output` — Șterge o ieșire de la o operație. (necesită: outputId)
+- `remove_operation_phase_qualification` — Sterge calificarea pe o faza a unei operatii (revine la mostenirea din flux/legacy). (necesită: operationId, phase)
 - `remove_operation_qc` — Șterge o cerință QC de la o operație. (necesită: qcId)
 - `remove_operator_equipment` — Scoate specializarea unui operator de pe un utilaj. (necesită: employeeId, equipmentId)
 - `reorder_flow_operations` — Reordonează operațiile într-un flux. (necesită: flowVersionId, ordering)
 - `schedule_production_orders` — Programează automat comenzi de producție pe echipamente/zone/zile/ture cu capacitate finită (ca SAP PP, dar hands-free). (parametri opționali: orders, dateFrom, dateTo, horizonDays)
 - `set_equipment_recipe_capacity` — Setează capacitatea unui echipament pentru o rețetă specifică (cantitate maximă per lot, timp ciclu, timp setup). (necesită: equipmentId, recipeId)
-- `set_zone_responsibles` — Seteaza lista completa de responsabili ai unei zone de productie. (necesită: zoneId, employeeIds)
+- `set_flow_phase_qualification_defaults` — Seteaza calificarea IMPLICITA la nivel de FLUX pe o faza (mostenita de operatiile fara rand propriu). (necesită: flowVersionId)
+- `set_operation_phase_qualification` — Seteaza CINE e calificat sa faca o operatie, pe o anumita FAZA: roluri si/sau oameni nominali. (necesită: operationId)
+- `set_zone_responsibles` — Setează responsabilii unei zone de producție (listă de angajați). (necesită: zoneId, employeeIds)
 - `unassign_recipe_from_zone` — Dezasociază o rețetă de la o zonă de producție. (necesită: recipeId, zoneId)
 - `update_capa` — Actualizează o acțiune CAPA: schimbă statusul (investigating/action/verification/closed/cancelled), adaugă cauză rădăcină, acțiune corectivă/preventivă, responsabil, termen, notă de verificare. (necesită: capaId)
 - `update_changeover_rule` — Modifică o regulă de changeover existentă (timp, tip curățare, alergeni, activă/dezactivată). (necesită: ruleId)
@@ -1022,15 +1028,13 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_delivery_zone` — Modifică o zonă de livrare existentă (taxe, praguri, ore, contur, activare). (necesită: id)
 - `update_vehicle` — Modifică un vehicul din flotă (număr, tip, status, capacitate, șofer alocat). (necesită: id)
 
-### ecommerce — Magazin Online — 21 tool-uri
+### ecommerce — Magazin Online — 18 tool-uri
 - `add_website_section` — Adaugă (sau actualizează prin sectionId) o secțiune pe o pagină a website-ului magazinului — homepage implicit — FĂRĂ a înlocui restul paginii (spre deosebire de set_website_page_content). (necesită: brandId, type, config)
 - `apply_website_template` — Reconstruiește structura unui website EXISTENT dintr-un template, cu date REALE (categorii reale în meniu/footer, contact din firmă, pagini cablate la produse/meniu). (necesită: brandId)
 - `create_discount_code` — Creează un cod de reducere pentru magazinul online (ex: VARA10 = 10% reducere). (necesită: code, type)
 - `create_shipping_zone` — Creează o zonă de livrare cu tarifele ei pentru MAGAZINUL ONLINE (storefront). (necesită: name)
 - `create_website` — Creează un website nou pentru un brand (config builder din /ecommerce/websites), cu structură REALĂ din prima: meniul (navbar) și footer-ul se construiesc din categoriile reale ale brandului (link-uri (necesită: brandId)
 - `delete_website_page` — Șterge o pagină din website-ul magazinului (din config.pages) — utilă pentru paginile placeholder generice de template (ex. (necesită: brandId)
-- `get_website_page` — Citește înapoi configul LIVE al unei pagini din builder: toate componentele (id, type, label, visible, config complet) + global/navbar. (necesită: brandId)
-- `patch_website_component` — Modifică O SINGURĂ componentă a unei pagini fără să re-trimiți tot array-ul de blocuri: shallow-merge `configPatch{}` în config-ul ei (sau setează `label`/`visible`). (necesită: brandId, sectionId)
 - `remove_website_section` — Șterge o secțiune de pe paginile website-ului magazinului — după sectionId (o secțiune anume) SAU după type (TOATE secțiunile de acel tip, ex. (necesită: brandId)
 - `set_ecommerce_order_tracking` — Setează numărul de tracking (AWB) și/sau link-ul de urmărire pe o comandă din magazinul online. (necesită: id)
 - `set_hero` — Setează secțiunea HERO (bannerul mare de sus) a website-ului magazinului — imaginea de fundal, titlul, subtitlul și butonul (CTA). (necesită: brandId)
@@ -1038,7 +1042,6 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_website_footer` — Setează footer-ul website-ului magazinului: date de contact (adresă/telefon/email/program), rețele sociale, coloane de linkuri, copyright. (necesită: brandId)
 - `set_website_legal_page` — Setează textul REAL al unei pagini legale a magazinului, per brand (Despre/Contact/Termeni/Confidențialitate/Livrare/Retur/FAQ). (necesită: brandId, slug, title, bodyParagraphs)
 - `set_website_page_content` — Editează o pagină din website-ul magazinului (din config.pages): titlu, vizibilitate sau blocurile (components). (necesită: brandId)
-- `set_website_theme` — Setează identitatea vizuală a storefront-ului (config.global): culori (primaryColor/secondaryColor/accentColor/backgroundColor/textColor), fonturi (fontFamily, headingFont), siteName, tagline, darkMod (necesită: brandId)
 - `update_discount_code` — Actualizează un cod de reducere existent — ex: dezactivează-l (active=false), schimbă valoarea, data expirării sau limita de utilizări. (necesită: id)
 - `update_ecommerce_order_status` 🔒 🌐 — Schimbă statusul unei comenzi din magazinul online (pending/processing/paid/shipped/delivered/cancelled/returned). (necesită: id, status)
 - `update_ecommerce_settings` — Actualizează setările magazinului online (pereche de scriere pentru get_ecommerce_settings). (parametri opționali: brandId, currency, defaultVatRate, taxInclusive)

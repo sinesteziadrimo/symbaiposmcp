@@ -13,8 +13,8 @@ Symbai Supplier este portalul pentru furnizori B2B conectati la ecosistemul Symb
 | Preturi | liste de pret, promotii, deal-uri, discounturi | `preturi` |
 | Livrari | zone, curieri, flota, AWB, dispecerat | `livrari` |
 | Facturare | facturi, incasari, eFactura unde este activata | `facturare` |
-| CRM & marketing | lead-uri, campanii, segmente, loialitate | `crm`, `marketing`, `loialitate` |
-| Productie | MPS si disponibilitate pentru furnizori care produc intern | `productie` |
+| CRM & marketing | lead-uri, activitati, conversatii, loialitate; pentru marketing MCP verifica doar statusul SMTP, campaniile se trimit din aplicatie | `crm`, `loialitate` (`marketing` doar cand apare tool de scriere in sesiune) |
+| Productie | MPS si disponibilitate pentru furnizori care produc intern | momentan UI/aplicatie; MCP Supplier nu expune inca tool-uri de productie |
 | Setari | configurari tenant, integrari, tokenuri | `setari` |
 
 ## Reguli de aur pentru agent
@@ -23,6 +23,7 @@ Symbai Supplier este portalul pentru furnizori B2B conectati la ecosistemul Symb
 - Foloseste tool-urile dedicate de comenzi; comenzile sunt izolate corect prin client/tenant, nu prin filtre inventate.
 - Actiunile ireversibile cer confirmare explicita: anulare comanda, postare document de stoc, retur care misca stocul, stergere plata, trimitere campanie.
 - Preturile si reducerile vin din motorul de preturi; nu recalcula manual contracte sau promotii.
+- Pentru marketing, `get_email_marketing_status` verifica doar daca SMTP e configurat. Nu trimite campanii prin MCP Supplier daca `tools/list` nu expune explicit un tool de trimitere.
 - Dupa scriere, reciteste rezultatul si spune utilizatorului unde se vede in aplicatie.
 
 ## Cand folosesti browserul

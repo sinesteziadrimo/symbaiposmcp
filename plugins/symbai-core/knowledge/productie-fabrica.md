@@ -103,6 +103,19 @@ Aceasta e calea industrială, pe tabletă (`/workstation-tablet`) sau din `/prod
 - **Etichete**: `print_production_labels` (`batchId`, `printerId`) trimite comanda la imprimantă.
 - ⚠ Acțiunile fizice pe containere (scanare camera, split/merge, avansare etapă, print eticheta, acceptare predare) se fac din aplicație (Scanner Containere web sau Symbai Staff), nu prin tool MCP. Prin MCP citești/verifici cu `exec_scan_container`, `exec_get_container_info`, `exec_list_handovers` si scrii productia/QC cand ai confirmare explicita.
 
+## Exploreaza fabrica — vizualizare operationala live
+- **Exploreaza Fabrica** (`/factory-explorer`) este vizualizatorul imersiv read-only pentru manager: combina Planul Fabrica 2D cu date live de executie, stoc si timeline. Nu este editor; pentru desenare/aranjare ramai pe `/factory-floor-plan`.
+- Ce vede userul: harta halei pe nivele, utilaje ocupate/libere/mentenanta, operatii care ruleaza pe ziua aleasa, containere/stoc pe locatii, panou de zona si panou de magazie/depozitare.
+- Datele vin din aceeasi sursa ca tool-urile MCP: `get_factory_plan` pentru plan + obiecte reale, live execution pentru ce ruleaza pe echipamente, endpoint-uri de detaliu zona/stoc pentru panourile laterale. Daca raspunzi din chat, foloseste intai MCP (`get_factory_plan`, `get_factory_dashboard`, `get_staffing_coverage`, `exec_list_active_operations` etc.), iar browserul pe `/factory-explorer` doar pentru dovada vizuala/screenshot sau ca sa arati userului unde se vede.
+- Cereri tipice: „arata-mi fabrica live", „unde se blocheaza azi", „ce se intampla in zona Ambalare", „ce stoc e in magazia rece", „da-mi screenshot cu hala". Raspuns bun: citești datele live, explici pe scurt, apoi dai ruta `/factory-explorer` si, daca ai browser-control, arati screenshot cu ziua/locatia selectata.
+
+## Calificari pe faze si oameni
+- Calificarea operatorilor are doua nivele: **oferta** (`operator_equipment`: cine e calificat pe ce utilaj, skill 1-3) si **cererea** pe flux/operatie/faza (`operation_phase_qualifications` + `flow_phase_qualification_defaults`: cine are voie sa porneasca, execute, faca QC, predea sau finalizeze).
+- Pentru o regula punctuala pe operatie foloseste `set_operation_phase_qualification(operationId, phase, roleIds?/roleNames?, employeeIds?, minSkillLevel?, requiredCount?)`. `phase:"any"` inseamna regula generala; `start`, `execution`, `qc`, `handover`, `completion` suprascriu pe faza. Liste goale sterg restrictia pe faza. Verifica apoi cu `list_operation_phase_qualifications`.
+- Pentru reguli repetate pe tot fluxul foloseste `set_flow_phase_qualification_defaults(flowVersionId, phase, ...)`, apoi `apply_flow_phase_defaults_to_operations` daca vrei sa cobori defaulturile pe operatiile fara regula proprie.
+- Pentru „cine poate face fluxul X / unde e subtire echipa" foloseste `get_flow_staffing_rollup(flowVersionId, date?)`. Pentru programul deja planificat pe o zi foloseste `get_staffing_coverage(date)`.
+- Scrierile pe calificari si ture sunt operationale reale: confirma cu managerul inainte sa schimbi cine e autorizat pe o faza, cine e responsabil de zona sau cine e fixat pe o tura.
+
 ## MPS / MRP — planificarea producției
 - **MPS** (Master Production Schedule) = ce produci, când, pe ce stație, în ce tură.
 - **MRP** = necesarul net de materiale: cerere − stoc existent − deja programat = ce TREBUIE produs/comandat.

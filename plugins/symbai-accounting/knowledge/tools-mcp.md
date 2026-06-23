@@ -8,6 +8,7 @@
 - `list_bills` / `get_bills_aging` — facturi de achiziție + vechimea datoriilor (aging AP).
 - `list_accounts` — planul de conturi.
 - `list_journal_entries` — note contabile recente.
+- `get_trial_balance`, `get_profit_loss`, `get_balance_sheet`, `get_vat_summary`, `get_financial_indicators`, `get_account_ledger`, `get_journal_register`, `get_receivables_aging` — rapoarte financiare calculate; foloseste-le inainte de SQL pentru intrebari standard.
 
 ## Facturare — vânzări (modul `facturare`)
 - `list_outgoing_invoices` / `get_outgoing_invoice` — facturi pentru eFactura.
@@ -28,6 +29,11 @@
 - `list_tax_declarations` / `get_tax_declaration` — tracker declarații (tip, perioadă, status, scadență).
 - `create_tax_declaration` / `update_tax_declaration` — gestionează intrările de declarații.
 - Generarea efectivă (D300/D394/D406/D112/CA3/UStVA...) și depunerea la ANAF se fac în aplicație; depunerea e ireversibilă.
+
+## eFactura, documente & închidere
+- `list_efactura_inbox`, `check_efactura_status`, `get_efactura_deadline` — citiri eFactura; `upload_invoice_to_efactura` cere modulul `facturare` si confirmare operationala cu utilizatorul.
+- `get_incoming_invoice_lines`, `approve_incoming_invoice`, `list_fixed_assets`, `dispose_fixed_asset`, `list_compensation_orders` — documente contabile si mijloace fixe.
+- `get_period_closing_readiness` — verifica daca perioada poate fi inchisa inainte de actiuni de finalizare; `post_vat_on_cash` cere modulul `contabilitate`.
 
 ## Parteneri (modul `parteneri`)
 - `list_clients` / `get_client` / `create_client` — clienți (cumpărători).
@@ -58,6 +64,11 @@
 - `update_company` — actualizează date firmă (fără câmpuri-secret).
 - `list_automation_rules` / `get_automation_rule` / `create_automation_rule` / `list_automation_logs` — automatizări.
 - `get_company_profile` / `list_company_contacts` / `list_company_administrators` / `list_company_associates` — informații firmă (citire).
+
+## SQL read-only (toggle `sqlRead` pe token)
+- `list_database_tables` → `describe_database_table` → `execute_sql_query` este workflow-ul pentru intrebari analitice neacoperite de rapoartele dedicate.
+- Interogheaza doar view-uri `mcp_v_*`, deja filtrate pe firma curenta. Doar `SELECT`/`WITH ... SELECT`; fara scriere, fara tabele brute si fara secrete.
+- Foloseste SQL dupa tool-urile dedicate, cu coloane explicite si `LIMIT`. Nu incerca sa ocolesti permisiuni sau confirmari prin SQL.
 
 ## Convenții
 - Tool-urile marcate *(confirm)* refuză execuția fără `confirm:true` — explică întâi, apoi reapelează cu confirmarea.

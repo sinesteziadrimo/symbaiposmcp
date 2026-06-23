@@ -17,7 +17,7 @@ Dacă tool-urile NU apar → folosește skill-ul `conecteaza-supplier`.
 ## Permisiuni
 
 - **Citire**: completă (produse, clienți, comenzi, stocuri, prețuri, livrări, facturi, rapoarte).
-- **Scriere**: DOAR pe modulele bifate pe token (produse, clienți, comenzi, stocuri, prețuri, livrări, facturare, loialitate, crm, marketing, producție, setări). „Permisiune insuficientă" = modulul nu e bifat → adminul recreează tokenul cu modulul dorit.
+- **Scriere**: DOAR pe modulele bifate pe token (produse, clienți, comenzi, stocuri, prețuri, livrări, facturare, loialitate, crm, setări). `marketing` expune momentan doar status SMTP, iar `productie` nu are tool-uri MCP Supplier în implementarea curentă — verifică `tools/list` dacă apare o versiune mai nouă. „Permisiune insuficientă" = modulul nu e bifat → adminul recreează tokenul cu modulul dorit.
 - Ștergerea de entități întregi nu e disponibilă prin MCP — recomandă ștergerea din aplicație.
 
 ## Cum lucrezi (workflow sigur)

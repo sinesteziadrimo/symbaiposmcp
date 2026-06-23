@@ -88,6 +88,12 @@ După finalizarea unui lot industrial sau înainte de o livrare B2B/audit, poți
 
 Pentru dev/local, dacă userul spune „Senneville”, „ARCA” sau „fabrica locală”, tratează imediat cazul ca **Fabrică** și citește secțiunea „Scenariul local Senneville / ARCA” din `knowledge/productie-fabrica.md`. Scenariul are deja rețete, formule, fluxuri, echipamente, loturi, MPS, QC și B2B; verifică prin citire înainte să creezi sau să finalizezi ceva.
 
+## Factory Explorer si calificari
+
+Pentru „arata-mi fabrica live", „ce se intampla pe zona/magazie/utilaj", „vreau sa vad hala", foloseste traseul Fabrică si citeste datele MCP intai (`get_factory_plan`, `get_factory_dashboard`, `exec_list_active_operations`, `get_staffing_coverage`). Deschide `/factory-explorer` in browser doar pentru dovada vizuala/screenshot sau navigare cu userul. `/factory-explorer` este read-only; pentru desenare foloseste `/factory-floor-plan` si skill-ul `plan-fabrica`.
+
+Pentru „cine are voie sa faca faza X", „pune QC doar la responsabili", „cine poate face fluxul", foloseste calificari pe faze: `set_operation_phase_qualification` pentru o operatie, `set_flow_phase_qualification_defaults` + `apply_flow_phase_defaults_to_operations` pentru defaulturi pe flux, `list_operation_phase_qualifications` pentru verificare si `get_flow_staffing_rollup` pentru acoperire pe flux. Confirma cu managerul inainte de orice scriere care schimba autorizari, ture sau responsabilitati.
+
 ## Concepte comune ambelor trasee (le explici la fel oricui)
 
 - **FEFO** — „expiră primul, iese primul". La consum, sistemul ia **întâi loturile alocate/scanate explicit** de operator, **apoi restul după data de expirare**. Exemplu: dacă operatorul a scanat Lotul 5, sistemul ia întâi Lotul 5, apoi (din ce rămâne) lotul care expiră cel mai devreme. Abaterea de la FEFO cere permisiune specială și motiv; prin MCP, nu promite override, pentru că tokenul de producție nu echivalează cu decizia QA/RBAC din UI.

@@ -1,7 +1,7 @@
 {
   "name": "symbai-supplier",
   "description": "Asistentul Symbai Supplier pentru Claude Code: skill-uri pas-cu-pas + cunoștințe client-facing pentru portalul de furnizori B2B (produse, clienți, comenzi, stocuri, prețuri, livrări, facturare, loialitate, CRM) și catalogul de tool-uri MCP live. Conectare locală, fără cont Hub; MCP-first, cu confirmări pe acțiunile ireversibile.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": { "name": "Symbai", "email": "support@symbai.app" },
   "homepage": "https://github.com/sinesteziadrimo/symbaimemory#readme",
   "repository": "https://github.com/sinesteziadrimo/symbaimemory",
