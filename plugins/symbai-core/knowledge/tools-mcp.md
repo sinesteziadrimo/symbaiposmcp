@@ -34,9 +34,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 973 tool-uri** — Citire 420 · Speciale 5 · SQL 3 · Scriere per modul 545 (pe 19 module).
+**TOTAL: 982 tool-uri** — Citire 422 · Speciale 5 · SQL 3 · Scriere per modul 552 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 420 tool-uri
+## Citire (fără permisiune de modul) — 422 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 45
 - `compare_attribution_models` — Compară modelele de atribuire (last_click/first_click/linear/time_decay/position) pe canale: venit + conversii + ROAS per model. (parametri opționali: brandId, days)
@@ -94,6 +94,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `exec_trace_lot_destination` — Trasabilitate directă: află unde a ajuns un lot de materie primă — în ce loturi de producție a fost consumat. (necesită: lotId)
 - `exec_trace_lot_origin` — Trasabilitate inversă: află din ce lot de producție, ce ingrediente și ce furnizori provin materiile prime ale unui lot de stoc. (necesită: lotId)
 - `explain_production_day` — Construiește o explicație ghidată, pas cu pas, a ÎNTREGII zile de producție pentru un owner (limbaj simplu, română). (parametri opționali: date, brandId, locationId)
+- `export_menu` — Exportă un meniu întreg ca TABEL (Categorie cu calea ierarhică completă, Produs, Preț, TVA, Disponibil), gata de salvat — fără a reconstrui manual din list_menu_categories + list_menu_items (care la m (necesită: menuId)
 - `forecast_production_demand` — Previziune cerere de producție (make-to-stock / PIR, ca SAP Demand Management) din istoricul de vânzări (POS + B2B). Fara productIds intoarce top 100 produse dupa netForecastHorizon; pentru istoric complet cere productIds. (parametri opționali: productIds, lookbackWeeks, horizonWeeks, method)
 - `generate_product_description` — PREVIEW (fără salvare) a unei descrieri SEO pentru UN produs: descriere unică orientată pe beneficii (română cu diacritice), slug ASCII, meta title/description, cuvinte-cheie și FAQ. (necesită: menuItemId)
 - `get_batch_stages` — Obține progresul etapelor unui lot de producție: fiecare etapă cu status, cine a completat, evenimente asociate. (necesită: batchId)
@@ -103,7 +104,6 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_game_slots` — Obține toate sloturile disponibile pentru un joc la o dată specifică. (necesită: gameId, date)
 - `get_lot_details` — Detaliile unui lot anume (cantitate rămasă, cost, status QC, document sursă, expirare). (necesită: lotId)
 - `get_menu_engineering` — Clasifică produsele din meniu pe cele 4 cadrane clasice de «menu engineering», pe baza vânzărilor reale și a marjei: ⭐ Vedete (se vând mult + profit bun — protejează-le), 🐎 Cai de povară (se vând mul (parametri opționali: brandId, menuId, period)
-- `export_menu` — Exportă un meniu întreg ca tabel (Categorie cu cale ierarhică, Produs, Preț, TVA, Disponibil) în csv/tsv/markdown/json. Folosește-l pentru audit/import/revizie pe meniuri mari, în loc să reconstruiești manual din categorii + item-uri. (necesită: menuId; parametri opționali: format, includeUnavailable)
 - `get_output_lots_for_batch` — Loturile de produs finit generate de un lot de producție (inventory_lots cu parentOrderId=batchId): număr lot, produs, cantitate rămasă, status QC, data fabricației, expirare. (necesită: batchId)
 - `get_physical_menu_config` — Citește configul unui design de meniu fizic, pe secțiuni (ca să nu explodezi contextul): fără section = setări GLOBALE (toate câmpurile scalare top-level: culori, fonturi, margini, columns, copertă, Q (necesită: configId)
 - `get_physical_menu_item` — Inspectează produse dintr-un design de meniu fizic: poziția în categorie, sortOrder și MĂRIMEA pozei (mare/mică/ascunsă, după photoLayout). (necesită: configId)
@@ -134,7 +134,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_hotel_reservations` — Listează rezervările de cazare ale hotelului (cele mai recente întâi). (parametri opționali: brandId, locationId, status, limita)
 - `list_lots` — Listează loturile de stoc (FIFO/FEFO), opțional filtrate pe depozit și/sau produs. (parametri opționali: warehouseId, productId, limit)
 - `list_menu_categories` — Listează toate categoriile de meniu pentru un brand sau meniu specific, cu numărul de produse din fiecare categorie. (parametri opționali: brandId, menuId)
-- `list_menu_items` — Listează produsele dintr-un meniu specific cu categoria de meniu și zona de depozitare. La meniuri mari răspunde compact automat; folosește `categoryId`/`limit`/`offset` pentru paginare sau `export_menu` pentru tabel complet. (necesită: menuId; parametri opționali: categoryId, limit, offset, compact)
+- `list_menu_items` — Listează produsele dintr-un meniu specific cu categoria de meniu și zona de depozitare. (necesită: menuId)
 - `list_menus` — Listează toate meniurile din sistem cu status și brand. (parametri opționali: brandId)
 - `list_pending_nirs` — Listează recepțiile (NIR-uri) create dar NEPOSTATE pe stoc (status DRAFT/PENDING) — ce așteaptă postarea pe stoc. (parametri opționali: warehouseId, supplierId, brandId, locationId)
 - `list_physical_menu_designs` — Listează designurile de MENIU FIZIC (tipărit/PDF) ale unui brand: configId, nume, meniu, format, nr. (parametri opționali: brandId, menuId)
@@ -167,7 +167,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `search_products_db` — Caută produse în baza de date după nume, SKU, cod de bare, categorie, tip, sau tag-uri. (parametri opționali: query, productType, storageZoneId, tagNames)
 - `search_products_for_tagging` — Previzualizează ce produse ar fi afectate de un set de filtre, FĂRĂ a asigna vreun tag. (parametri opționali: brandId, menuId, menuName, locationId)
 
-### Producție & trasabilitate — 48
+### Producție & trasabilitate — 49
 - `build_electronic_batch_record` — Compilează Dosarul Electronic de Lot (EBR / Electronic Batch Record) complet pentru un lot, din toate datele legate de lot: antet+rețetă, materiale consumate+loturi, operații cu actuali, QC în proces, (necesită: batchId)
 - `calculate_flow_bom` — Calculează BOM (Bill of Materials) complet pentru un flux: agregarea tuturor materialelor din toate operațiile. (necesită: flowVersionId)
 - `exec_get_batch_progress` — Obține progresul complet al unui lot: pași de execuție, procent finalizare, materiale, output, pasul următor. (necesită: batchId)
@@ -206,6 +206,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_operation_outputs` — Listează ieșirile unei operații sau ale întregului flux. (parametri opționali: operationId, flowVersionId)
 - `list_operation_qc` — Listează cerințele QC ale unei operații. (necesită: operationId)
 - `list_operation_requests` — Jurnalul cererilor de aprobare din POS — anulări, retururi, discounturi, comps «din partea casei», transferuri de masă/ospătar, împărțiri de notă. Nu include `shadow_order_conflict`; pentru conflicte cloud-edge/Viva foloseste `list_shadow_order_conflicts`. (parametri opționali: employeeName, status, type, brandId)
+- `list_operator_equipment` — Listeaza specializarile operator-utilaj. (parametri opționali: employeeId, equipmentId)
 - `list_provisional_shifts` — Listează schimburile provizorii (temporare) active. (parametri opționali: dateFrom, dateTo)
 - `list_qc_inspections` — Listează inspecțiile de control calitate (QC) — rezultat, tip, defect, lot asociat. (parametri opționali: batchId, result, days, limit)
 - `list_shift_assignments` — Listează asignările angajaților la ture de producție, cu detalii angajat și tură. (parametri opționali: date, dateFrom, dateTo, shiftId)
@@ -217,13 +218,14 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `verify_batch_audit_chain` — Verifică integritatea lanțului de audit tamper-evident al unui lot (Electronic Batch Record): confirmă că nicio înregistrare de siguranță (override FEFO, QC, HACCP etc.) nu a fost modificată, ștearsă (necesită: batchId)
 - `verify_electronic_batch_record` — Verifică integritatea EBR-ului ELIBERAT: recompilează dosarul, recalculează hash-ul snapshot și îl compară cu hash-ul ancorat în lanț la eliberare + verifică lanțul de audit. (necesită: batchId)
 
-### Personal & ture — 11
+### Personal & ture — 12
 - `diagnose_staff_benefit_rule` — Explică DE CE o regulă de beneficiu personal nu se aplică (sau se aplică): câți angajați sunt eligibili, câți la lucru acum, câte produse acoperă, ce probleme are configurarea (rol/buget/scope/aplicat (necesită: ruleId)
 - `get_employee_activity` — «Ce a făcut ospătarul X» pe o zi — consolidat într-un singur apel: (1) VÂNZĂRI (bonuri finalizate, venit — DOAR pe comenzi finalizate, ca să reconcilieze cu performanta_ospatari —, bacșiș, bon mediu, (necesită: employeeName)
 - `get_employee_availability` — Verifică disponibilitatea angajaților pe o anumită dată — cine este deja asignat la ture și cine e liber. (necesită: date)
 - `get_staff_benefit_budget` — Arată bugetul de beneficiu personal al unui angajat pe perioada curentă (cât are, cât a consumat, cât a rămas) pentru fiecare regulă de tip buget. (necesită: employeeId)
 - `get_staff_benefit_report` — Raportul de consum al beneficiilor personal (feed pentru P&L): cât s-a consumat pe interval, grupat pe angajat/regulă/produs/zi, cu nume reale. (parametri opționali: from, to, groupBy, brandId)
 - `get_staff_overview` — Citeste un rezumat complet al personalului: angajati, roluri, ture viitoare, liste sarcini, pontaje. (necesită: brandId)
+- `get_staffing_coverage` — Verifica acoperirea cu personal calificat pe o zi: operatii programate pe utilaje vs operatori specializati si prezenti pe tura. (parametri opționali: date)
 - `list_contract_templates` — Listeaza sabloanele de contract (modulul /contracts) — documente HTML reutilizabile cu {{variabile}}, folosite ca baza pentru documente de export/semnare. (parametri opționali: brandId, active)
 - `list_employee_contracts` — Listează contractele de muncă ale angajaților (CIM/PFA/Zilier) cu alocările multi-locație (procent sau sumă fixă) și bonusurile aferente. (parametri opționali: employeeId, active)
 - `list_employees` — Listează angajații activi cu nume, rol (+ brandul rolului), departament, poziție, salariu orar și brand/locație primară + acces multi-brand/multi-locație. (parametri opționali: includeInactive, department, brandId)
@@ -388,9 +390,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_enterprise_control_readiness` — Audit read-only de maturitate enterprise pentru fabrica: audit trail, change control, aprobari, semnaturi electronice, EBR/release packet si batch record blocat la versiuni formula+flux. (parametri opționali: batchId, daysBack)
 - `get_event_fiche` — Citește fișa unui EVENIMENT/REZERVARE (dintr-un deal CRM convertit) — secțiunea cerută. (necesită: reservationId, section)
 - `get_factory_cost_controlling` — Controlling industrial SAP-like pe LOT: standard vs actual pentru MATERIAL, MANOPERA si OVERHEAD/regie. (necesită: batchId)
-- `get_factory_dashboard` — Obține Panoul Fabrică live: pipeline loturi, status echipamente, livrări azi/mâine, QC/lipsuri/blocaje, containere/genealogie și KPI-uri (Yield, OEE, On-Time, Waste, FPY). Folosește-l înainte să explici dashboard-ul; dacă OEE e mic dar Yield e bun, verifică disponibilitate/performanță/calitate, nu presupune bug UI.
+- `get_factory_dashboard` — Obține dashboard-ul fabricii: pipeline loturi, status echipamente, livrări azi/mâine, probleme QC, lipsuri materie primă, KPI-uri globale.
 - `get_factory_monthly_close` — Pachet read-only de inchidere lunara industriala: agregare pe luna a costului standard vs actual pentru material/manopera/overhead, top abateri favorabile/nefavorabile, loturi incomplete si checklist (necesită: month)
-- `get_factory_plan` — Citește un plan complet: meta (nivele, grilă) + obiectele (cu nume real, orfan, și date LIVE: status echipament + fluxuri care îl folosesc + operații azi; stoc real pe zone/magazii; rol și ture azi pe (necesită: planId)
+- `get_factory_plan` — Citește un plan complet: meta (nivele, grilă) + obiecte (cu nume real, orfan și date LIVE: echipamente cu status/fluxuri/operații azi/operatori calificați; zone cu responsabili; operatori cu rol, ture (necesită: planId)
 - `get_factory_plan_palette` — Listează entitățile REALE disponibile pentru a fi puse pe plan (zone de producție, echipamente, magazii, zone de depozitare și operatori/angajați activi), marcând care sunt deja plasate. (necesită: planId)
 - `get_industrial_costing_readiness` — Audit read-only de costing industrial: standard cost vs actual cost, varianta material, dovezi pentru manopera, energie/overhead si cost centers. (parametri opționali: recipeId, batchId)
 - `get_keyword_rankings` — Istoricul de poziții al unui cuvânt-cheie urmărit (evoluția în Google pe ultimele N zile). (necesită: id)
@@ -401,6 +403,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_my_tasks` — Sarcinile vizibile unui angajat în ziua dată, grupate Întârziate → Azi → Viitoare + Generale (libere) + Finalizate azi. (necesită: employeeId)
 - `get_nutrition_gaps` — Arată ce ingrediente ale unui produs NU au încă valori nutriționale completate — adică ce te împiedică să rulezi recalc_product_nutrition cu succes. (necesită: productId)
 - `get_offer_scorecard` — Verdictul «Păstrează / Oprește» pentru o ofertă (auto-discount de pe bon) — a meritat sau nu, în lei, ONEST. (necesită: offerId)
+- `get_operator_assignments` — Detaliul unui operator: utilaje pe care e specializat, zone de care raspunde, tura/statia din ziua aleasa si operatiile de azi pe utilajele lui. (necesită: employeeId)
 - `get_pnl` — Raportul P&L (profit si pierdere) COMPLET pe o perioada, gata de aratat si explicat in chat: venituri nete, COGS, profit brut + marja, cost personal, OpEx, profit operational, profit net + marja neta, (parametri opționali: perioada, startDate, endDate, brandId)
 - `get_pnl_snapshot` — Citeste un P&L salvat (snapshot): totalurile inghetate + ajustarile manuale si efectul lor. (necesită: snapshotId)
 - `get_presentation` — Citește o prezentare salvată — implicit un REZUMAT (meta + numărători). (necesită: presentationId)
@@ -422,7 +425,6 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_task` — Detaliile unei sarcini (după taskId): status, prioritate, atribuire, scadență (dată + oră), tipul de dovadă cerută, dacă cere verificare, plus lista din care face parte. (necesită: taskId)
 - `get_task_dashboard` — Dashboard manager: pentru fiecare listă din scope, numărul sarcinilor de AZI pe status (de făcut / în lucru / gata / întârziate) + procent finalizare. (parametri opționali: brandId, locationId, date)
 - `get_waste_report` — Obține raportul de pierderi (waste): evenimente waste, cantități, tipuri, per lot sau global. (parametri opționali: days, batchId)
-- `get_website_page` — Citește configul LIVE al unei pagini din Website Builder: fără `pageSlug`/`pageId` întoarce indexul paginilor + `navbar` + `global`; cu slug/id întoarce componentele cu `id`, `type`, `visible` și `config` complet. Folosește-l după `set_website_page_content`, `add_website_section`, `set_website_theme` sau `update_website_navigation` ca read-back, în loc de SELECT direct în `menu_display_configs`. (necesită: brandId; parametri opționali: pageSlug, pageId, configId)
 - `list_ad_accounts` — Listează conturile de reclame Meta (Facebook/Instagram) conectate pentru un brand: id intern (folosit la boost), numele contului, pagina, moneda și statusul. (parametri opționali: brandId)
 - `list_ad_campaigns` — Listează campaniile publicitare Meta ale unui brand cu status (pending_review/active/paused/error/completed), buget zilnic, obiectiv și perioadă. (parametri opționali: brandId, status, limit)
 - `list_b2b_client_depots` — Listeaza punctele de livrare/depozitele unui client B2B, inclusiv GLN ship-to si coduri EDI. (necesită: clientId)
@@ -484,7 +486,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 545 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 552 tool-uri (gated de writeModules pe token)
 
 ### produse_meniu — Produse & Meniuri — 63 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
@@ -498,7 +500,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `bulk_add_menu_items` — Adaugă în masă mai multe produse într-un meniu cu preț (versiunea bulk a add_menu_item). (necesită: menuId, items)
 - `bulk_assign_tag` — Asignează un tag la TOATE produsele/entitățile care corespund filtrelor date. (necesită: tagId)
 - `bulk_create_menus` — Creează mai multe meniuri dintr-o dată (un meniu per brand). (necesită: menus)
-- `bulk_create_products` — Creează mai multe produse deodată (eficient pentru import). La retail/import păstrează și `sku`, `barcode`, `ean` dacă există, ca scanarea la inventar/POS să funcționeze. (necesită: brandId, products)
+- `bulk_create_products` — Creează mai multe produse deodată (eficient pentru import). (necesită: brandId, products)
 - `bulk_create_storage_zones` — Creează mai multe sub-zone de depozitare într-o magazie (ex: frigider, raft). (necesită: brandId, storageZones)
 - `bulk_optimize_category_seo` — Pune slug-uri SEO pe TOATE categoriile fără slug dintr-un brand, deodată (determinist, fără AI, fără cost). (parametri opționali: brandId, dryRun, limit)
 - `bulk_optimize_product_seo` — Optimizează SEO pe MULTE produse deodată: generează descrieri unice (orientate pe beneficii, română cu diacritice, anti-duplicat) + slug-uri ASCII. (parametri opționali: brandId, mode, slugsOnly, dryRun)
@@ -512,7 +514,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_allergen` — Creează un alergen (ex: Gluten, Lactate, Ouă) (necesită: name, brandId)
 - `create_menu` — Creează un meniu nou (principal, bar, livrare, kiosk). (necesită: name, brandId)
 - `create_menu_category` — Creează o categorie de meniu (ex. (necesită: name, brandId)
-- `create_product` — Creează un produs nou. Acceptă opțional `sku`, `barcode`, `ean`; la retail nu le omite dacă sursa le are. (necesită: name, brandId)
+- `create_product` — Creează un produs nou. (necesită: name, brandId)
 - `create_redirect` — Creează un redirect 301 (permanent, implicit) sau 302 (temporar) de la un URL VECHI la unul NOU pe site-ul brandului. (necesită: sourcePath, targetPath)
 - `create_storage_zone` — Creează o sub-zonă de depozitare într-o magazie (ex: frigider, raft, congelator). (necesită: name, brandId)
 - `create_tag` — Creează o etichetă (tag) pentru gruparea produselor — folosit pentru rutare imprimante/KDS, grupare stocuri, filtrare meniu (necesită: name, brandId)
@@ -546,7 +548,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_menu_category` — Actualizează o categorie de meniu existentă: redenumire (name), re-parentare (parentId — numărul părintelui din același brand, sau null pentru rădăcină), sortOrder, color. (necesită: categoryId)
 - `update_menu_category_fields` — Modifică o categorie de meniu existentă — field-setter generic: trimite DOAR câmpurile de schimbat (name, color, icon, parentId, sortOrder, brandId, imageUrl). (necesită: categoryId)
 - `update_menu_item` — Actualizează un menu item: preț, nume, disponibilitate, categorie, descriere, gramaj, ordine + câmpuri de MAGAZIN ONLINE (reducere, brand, material, vârstă, video, certificări). (necesită: brandId, menuItemId)
-- `update_product` — Actualizează un produs existent (TVA, categorie, furnizor, tip, cont contabil, receptionPrice, SKU/barcode/EAN etc.). (necesită: productId)
+- `update_product` — Actualizează un produs existent (TVA, categorie, furnizor, tip, cont contabil, receptionPrice, etc.). (necesită: productId)
 - `update_storage_zone` — Actualizează o zonă de depozitare existentă (sub-zonă opțională din magazie). (necesită: storageZoneId)
 - `update_tag` — Actualizează o etichetă existentă (nume, culoare, descriere) (necesită: tagId)
 - `update_warehouse` — Actualizează o gestiune existentă: redenumire, schimbare tag, mutare pe altă locație, activare/dezactivare. (necesită: warehouseId)
@@ -563,7 +565,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_recipe_labels` — Setează/actualizează etichetele pentru o rețetă. (necesită: recipeId, labels)
 - `update_recipe` — Actualizează o rețetă existentă. (necesită: recipeId)
 
-### productie — Producție — 82 tool-uri
+### productie — Producție — 87 tool-uri
 - `activate_flow_version` — Activează un flux (schimbă statusul din draft → active). (necesită: flowVersionId)
 - `add_flow_operation` — Adaugă o operație nouă într-un flux cu toate câmpurile tab-ului General: nume, ordine, durată, setup, descriere, container, depozitare, produceLot, skipIfStockAvailable, overlapAllowed. (necesită: flowVersionId, name, operationOrder)
 - `add_operation_dependency` — Adaugă o dependență între două operații: FS (Finish-Start), SS (Start-Start), FF (Finish-Finish), SF (Start-Finish) cu lag time. (necesită: flowVersionId, fromOperationId, toOperationId)
@@ -573,6 +575,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `add_qc_failure_procedure` — Adaugă o procedură de eșec QC: severitate, dispoziție (rework/retur/scrap/carantină), escalare, instrucțiuni. (necesită: qualityRequirementId, name, dispositionType)
 - `archive_flow_version` — Arhivează un flux tehnologic. (necesită: flowVersionId)
 - `assign_flow_to_equipment` — Asignează un flux tehnologic (versiune de flux) la un echipament cu productivitate. (necesită: equipmentId, flowVersionId)
+- `assign_operator_to_equipment` — Marcheaza un operator ca specializat/calificat pe un utilaj. (necesită: employeeId, equipmentId)
+- `assign_operator_to_shift` — Asigneaza un operator pe o tura la o data si, optional, il fixeaza pe utilaj/zona/rol. (necesită: employeeId, shiftId, date)
+- `assign_operator_to_zone` — Adauga sau scoate un operator din lista responsabililor unei zone, fara sa atinga ceilalti responsabili. (necesită: employeeId, zoneId)
 - `assign_recipe_to_zone` — Asociază o rețetă cu o zonă de producție. (necesită: recipeId, zoneId)
 - `auto_arrange_diagram` — Aranjează AUTOMAT diagrama unui flux (layout curat ELK, benzi pe zonă/echipament). (necesită: flowVersionId)
 - `auto_chain_operations` — Creează automat dependențe FS (Finish-Start) secvențiale pentru toate operațiile unui flux, în ordinea lor. (necesită: flowVersionId)
@@ -631,9 +636,11 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `remove_operation_material` — Șterge o cerință de material de la o operație. (necesită: materialId)
 - `remove_operation_output` — Șterge o ieșire de la o operație. (necesită: outputId)
 - `remove_operation_qc` — Șterge o cerință QC de la o operație. (necesită: qcId)
+- `remove_operator_equipment` — Scoate specializarea unui operator de pe un utilaj. (necesită: employeeId, equipmentId)
 - `reorder_flow_operations` — Reordonează operațiile într-un flux. (necesită: flowVersionId, ordering)
 - `schedule_production_orders` — Programează automat comenzi de producție pe echipamente/zone/zile/ture cu capacitate finită (ca SAP PP, dar hands-free). (parametri opționali: orders, dateFrom, dateTo, horizonDays)
 - `set_equipment_recipe_capacity` — Setează capacitatea unui echipament pentru o rețetă specifică (cantitate maximă per lot, timp ciclu, timp setup). (necesită: equipmentId, recipeId)
+- `set_zone_responsibles` — Seteaza lista completa de responsabili ai unei zone de productie. (necesită: zoneId, employeeIds)
 - `unassign_recipe_from_zone` — Dezasociază o rețetă de la o zonă de producție. (necesită: recipeId, zoneId)
 - `update_capa` — Actualizează o acțiune CAPA: schimbă statusul (investigating/action/verification/closed/cancelled), adaugă cauză rădăcină, acțiune corectivă/preventivă, responsabil, termen, notă de verificare. (necesită: capaId)
 - `update_changeover_rule` — Modifică o regulă de changeover existentă (timp, tip curățare, alergeni, activă/dezactivată). (necesită: ruleId)
@@ -1012,13 +1019,15 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_delivery_zone` — Modifică o zonă de livrare existentă (taxe, praguri, ore, contur, activare). (necesită: id)
 - `update_vehicle` — Modifică un vehicul din flotă (număr, tip, status, capacitate, șofer alocat). (necesită: id)
 
-### ecommerce — Magazin Online — 19 tool-uri
+### ecommerce — Magazin Online — 21 tool-uri
 - `add_website_section` — Adaugă (sau actualizează prin sectionId) o secțiune pe o pagină a website-ului magazinului — homepage implicit — FĂRĂ a înlocui restul paginii (spre deosebire de set_website_page_content). (necesită: brandId, type, config)
 - `apply_website_template` — Reconstruiește structura unui website EXISTENT dintr-un template, cu date REALE (categorii reale în meniu/footer, contact din firmă, pagini cablate la produse/meniu). (necesită: brandId)
 - `create_discount_code` — Creează un cod de reducere pentru magazinul online (ex: VARA10 = 10% reducere). (necesită: code, type)
 - `create_shipping_zone` — Creează o zonă de livrare cu tarifele ei pentru MAGAZINUL ONLINE (storefront). (necesită: name)
 - `create_website` — Creează un website nou pentru un brand (config builder din /ecommerce/websites), cu structură REALĂ din prima: meniul (navbar) și footer-ul se construiesc din categoriile reale ale brandului (link-uri (necesită: brandId)
 - `delete_website_page` — Șterge o pagină din website-ul magazinului (din config.pages) — utilă pentru paginile placeholder generice de template (ex. (necesită: brandId)
+- `get_website_page` — Citește înapoi configul LIVE al unei pagini din builder: toate componentele (id, type, label, visible, config complet) + global/navbar. (necesită: brandId)
+- `patch_website_component` — Modifică O SINGURĂ componentă a unei pagini fără să re-trimiți tot array-ul de blocuri: shallow-merge `configPatch{}` în config-ul ei (sau setează `label`/`visible`). (necesită: brandId, sectionId)
 - `remove_website_section` — Șterge o secțiune de pe paginile website-ului magazinului — după sectionId (o secțiune anume) SAU după type (TOATE secțiunile de acel tip, ex. (necesită: brandId)
 - `set_ecommerce_order_tracking` — Setează numărul de tracking (AWB) și/sau link-ul de urmărire pe o comandă din magazinul online. (necesită: id)
 - `set_hero` — Setează secțiunea HERO (bannerul mare de sus) a website-ului magazinului — imaginea de fundal, titlul, subtitlul și butonul (CTA). (necesită: brandId)
@@ -1026,11 +1035,11 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_website_footer` — Setează footer-ul website-ului magazinului: date de contact (adresă/telefon/email/program), rețele sociale, coloane de linkuri, copyright. (necesită: brandId)
 - `set_website_legal_page` — Setează textul REAL al unei pagini legale a magazinului, per brand (Despre/Contact/Termeni/Confidențialitate/Livrare/Retur/FAQ). (necesită: brandId, slug, title, bodyParagraphs)
 - `set_website_page_content` — Editează o pagină din website-ul magazinului (din config.pages): titlu, vizibilitate sau blocurile (components). (necesită: brandId)
-- `set_website_theme` — Setează identitatea vizuală globală a website-ului (`config.global`): culori, fonturi, siteName, tagline și darkMode. Folosește-l pentru potrivire de brand/copie fidelă; nu setează `customCss` (intenționat, pentru siguranță). (necesită: brandId)
+- `set_website_theme` — Setează identitatea vizuală a storefront-ului (config.global): culori (primaryColor/secondaryColor/accentColor/backgroundColor/textColor), fonturi (fontFamily, headingFont), siteName, tagline, darkMod (necesită: brandId)
 - `update_discount_code` — Actualizează un cod de reducere existent — ex: dezactivează-l (active=false), schimbă valoarea, data expirării sau limita de utilizări. (necesită: id)
 - `update_ecommerce_order_status` 🔒 🌐 — Schimbă statusul unei comenzi din magazinul online (pending/processing/paid/shipped/delivered/cancelled/returned). (necesită: id, status)
 - `update_ecommerce_settings` — Actualizează setările magazinului online (pereche de scriere pentru get_ecommerce_settings). (parametri opționali: brandId, currency, defaultVatRate, taxInclusive)
-- `update_website_navigation` — Editează meniul (navbar) website-ului magazinului: `items[]` pentru structură completă, `rebuildCategoriesFromCatalog:true` pentru categorii reale sau `navbarSettings{}` pentru setări precum ascunderea CTA/search/login, transparent/sticky/logoText. (necesită: brandId)
+- `update_website_navigation` — Editează meniul (navbar) website-ului magazinului. (necesită: brandId)
 - `upsert_custom_website_component` — Adauga sau actualizeaza o componenta custom in Website Builder, randata pe site-ul public ca HTML + CSS scoped. (necesită: brandId)
 
 ### emag — eMAG Marketplace — 2 tool-uri
