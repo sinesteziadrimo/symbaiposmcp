@@ -68,6 +68,7 @@ Răspunsul conține `data.newSections` cu id-urile generate (string-uri gen `sec
 {"floorConfigId": 3, "sectionId": "sec_1718...", "tableDbIds": [11, 12, 13, 14, 15]}
 ```
 Împarte mesele logic, pe proximitate (S1–S10 raion A, S11–S20 raion B). Dacă răspunsul spune că mesele nu sunt încă pe hartă, rulează întâi pasul 4.
+`data.assignedCount` din răspuns numără mesele unice asignate (`dbId` distincte). Nu-l dubla pentru că aceeași masă există și în view-ul desktop, și în view-ul mobile al hărții. Verificarea corectă este o citire după scriere: `get_floor_config(section:"tables")` sau `list_entities floor_configs` și confirmi că fiecare masă are `sectionId`.
 
 **6. Programul săptămânal (doar dacă există mai multe configurații) — `create_floor_config_schedule`** (obligatorii: `brandId`, `dayOfWeek`, `floorConfigId`, `locationId`)
 ```json
@@ -112,6 +113,7 @@ Entitățile create prin MCP **apar** în panourile wizard-ului (pașii detectea
 2. **`add_sections_to_config` NU e idempotent** — fiecare apel ADAUGĂ raioane noi. Înainte de a-l (re)apela, citește `configData.sections` din `list_entities floor_configs`. La un timeout, verifică prin citire dacă scrierea a intrat; nu repeta orbește.
 3. **`dayOfWeek` începe cu 0=Duminică** (nu 1=Luni). „Luni–Vineri" = dayOfWeek 1–5.
 4. **`sectionId` e un string generat** (`sec_...`) din răspunsul lui `add_sections_to_config` — nu un număr, nu numele raionului. `tableDbIds` sunt id-urile rândurilor de masă (din `data.ids` la creare sau `list_entities floor_tables`).
+4b. **`assignedCount` la `assign_tables_to_section` = mese distincte.** Layout-ul ține și desktop, și mobile, dar mesajul/count-ul nu se mai dublează. Dacă ai cerut 10 `tableDbIds` și tool-ul spune 10, raportează userului „10 mese asignate", apoi verifică prin citire.
 5. **Pozițiile meselor NU se setează prin MCP** — `update_floor_table` schimbă doar nume/locuri/formă (descrierea tool-ului menționează „poziție", dar nu există parametri x/y). Nu promite utilizatorului că aranjezi sala vizual; trimite-l în Designer.
 6. **`brandId` e cerut de scheme la mese** chiar dacă masa aparține de fapt zonei — pasează-l mereu, dar nu te baza pe filtrare per brand la mese.
 7. **Mesele create prin MCP nu au locație proprie setată** — aparțin locației prin zona lor. Filtrul `locationId` + `unassignedOnly` din `bulk_assign_tables_to_zone` nu le va găsi; folosește `tableIds` explicit.

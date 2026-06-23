@@ -45,7 +45,7 @@ ID-uri, nu nume (roleId, employeeId, floorConfigId). Caută înainte de a crea (
 
 ## (d) Configurează Program Salon (aranjament per zi)
 
-Pregătire aranjamente (dacă lipsesc): `create_floor_zone` → `bulk_create_floor_tables` → `create_floor_config(name, brandId, locationId, zoneIds)` → `add_sections_to_config(floorConfigId, sections:[{name,color}])` → `assign_tables_to_section(floorConfigId, sectionId, tableDbIds[])`. Apoi **ce aranjament pe ce zi**: `create_floor_config_schedule(brandId*, dayOfWeek* [0=Duminică…6=Sâmbătă], floorConfigId*, locationId*)` pentru fiecare zi de operare. Excepțiile pe dată și presetul QR per raion (Prenume / La scanare / Confirmare ospătar) se setează din tabul Program Salon în aplicație.
+Pregătire aranjamente (dacă lipsesc): `create_floor_zone` → `bulk_create_floor_tables` → `create_floor_config(name, brandId, locationId, zoneIds)` → `add_sections_to_config(floorConfigId, sections:[{name,color}])` → `assign_tables_to_section(floorConfigId, sectionId, tableDbIds[])`. `assignedCount` de la asignare înseamnă mese DISTINCTE, nu desktop+mobile dublat; confirmă prin `get_floor_config(section:"tables")`. Apoi **ce aranjament pe ce zi**: `create_floor_config_schedule(brandId*, dayOfWeek* [0=Duminică…6=Sâmbătă], floorConfigId*, locationId*)` pentru fiecare zi de operare. Excepțiile pe dată și presetul QR per raion (Prenume / La scanare / Confirmare ospătar) se setează din tabul Program Salon în aplicație.
 
 ## (e) Contracte CIM/PFA/Zilier + alocări + bonusuri
 

@@ -32,7 +32,7 @@ Raioanele împart mesele logic, ca să se ruteze comenzile QR la ospătarul de t
 - **`set_config_sections` ÎNLOCUIEȘTE complet lista de raioane.** Ca să păstrezi raioanele existente și doar să adaugi unul, citește întâi `get_floor_config(section:"sections")`, apoi retrimite lista COMPLETĂ + cel nou, **păstrând id-urile `sec_…` existente** (altfel mesele asignate rămân orfane). Dacă pornești de la zero, le poți lăsa pe toate fără id (se generează).
 - **Raioanele nu rutează nimic singure.** Comanda QR ajunge la ospătarul corect abia când **tura ospătarului e legată de raion** (modulul `personal` — Program Salon / modalul de tură). Vezi skill-ul `gestioneaza-personal`. Menționează asta când termini de făcut raioanele.
 
-Asignarea meselor la raion: `move_tables_to_section(floorConfigId, sectionId, tableDbIds[])` (sau `sectionId:null` ca să le scoți). O singură masă: `set_floor_table_geometry(tableId, sectionId)`.
+Asignarea meselor la raion: `move_tables_to_section(floorConfigId, sectionId, tableDbIds[])` (sau `sectionId:null` ca să le scoți). O singură masă: `set_floor_table_geometry(tableId, sectionId)`. În fluxurile vechi de onboarding există și `assign_tables_to_section`; când întoarce `assignedCount`, numărul este de mese DISTINCTE (`dbId`), nu suma item-elor desktop+mobile din `zonesMap`. La final, confirmă cu `get_floor_config(section:"tables")` că mesele au `sectionId`-ul cerut.
 
 ## Rutarea de zonă la imprimante/ecrane — „de ce nu iese bonul"
 
