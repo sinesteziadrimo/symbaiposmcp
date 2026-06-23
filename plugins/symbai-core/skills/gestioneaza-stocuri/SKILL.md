@@ -40,8 +40,9 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 2. Daca alege produse manual, ii explic filtrele curente: cautare text, tag, furnizor, tip produs si TVA; "Select all"/"Deselect all" se aplica doar pe rezultatul filtrat.
 3. Daca lucreaza pe zone, verific ca zonele apartin gestiunilor sesiunii. Zonele noi create dupa pornirea inventarului pot fi trimise catre numarator; pentru refacerea asteptatului in sesiunea principala foloseste "Actualizeaza Stocuri".
 4. Pentru delegare pe telefon, foloseste butonul de trimitere de langa "Inventar Mobil": destinatar manual sau angajat, canal WhatsApp/mail/copiere link, alocare pe produse filtrate sau pe zone, plus toggle daca poate cauta produse extra.
-5. Dupa numarare, diferentele apar in `/inventory-check?tab=variance`; se aproba in tabul Aprobari. Pot inregistra o diferenta si prin MCP: `create_inventory_adjustment` cu `productId`+`systemQty`+`countedQty`+`reason` (ramane in 'pending', NU misca stocul), apoi `approve_inventory_adjustment` cu `adjustmentId`+`confirm:true` ca sa aplic diferenta pe stocul real (confirma intai cu clientul).
-6. Verific cu `get_daily_consumption_status` daca consumul zilei e generat (altfel diferentele par mai mari).
+5. Daca userul intreaba "cine a numarat?", "de unde vine diferenta?" sau vrea audit pe inventar, lucrez MCP-first: `list_stock_count_sessions` pentru sesiuni, apoi `get_stock_count_session(sessionId, includeEntries:true, onlyVariance:true)` pentru intrarile individuale (numarator, ora, sursa, cantitate) si totalul pe linie. Nu recalculez manual din SQL decat daca tool-ul lipseste pe un build vechi.
+6. Dupa numarare, diferentele apar in `/inventory-check?tab=variance`; se aproba in tabul Aprobari. Pot inregistra o diferenta si prin MCP: `create_inventory_adjustment` cu `productId`+`systemQty`+`countedQty`+`reason` (ramane in 'pending', NU misca stocul), apoi `approve_inventory_adjustment` cu `adjustmentId`+`confirm:true` ca sa aplic diferenta pe stocul real (confirma intai cu clientul).
+7. Verific cu `get_daily_consumption_status` daca consumul zilei e generat (altfel diferentele par mai mari).
 
 **C. Setez stoc inițial pentru un produs nou**
 1. Confirm produsul cu `search_products_db` / `get_product_details`.
@@ -72,7 +73,7 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 4. Explic simplu rezultatul: "Am pregătit etichetele QR pentru zone; când scanezi codul de pe raft, se deschide `/scan/zone/:id` și vezi stocul live din zona respectivă."
 
 ## Tool-uri folosite
-- **Citire (oricând):** `get_stock_levels`, `get_warehouse_products_summary`, `list_warehouses_full`, `list_storage_zones_full`, `get_daily_consumption_status`, `get_production_stock_overview`, `get_semipreparate_stock`, `list_lots`, `search_products_db`, `get_product_details`, `generate_report`, `exec_trace_lot_origin`, `exec_trace_lot_destination`, `exec_get_lot_qc_status`, `jurnal_activitate`, `gaseste_in_aplicatie`.
+- **Citire (oricând):** `get_stock_levels`, `get_warehouse_products_summary`, `list_warehouses_full`, `list_storage_zones_full`, `list_stock_count_sessions`, `get_stock_count_session`, `get_daily_consumption_status`, `get_production_stock_overview`, `get_semipreparate_stock`, `list_lots`, `search_products_db`, `get_product_details`, `generate_report`, `exec_trace_lot_origin`, `exec_trace_lot_destination`, `exec_get_lot_qc_status`, `jurnal_activitate`, `gaseste_in_aplicatie`.
 - **Scriere (cer modul produse_meniu):** `set_initial_stock`, `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`.
 - **Mișcări de stoc (cer modul Stocuri & Recepție):** `create_inventory_document` (motorul canonic — ieșiri/transferuri/intrări), `post_inventory_document`, `create_inventory_adjustment`, `approve_inventory_adjustment`, `generate_daily_consumption`. Toate mișcă stocul real → confirm-first (`confirm:true` doar după acordul clientului).
 

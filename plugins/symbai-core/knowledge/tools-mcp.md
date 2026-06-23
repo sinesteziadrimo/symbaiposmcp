@@ -34,9 +34,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 990 tool-uri** — Citire 427 · Speciale 5 · SQL 3 · Scriere per modul 555 (pe 19 module).
+**TOTAL: 992 tool-uri** — Citire 429 · Speciale 5 · SQL 3 · Scriere per modul 555 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 427 tool-uri
+## Citire (fără permisiune de modul) — 429 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 45
 - `compare_attribution_models` — Compară modelele de atribuire (last_click/first_click/linear/time_decay/position) pe canale: venit + conversii + ROAS per model. (parametri opționali: brandId, days)
@@ -85,7 +85,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `top_produse` — Cele mai vândute produse pe o perioadă — cantitate vândută, încasări, în câte bonuri a apărut și ponderea în venituri. (parametri opționali: perioada, startDate, endDate, brandId)
 - `vanzari_in_timp` — Distribuția vânzărilor în timp pe o perioadă, pentru a vedea tiparul și orele/zilele de vârf. (parametri opționali: perioada, startDate, endDate, brandId)
 
-### Produse, meniu, rețete & stoc — 80
+### Produse, meniu, rețete & stoc — 82
 - `analyze_recipes` — Analizează rețetele unui brand (completitudine, costuri, ingrediente lipsă). (necesită: brandId)
 - `detect_production_bottlenecks` — Detectează blocajele (bottlenecks) în producție: stații supraîncărcate, utilizare vs capacitate, pe orizont temporal. (parametri opționali: daysAhead)
 - `discover_site_inventory` — Descoperă scopul ADEVĂRAT al unui site înainte de copiere: numără produse/categorii/blog/pagini din surse independente (sitemap-index + feed-ul platformei Shopify/WooCommerce + X-WP-Total), nu din ce (necesită: url)
@@ -126,6 +126,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_reservation_type_configs` — Listează configurațiile TIPURILOR DE REZERVARE — comutatorul care decide, pentru fiecare tip (zi de naștere, nuntă, corporate, standard...), dacă e 'eveniment' și ce TABURI apar pe pagina evenimentulu (parametri opționali: brandId, locationId)
 - `get_reservations_overview` — Obține un rezumat complet al rezervărilor: setări curente, statistici, rezervări de azi/mâine, waitlist, tipuri configurate (parametri opționali: brandId, locationId)
 - `get_semipreparate_stock` — Obține stocul de semipreparate din loturi finalizate (congelate/refrigerate), cu valabilitate și cantități.
+- `get_stock_count_session` — Citeste detaliul unei sesiuni de inventariere fizica: liniile de produse, cantitatea scriptica vs numarata, diferentele si istoricul intrarilor individuale (fiecare apasare Adauga: cantitate, numarato (necesită: sessionId)
 - `get_stock_levels` — Afișează stocul curent per produs din toate gestiunile. (parametri opționali: productType, warehouseId, onlyLowStock, productName)
 - `get_supplier_last_prices` — Ultimele prețuri de achiziție pentru produsele unui furnizor: preț catalog vs ultimul preț facturat/recepționat, plus tendința (crescut/scăzut). (necesită: supplierId)
 - `get_warehouse_products_summary` — Returnează un sumar al produselor dintr-o gestiune: câte produse, pe ce categorii, tipuri de produse. (necesită: warehouseId)
@@ -153,6 +154,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_recipe_flow_steps` — Listează pașii de flux (flow operations) asociați unei rețete prin flow version. (necesită: recipeId)
 - `list_recipe_ingredients` — Listează toate ingredientele unei rețete cu detalii produs (nume, unitate, tip). (necesită: recipeId)
 - `list_recipes` — Listează rețetele (semi-preparate, preparate finite) din sistem. (parametri opționali: productType, query, limit)
+- `list_stock_count_sessions` — Listeaza sesiunile de inventariere fizica (stocktake): status, gestiuni, progres, cate linii au fost numarate, cate diferente exista si cate intrari individuale de numarare au fost adaugate. (parametri opționali: status, warehouseId, dateFrom, dateTo)
 - `list_storage_zones_full` — Listează toate zonele de depozitare (sub-zone din magazii). (parametri opționali: parentId)
 - `list_tag_routing_rules` — Listeaza TOATE regulile de rutare tag -> ecran KDS / imprimanta: zone_tag_routing_overrides (per zona — ce vede UI-ul si ce ruteaza POS-ul), tag_routing_rules (per locatie, fallback) si printer_tag_ro (parametri opționali: locationId, brandId)
 - `list_tag_summary` — Afișează un rezumat al tuturor tagurilor cu numărul de asignări pe tip de entitate. (parametri opționali: brandId)
