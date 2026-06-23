@@ -52,7 +52,7 @@ Aplicația își adaptează wizard-ul după domeniul de business (restaurant/caf
 ## Cum măsori progresul
 
 - **`get_config_status(brandId)`** — procent general + 19 categorii (brand, locații, produse, meniuri, gestiuni, rețete, personal, POS, plăți, imprimante, ecrane bucătărie, fiscal, rezervări...), fiecare cu ce e configurat și ce lipsește. Dă `brandId` explicit. E măsura REALĂ a progresului — folosește-o la început (inventar), după fiecare fază și la final.
-- Atenție la interpretare: măsoară EXISTENȚA datelor (count-uri), nu corectitudinea lor; itemul de „prețuri" raportează articole de meniu raportat la numărul de produse (poate depăși 100%); sugestiile `nextSteps` sunt calibrate pe profil de restaurant — ia-le orientativ.
+- Atenție la interpretare: măsoară EXISTENȚA datelor (count-uri), nu corectitudinea lor; itemul „Categorii" din Produse & Categorii numără **categoriile de meniu** (`menu_categories` cu brand/global), nu zonele de depozitare; itemul de „prețuri" raportează articole de meniu raportat la numărul de produse (poate depăși 100%); sugestiile `nextSteps` sunt calibrate pe profil de restaurant — ia-le orientativ.
 - **Ține un fișier local de progres** (ex. `symbai-onboarding-progres.md` în folderul de lucru al utilizatorului): faza, ce s-a făcut, ce a rămas pe UI la utilizator, deciziile luate (brandId/locationId folosite, maparea fișierelor importate). La o sesiune nouă: citește fișierul + re-rulează `get_config_status` și continui de unde ai rămas — onboarding-ul real durează mai multe sesiuni.
 
 ## Coexistența cu wizard-ul din aplicație

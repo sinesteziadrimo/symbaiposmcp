@@ -24,6 +24,18 @@ Codul real este sursa de adevar: verifica mereu `app.json`, `package.json`, `src
 
 Owner EAS curent: `mp-river-side`.
 
+## Runtime actual in Symbai POS
+
+`expo-mobile` este aplicatia nativa **Symbai POS** pentru ospatari/bar/receptie. Cand userul intreaba de ecranul de mese de pe telefon, de "Actiuni masa", de zoom pe planul de sala sau de etichete dublate de tip "Masa Masa 7", raspunsul agentului trebuie sa porneasca de aici:
+
+- **Etichete mese**: aplicatia normalizeaza numele mesei peste Rooms, Order, Guest si preview nota. Pentru mese simple afiseaza `Masa 7`; pe carduri compacte sau pe harta afiseaza `M7`; pentru nume reale precum `Terasa VIP` pastreaza numele fara sa forteze prefix. Nu spune userului sa redenumeasca mesele doar ca sa scape de dublarea "Masa".
+- **Ecranul de sali**: pe telefoane inguste headerul se compacteaza automat, selectorul de unitate ramane in stanga, iar iconurile POS/alerte/housekeeping/chat/setari/profil raman accesibile fara sa impinga planul.
+- **Planul de sala pe telefon**: canvasul are pan/pinch, double tap, butoane flotante `+ / zoom / -` si reset safe-area. Butonul din mijloc arata zoomul relativ curent, nu text fix `1x`. Pentru dovada vizuala foloseste emulator Android sau device real; arata screenshot cu Rooms -> planul salii, nu doar un build/typecheck.
+- **Actiuni masa**: in ecranul comenzii, cele 3 puncte deschid un bottom sheet scrollabil, nu un meniu lung. Acolo sunt actiunile: Printeaza Nota, Transfer, Preia Masa, Transfera Produse, Partajeaza, Mesaj Bucatarie, Imparte Nota, Masa Servita, Reprint Bon Fiscal, Retur, Casa, Discount, Beneficiu Personal, Client, Firma si configuratiile de afisare cand exista mai multe.
+- **Masa Servita**: comutatorul ramane o actiune pe masa. Explica simplu: pe bonul fiscal produsele se grupeaza ca "Masa servita" pe cote TVA; nu schimba continutul real al notei.
+
+Pentru lucru practic: datele de sala/configuratie se citesc si se modifica prin tool-urile de plan de sala (`get_floor_config`, `set_floor_table_geometry`, `arrange_tables_grid`, `move_tables_to_section`, `set_zone_routing` etc.), iar aplicatia nativa doar confirma cum vede ospatarul. Browser/Chrome este suficient pentru POS web; pentru comportament nativ (gesturi, safe-area, bottom sheet, app2app plati) foloseste skill-ul de emulator Android si screenshot.
+
 ## Branding obligatoriu
 
 - Foloseste identitatea Symbai: logo-ul/mark-ul cu **S** din Symbai POS, culorile albastre Symbai, denumirile `Symbai POS`, `Symbai Portal`, `Symbai Staff`.
