@@ -120,7 +120,7 @@ Inainte sa marchezi o sectiune ca necesitand `custom-html`, verifica aceste opti
 - Ticker/marquee: `marquee` cu `items[]`, `speed`, `separator`, `direction`, culori pentru benzi derulante cu slogane repetate; nu folosi GIF/video/custom HTML.
 - Fundal light mode: `set_website_theme(backgroundColor, textColor?)` cand originalul are fundal cream/warm/branded; verifica desktop + mobil ca nu a ramas alb implicit.
 - Footer complet de magazin: `set_website_footer` cu `description`, `paymentMethods`, `showAnpc` si `socialLinks` custom sigure (ex. `tripadvisor`, `whatsapp`, `booking`), pe langa contact/columns.
-- Navbar/chrome: `update_website_navigation` aplica `navbarSettings` direct, inclusiv `sidebar-left`, `navbarBg` pentru bare solide pe fundal cream/branded si `ctaButton:{style:"outline"}` pentru CTA contur; verifica prin `get_website_page` dupa scriere.
+- Navbar/chrome: `update_website_navigation` aplica `navbarSettings` direct, inclusiv `sidebar-left`, `navbarBg` pentru bare solide pe fundal cream/branded si `ctaButton:{style:"outline"}` / `ctaButton:{style:"outline",color:"#c9a45c"}` pentru CTA contur cu culoare default sau custom; verifica prin `get_website_page` dupa scriere.
 - Navbar transparent / logo contextual: `navbarSettings.transparent:true` pluteste peste hero doar daca pagina incepe cu hero/hero-slider; pe pagini light devine solid si poate folosi `logoUrlDark`. Pentru selector valuta seteaza `showCurrency:true` + `currencies`. Verifica vizual home + cel putin o subpagina.
 
 Acestea trebuie bifate in Poarta 4 de design: screenshot desktop + mobil pentru hero diagonal, read-back pentru footer/navbar si comparatie vizuala cu originalul.
