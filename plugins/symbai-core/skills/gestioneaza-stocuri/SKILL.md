@@ -27,6 +27,7 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 6. **Stoc ciudat (negativ, prea mic, diferențe mari) = aproape mereu rețetă greșită, unități amestecate (kg vs buc) sau consum negenerat** — verifică `get_daily_consumption_status` înainte de a trage concluzii.
 7. **Inventarierea se limiteaza strict la gestiunile alese** — cand ajuti cu `/inventory-check`, lista de produse trebuie sa vina din stoc live in gestiunea aleasa sau din produse stocabile cu zona asignata acelei gestiuni. Nu ghida clientul sa numere produse nestocabile, servicii sau produse finite de reteta in Zone & Amplasare.
 8. **Rafturi/QR = Plan Fabrică 2D + Warehouse Hub** — pentru fabrici, rack-urile, etichetele QR și pagina mobilă de zonă se operează din `/factory-floor-plan`, după ce ai verificat datele live prin MCP.
+9. **Scoate din zonă ≠ transfer de stoc** — în `/inventory-check?tab=zones`, butonul `X` de pe produs doar îl dezleagă de zona de depozitare și îl întoarce la „produse fără zonă". Nu șterge produsul, nu mută cantitate și nu înlocuiește transferul între gestiuni.
 
 ## Fluxul (pași numerotați cu tool-urile MCP)
 
@@ -69,8 +70,9 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 **H. Rafturi și QR de zonă**
 1. Verific structura live: `list_warehouses_full`, `list_storage_zones_full`, apoi stocul cu `get_stock_levels` și loturile cu `list_lots` când contează expirarea/trasabilitatea.
 2. Dacă userul vrea doar zone simple, creez prin MCP cu `create_storage_zone` sau `bulk_create_storage_zones` (confirm când sunt multe zone sau schimb structura existentă).
-3. Pentru rack/bin-uri vizuale și etichete QR, deschid `/factory-floor-plan`, selectez magazia sau zona de depozitare, intru în **Vezi depozitul** și folosesc **Raft** sau **Etichete QR**. Aici folosesc `browser:control-in-app-browser` sau `chrome:control-chrome` dacă trebuie dovadă vizuală, print sau verificare pe sesiunea logată.
-4. Explic simplu rezultatul: "Am pregătit etichetele QR pentru zone; când scanezi codul de pe raft, se deschide `/scan/zone/:id` și vezi stocul live din zona respectivă."
+3. Dacă userul a pus un produs în zona greșită și vrea doar „scoate-l de acolo", îl ghidez la `/inventory-check?tab=zones` → rândul produsului → buton `X`; explic că rămâne în magazie și reapare la „produse fără zonă".
+4. Pentru rack/bin-uri vizuale și etichete QR, deschid `/factory-floor-plan`, selectez magazia sau zona de depozitare, intru în **Vezi depozitul** și folosesc **Raft** sau **Etichete QR**. Aici folosesc `browser:control-in-app-browser` sau `chrome:control-chrome` dacă trebuie dovadă vizuală, print sau verificare pe sesiunea logată.
+5. Explic simplu rezultatul: "Am pregătit etichetele QR pentru zone; când scanezi codul de pe raft, se deschide `/scan/zone/:id` și vezi stocul live din zona respectivă."
 
 ## Tool-uri folosite
 - **Citire (oricând):** `get_stock_levels`, `get_warehouse_products_summary`, `list_warehouses_full`, `list_storage_zones_full`, `list_stock_count_sessions`, `get_stock_count_session`, `get_daily_consumption_status`, `get_production_stock_overview`, `get_semipreparate_stock`, `list_lots`, `search_products_db`, `get_product_details`, `generate_report`, `exec_trace_lot_origin`, `exec_trace_lot_destination`, `exec_get_lot_qc_status`, `jurnal_activitate`, `gaseste_in_aplicatie`.
