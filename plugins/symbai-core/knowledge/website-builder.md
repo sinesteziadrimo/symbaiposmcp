@@ -215,6 +215,18 @@ configure_storefront_trust_bar(
 - **Confirmă înainte de `apply_website_template` cu `confirmReplace`** — rescrie structura paginilor.
 - **Verifică prin link, nu doar „am rulat tool-ul"** — deschide pagina (deep-link) ca să confirmi vizual.
 
+## Update 2026-06-24 - optiuni vizuale website live
+
+Cand construiesti sau copiezi un site, foloseste intai aceste optiuni native inainte de `custom-html`:
+
+- **Hero corporate diagonal:** `hero-slider` accepta `heroLayout:"diagonal-split"`. Foloseste-l cand sursa are poza full-bleed si panou colorat diagonal in stanga (ex. site corporate/food distribution). Campuri utile: `backgroundColor` = culoarea panoului, `diagonalAccentColor` = fasia/swoosh diagonala, `panelWidth` = latimea panoului, `autoplay/showDots/showArrows` pentru slideshow.
+- **Titlu hero bicolor:** pe fiecare slide poti trimite `titleAccent` pentru a doua linie in `accentColor`, la aceeasi scara cu titlul. E potrivit pentru headline-uri de tip doua randuri, unde originalul accentueaza un cuvant/segment.
+- **Carduri de beneficii minimaliste:** `feature-cards` accepta `style:"divided"` si `cards[].linkText`. Alege-l pentru layout-uri editoriale/minimaliste cu coloane separate vertical, titlu mare subtire si link CTA jos, fara imagine/card ridicat.
+- **Footer complet:** `set_website_footer` accepta, pe langa contact/social/columns/copyright, `description` pentru coloana de brand, `paymentMethods:["Visa","Mastercard",...]` pentru badge-uri in bara de jos si `showAnpc` pentru linkurile ANPC/SOL.
+- **Navbar settings sunt live:** `update_website_navigation` aplica acum `navbarSettings` direct (`style`, `logoText`, `showSearch`, `showLoginButton`, `ctaButton`, `sidebar-left`, iconite). Nu mai folosi `update_menu_display_config` doar ca sa repari chrome-ul navbar.
+
+Verificare: dupa `update_website_navigation`, `set_website_footer` sau pagini cu aceste optiuni, citeste `get_website_page` si apoi fa screenshot/browser check. In raspunsul catre user spune pe scurt ce ai reprodus vizual: "hero cu panou diagonal", "titlu bicolor", "footer cu metode de plata si ANPC", nu numele campurilor JSON.
+
 ## FAQ
 
 - **Diferența website vs portal?** Portalul = app-ul pentru clienții din local (QR la masă: meniu/comenzi/rezervări). Website-ul = site-ul public indexat de Google, cu magazin. Configurări diferite, tool-uri diferite.

@@ -1052,6 +1052,11 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_website_navigation` — Editează meniul (navbar) website-ului magazinului. (necesită: brandId)
 - `upsert_custom_website_component` — Adauga sau actualizeaza o componenta custom in Website Builder, randata pe site-ul public ca HTML + CSS scoped. (necesită: brandId)
 
+Note website 2026-06-24:
+- `set_website_footer` accepta si `description`, `paymentMethods` si `showAnpc`, nu doar contact/social/columns.
+- `update_website_navigation` aplica direct `navbarSettings` pentru stil/logo/search/login/CTA/sidebar; foloseste-l in loc de fallback DB/config pentru chrome-ul navbar.
+- `list_website_component_catalog`/`set_website_page_content` pot folosi noile config-uri native: `hero-slider.heroLayout:"diagonal-split"`, `slides[].titleAccent`, `feature-cards.style:"divided"` si `cards[].linkText`.
+
 ### emag — eMAG Marketplace — 2 tool-uri
 - `sync_emag_offers` 🔒 🌐 — Împinge prețurile și stocurile produselor către eMAG (creează/actualizează oferte). (parametri opționali: accountId, productIds, pushAll, limita)
 - `sync_emag_orders` 🌐 — Aduce (pull) comenzile noi din eMAG în sistem, creând comenzi interne pentru cele care nu există. (parametri opționali: accountId, pages, itemsPerPage, modifiedAfter)

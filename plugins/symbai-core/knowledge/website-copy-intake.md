@@ -51,6 +51,16 @@ Capcane reale care au stricat o clona (drimoland.ro, Strapi/Next). Bifeaza-le pe
 - **NU activa „extra"-uri decorative implicite** pe care sursa nu le are: blog `showSidebar`/newsletter, badge „Popular"/„Recomandat", toggle de facturare, „featured hero". Un element IN PLUS strica fidelitatea la fel ca unul lipsa.
 - **Fiecare ruta randeaza continutul EI** (acasa ≠ meniu; `/blog` = listarea blogului). Fallback tacut la home = pagina LIPSA. Verifica prin **citire** (`get_website_page`) + **vizual in Chrome** langa original; re-importa dupa ORICE fix de mapare inainte de re-verificare.
 
+## Update 2026-06-24 - mapari native noi
+
+La copiere fidela, nu sari la `custom-html` pentru aceste pattern-uri:
+
+- **Hero cu panou diagonal + poza:** mapeaza la `hero-slider` cu `heroLayout:"diagonal-split"`, `backgroundColor`, `diagonalAccentColor`, `panelWidth`, slide-uri multiple si dots/arrows daca originalul le are. Pe mobil rendererul foloseste overlay lizibil, deci verifica desktop + mobil.
+- **Headline bicolor:** daca titlul original are doua randuri cu accent vizual, foloseste `slides[].title` + `slides[].titleAccent` in loc de markup custom.
+- **Beneficii/feature-uri in coloane separate:** pentru sectiuni cu titlu mare, text scurt si link jos, foloseste `feature-cards` cu `style:"divided"` si `cards[].linkText`.
+- **Footer de e-commerce:** pastreaza descrierea brandului, metodele de plata si ANPC/SOL cu `set_website_footer(description, paymentMethods, showAnpc)`, nu ca bloc separat pe pagina.
+- **Navbar real:** `update_website_navigation(..., navbarSettings:{...})` aplica acum direct stil/logo/search/login/CTA/sidebar; dupa scriere, confirma prin `get_website_page` ca `navbar` contine setarile asteptate.
+
 ## Meniu restaurant / produse importate din site
 
 Pentru pagini de meniu restaurant nu copia doar cateva produse manuale. Daca sursa este Next.js/Strapi, cauta in `__NEXT_DATA__` dupa componente de tip `ComponentCmsDataProductsList` sau echivalent si extrage toate categoriile si produsele.

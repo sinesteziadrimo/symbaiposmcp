@@ -67,6 +67,18 @@ Logo-ul e cel mai des copiat GREȘIT. Reguli:
 - **Aplică pe site**: logo-ul → logo-ul din header (navbar); favicon-ul → favicon; culoarea → accentul temei; fontul → fontul site-ului. **Dacă logo-ul (imaginea) conține deja numele brandului, OPREȘTE textul-nume de lângă logo** (altfel apare dublu).
 - **VERIFICĂ vizual**: deschide site-ul și fă screenshot — logo-ul trebuie să fie LIZIBIL (nu minuscul: un wordmark cu text are nevoie de înălțime mai mare decât un icon) și fără text dublat. Nu declara gata până nu-l vezi corect.
 
+## Update 2026-06-24 - optiuni website de folosit in executie
+
+Cand userul cere un site "ca X" sau vrea un homepage/landing mai premium, verifica intai catalogul si foloseste aceste optiuni native:
+
+- `hero-slider` + `heroLayout:"diagonal-split"` pentru hero corporate cu poza full-bleed si panou colorat diagonal in stanga. Seteaza `backgroundColor`, `diagonalAccentColor`, `panelWidth`; pastreaza slideshow-ul daca sursa are mai multe slide-uri.
+- `slides[].titleAccent` pentru titlu bicolor / al doilea rand accentuat. E mai bun decat custom HTML pentru headline-uri de brand.
+- `feature-cards` + `style:"divided"` + `cards[].linkText` pentru beneficii in coloane minimaliste cu separatoare verticale.
+- `set_website_footer(description, paymentMethods, showAnpc)` cand footerul sursei are descriere brand, badge-uri Visa/Mastercard/Maestro sau ANPC/SOL.
+- `update_website_navigation(items[], navbarSettings{})` aplica direct stil/logo/search/login/CTA/sidebar. Dupa scriere, verifica read-back cu `get_website_page`; nu folosi `update_menu_display_config` doar pentru navbar.
+
+Explica userului rezultatul in limbaj vizual ("am reprodus hero-ul cu panou diagonal si titlu bicolor", "am pus footer cu metode de plata si ANPC"), apoi arata link/screenshot cand browserul e disponibil.
+
 ## Cheat table — ce cere userul → ce faci
 
 | Userul cere | Tool MCP (acțiune) |

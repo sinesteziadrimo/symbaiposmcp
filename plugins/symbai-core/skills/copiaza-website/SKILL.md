@@ -109,6 +109,18 @@ Catalogul poate fi 100% și site-ul tot să arate „groaznic" dacă paginile su
 - [ ] **Navbar-ul = meniul REAL al sursei, nu lista auto de pagini.** Inspectează în browser meniul site-ului real (itemii de top + dropdown-urile lor + href-uri) și reconstruiește-l 1:1 cu `update_website_navigation items[]` (suport `children[]` pentru dropdown). Default-ul (o intrare per pagină: Acasă/Atracții/Restaurant/...) NU corespunde. Și ascunde butonul CTA din dreapta dacă originalul n-are (`navbarSettings:{ctaButton:{visible:false}}`). Daca originalul are meniu lateral stanga, foloseste `navbarSettings:{style:"sidebar-left", sidebarBg, sidebarTextColor, socialLinks:[...]}`.
 - [ ] **NU activa „extra"-uri de componentă pe care sursa NU le are.** Componentele Symbai au opțiuni implicite decorative (sidebar de blog cu newsletter + „Recente", badge „Popular"/„Recomandat", toggle de facturare lunar/anual, rating badge, „featured hero"). Activează-le DOAR dacă site-ul real le are. Ex.: blogul drimoland.ro NU are sidebar → `blog-listing.showSidebar=false` (altfel apare un „Abonează-mă" nealiniat care nu există în original). Compară layout-ul real (câte coloane, cu/fără sidebar, cu/fără badge) și oglindește-l — un element în plus strică fidelitatea la fel ca unul lipsă.
 
+## Update 2026-06-24 - mapping-uri native pentru fidelitate vizuala
+
+Inainte sa marchezi o sectiune ca necesitand `custom-html`, verifica aceste optiuni live din website builder:
+
+- Hero corporate cu panou diagonal si poza: `hero-slider` cu `heroLayout:"diagonal-split"`, `backgroundColor`, `diagonalAccentColor`, `panelWidth`, dots/arrows/autoplay cand sursa are slider.
+- Titlu bicolor / rand accentuat: `slides[].titleAccent`; pastreaza `slides[].title` ca primul rand.
+- Beneficii in coloane minimaliste: `feature-cards` cu `style:"divided"` si `cards[].linkText`.
+- Footer complet de magazin: `set_website_footer` cu `description`, `paymentMethods` si `showAnpc`, pe langa contact/social/columns.
+- Navbar/chrome: `update_website_navigation` aplica `navbarSettings` direct, inclusiv `sidebar-left`; verifica prin `get_website_page` dupa scriere.
+
+Acestea trebuie bifate in Poarta 4 de design: screenshot desktop + mobil pentru hero diagonal, read-back pentru footer/navbar si comparatie vizuala cu originalul.
+
 ### Faza 5 — Nu te opri până nu e gata (mod AUTONOM, OPT-IN)
 > Aceasta e modul AUTONOM — pornește-l DOAR după ce userul cere explicit „rulează tot / nu te opri / las-o să meargă". În modul IMPLICIT (vezi „Cum lucrezi cu userul"), după FIECARE sarcină mică verificată te oprești și propui următoarea. În modul autonom, fă checkpoint: după fiecare poartă care trece sau fiecare N loturi, postează o linie de progres + următoarea sarcină planificată, ca userul să poată interveni.
 
