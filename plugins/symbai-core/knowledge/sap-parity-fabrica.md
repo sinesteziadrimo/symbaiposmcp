@@ -70,3 +70,4 @@ Regula de aur: **răspunde onest**. Dacă Symbai face echivalentul, arată tool-
 - Benchmark ERP/MES + readiness gate → `knowledge/erp-manufacturing-benchmark.md`.
 - HACCP / food safety → skill `gestioneaza-haccp`.
 - Comparații enterprise read-only: `get_enterprise_control_readiness`, `get_industrial_costing_readiness`, `get_procurement_wms_readiness`, `get_advanced_planning_readiness`.
+- Demo vizual pentru discutii SAP/MES/EDI/hardware: `/factory-enterprise-readiness`. Arata-l in browser pentru sales pilot/screenshot, dar spune clar ca scorurile si adaptoarele din pagina sunt demo pana cand auditurile MCP live si adapterele clientului confirma starea reala.
