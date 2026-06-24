@@ -51,7 +51,17 @@ Modulul acoperă tot ce pleacă din local către client: comenzile de pe platfor
 - **Inbox WhatsApp** (`/whatsapp-inbox`) — conversațiile WhatsApp cu clienții pe numărul central, per brand: fire de discuție stil WhatsApp, trimitere text/poze/documente, reacții, marcare citit; util pentru clienții care comandă prin mesaje.
 
 ## Fluxuri frecvente
-1. **Conectezi Glovo/Wolt/Bolt/Tazz**: `/channels` → tab Integrări → adaugi canalul cu datele de la platformă (la Wolt: client ID/secret + venue) → sincronizezi meniul din tab Meniu & Prețuri → comenzile încep să apară în `/deliveries`.
+1. **Conectezi Glovo/Wolt/Bolt/Tazz**: `/channels` → tab Integrări → adaugi canalul cu datele de la platformă (la Wolt: client ID/secret + venue; la Glovo: Partner API token, Glovo Store ID si Store Address External ID) → sincronizezi meniul din tab Meniu & Prețuri → comenzile încep să apară în `/deliveries`.
+
+### Glovo Partner API - workflow oficial
+
+Pentru Glovo nu spune doar "pune cheia API". Workflow-ul practic este:
+1. Userul obtine de la Glovo Partner API token, Glovo Store ID si Store Address External ID. Nu cere parola contului Glovo.
+2. In `/channels?tab=integrations`, canalul Glovo afiseaza URL-urile publice pe hostul tenantului: dispatch webhook, cancellation webhook si Menu JSON URL.
+3. Full menu sync construieste meniul din meniurile asignate canalului, il valideaza, apoi trimite catre Glovo `menuUrl` (URL-ul JSON servit de Symbai). Pentru pret/disponibilitate, foloseste update-urile mici/bulk, nu full sync repetat.
+4. Comenzile vin prin dispatch webhook si se deduplica dupa `order_id`/`order_code`. Acceptarea, `ready_for_pickup`, `out_for_delivery` si `customer_picked_up` se trimit catre Glovo din Symbai cu Store Address External ID.
+5. API-ul public Glovo nu expune reject/anulare generica din restaurant. Daca userul trebuie sa refuze/anuleze, ii spui sa faca asta in Glovo sau prin suport Glovo; Symbai reflecta statusul cand primeste cancellation webhook.
+6. Daca userul activeaza auto-accept smart, Symbai calculeaza timpul promis din KDS: bonuri active in fata + durata medie a bonurilor finalizate recent + buffer. Modul `Glovo prioritar` ignora bonurile normale neincepute, dar nu sare peste ce este deja in lucru. Daca ETA depaseste limita maxima setata, comanda ramane neacceptata pentru operator.
 2. **Gestionezi comenzile de pe platforme**: `/deliveries` → tab Comenzi Active → accepți (sau „Acceptă Toate") → „În pregătire" → „Gata" → „Ridicată" → „Livrată"; refuzi cu motiv scris (ex. ingredient indisponibil).
 3. **Pornești livrarea cu flotă proprie**: `/deliveries/fleet` → tab Livratori → bifezi angajații curieri → tab Vehicule → adaugi vehiculele → tab Schimburi → „Deschide schimb" (livrator + vehicul + km) → definești zonele în `/deliveries/zones`.
 4. **Asignezi o comandă**: `/deliveries/dispatch` → bifezi comanda din coloana „De livrat" → alegi livratorul activ (sau „Asignează celui mai potrivit", sau tragi cardul comenzii peste livrator) → livratorul o vede instant în `/livrator`.
@@ -73,11 +83,13 @@ Modulul acoperă tot ce pleacă din local către client: comenzile de pe platfor
 **SQL (doar-citire, dacă token-ul are toggle-ul SQL):** `list_database_tables` → `describe_database_table` → `execute_sql_query` — pentru întrebări pe care rapoartele dedicate nu le acoperă (ex. livrări eșuate pe motiv).
 
 **Scriere (cere modulul de permisiune `setari` pe token):**
-- `create_delivery_channel` — configurează un canal de livrare (platformă, brand, locație).
+- `create_delivery_channel` — configurează un canal de livrare (platformă, brand, locație). Pentru Glovo, asta doar creeaza inregistrarea; conectarea reala cere token + Store ID-uri in `/channels?tab=integrations`, apoi trimiterea celor trei URL-uri publice catre Glovo.
 - `configure_portal_general` — pornește/oprește livrarea și ridicarea personală pe portalul de comenzi online (allowDelivery / allowPickup).
 
 ## Întrebări frecvente și capcane
-- **De ce nu văd comenzile de pe Glovo?** Verifică `/channels` → Integrări: canalul trebuie conectat și Online. Un canal **pauzat** apare cu badge roșu și motiv în `/deliveries` → tab Platforme.
+- **De ce nu văd comenzile de pe Glovo?** Verifică `/channels` → Integrări: canalul trebuie conectat și Online, iar Glovo trebuie sa aiba dispatch webhook-ul Symbai configurat. Verifica si Store Address External ID-ul, pentru ca accept/ready/pickup il trimit in header catre Glovo. Un canal **pauzat** apare cu badge roșu și motiv în `/deliveries` → tab Platforme.
+- **De ce nu pot refuza/anula Glovo din Symbai?** Este limita API-ului public Glovo Partner: Symbai trimite accept/ready/pickup, dar reject/anulare se fac in Glovo/suport Glovo si revin in Symbai prin cancellation webhook.
+- **Ce inseamna auto-accept dupa traficul din KDS?** Nu accepta orbeste. Daca este activ pe canalul Glovo, trimite catre Glovo `committedPreparationTime` calculat din coada bucatariei. Explica userului ca poate alege intre `Intra la rand` si `Prioritate Glovo`, plus ETA minim/maxim.
 - **De ce nu pot asigna comanda unui angajat?** Trebuie să fie bifat ca livrator (Flotă → Livratori) ȘI să aibă un **schimb deschis**. Lista „Alege livrator activ" arată doar livratorii cu schimb deschis.
 - **De ce livratorul apare „Offline" deși lucrează?** Statusul vine din poziția GPS trimisă de aplicația livratorului; fără poziție în ultimele 15 minute dispare din „Livratori activi". Verifică dacă are aplicația deschisă și tracking-ul pornit.
 - **Livratorii costă în plus?** Da — fiecare angajat bifat ca livrator se taxează nominal (modul Livrator, 29€/livrator) și numărul se trimite automat în Hub. Bifarea nu dă și nu ia acces la pagini.
