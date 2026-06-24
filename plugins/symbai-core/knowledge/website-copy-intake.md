@@ -12,7 +12,7 @@ Pentru site-uri bogate (ex. Drimoland), nu considera o pagina "copiata" daca ai 
 
 ## Intake obligatoriu
 
-1. Ruleaza `analyze_external_website(url, crawlPages:true, maxPages:12)` inainte de scriere.
+1. Ruleaza `analyze_external_website(url, crawlPages:true, maxPages:12)` inainte de scriere. (12 = intake rapid; plafonul real e 24 — mareste daca sunt mai multe pagini-cheie. Peste 24 → skill-ul `copiaza-website`.)
 2. Daca stii pagini critice, trimite `pageUrls`, de exemplu `["/meniu","/blog","/galerie","/contact"]`.
 3. Pastreaza din raspuns:
    - `seo.title`, `seo.description`, `seo.canonical`, `seo.ogImage`.
@@ -67,7 +67,7 @@ Pentru pagini de meniu restaurant nu copia doar cateva produse manuale. Daca sur
 
 Pastreaza pe fiecare produs: `name`, `description`, `price`, `weight`, `imageUrl`, `gallery`, `nutritionalInfo`, `ingredients`, `allergens` si id-ul sursa daca exista. La Drimoland pozele produselor vin din `attributes.media.data[].attributes.url`, nu din campuri simple `image`/`images`; verifica mai multe forme inainte sa concluzionezi ca lipsesc pozele.
 
-Inainte de scrieri in baza POS, fa audit read-only: `list_brands` -> `list_menus` -> `list_menu_items`/`search_products_db` -> `get_product_details` pe esantioane. Nu face update/import masiv de produse fara dry-run si confirmare, deoarece schimba meniul live. Pentru preview local, `static-menu-board` este acceptabil daca pastreaza structura si datele reale; pentru productie, sincronizeaza apoi catalogul POS.
+Inainte de scrieri in baza POS, fa audit read-only: `list_brands` -> `list_menus` -> `list_menu_items`/`search_products_db` -> `get_product_details` pe esantioane. Nu face update/import masiv de produse fara dry-run si confirmare, deoarece schimba meniul live. Pentru preview local, `static-menu-board` este acceptabil daca pastreaza structura si datele reale; pentru productie, sincronizeaza apoi catalogul POS. (Cand fidelitatea conteaza: un `ProductsList` al sursei se mapeaza la imaginea de meniu sau la catalogul POS real — nu ramane un board static cu date inventate.)
 
 ## Blog / articole importate din site
 

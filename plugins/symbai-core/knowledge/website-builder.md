@@ -14,7 +14,7 @@ Symbai are un **builder de website** integrat: din catalogul de produse + meniul
 
 **Capabilități cheie** (toate se setează prin tool-uri, fără click):
 - **Pagini** — Acasă, Magazin/Catalog, Despre, Contact + pagini de categorie (`/categorie/<slug>`) și produs (`/produs/<slug>`) generate automat. URL-ul canonic e pe **slug** (SEO); `/...<id>` rămâne fallback și face redirect 301 spre slug.
-- **Componente (blocuri)** care se aranjează pe pagini: hero/banner, grilă de categorii, grilă de produse (cu filtre + faceted sidebar), branduri, carduri de avantaje, testimoniale, newsletter, bară de anunțuri sus, bloc de text, contact, blog.
+- **Componente (blocuri)** care se aranjează pe pagini: hero/banner, grilă de categorii, grilă de produse (cu filtre + faceted sidebar), branduri, carduri de avantaje (`feature-cards`), **carusel de carduri glisabil (`feature-carousel`)**, text+imagine, galerie (cu lightbox), tabel de prețuri (`pricing`), testimoniale, **numărătoare inversă (`countdown`)**, FAQ, newsletter, bară de anunțuri sus, bloc de text, contact, blog.
 - **Ierarhie de categorii** — categorii părinte → subcategorii (drill-down). O pagină de categorie-părinte arată **grila de subcategorii + produsele din tot subarborele**.
 - **Filtre faceted** (sidebar tip magazin mare): preț, disponibilitate (în stoc), brand, material, vârstă, categorie de interes.
 - **Hero** (banner mare cu imagine + titlu + buton), **footer** bogat (contact, social, coloane de linkuri, copyright/CUI), **pagini legale** (Despre, Contact, Termeni, Confidențialitate, Livrare, Retur, FAQ — indexate de Google, conforme ANPC), **bară de anunțuri**, **logo**.
