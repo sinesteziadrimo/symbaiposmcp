@@ -284,7 +284,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `check_rma_eligibility` — Verifică dacă o comandă e eligibilă pentru retur: fereastra politicii, statusul comenzii, retururi deschise existente, articolele eligibile. (necesită: orderId)
 - `get_blog_analytics_overview` — Privire de ansamblu asupra traficului pe blog pe ultimele N zile: afișări de pagină, vizitatori unici, sesiuni, timp mediu pe pagină, bounce rate. (parametri opționali: brandId, days)
 - `get_blog_post` — Detaliile unui articol de blog după id: titlu, slug, status, categorie, tag-uri, meta description, conținut (trunchiat), vizualizări. (necesită: id)
-- `get_delivery_pnl` — P&L pe LIVRARI (segment): profit DOAR din veniturile de livrare, cu marfa AUTOMAT din consum si cu cheltuielile pe care le-a ales proprietarul (manopera = angajati desemnati; cheltuieli = fix / % din (parametri opționali: perioada, startDate, endDate, configId)
+- `get_delivery_pnl` — P&L pe LIVRARI (segment): include marfa din consum, costuri automate de platforma si cheltuielile alese de proprietar. (parametri opționali: perioada, startDate, endDate, configId)
 - `get_dispatch_analytics` — KPI de livrare pe N zile: total/livrate/eșuate, livrări externe, timp mediu de livrare, depășiri SLA, alerte pe tip, top livratori. (parametri opționali: brandId, locationId, days)
 - `get_ecommerce_settings` — Returnează setările magazinului online (configurare store: monedă, checkout, livrare, taxe etc.). (parametri opționali: brandId)
 - `get_emag_dashboard` — Privire de ansamblu eMAG: conturile conectate (activ/conexiune ok, ultima sincronizare), statistici oferte pe status și comenzi pe status. (parametri opționali: accountId)

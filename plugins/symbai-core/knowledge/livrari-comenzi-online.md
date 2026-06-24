@@ -62,6 +62,12 @@ Pentru Glovo nu spune doar "pune cheia API". Workflow-ul practic este:
 4. Comenzile vin prin dispatch webhook si se deduplica dupa `order_id`/`order_code`. Acceptarea, `ready_for_pickup`, `out_for_delivery` si `customer_picked_up` se trimit catre Glovo din Symbai cu Store Address External ID.
 5. API-ul public Glovo nu expune reject/anulare generica din restaurant. Daca userul trebuie sa refuze/anuleze, ii spui sa faca asta in Glovo sau prin suport Glovo; Symbai reflecta statusul cand primeste cancellation webhook.
 6. Daca userul activeaza auto-accept smart, Symbai calculeaza timpul promis din KDS: bonuri active in fata + durata medie a bonurilor finalizate recent + buffer. Modul `Glovo prioritar` ignora bonurile normale neincepute, dar nu sare peste ce este deja in lucru. Daca ETA depaseste limita maxima setata, comanda ramane neacceptata pentru operator.
+
+### Wolt - configurare financiara si P&L
+
+La Wolt, canalul din `/channels?tab=integrations` are setari financiare suplimentare: baza de comision (produse dupa/inainte de discount sau total dupa/inainte de discount), modul de finantare promotii (`from_order_v2`, firma 100%, Wolt 100%, split procent), procentul suportat de firma si maparea taxelor delivery/service/small-order/marketing/Wolt+. Comenzile Wolt pastreaza in metadata suma basket, fee parts, depozite, campanii aplicate si daca e Wolt+.
+
+Pentru intrebari de profitabilitate nu estima manual din UI. Foloseste `list_delivery_pnl_segments` -> `get_delivery_pnl`; citeste `platformPnl` pentru comisioane, taxe, promotii suportate de firma vs platforma, profit contributie, comenzi nelegate de POS si warninguri. Daca userul vrea dovada vizuala, deschide `/reports/pnl-livrari`; pentru setari de canal deschide `/channels?tab=integrations`.
 2. **Gestionezi comenzile de pe platforme**: `/deliveries` → tab Comenzi Active → accepți (sau „Acceptă Toate") → „În pregătire" → „Gata" → „Ridicată" → „Livrată"; refuzi cu motiv scris (ex. ingredient indisponibil).
 3. **Pornești livrarea cu flotă proprie**: `/deliveries/fleet` → tab Livratori → bifezi angajații curieri → tab Vehicule → adaugi vehiculele → tab Schimburi → „Deschide schimb" (livrator + vehicul + km) → definești zonele în `/deliveries/zones`.
 4. **Asignezi o comandă**: `/deliveries/dispatch` → bifezi comanda din coloana „De livrat" → alegi livratorul activ (sau „Asignează celui mai potrivit", sau tragi cardul comenzii peste livrator) → livratorul o vede instant în `/livrator`.

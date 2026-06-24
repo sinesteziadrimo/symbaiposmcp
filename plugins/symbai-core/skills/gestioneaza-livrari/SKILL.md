@@ -41,6 +41,7 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 | „ce retururi am / detaliile returului / KPI retururi" | `list_rma_requests` · `get_rma_details(id)` · `get_rma_kpi_summary` | `/ecommerce/returns` |
 | „pot returna comanda asta? / aprobă / respinge / rambursează returul" | `check_rma_eligibility` · `approve_rma` · `reject_rma` · `process_rma_refund(confirm:true)` | `/ecommerce/returns` |
 | „conectează un canal Glovo/Wolt/Bolt/Tazz" | `create_delivery_channel` (modul `setari`) | `/channels?tab=integrations` |
+| „cât mă costă Wolt/Glovo / ce profit fac pe platforme" | `list_delivery_pnl_segments` → `get_delivery_pnl` (read-only) | `/reports/pnl-livrari` |
 | „ce agenți de vânzări am / activează-l/dezactivează-l" | `list_sales_agents` · `toggle_sales_agent` (modul `setari`) | (creare agent nou = UI) |
 
 > Rutele exacte le confirmi cu `gaseste_in_aplicatie("dispecerat" / "zone livrare" / "AWB" / "retururi")` — **nu inventa URL-uri**. Cheat-sheet în `navigare-rapida.md`. Multe pagini de livrare au sub-tab-uri adresabile cu `?tab=…` — du-te direct la tab.
@@ -57,6 +58,7 @@ Aproape nimic din dispecerat nu cere click — dar:
 - **Schimb deschis = condiție de alocare.** Dacă `assign_orders_to_driver` refuză cu „nu are schimb deschis", nu insista — explică userului că livratorul trebuie să-și deschidă schimbul (vehicul + km) în `/deliveries/fleet`. Și că trebuie marcat livrator (`set_employee_as_driver`) dacă nu e.
 - **Livratorii costă în plus.** Fiecare angajat bifat livrator se taxează nominal (modul Livrator) și `set_employee_as_driver` declanșează sincronizarea de billing cu Hub. Spune-i userului când marchezi pe cineva.
 - **Agregatorii ≠ flota proprie.** Comenzile de pe Glovo/Wolt/Bolt/Tazz se gestionează ca platforme în `/channels` și `/deliveries` (Centru Livrări) — aduc curierii LOR. Dispeceratul (tool-urile de aici) e pentru flota TA proprie + curierii externi comandați de tine. Nu le amesteca (vezi capcanele din `livrari-comenzi-online.md`).
+- **Profitul pe platforme nu se estimează din comisionul vizibil.** Pentru Wolt/Glovo/Bolt/Tazz folosește `get_delivery_pnl` și citește `platformPnl`: comisioane, taxe, promoții suportate de firmă vs platformă, profit contribuție, comenzi nelegate și warninguri. La Wolt, setările financiare sunt în `/channels?tab=integrations` pe canal: baza de comision, finanțarea promoțiilor și maparea taxelor.
 - **Confirmă prin re-citire, arată prin screenshot.** După o scriere (alocare, zonă, vehicul), tool-ul a întors `success` = e salvat — confirmă cu `list_*`/`get_*`, nu cu pixelul; și fă screenshot la pagină ca să-i arăți userului (spune-i să dea refresh dacă nu vede). Vezi `condu-chrome.md` regulile c și f.
 - **Motivul de eșec e standardizat** — `mark_delivery_failed` cere un `reason` din lista fixă (client absent, adresă greșită, refuzată etc.); tool-ul îți spune valorile valide dacă greșești.
 - **Ștergerea de entități întregi nu merge prin conexiune** — dezactivează (zonă `active:false`, vehicul `status:"inactive"`) sau ghidează userul să șteargă din aplicație.
