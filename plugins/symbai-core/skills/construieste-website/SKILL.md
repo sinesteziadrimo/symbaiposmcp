@@ -73,7 +73,7 @@ Cand userul cere un site "ca X" sau vrea un homepage/landing mai premium, verifi
 
 - `hero-slider` + `heroLayout:"diagonal-split"` pentru hero corporate cu poza full-bleed si panou colorat diagonal in stanga. Seteaza `backgroundColor`, `diagonalAccentColor`, `panelWidth`; pastreaza slideshow-ul daca sursa are mai multe slide-uri.
 - `slides[].titleAccent` pentru titlu bicolor / al doilea rand accentuat. E mai bun decat custom HTML pentru headline-uri de brand.
-- `feature-cards` + `style:"divided"` + `cards[].linkText` pentru beneficii in coloane minimaliste cu separatoare verticale.
+- `feature-cards` + `style:"divided"` + `cards[].linkText` pentru beneficii in coloane minimaliste cu separatoare verticale; foloseste `titleAlign` si `\n` in `title` pentru headline-uri de sectiune aliniate stanga/dreapta sau pe doua randuri.
 - `tabbed-cards` pentru locatii/servicii/proiecte filtrate pe pastile (`tabs[]`, `cards[].tab`, `showAllTab`). Alege-l inainte de `custom-html` pentru sectiuni tip "Our locations" pe regiuni.
 - `set_website_theme(backgroundColor, textColor?)` si in light mode cand site-ul sursa are fundal cream/warm/branded; rendererul nu mai forteaza alb daca exista `backgroundColor`.
 - `set_website_footer(description, paymentMethods, showAnpc, socialLinks)` cand footerul sursei are descriere brand, badge-uri Visa/Mastercard/Maestro, ANPC/SOL sau platforme sociale custom (`tripadvisor`, `whatsapp`, `booking`).

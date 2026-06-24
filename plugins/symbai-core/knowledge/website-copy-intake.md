@@ -57,7 +57,7 @@ La copiere fidela, nu sari la `custom-html` pentru aceste pattern-uri:
 
 - **Hero cu panou diagonal + poza:** mapeaza la `hero-slider` cu `heroLayout:"diagonal-split"`, `backgroundColor`, `diagonalAccentColor`, `panelWidth`, slide-uri multiple si dots/arrows daca originalul le are. Pe mobil rendererul foloseste overlay lizibil, deci verifica desktop + mobil.
 - **Headline bicolor:** daca titlul original are doua randuri cu accent vizual, foloseste `slides[].title` + `slides[].titleAccent` in loc de markup custom.
-- **Beneficii/feature-uri in coloane separate:** pentru sectiuni cu titlu mare, text scurt si link jos, foloseste `feature-cards` cu `style:"divided"` si `cards[].linkText`.
+- **Beneficii/feature-uri in coloane separate:** pentru sectiuni cu titlu mare, text scurt si link jos, foloseste `feature-cards` cu `style:"divided"` si `cards[].linkText`. Daca originalul are titlu de sectiune aliniat stanga/dreapta sau pe doua randuri, seteaza `titleAlign` si pune `\n` in `title`.
 - **Carduri filtrabile:** pentru locatii pe regiuni, servicii pe categorie sau portofolii cu pastile de filtru, foloseste `tabbed-cards` (`tabs[]`, `cards[].tab`, `showAllTab`) in loc de `custom-html`.
 - **Fundal light mode:** daca sursa are fundal cream/warm/branded, seteaza `set_website_theme(backgroundColor, textColor?)`; rendererul il aplica si pe light mode, nu doar pe dark.
 - **Footer de e-commerce:** pastreaza descrierea brandului, metodele de plata si ANPC/SOL cu `set_website_footer(description, paymentMethods, showAnpc)`, nu ca bloc separat pe pagina. Pentru platforme sociale ne-standard trimite chei custom sigure in `socialLinks` (ex. `tripadvisor`, `whatsapp`, `booking`).

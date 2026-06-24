@@ -115,7 +115,7 @@ Inainte sa marchezi o sectiune ca necesitand `custom-html`, verifica aceste opti
 
 - Hero corporate cu panou diagonal si poza: `hero-slider` cu `heroLayout:"diagonal-split"`, `backgroundColor`, `diagonalAccentColor`, `panelWidth`, dots/arrows/autoplay cand sursa are slider.
 - Titlu bicolor / rand accentuat: `slides[].titleAccent`; pastreaza `slides[].title` ca primul rand.
-- Beneficii in coloane minimaliste: `feature-cards` cu `style:"divided"` si `cards[].linkText`.
+- Beneficii in coloane minimaliste: `feature-cards` cu `style:"divided"` si `cards[].linkText`; pentru titlu de sectiune aliniat stanga/dreapta sau pe doua randuri foloseste `titleAlign` si `\n` in `title`.
 - Carduri filtrabile: `tabbed-cards` cu `tabs[]`, `cards[].tab` si `showAllTab` pentru locatii pe regiuni, servicii sau portofolii filtrate.
 - Fundal light mode: `set_website_theme(backgroundColor, textColor?)` cand originalul are fundal cream/warm/branded; verifica desktop + mobil ca nu a ramas alb implicit.
 - Footer complet de magazin: `set_website_footer` cu `description`, `paymentMethods`, `showAnpc` si `socialLinks` custom sigure (ex. `tripadvisor`, `whatsapp`, `booking`), pe langa contact/columns.
