@@ -119,6 +119,7 @@ Inainte sa marchezi o sectiune ca necesitand `custom-html`, verifica aceste opti
 - Carduri filtrabile: `tabbed-cards` cu `tabs[]`, `cards[].tab` si `showAllTab` pentru locatii pe regiuni, servicii sau portofolii filtrate.
 - Lista editoriala + imagine: `split-list` pentru servicii/oferte/valori/pasi cu titluri subliniate, descrieri si linkuri langa fotografie; pastreaza `imagePosition`, `titleUnderline`, `dividers` si culorile originale.
 - Carusel editorial: `content-carousel` pentru destinatii, experiente, pachete sau povesti afisate cate una cu sageti/dots; continutul e inline, nu POS live.
+- Pasi / cum functioneaza: `process-steps` pentru sectiuni "how it works", abonamente, flux comanda/livrare sau experienta in 3-5 pasi; pastreaza `layout`, `numberStyle`, `connectors` si culorile.
 - Ticker/marquee: `marquee` cu `items[]`, `speed`, `separator`, `direction`, `textCase`, culori pentru benzi derulante cu slogane repetate; nu folosi GIF/video/custom HTML. Pentru branduri lowercase seteaza `textCase:"lower"`.
 - Banda App Store / Google Play: `app-download` cu `appStoreUrl`, `googlePlayUrl` sau `stores[]`, optional `image` cu telefon, pentru sectiuni de tip order-ahead, loialitate, livrare sau "download our app"; nu o recrea ca `custom-html`.
 - Meniu restaurant static: `menu-list` cu `layout:"grid"|"list"`, `items[]`/`categories[]`, pret, meta/kcal, badge-uri, tag-uri dietetice, spice si culori. Foloseste-l pentru pagini de marketing/clone; daca userul cere meniu POS live, nu-l folosi ca substitut al catalogului.
