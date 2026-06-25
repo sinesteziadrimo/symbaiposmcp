@@ -12,7 +12,7 @@
       "name": "symbai-core",
       "source": "./plugins/symbai-core",
       "description": "Asistentul Symbai: ghiduri pas-cu-pas + cunoștințe despre modulele Symbai, aplicațiile native Expo și catalogul MCP live. Lucrează MCP-first cu confirmări sigure și verificare prin citire.",
-      "version": "0.23.55",
+      "version": "0.23.56",
       "author": { "name": "Symbai" },
       "homepage": "https://github.com/sinesteziadrimo/symbaimemory",
       "repository": "https://github.com/sinesteziadrimo/symbaimemory",
