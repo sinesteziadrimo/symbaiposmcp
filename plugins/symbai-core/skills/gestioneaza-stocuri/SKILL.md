@@ -17,10 +17,11 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 - Mută marfă între depozite (**transfer**), scoate marfă (pierdere/casare/furt) sau cere **raport de stoc**.
 - Vrea **trasabilitate**: din ce lot/furnizor a venit marfa, unde s-a consumat.
 - Vrea rafturi/bin-uri în magazie, etichete QR pentru zone sau să vadă pe telefon ce este într-o zonă scanată.
+- Vrea cost provizoriu pentru food cost înainte de prima recepție/factură, fără să miște stoc.
 
 ## Reguli de aur
 1. **Limbaj de manager, zero jargon** — "depozit/gestiune", "numărare fizică", "marfă care expiră", nu termeni tehnici.
-2. **Citire mereu, scriere doar cu modul** — tool-urile de citire merg oricând; scrierea (`set_initial_stock`, `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`) cere modulul **produse_meniu** pe token. Dacă lipsește, spune-i clientului să-l activeze din Hub → Acces AI.
+2. **Citire mereu, scriere doar cu modul** — tool-urile de citire merg oricând; scrierea (`set_initial_stock`, `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`, `set_standard_costs`) cere modulul potrivit pe token. Dacă lipsește, spune-i clientului să-l activeze din Hub → Acces AI.
 3. **Întâi contextul** — `list_brands` + `list_locations` pentru brand/locație, apoi `list_warehouses_full` pentru gestiuni.
 4. **Linkuri reale** — pentru pagina exactă folosește `gaseste_in_aplicatie`. Centrul de comandă e **Tablou de Bord Stoc** (`/inventory`), cu taburi precum Stoc Curent, Inventariere, Zone, Diferențe, Niveluri, Mișcări; mai sunt **Consum Zilnic** (`/daily-consumption`), **Operațiuni Gestiune** (`/stock-operations`) și **Verificări Stoc** (`/inventory-check`).
 5. **Transferurile și ieșirile de stoc se fac prin MCP** — `create_inventory_document` e motorul canonic de stoc: ieșiri cu `docType` CONSUMPTION/WASTE/THEFT/ADJUSTMENT_MINUS/RETURN_OUT/SALE_ISSUE (dă `warehouseFromId`), transfer cu `warehouseFromId`+`warehouseToId`. Obligatoriu și `docType`, `docNo`, `docDate` (YYYY-MM-DD) + `lines` (fiecare linie cere `productId`+`qty`). Cu `autoPost:true`+`confirm:true` mișcă stocul real ireversibil (confirmă întâi cu clientul), altfel rămâne DRAFT și îl postezi cu `post_inventory_document`. Ștergerea de entități întregi rămâne doar din aplicație. Verifică mereu rezultatul cu tool-urile de citire.
@@ -49,6 +50,10 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 1. Confirm produsul cu `search_products_db` / `get_product_details`.
 2. `set_initial_stock` cu `productId` + `quantity` și, dacă știi gestiunea, `warehouseId` (necesită modul produse_meniu). Dacă tool-ul spune că produsul are stoc în mai multe gestiuni și cere `warehouseId`, nu reîncerca în orb: rulează `list_warehouses_full` / `get_stock_levels(productName)` ca să alegi gestiunea corectă, confirmă cu userul, apoi reapelează cu `warehouseId`.
 
+**C2. Setez cost standard provizoriu, fără stoc**
+1. Folosesc doar când userul vrea food cost estimativ înainte de primele recepții reale.
+2. `set_standard_costs({ items: [{ productId | productName, standardCost }] })`; `0` îl curăță. Spune clar: nu creează stoc, nu schimbă CMP/loturi, nu ține loc de NIR; prima recepție reală are prioritate în costuri.
+
 **D. Consum zilnic (cum scade stocul din vânzări)**
 1. `get_daily_consumption_status` cu `date` → ce s-a consumat, ce nu s-a generat încă, produse vândute fără rețetă.
 2. Reprocesare prin MCP: `generate_daily_consumption` cu `date` (YYYY-MM-DD), opțional `locationId`/`warehouseId` — scade stocul ingredientelor (FIFO) pentru comenzile finalizate în acea zi. Mișcă stocul real, deci cere `confirm:true` doar după ce confirmă clientul (dă eroare dacă ziua e deja generată). Alternativ, din aplicație la `/daily-consumption` → buton "Reprocesare Vânzări".
@@ -76,7 +81,7 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 
 ## Tool-uri folosite
 - **Citire (oricând):** `get_stock_levels`, `get_warehouse_products_summary`, `list_warehouses_full`, `list_storage_zones_full`, `list_stock_count_sessions`, `get_stock_count_session`, `get_daily_consumption_status`, `get_production_stock_overview`, `get_semipreparate_stock`, `list_lots`, `search_products_db`, `get_product_details`, `generate_report`, `exec_trace_lot_origin`, `exec_trace_lot_destination`, `exec_get_lot_qc_status`, `jurnal_activitate`, `gaseste_in_aplicatie`.
-- **Scriere (cer modul produse_meniu):** `set_initial_stock`, `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`.
+- **Scriere (cer modul produse_meniu / inventar, după caz):** `set_initial_stock`, `set_standard_costs`, `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`.
 - **Mișcări de stoc (cer modul Stocuri & Recepție):** `create_inventory_document` (motorul canonic — ieșiri/transferuri/intrări), `post_inventory_document`, `create_inventory_adjustment`, `approve_inventory_adjustment`, `generate_daily_consumption`. Toate mișcă stocul real → confirm-first (`confirm:true` doar după acordul clientului).
 
 ## Legături (fișiere knowledge relevante)

@@ -34,7 +34,7 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 1011 tool-uri** — Citire 436 · Speciale 5 · SQL 3 · Scriere per modul 567 (pe 19 module).
+**TOTAL: 1016 tool-uri** — Citire 436 · Speciale 5 · SQL 3 · Scriere per modul 572 (pe 19 module).
 
 ## Citire (fără permisiune de modul) — 436 tool-uri
 
@@ -500,9 +500,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 567 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 572 tool-uri (gated de writeModules pe token)
 
-### produse_meniu — Produse & Meniuri — 66 tool-uri
+### produse_meniu — Produse & Meniuri — 69 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
 - `answer_bulk_import_question` — Raspunde la O intrebare de clarificare dintr-o sesiune de import (echivalentul unui click pe optiune in pagina de import, dar prin conexiune). (necesită: sessionId, questionId, optionId)
 - `apply_menu_prices` — Actualizează prețurile meniu items în bulk. (necesită: menuId, prices)
@@ -514,6 +514,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `bulk_add_menu_items` — Adaugă în masă mai multe produse într-un meniu cu preț (versiunea bulk a add_menu_item). (necesită: menuId, items)
 - `bulk_assign_tag` — Asignează un tag la TOATE produsele/entitățile care corespund filtrelor date. (necesită: tagId)
 - `bulk_create_menus` — Creează mai multe meniuri dintr-o dată (un meniu per brand). (necesită: menus)
+- `bulk_create_menu_categories` — Creează multe categorii de meniu într-un singur apel; părinții trebuie să existe sau să apară înaintea copiilor când folosești parentName. (necesită: brandId, items)
 - `bulk_create_products` — Creează mai multe produse deodată (eficient pentru import). (necesită: brandId, products)
 - `bulk_create_storage_zones` — Creează mai multe sub-zone de depozitare într-o magazie (ex: frigider, raft). (necesită: brandId, storageZones)
 - `bulk_optimize_category_seo` — Pune slug-uri SEO pe TOATE categoriile fără slug dintr-un brand, deodată (determinist, fără AI, fără cost). (parametri opționali: brandId, dryRun, limit)
@@ -528,6 +529,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `bulk_update_products` — Actualizează produse în masă. (parametri opționali: productIds, updates, productUpdates)
 - `create_availability_schedule` — Creeaza un program de disponibilitate: produs/categorie/meniu vizibil si comandabil doar in anumite zile+ore/canale; nu modifica pretul. (necesită: name)
 - `create_allergen` — Creează un alergen (ex: Gluten, Lactate, Ouă) (necesită: name, brandId)
+- `create_bulk_import_session_from_file` — Creează o sesiune de import dintr-un fișier Excel/CSV trimis base64 prin MCP; întoarce întrebările de clarificare înainte de import. (necesită: fileName, fileContentBase64)
 - `create_menu` — Creează un meniu nou (principal, bar, livrare, kiosk). (necesită: name, brandId)
 - `create_menu_category` — Creează o categorie de meniu (ex. (necesită: name, brandId)
 - `create_product` — Creează un produs nou. (necesită: name, brandId)
@@ -542,6 +544,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `delete_tag` 🔒 — Șterge complet un tag și TOATE dependentele lui: asignări + reguli de rutare (tag_routing_rules + zone overrides, inclusiv cele globale invizibile în UI) + rute imprimantă + override-uri dispozitiv. (necesită: tagId)
 - `duplicate_menu` — Duplică un meniu întreg: creează o copie (status draft) cu nume UNIC per brand ('X (Copie)', 'X (Copie 2)'…), copiază categoriile și TOATE articolele de meniu (preț, gramaj, imagine, ordine, disponibi (necesită: menuId)
 - `group_menu_categories_into_new` — Creează o categorie PĂRINTE nouă și mută sub ea mai multe categorii existente, totul într-o singură tranzacție. (necesită: name, brandId, categoryIds)
+- `import_bulk_session` — Rulează importul unei sesiuni bulk create din fișier; răspunde întâi la întrebările critice cu list/answer_bulk_import_question. (necesită: sessionId)
 - `interpret_menu_photo` — Interpretează (cu AI) o poză de produs/preparat de la un URL și o potrivește cu articolele din meniu — întoarce o descriere a imaginii + cele mai probabile articole de meniu (cu scor de încredere). (necesită: imageUrl)
 - `merge_menu_categories` — Fuzionează două categorii de meniu: mută TOATE produsele și articolele de meniu din source în target, mută subcategoriile source sub target, apoi șterge categoria source. (necesită: sourceId, targetId)
 - `recalc_product_nutrition` — Recalculează AUTOMAT valorile nutriționale ale unui produs din rețeta/formula lui — adună aportul fiecărui ingredient (ponderat cu gramajul și scăzând pierderile), apoi raportează la randamentul final (necesită: productId)
@@ -832,7 +835,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_product_type_accounts_per_unit` — Setează/modifică conturile contabile ale unui tip de produs DOAR pentru o anumită unitate (brand+locație). (necesită: productTypeId, brandId, locationId, accounts)
 - `void_cash_book_entry` — Anulează (stornează) o operațiune dintr-un registru de casă, cu motiv obligatoriu — NU șterge, păstrează trasabilitatea legală. (necesită: entryId, reason)
 
-### furnizori — Furnizori — 20 tool-uri
+### furnizori — Furnizori — 21 tool-uri
 - `add_purchase_order_item` — Adaugă o linie de produs la o comandă de achiziție DRAFT (cantitate + preț unitar). (necesită: orderId, quantity, unitPrice)
 - `bulk_create_supplier_product_mapping` — Mapează ÎN MASĂ produse din catalogul furnizorului la produse interne (max 200/apel) — pentru zeci/sute de legături deodată. (necesită: mappings)
 - `bulk_create_supplier_products` — Adaugă MAI MULTE produse în catalogul unui furnizor într-un singur apel (versiunea în masă a create_supplier_product). (necesită: supplierId, products)
@@ -847,6 +850,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_supplier_product_mapping` — Mapează un produs din catalogul furnizorului la un produs intern din Symbai (pentru aprovizionare automată) (necesită: supplierProductId, productId)
 - `enable_supplier_portal` — Activează portalul pentru furnizor și generează link de acces + parolă temporară. (necesită: supplierId)
 - `generate_b2b_retail_shipment_plan` — Genereaza si salveaza intern planul WMS/SSCC/ASN pentru o comanda B2B retail. (necesită: orderId)
+- `import_supplier_catalog_from_file` — Importă catalogul unui furnizor din Excel/CSV trimis base64; creează/actualizează produsele de catalog în loturi, idempotent pe furnizor+nume+pachet. (necesită: supplierId, fileName, fileContentBase64)
 - `receive_purchase_order` 🔒 — Înregistrează o recepție pe o comandă de achiziție (cine a recepționat + notă). (necesită: orderId)
 - `update_b2b_client` — Actualizează un client B2B existent. (necesită: clientId)
 - `update_b2b_client_depot` — Actualizeaza un punct de livrare/depozit B2B. (necesită: depotId)
@@ -1074,7 +1078,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `sync_emag_offers` 🔒 🌐 — Împinge prețurile și stocurile produselor către eMAG (creează/actualizează oferte). (parametri opționali: accountId, productIds, pushAll, limita)
 - `sync_emag_orders` 🌐 — Aduce (pull) comenzile noi din eMAG în sistem, creând comenzi interne pentru cele care nu există. (parametri opționali: accountId, pages, itemsPerPage, modifiedAfter)
 
-### inventar — Stocuri & Recepție — 14 tool-uri
+### inventar — Stocuri & Recepție — 15 tool-uri
 - `accept_all_invoice_mappings` — Acceptă în bloc toate liniile unei facturi care sunt deja mapate (au produs + cont) dar încă neacceptate. (necesită: invoiceId)
 - `accept_invoice_line_mapping` — Confirmă (acceptă) maparea unei linii deja legate la un produs + cont, fără s-o re-mapezi. (necesită: invoiceId, lineId)
 - `approve_inventory_adjustment` 🔒 — Aprobă o cerere de ajustare de stoc aflată în 'pending'. (necesită: adjustmentId)
@@ -1087,6 +1091,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `map_invoice_line` — Mapează (leagă) o linie de factură furnizor la un produs intern + un cont contabil, opțional cu factor de pachet (reconversie, ex. (necesită: invoiceId, lineId, productId)
 - `merge_finished_products` — Unifică două produse finite/mărfuri duplicate: păstrează keepProductId și absoarbe removeProductId (repointează stoc, loturi, vânzări, meniuri, reguli de mapare). (necesită: keepProductId, removeProductId)
 - `post_inventory_document` 🔒 — Postează pe stoc un document de inventar aflat în DRAFT (mișcă stocul real, generează loturi/ieșiri ireversibil). (necesită: documentId)
+- `set_standard_costs` — Setează costul standard provizoriu pe produse pentru food cost înainte de recepții reale; nu mișcă stocul și 0 îl curăță. (necesită: items)
 - `set_invoice_context` — Setează contextul unei facturi de intrare: tipul facturii (marfuri/materii_prime/servicii/utilitati/ambalaje/imobilizari), brand, locație (unitate), magazia/magaziile de recepție, deductibilitatea TVA (necesită: invoiceId)
 - `update_lot_status` 🔒 — Schimbă statusul / câmpurile de QC ale unui lot de stoc (ex: 'approved', 'quarantine', 'rejected', 'released'). (necesită: lotId, status)
 
@@ -1139,6 +1144,6 @@ Invocabile ca „slash-commands" în clientul MCP — ghidează un flux pas-cu-p
 - **Ștergeri de entități întregi** (produse, branduri, angajați, rezervări) — nu există tool-uri de ștergere; doar din aplicație. Excepție: scoaterea de sub-entități (ex. un ingredient dintr-o rețetă, o operație dintr-un flux).
 - **Acțiuni care au sens doar în interfață** — navigare ghidată pe ecran, dialoguri vizuale, delegare către agenții de chat din aplicație.
 - **Actiuni neacoperite de un tool explicit** — chiar daca un modul are multe tool-uri (inclusiv reclame platite), modelul MCP este fail-closed: foloseste doar tool-urile listate in catalog si trimite userul in aplicatie pentru restul.
-- **Upload de fișiere binare** (OCR factură din poză, potrivire în masă de poze necunoscute) — nu trec prin conexiune; se fac din aplicație. (Interpretarea unei poze dintr-un URL public se poate.)
+- **Upload de fișiere binare vizuale** (OCR factură din poză, potrivire în masă de poze necunoscute, PDF/poze mari) — nu trec prin conexiune; se fac din aplicație. Excel/CSV mic poate intra prin `create_bulk_import_session_from_file` sau `import_supplier_catalog_from_file`. Interpretarea unei poze dintr-un URL public se poate.
 - **Trimiterea unei comenzi de aprovizionare către furnizor** (acțiune externă) — se face din aplicație; prin MCP doar creezi/editezi comanda draft.
 - Orice tool care nu apare în acest catalog nu poate fi apelat — modelul e închis (fail-closed).

@@ -8,7 +8,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 
 ## Concepte
 
-- **Produs** — lucrul fizic din gestiune: unitate de măsură (kg, l, buc), stoc, preț de achiziție. Produsele sunt globale pe companie (un singur nomenclator); pe fișa produsului se setează doar prețul de recepție, NU prețul de vânzare.
+- **Produs** — lucrul fizic din gestiune: unitate de măsură (kg, l, buc), stoc, preț de achiziție. Produsele sunt globale pe companie (un singur nomenclator); pe fișa produsului se setează doar prețul de recepție/costul standard provizoriu, NU prețul de vânzare.
 - **Articol de meniu** — lucrul vandabil, cu preț de vânzare. Trăiește într-un meniu, într-o categorie. Același produs poate fi în mai multe meniuri, cu nume și preț propriu în fiecare — așa se fac prețuri diferite per platformă.
 - **Meniu** — colecție de articole cu prețuri. Un brand poate avea mai multe meniuri (unul prestabilit + ciorne); se pot duplica ca să lucrezi pe o copie fără să atingi meniul servit.
 - **Categorie de meniu** — ierarhie pe până la 6 niveluri (ex. Bar > Bere > Artizanală); clic pe o categorie părinte arată și produsele subcategoriilor.
@@ -50,7 +50,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - **Leagă Rețetarul** (`/recipe-mapping`) — import rețetar din Excel (coloane: Produse Finite, Porții, Ingrediente, UM, Cantitate): fiecare ingredient se mapează la un produs existent (potrivire exactă → similară → „Rezolvă cu AI"); conflictele de unitate de măsură BLOCHEAZĂ importul până le rezolvi; produse noi se creează doar pentru ce nu există.
 
 **Import**
-- **Import din Excel** (`/ai-bulk-import`) — „Sym Import": urci fișiere Excel (produse, prețuri, stocuri), AI mapează coloanele, pune întrebări de clarificare unde nu e sigur și are editare avansată înainte de import.
+- **Import din Excel** (`/ai-bulk-import`) — „Sym Import": urci fișiere Excel (produse, prețuri, stocuri), AI mapează coloanele, pune întrebări de clarificare unde nu e sigur și are editare avansată înainte de import. Prin MCP, pentru Excel/CSV mic există același flux fără browser: `create_bulk_import_session_from_file` → întrebări → `import_bulk_session`.
 - **Meniu din PDF** (`/menu/import-pdf`) — urci un PDF cu meniul SAU poze/scanări: AI extrage produsele, prețurile, pozele și chiar designul paginilor (reconstruit pentru Meniu Fizic), cu propunere editabilă înainte de import; prețurile nu sunt niciodată inventate — doar ce există în document.
 
 **Pagini publice (văzute de clienți)**
@@ -125,7 +125,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - `gaseste_in_aplicatie` — link direct către orice pagină.
 
 **Scriere (cer modulul de permisiune `produse_meniu` pe token):**
-- `create_product`, `update_product`, `bulk_create_products`, `bulk_update_products` — catalog (prețul de vânzare NU se pune aici). La retail/import păstrează codurile sursă: `sku`, `barcode`, `ean` pe `create_product`/`bulk_create_products` și `update_product` unde trebuie corectate.
+- `create_product`, `update_product`, `bulk_create_products`, `bulk_update_products`, `set_standard_costs` — catalog (prețul de vânzare NU se pune aici; `standardCost` este doar cost provizoriu pentru food cost până la recepții reale). La retail/import păstrează codurile sursă: `sku`, `barcode`, `ean` pe `create_product`/`bulk_create_products` și `update_product` unde trebuie corectate.
 - `create_menu`, `update_menu`, `add_menu_item`, `update_menu_item`, `bulk_update_menu_item_prices`, `apply_menu_prices`, `auto_create_menu_from_products` — meniuri și prețuri de vânzare.
 - `create_vat_rate`, `auto_assign_vat_batch` — TVA (clasificare automată cu AI).
 - `create_tag`, `update_tag`, `assign_tag`, `bulk_assign_tag`, `bulk_remove_tag`, `auto_tag_from_menu_categories` — etichete.
@@ -136,6 +136,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 **Scriere (modul `financiar`):** `create_product_type`, `update_product_type`, `update_product_type_accounts_per_unit` — tipuri de produs și conturile lor.
 
 **Scriere — categorii de meniu și imagini (din 2026-06, acoperă golurile de import):**
+- `bulk_create_menu_categories` — creează multe categorii de meniu într-un apel; ordonează părinții înaintea copiilor când folosești `parentName`; pentru update pe categorii existente folosește `update_menu_category_fields`.
 - `create_menu_category` — creează o categorie de meniu (ierarhică prin `parentId`, ex. Bar > Bere); idempotentă pe (nume, brand); se atașează automat la meniurile brandului.
 - `set_product_image` — pune o imagine pe produs dintr-un URL public (ex. de pe meniul/site-ul vechi); o descarcă și o stochează optimizat (NU rămâne hotlink), apoi o propagă la articolele de meniu. `gallery: true` adaugă în galerie fără a înlocui cover-ul.
 - `add_menu_item` / `update_menu_item` acceptă acum și `menuCategoryId`, `description`, `gramaj` — categoria se oglindește automat și pe produs.
@@ -163,6 +164,7 @@ Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (șter
 - `set_product_allergens` ÎNLOCUIEȘTE tot setul de alergeni al produsului. Alergenii din rețetă se moștenesc automat.
 - `auto_create_menu_from_products` pe tenant viu = toate produsele nemeniuite intră cu preț 0 într-un meniu activ. `bulk_update_menu_item_prices` fără `brandId` = match pe nume în tot sistemul.
 - Schimbarea gestiunii (`warehouseId`) pe un produs cu stoc declanșează transfer contabil automat (document + note).
+- `standardCost` este fallback de cost, nu mișcare de stoc: nu creează loturi, nu schimbă CMP și prima recepție reală îl umbrește.
 
 ## Întrebări frecvente și capcane
 
@@ -171,15 +173,18 @@ Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (șter
 - **De ce nu se aplică reducerea pe notă?** Doar ofertele din pagina Oferte (/menu/promotions) reduc efectiv nota. Banner-ele promoționale de pe website sunt doar vizuale. Verifică și fereastra orară/zilele și canalele ofertei.
 - **De ce nu pot porni oferta?** Margin Guardrail a calculat că vinde sub cost — butonul e blocat. Poți modifica oferta sau confirma explicit „Publică oricum". Dacă verdictul e „provizoriu", completează rețetele lipsă pentru un calcul sigur.
 - **Unde setez prețul de vânzare?** DOAR în meniu (Produse Meniu sau `add_menu_item`/`update_menu_item`). Pe fișa produsului există doar prețul de achiziție/recepție.
+- **Cum pun cost provizoriu până vine prima factură/NIR?** `set_standard_costs` sau `standardCost` pe produs. Explică userului că este doar pentru estimarea food cost-ului, nu pentru stoc și nu pentru contabilitate.
 - **De ce nu apare produsul pe kiosk/POS?** Verifică în Platforme ce meniuri sunt atribuite canalului și dacă produsul/categoria nu e exclus(ă); apoi verifică disponibilitatea (nu e „86", nu e „automat din stoc" cu stoc 0).
 - **De ce apare „indisponibil" deși am stoc?** Verifică întâi disponibilitatea programată din `/menu/promotions` → tab Disponibilitate (zi/oră/canal), apoi regulile „automat din stoc" și „86". Un operator l-a putut marca „86" manual — vezi /menu/center cine și de ce.
 - **Ce cote TVA folosesc?** În România: 0%, 11%, 21%. Mâncarea preparată de regulă 11%, băuturile 21%. Nu folosi cotele vechi 5/9/19.
+- **TVA lipsă la import HoReCa.** Serverul clasifică determinist lipsurile: mâncare/preparate/apă 11, alcool/băuturi zaharoase/aromate/cafea/non-food/incert 21. Dacă sursa are TVA, trimite valoarea explicită.
 - **Pachet meniu sau masă servită?** Pachet = grupare de produse care EXISTĂ deja separat în meniu. Masă servită = meniu de eveniment la preț fix la care NU cunoști rețeta la vânzare — costul se stabilește ulterior din consum.
 - **De ce nu pot importa rețetarul din Excel?** Conflictele de unitate de măsură (marcate galben) blochează importul până le rezolvi — intenționat, ca să nu-ți strice consumul.
 - **„Niciun produs cu acest nume" la legarea rețetelor.** Potrivirea e pe nume exact — divergențele tipice sunt typo-uri, diacritice sau sufixe („mp", „Promo", „(4pers)"). Redenumește sau leagă manual.
 - **Am două produse aproape identice în catalog.** Nu le șterge manual — folosește Unifică Duplicate, care păstrează vânzările, stocul (adunat), rețeta și locul în meniu.
 - **Produsul nou nu iese la imprimantă/KDS.** Aproape sigur n-are tag de rutare sau are un tag NOU fără regulă: bonul se creează „unrouted" (nu se printează, nu apare pe niciun ecran, fără eroare). Dă-i tagul EXISTENT al secției (`list_tag_summary` arată convenția clientului); pentru tag nou, regula se creează în Setări → Imprimante.
-- **Cum pun categorie/descriere/gramaj/poză la import prin asistent?** Categoria: `create_menu_category` (o dată per secție) + `menuCategoryId` pe `add_menu_item`. Descrierea și gramajul: direct pe `add_menu_item`/`update_menu_item` (sau `description`/`weight` pe produs). Poza: `set_product_image` cu URL public. Toate se văd după un refresh al paginii.
+- **Cum pun categorie/descriere/gramaj/poză la import prin asistent?** Categoria: `bulk_create_menu_categories` pentru multe categorii sau `create_menu_category` punctual + `menuCategoryId` pe `add_menu_item`. Descrierea și gramajul: direct pe `add_menu_item`/`update_menu_item` (sau `description`/`weight` pe produs). Poza: `set_product_image` cu URL public. Toate se văd după un refresh al paginii.
+- **Am multe categorii/subcategorii.** Folosește `bulk_create_menu_categories`; pune părinții înaintea copiilor sau dă `parentId` explicit când numele părintelui e ambiguu.
 - **Am produse de retail cu scanner.** La import nu pierde codurile: trimite `sku`, `barcode` și/sau `ean` pe `create_product`/`bulk_create_products`; dacă lipsesc, scannerul nu are ce potrivi ulterior chiar dacă produsul există în meniu.
 
 ## Pentru acces SQL

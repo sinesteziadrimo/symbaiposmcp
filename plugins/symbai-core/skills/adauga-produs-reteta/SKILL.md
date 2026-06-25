@@ -47,7 +47,7 @@ Arborele de decizie (confirmat de clasificatorul oficial Symbai):
 | Meniu de eveniment la preț fix, fără rețetă cunoscută | `masa_servita` — NU e în enum-ul create_product; creează-l ca tip custom cu `create_product_type(brandId, code, name, …conturi)`, apoi folosește `code`-ul tău la creare | — | NU (cost ulterior prin fișă de consum) |
 
 - **Capcana unității la spirtoase**: sticla TREBUIE ținută la **l** (litri). Dacă e în „buc", rețeta „40 ml" e neconvertibilă → consumă 0.04 BUCĂȚI per shot, **fără niciun avertisment prin MCP** (incident real: COGS ×1000, stocuri −12.000 kg). Conversia e automată DOAR în aceeași familie: g↔kg, ml↔cl↔dl↔l.
-- **TVA România: 0 / 11 / 21.** Mâncare preparată și băuturi nealcoolice de regulă 11; **alcoolul mereu 21**; setează `vat` explicit la creare (default-ul e 21). Nu ești sigur → întreabă.
+- **TVA România: 0 / 11 / 21.** Mâncare preparată și băuturi nealcoolice de regulă 11; **alcoolul mereu 21**; setează `vat` explicit la creare. La import HoReCa fără TVA, serverul are fallback determinist (alimente/apă 11, alcool/băuturi zaharoase/cafea/non-food/incert 21), dar explicitul câștigă.
 - **Marfa fără rețetă e normală** (nu e o problemă de date); un `finished_good` fără rețetă E o problemă — nu scade stoc și rămâne necostat în P&L.
 
 ## Faza 3 — Propune și cere aprobarea (doar la import)
@@ -56,8 +56,8 @@ Construiește tabelul complet ÎNAINTE de orice scriere și arată-l userului: n
 
 ## Faza 4 — Execută în ordinea corectă
 
-1. **Categoriile de meniu întâi** (la import): `create_menu_category` per secție (Gustări, Cocktailuri, Vin Alb…), ierarhic cu `parentId` unde are sens (Bar > Bere). E idempotentă pe (nume, brand) și se atașează automat la meniurile brandului.
-2. **Materiile prime apoi** (`bulk_create_products` cu type + unit + vat + warehouseId + description + weight + `sku`/`barcode`/`ean` dacă sursa le are), apoi produsele vândute. Pentru retail, codurile de bare/EAN se pun la creare/import; altfel scannerul POS/inventar nu are ce potrivi.
+1. **Categoriile de meniu întâi** (la import): pentru multe categorii folosește `bulk_create_menu_categories({ brandId, items })`; părinții trebuie să fie înaintea copiilor când folosești `parentName`. Punctual, `create_menu_category` per secție (Gustări, Cocktailuri, Vin Alb…), ierarhic cu `parentId`. Tool-urile sunt idempotente și atașează categoriile la meniurile brandului.
+2. **Materiile prime apoi** (`bulk_create_products` cu type + unit + vat + warehouseId + description + weight + `sku`/`barcode`/`ean` dacă sursa le are), apoi produsele vândute. Pentru retail, codurile de bare/EAN se pun la creare/import; altfel scannerul POS/inventar nu are ce potrivi. Dacă ai doar costuri estimate înainte de prima recepție, setează `standardCost` / `set_standard_costs`; nu inventa stoc sau NIR.
 3. ⚠ **Dedupe silențios cu success:true**: `create_product` / `create_menu` / `create_menu_category` / `create_tag` / `create_allergen` întorc entitatea EXISTENTĂ dacă numele/perechea există — parametrii tăi NU se aplică pe ea. Citește răspunsul, nu doar status-ul.
 4. **Rețete** (modul `retete`): `create_recipe` cu **productId EXPLICIT mereu** (fără el → match PARȚIAL pe nume sau auto-creează un produs nou greșit). `add_recipe_ingredients` cu **productId, nu productName** (typo la nume → auto-creează un raw_material dublură). Înainte de fiecare ingredient verifică `products.unit` al lui — cantitatea rețetei trebuie în aceeași familie de unități. `yield` gol = 1; „50 porții" = 50.
 5. **În meniu, complet dintr-un apel**: `add_menu_item(menuId, productId, price, name, menuCategoryId, description, gramaj, sortOrder)` — pune prețul, categoria, descrierea și gramajul deodată. E UPSERT (dacă produsul e deja în meniu, câmpurile se aplică pe item-ul existent); numele afișat ia implicit numele produsului. Categoria se oglindește automat și pe produs. Prețul de vânzare se setează DOAR aici.
@@ -67,7 +67,7 @@ Construiește tabelul complet ÎNAINTE de orice scriere și arată-l userului: n
 8. **Alergeni**: `set_product_allergens(productId, allergenIds)` — ⚠ ÎNLOCUIEȘTE tot setul, citește întâi ce are produsul. Dacă lista de alergeni e goală, cere userului să ruleze seed-ul UE din pagina Alergeni. Produsele cu rețetă moștenesc automat alergenii ingredientelor — setează manual doar ce nu vine din rețetă.
 9. **TVA la final**: dacă au rămas găuri, `auto_assign_vat_batch` (cu onlyMissing) + verificare prin citire.
 10. **Stoc inițial** doar dacă userul îl cere: `set_initial_stock` (creează document de ajustare + mișcări reale).
-11. Anti-capcane: NU folosi `auto_create_menu_from_products` pe un tenant viu (bagă TOATE produsele nemeniuite cu preț 0 într-un meniu activ); la `bulk_update_menu_item_prices` dă MEREU `brandId` (altfel face match pe nume în tot sistemul); NU schimba `warehouseId` pe produse cu stoc „din curățenie" (declanșează transfer contabil automat).
+11. Anti-capcane: NU folosi `auto_create_menu_from_products` pe un tenant viu (bagă TOATE produsele nemeniuite cu preț 0 într-un meniu activ); la `bulk_update_menu_item_prices` dă MEREU `brandId` (altfel face match pe nume în tot sistemul); NU schimba `warehouseId` pe produse cu stoc „din curățenie" (declanșează transfer contabil automat); `standardCost` nu mișcă stoc și nu înlocuiește NIR-ul.
 
 ## Faza 5 — Verifică prin CITIRE (niciodată prin UI)
 

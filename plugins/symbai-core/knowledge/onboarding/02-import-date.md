@@ -6,7 +6,7 @@
 
 La final există: catalogul de produse (cu unitate de măsură, tip și TVA corecte), gestiunile (magaziile) în care stau, cel puțin un meniu activ cu prețuri de vânzare și — opțional — stocul inițial și furnizorii. Fără această bază, fazele următoare (etichete, rutare bucătărie, rețete, rapoarte) nu au pe ce lucra. Faza se încheie cu o verificare de sănătate echivalentă pasului 3 din wizard-ul aplicației.
 
-**Avantajul tău unic**: poți citi fișiere locale (Excel/CSV/PDF) direct de pe PC-ul utilizatorului și poți crea datele prin tool-uri — utilizatorul nu mai trece prin wizard dacă nu vrea. Există două căi; alege-o conștient (vezi mai jos).
+**Avantajul tău unic**: poți citi fișiere locale (Excel/CSV/PDF) direct de pe PC-ul utilizatorului și poți crea/importa datele prin tool-uri — utilizatorul nu mai trece prin wizard dacă nu vrea. Există mai multe căi; alege-o conștient (vezi mai jos).
 
 ## Permisiuni necesare pe token
 
@@ -37,13 +37,22 @@ Se activează din portalul Hub (hub.symbai.app) → Acces AI. Fără modul, tool
 
 ## Trei căi — când o alegi pe care
 
+- **Calea M — import fișier prin MCP (preferată când există tool-urile)**: Excel/CSV mic sau mediu, până la limita serverului (~6 MB decodat), fără nevoie de dovadă vizuală. Trimiți fișierul base64 cu `create_bulk_import_session_from_file`, răspunzi la întrebări prin `list_bulk_import_questions` / `answer_bulk_import_question`, apoi rulezi `import_bulk_session`. Pentru catalog furnizor: `import_supplier_catalog_from_file`. E aceeași logică de import, dar fără browser.
 - **Calea A — direct prin tool-uri (tu faci tot, fără pagină)**: fișiere mici-medii și curate (orientativ sub ~200-300 de rânduri), sau utilizatorul dictează lista. Control complet, zero context-switch. Pașii de execuție mai jos.
 - **Calea C — IMPORT ASISTAT (recomandată pentru fișiere reale)**: lași **pagina de import** să parseze fișierele (motorul ei robust pe encoding/numere RO/formate murdare + import tranzacțional), dar **TU răspunzi la întrebările ei** (în ce magazie, ce tip de produs, ce TVA, ce meniu — exact unde pagina greșește des) și **după import verifici și corectezi prin conexiune** tot ce a ieșit strâmb. În mod automat conduci pagina prin extensia Chrome; în mod asistat îi spui userului exact ce să încarce și ce să răspundă. Și mai inteligent: dacă fișierul e murdar/incomplet, **construiești tu un fișier canonic** (anteturi exacte → import determinist, fără întrebări) și **pre-creezi referințele prin MCP**, ba chiar **completezi datele lipsă din website/SmartMenu** cu permisiunea userului. **Playbook complet: `02b-import-asistat.md`** + `02c-import-sabloane-canonice.md` (fișier canonic + pre-creare + capcane) + `02d-import-surse-externe.md` (enrichment), sau skill-ul dedicat `importa-date`. Asta e calea de ales la fișiere mari, multe fișiere, exporturi SAGA/HTML, categorii de meniu, date lipsă, sau orice format care nu e fix cum trebuie.
 - **Calea B — wizard-ul „pe cont propriu"**: dacă userul preferă să facă singur importul în pagină, fără tine — `gaseste_in_aplicatie("import produse din excel")`. (Calea C e Calea B + tu răspunzi la întrebări și corectezi după — aproape mereu preferabilă.)
 - **Meniu din PDF sau poze**: pagină dedicată care extrage produse + prețuri + design — `gaseste_in_aplicatie("import meniu din PDF")`. NU reconstrui tu un meniu fotografiat dacă pagina asta e disponibilă. (Vezi și skill-ul `adauga-produs-reteta` pentru meniu de pe website.)
 - Fișierele cu **rețete** sau **angajați** NU se importă în faza asta — au fazele lor (rețete, personal); notează că le-ai văzut și revino la ele.
 
-> Regula scurtă, cu exemple: **fișier mic și curat → Calea A** (ex.: o listă de ~40 de produse pe Excel cu coloane clare nume/preț/categorie, sau userul ți le dictează). **Orice altceva → Calea C asistat**: export din SAGA/alt POS cu coloane strâmbe, mai multe foi, numere în formate ciudate, encoding stricat; peste ~300 de rânduri; mai multe fișiere deodată; meniuri cu categorii care trebuie să intre în locuri diferite; sau userul cere „importă exact cum era în programul vechi". Pagina e plasa de siguranță la citire; tu ești creierul la decizii și verificare.
+> Regula scurtă, cu exemple: **Excel/CSV mic cu tool-urile disponibile → Calea M**. **Listă foarte mică și clară → Calea A** (ex.: ~40 de produse pe Excel cu coloane clare nume/preț/categorie, sau userul ți le dictează). **Fișiere mari/murdare/PDF/poze sau nevoie de dovadă vizuală → Calea C asistat**. Pagina e plasa de siguranță la citire; tu ești creierul la decizii și verificare.
+
+## Pașii de execuție — import fișier prin MCP (Calea M)
+
+1. Citești local fișierul ca să înțelegi structura, apoi încarci conținutul base64 cu `create_bulk_import_session_from_file({ fileName, fileContentBase64, brandId?, locationId?, sheetName?, entityType? })`. Nu folosi această cale pentru fișiere mari peste limită, PDF/poze sau OCR.
+2. Citești întrebările importului cu `list_bulk_import_questions(sessionId)` și răspunzi doar după ce ai contextul: `answer_bulk_import_question(sessionId, questionId, optionId)`. Întrebările critice (magazie, tip produs, TVA, meniu/categorie) se rezolvă înainte de import.
+3. Rulezi `import_bulk_session({ sessionId })`. Dacă importul întoarce întrebări critice rămase, nu forța: răspunde întâi, apoi reapelează.
+4. Pentru catalog furnizor, nu construi manual sute de linii: `import_supplier_catalog_from_file({ supplierId, fileName, fileContentBase64, currency?, defaultUnit?, columnMap? })`. Apoi verifici mapările cu tool-urile de furnizori.
+5. Verifici final prin citiri MCP: produse, meniu, categorii, TVA, gestiuni, stoc, furnizori. Browserul se folosește doar dacă userul cere dovadă vizuală.
 
 ## Pașii de execuție — tool-urile MCP exacte (Calea A)
 
@@ -80,24 +89,26 @@ add_menu_item({ menuId: 5, productId: 123, price: 12.5, name: "Coca-Cola 330ml" 
 - `add_menu_item` e idempotent pe (menuId, productId), dar **NU actualizează prețul** dacă articolul există — pentru asta `update_menu_item({ brandId, menuItemId, price })` sau, în masă pe nume, `bulk_update_menu_item_prices({ brandId, items: [{ name, price }] })`, sau pe ID-uri `apply_menu_prices({ menuId, prices: [{ menuItemId, newPrice }] })`.
 - Trimite și `name` la `add_menu_item` (numele afișat în meniu) — serverul îl acceptă chiar dacă nu apare în schema tool-ului; fără el articolul apare ca „Item".
 - `auto_create_menu_from_products({ brandId, menuName? })` — folosește-l DOAR pe un catalog format aproape exclusiv din produse vandabile: bagă TOATE produsele active care nu-s în niciun meniu, **indiferent de tip** (și materiile prime!) și **cu preț 0**. După el trebuie oricum setate prețurile. Pe un catalog mixt, preferă `add_menu_item` selectiv.
+- Categorii multe/ierarhice: `bulk_create_menu_categories({ brandId, items })` înainte de articole. Pune părinții înaintea copiilor; poți folosi `parentName` pentru categoriile create anterior în același apel. Pentru categorii existente, tool-ul le refolosește și nu le suprascrie culoarea/ordinea — editează cu `update_menu_category_fields`.
 
-**4. TVA** — de regulă cotele 0/11/21 există deja (`list_vat_rates`). Dacă lipsește una: `create_vat_rate({ name: "TVA Alimente", rate: 11 })`. Pentru clasificare automată pe produse: `auto_assign_vat_batch({ brandId, onlyMissing: true })` (AI, loturi de 50; filtre opționale warehouseId/productType).
+**4. TVA** — de regulă cotele 0/11/21 există deja (`list_vat_rates`). Dacă lipsește una: `create_vat_rate({ name: "TVA Alimente", rate: 11 })`. Pentru clasificare automată pe produse: `auto_assign_vat_batch({ brandId, onlyMissing: true })` (AI, loturi de 50; filtre opționale warehouseId/productType). În RO HoReCa, dacă importul nu primește TVA explicit, serverul are fallback determinist: mâncare/preparate/apă → 11; alcool, băuturi zaharoase/aromate, cafea/ceai, non-food sau incert → 21. Explicitul din fișier câștigă.
 
 **5. Stoc inițial** (doar dacă utilizatorul a confirmat) — `set_initial_stock({ productId, quantity })`, un apel per produs:
 - Cantitatea e **ABSOLUTĂ** (stocul-țintă, nu adaos); re-apelul cu aceeași valoare e no-op.
 - Creează un document de ajustare deja POSTAT, cu efecte în contabilitate — e pentru setup, NU pentru corecții curente de stoc (alea se fac din aplicație prin inventar/mișcări).
 - Fără gestiune specificată merge în **prima gestiune activă**; cu mai multe gestiuni trimite și `warehouseId` (acceptat de server, deși nu apare în schemă).
 - Pentru sute de produse cu stoc, calea B e mai rapidă (coloana `initialStock` la importul de produse din wizard).
+- Dacă userul vrea doar un cost provizoriu pentru food cost înainte de prima recepție, NU seta stoc fictiv: folosește `set_standard_costs` / `standardCost` pe produs. Nu mișcă stoc, nu schimbă CMP și este umbrit de prima recepție reală.
 
 **6. Furnizori** (opțional, modul `furnizori`) — `create_supplier({ name, brandId, cui?, phone?, paymentTermsDays?, deliveryDays? })`, apoi catalogul: `create_supplier_product({ supplierId, name, unit?, price?, vatRate? })` + legătura la produsul intern `create_supplier_product_mapping({ supplierProductId, productId, isPreferred? })`.
 
 **După FIECARE scriere**: confirmă printr-o citire (`list_menu_items`, `search_products_db`, `list_warehouses_full` etc.), NU prin ce vede utilizatorul în browser — interfața are cache și arată datele noi abia după refresh. Nu repeta scrierea, nu raporta bug.
 
-## Ce se face DOAR din aplicație
+## Ce poate necesita aplicația / fallback UI
 
-- **Categoriile de meniu** (Aperitive, Paste, Bar > Bere…) — pe instanțele mai noi există `create_menu_category({ name, brandId, parentId? })` (idempotent pe nume+brand; ierarhie prin `parentId`) — verifică dacă tool-ul apare în sesiunea ta. Dacă NU apare: importul prin wizard (coloana `menuCategory`, cu ierarhie pe separatorul ` > `) sau manual — `gaseste_in_aplicatie("categorii meniu")`. Asignarea pe articole: `update_menu_item({ brandId, menuItemId, menuCategoryId })` cu o categorie EXISTENTĂ a brandului (se oglindește și pe produs). După ce userul zice că a terminat: `list_menu_categories({ brandId })` — vezi numărul de produse per categorie.
+- **Categoriile de meniu** (Aperitive, Paste, Bar > Bere…) — prin MCP: `bulk_create_menu_categories` pentru importuri mari sau `create_menu_category` punctual, apoi `update_menu_item({ brandId, menuItemId, menuCategoryId })`. Dacă tool-urile lipsesc pe build vechi: importul prin wizard (coloana `menuCategory`, cu ierarhie pe separatorul ` > `) sau manual — `gaseste_in_aplicatie("categorii meniu")`. După import: `list_menu_categories({ brandId })` — vezi numărul de produse per categorie.
 - **Pozele produselor** — pe instanțele mai noi există `set_product_image({ productId, imageUrl })` (poză dintr-un URL public, ex. de pe website-ul/meniul vechi al restaurantului) — verifică dacă apare în sesiunea ta. Dacă NU: pozele se pun din aplicație, pe fișa produsului sau prin biblioteca media — `gaseste_in_aplicatie("poze produse meniu")`.
-- **Wizard-ul de import** (calea B) — `gaseste_in_aplicatie("import produse din excel")`. După import: verificarea de mai jos prin citiri MCP.
+- **Wizard-ul de import** (calea B/C) — folosește-l pentru fișiere peste limita MCP, PDF/poze, formate care cer verificare vizuală sau când tool-urile de import fișier lipsesc. Link: `gaseste_in_aplicatie("import produse din excel")`. După import: verificarea de mai jos prin citiri MCP.
 - **Meniu din PDF/poze** — `gaseste_in_aplicatie("import meniu din PDF")`. După: `list_menu_items`.
 - Pentru importul unui meniu de pe **website** (inclusiv site-uri SPA cu API JSON în spate) sau adăugări punctuale după onboarding, există skill-ul dedicat `adauga-produs-reteta` — aceleași reguli, plus descoperirea stilului clientului (taguri, marfă vs materie primă la băuturi).
 - **Recepții de marfă (NIR), inventar fizic, transferuri/mișcări de stoc** — pasul „Gestiune & Stocuri" e doar ghid în wizard; documentele se fac din aplicație — `gaseste_in_aplicatie("intrări marfă")` / `("verificare stoc")`. După: `get_warehouse_products_summary({ warehouseId })`.
@@ -134,6 +145,7 @@ Raportează utilizatorului pe scurt: câte produse create/sărite, câte articol
 
 - **Numere europene**: „1.234,50" = 1234.50, nu 1234550. Atenție specială la cantități gen „0.025" (punct = zecimală, nu separator de mii). Tu trimiți `number` curat în tool-uri — normalizarea e treaba ta, înainte de apel.
 - **TVA România = 0/11/21**. Fișierele vechi vin cu 5/9/19/24 — remapează (alimente → 11, alcool/băuturi/standard → 21) și NU „repara" înapoi. Ignoră exemplele istorice din descrierile unor tool-uri („ex: 19, 9, 5") — sunt text vechi, nu reguli.
+- **TVA lipsă la HoReCa**: importul clasifică determinist lipsurile pe regulile RO curente; dacă sursa are TVA explicit, trimite-l și nu-l înlocui cu presupuneri.
 - **Nume de parametri inconsistente**: `create_product`/`bulk_create_products` folosesc `vat` + `type`; `bulk_update_products` folosește `updates.vatRate` + `updates.productType`. Nu le încrucișa.
 - **Prețul de vânzare trăiește DOAR în meniu** (`add_menu_item`/`update_menu_item`). Pe produs există doar `receptionPrice` (achiziție). Dacă fișierul are o singură coloană de preț la produse vandabile, aproape sigur e prețul de vânzare → în meniu, nu în receptionPrice (la `merchandise` receptionPrice se auto-completează oricum din primul preț de meniu).
 - **`add_menu_item` nu suprascrie prețul** unui articol existent — răspunde „Produsul este deja în meniu". Schimbarea de preț = `update_menu_item`/`apply_menu_prices`/`bulk_update_menu_item_prices`.
