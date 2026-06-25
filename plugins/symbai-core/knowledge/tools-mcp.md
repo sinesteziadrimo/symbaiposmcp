@@ -34,7 +34,7 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 1010 tool-uri** — Citire 436 · Speciale 5 · SQL 3 · Scriere per modul 566 (pe 19 module).
+**TOTAL: 1011 tool-uri** — Citire 436 · Speciale 5 · SQL 3 · Scriere per modul 567 (pe 19 module).
 
 ## Citire (fără permisiune de modul) — 436 tool-uri
 
@@ -500,9 +500,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 566 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 567 tool-uri (gated de writeModules pe token)
 
-### produse_meniu — Produse & Meniuri — 65 tool-uri
+### produse_meniu — Produse & Meniuri — 66 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
 - `answer_bulk_import_question` — Raspunde la O intrebare de clarificare dintr-o sesiune de import (echivalentul unui click pe optiune in pagina de import, dar prin conexiune). (necesită: sessionId, questionId, optionId)
 - `apply_menu_prices` — Actualizează prețurile meniu items în bulk. (necesită: menuId, prices)
@@ -523,6 +523,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `bulk_set_product_allergens` 🔒 — Setează alergenii pe MAI MULTE produse deodată — fără să intri pe fiecare produs în parte. (necesită: allergenIds, mode)
 - `bulk_set_product_custom_values` — Completează VALORILE câmpurilor custom (atribute de catalog: Material, Culoare, Tara origine etc.) pe MAI MULTE produse dintr-un singur apel — ideal după un import sau scraping. (necesită: brandId, items)
 - `bulk_set_product_images` — Setează imagini pentru MAI MULTE produse într-un singur apel (versiunea în masă a set_product_image). (necesită: images)
+- `bulk_set_product_nutrition` — Setează valorile nutriționale manuale (/100g, EU 1169/2011) pe mai multe produse dintr-un singur apel, ca set_product_nutrition dar pentru onboarding/importuri mari; upsert per produs, maximum 500 linii, cu erori raportate per produs. (necesită: items)
 - `bulk_update_menu_item_prices` — Actualizează prețurile mai multor menu items dintr-o dată, prin potrivire după nume. (necesită: brandId, items)
 - `bulk_update_products` — Actualizează produse în masă. (parametri opționali: productIds, updates, productUpdates)
 - `create_availability_schedule` — Creeaza un program de disponibilitate: produs/categorie/meniu vizibil si comandabil doar in anumite zile+ore/canale; nu modifica pretul. (necesită: name)

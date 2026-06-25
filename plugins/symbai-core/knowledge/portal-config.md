@@ -39,7 +39,7 @@ Userul rareori știe toate opțiunile. **Nu turna tot dialogul peste el** și nu
 
 Toate iau `brandId` (și opțional `locationId`). Citirea merge mereu; scrierile cer modulul **Setări & Configurare** (`setari`). Fiecare `configure_portal_*` scrie DOAR câmpurile pe care le dai — restul rămân neatinse (merge server-side).
 
-- **`get_portal_config(brandId, locationId?)`** — citește TOATĂ configurarea (tip business, culori, texte, funcționalități, afișare, **config meniu**, și **config QR**: nivel + mod plată + preset). **Citește ÎNTÂI**, înainte de orice scriere.
+- **`get_portal_config(brandId, locationId?)`** — citește TOATĂ configurarea (tip business, culori, texte, funcționalități, afișare, **config meniu**, și **config QR**: nivel + mod plată + preset). **Citește ÎNTÂI**, înainte de orice scriere. Dacă portalul/QR este activ dar nu are niciun meniu asociat pe canalele lui, întoarce `warnings[]` și mesaj cu `ATENTIE`; fixul este `assign_menu_to_channel`, nu auto-asociere.
 - **`configure_portal_general`** — tip business, nume platformă, autentificare (requireLogin/requireDate), livrare/pickup. La PRIMA configurare a unui portal nou, tool-ul pune automat default-uri după `businessType`: restaurant/cafe/bar/qsr/hotel primesc funcțiile de ospitalitate (meniu, comenzi, rezervări, QR, profil, loialitate, notificări) și tema albastră `#2563eb`; `amusement_park`/parc păstrează setul complet de parc și tema violet `#7c3aed`. Pe un portal existent NU suprascrie funcțiile/tema alese de client.
 - **`configure_portal_appearance`** — culori (hex), font, borderRadius, buttonStyle, cardStyle, navStyle, plus **`categoryChipStyle`** (filled/outline/soft/glass/gradient/minimal) și **`categoryChipColor`** (hex; gol `""` = folosește culoarea principală).
 - **`configure_portal_texts`** — titlu/subtitlu bun venit, butoane, texte de înregistrare.
@@ -120,6 +120,7 @@ Important de înțeles ca să-i explici userului — comanda QR NU ajunge la cin
 3. **Schimbi textele**: `configure_portal_texts(brandId, welcomeTitle:"Bun venit!", exploreButton:"Vezi Meniul")`.
 4. **Ascunzi/redenumești un tab**: `configure_portal_display(brandId, tabs:{events:false}, tabLabels:{menu:"Meniul Nostru"})`.
 5. **Configurezi meniul public**: `configure_portal_menu_config(brandId, showAllergens:true, showWeight:true, dietaryFilters:["vegan","gluten_free"], categoryNavMode:"two-level")`.
+5b. **Portalul/QR e activ dar meniul public e gol**: `get_portal_config(brandId)` sau `get_config_status(brandId)` arată avertismentul de meniu lipsă → `list_menus` + `assign_menu_to_channel({ brandId, channel:"parc-distractii" sau "table-clients", sourceMenuIds:[...] })` → recitești `get_portal_config` și confirmi că `warnings` e gol. Nu asocia automat primul meniu fără acord: brandurile pot avea meniuri diferite pe canale.
 6. **QR la masă, simplu (recomandat)**: `configure_portal_qr(brandId, qrLevel:"brand", directPaymentMode:"off", nameVisible:true, phoneVisible:true)` → spune-i că setările se aplică în tot brandul și că pentru rutare ospătarul trebuie pus pe raion în Program Salon.
 7. **Arăți userului ce faci, live**: `spotlight_portal_tab(brandId, tab:"qr", section:"qr-level")` → modala se deschide în browserul lui pe tab-ul QR, evidențiind nivelul.
 8. **Verifici cum e configurat**: `get_portal_config(brandId)` — răspunzi în limbaj de business ce e pornit/oprit, culori, QR.
@@ -132,6 +133,7 @@ Important de înțeles ca să-i explici userului — comanda QR NU ajunge la cin
 ## Întrebări frecvente
 
 - **De ce nu apare X în aplicația clienților?** Modulul e oprit în Funcționalități SAU tab-ul e ascuns în Afișare SAU secțiunea home e dezactivată SAU lipsesc datele (modul pornit, dar gol). Verifică cu `get_portal_config`.
+- **De ce portalul/QR arată gol deși produsele există?** Verifică `warnings[]` în `get_portal_config` și itemul `portal_menu_assignment` din `get_config_status`: portalul afișează produse doar dacă există o asociere activă meniu-canal. Asociază meniul potrivit cu `assign_menu_to_channel`.
 - **Schimbarea nu se vede în portal.** După `success`, datele sunt corecte; portalul poate arăta vechiul până la refresh (cache). Confirmă cu `get_portal_config`, nu repeta scrierea.
 - **Comanda QR ajunge la cine nu trebuie / la nimeni.** Nu e (mereu) bug: vezi „lanțul de rutare" mai sus. Verifică raionul mesei + tura ospătarului legată de raion + că e cineva în tură. La 2 min fără acceptare, se difuzează către toți.
 - **Per brand sau per zonă la QR?** Recomandă `brand` (simplu, un loc). `zona` doar dacă chiar vrea setări diferite pe terasă vs salon.
@@ -144,6 +146,7 @@ Important de înțeles ca să-i explici userului — comanda QR NU ajunge la cin
 - **Default-uri scrise peste setări existente** — trimite DOAR câmpurile pe care le schimbi. Citește cu `get_portal_config` înainte.
 - **Default-uri la portal nou** — dacă portalul nu există încă, `configure_portal_general` alege singur setul inițial după `businessType`. Nu porni/opri manual toate funcțiile doar ca să corectezi vechiul default de parc: citește după creare cu `get_portal_config`, apoi ajustează doar diferențele cerute de user.
 - **Modul pornit fără date** — pornești „Jocuri"/„Fidelitate" dar clientul vede gol. Pornește modulul ȘI populează-l.
+- **Portal activ fără meniu asociat** — clientul vede portal gol. `get_portal_config` avertizează proactiv, iar `get_config_status` marchează `portal_menu_assignment` neconfigurat. Rezolvi cu `assign_menu_to_channel` pe canalul corect (`parc-distractii` pentru magazin online web, `table-clients` pentru QR la masă), după ce confirmi meniul.
 - **QR configurat ≠ comanda ajunge la ospătar** — config-ul QR cere datele, dar rutarea depinde de raion + tură (vezi lanțul). Spune-i userului mereu și de pasul Program Salon.
 - **Nivel QR greșit** — dacă pui `zona`/`raion` dar userul nu configurează preseturile în Program Salon, comportamentul cade pe default. Pentru simplitate, `brand`.
 - **Culori ca text, nu hex** — tool-ul cere hex (`#059669`). `categoryChipColor` gol (`""`) = folosește culoarea principală.
@@ -153,7 +156,7 @@ Important de înțeles ca să-i explici userului — comanda QR NU ajunge la cin
 
 ## Tool-uri MCP utile
 
-- **Citire (fără permisiune de modul):** `get_portal_config`, `list_portal_games`, `get_game_details`, `check_game_availability`, `get_game_slots`, `list_qr_field_presets`, `list_floor_zones`. Plus `gaseste_in_aplicatie` (link direct) și `jurnal_activitate`.
+- **Citire (fără permisiune de modul):** `get_portal_config`, `get_config_status`, `list_portal_games`, `get_game_details`, `check_game_availability`, `get_game_slots`, `list_qr_field_presets`, `list_floor_zones`. Plus `gaseste_in_aplicatie` (link direct) și `jurnal_activitate`.
 - **Scriere — modul «Setări & Configurare» (`setari`):** `configure_portal_general`, `configure_portal_appearance`, `configure_portal_texts`, `configure_portal_features`, `configure_portal_display`, `configure_portal_menu_config`, `configure_portal_qr`, `spotlight_portal_tab`, `highlight_portal_section`, plus QR per raion: `set_qr_field_preset_fields`, și jocuri: `update_game_config`, `update_game_schedule`, `update_game_pricing`, `set_game_date_override`.
 - **Scriere — modul «Rezervări & Clienți» (`rezervari_clienti`):** `create_game_reservation`.
 - „Permisiune insuficientă" → modulul nu e bifat pe token → portal Hub → Acces AI. Catalogul complet: `tools-mcp.md`.
