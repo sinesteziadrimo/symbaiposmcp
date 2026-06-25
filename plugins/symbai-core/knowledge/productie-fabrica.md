@@ -2,6 +2,7 @@
 
 > Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie` — el e sursa autoritară de navigare.
 > Acest fișier acoperă **modul fabrică** (producție industrială complexă: fluxuri tehnologice pe stații, shop-floor, MPS/MRP, B2B, QC/HACCP, KPI fabrică). Pentru producția simplă de restaurant / bucătărie centrală (loturi de semipreparate, fără fluxuri pe stații) vezi `productie-restaurant.md`.
+> Pentru **fabrică de înghețată / produse aerate** (overrun = aer, densitate kg↔L, net vs brut, randament cu câștig de volum, conformitate ℮) vezi `productie-inghetata.md`.
 
 ## Pe scurt — ce e o fabrică în Symbai
 Modul fabrică transformă Symbai într-un mini-MES/ERP de producție: planifici ce produci (MPS/MRP din comenzi B2B + cereri interne), execuți pe stații de lucru cu tabletă (shop-floor), urmărești fiecare lot de la materie primă la produs finit (genealogie + recall), controlezi calitatea (carantină, inspecții, HACCP), urmărești echipamente/zone/ture și livrezi clienților business (B2B picking + expediere). Totul cu trasabilitate de container cu cod QR și KPI live (Yield, OEE, FPY, On-Time, Waste).

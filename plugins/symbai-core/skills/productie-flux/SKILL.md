@@ -29,6 +29,7 @@ Pentru configurări de fabrică, loturi multiple, recall, MPS sau situații cu r
 |---|---|---|
 | Restaurant, bucătărie centrală, catering, evenimente (mod simplu / restaurant & evenimente) | **Restaurant** — un lot = un pas: `exec_complete_batch` finalizează + consumă + creează produsul finit | `knowledge/productie-restaurant.md` |
 | Fabrică alimentară / nealimentară (mod fabrică) | **Fabrică** — flux pe operații, stații, MPS, trasabilitate, QC, B2B | `knowledge/productie-fabrica.md` |
+| Fabrică de **înghețată / produse aerate** | **Fabrică + strat înghețată** — overrun (aer), densitate kg↔L, net vs brut, randament cu câștig de volum, conformitate ℮; tool-uri `set_recipe_overrun`, `set_product_density`, `get_icecream_yield`, `get_batch_mass_balance` (overrun-aware), `get_production_yield_kpis` | `knowledge/productie-inghetata.md` (+ `productie-fabrica.md`) |
 | Nu e clar / e la limită | Întreabă userul „restaurant sau fabrică?", apoi rutează | după răspuns |
 
 Fișierele de cunoștințe conțin pașii detaliați, paginile reale și tool-urile cu parametrii lor. Skill-ul ăsta doar **orientează și rutează** — nu repetă tot conținutul lor.
