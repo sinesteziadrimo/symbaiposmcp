@@ -51,6 +51,8 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 | „cât mă costă Wolt/Glovo / ce profit fac pe platforme" | `list_delivery_pnl_segments` → `get_delivery_pnl` (read-only) | `/reports/pnl-livrari` |
 | „ce agenți de vânzări am / activează-l/dezactivează-l" | `list_sales_agents` · `toggle_sales_agent` (modul `setari`) | (creare agent nou = UI) |
 
+Pentru „micul dejun doar dimineata", „meniul de noapte", „opreste categoria X in afara weekendului" sau „program pe Wolt/Glovo", nu folosi ofertele/discounturile. Flux corect: gasesti tinta (`search_products_db` / `list_menu_categories` / `list_menus`) -> `list_availability_schedules` -> `create_availability_schedule` sau `update_availability_schedule` (modul `produse_meniu`) -> recitesti si dai linkul `/menu/promotions`, tab **Disponibilitate**. Asta seteaza vizibil/comandabil; pretul ramane neschimbat.
+
 > Rutele exacte le confirmi cu `gaseste_in_aplicatie("dispecerat" / "zone livrare" / "AWB" / "retururi")` — **nu inventa URL-uri**. Cheat-sheet în `navigare-rapida.md`. Multe pagini de livrare au sub-tab-uri adresabile cu `?tab=…` — du-te direct la tab.
 
 ## Cazurile rare unde chiar dai click (Chrome activ)
@@ -70,6 +72,7 @@ Aproape nimic din dispecerat nu cere click — dar:
 - **Snooze/pauză nu șterge comenzile.** Dacă userul spune „suntem aglomerați", `snooze_delivery_channel` pune canalul offline la sursă pentru perioada cerută și oprește auto-accept-ul; comenzile deja primite rămân în Symbai.
 - **Profitul pe platforme nu se estimează din comisionul vizibil.** Pentru Wolt/Glovo/Bolt/Tazz folosește `get_delivery_pnl` și citește `platformPnl`: comisioane, taxe, promoții suportate de firmă vs platformă, profit contribuție, comenzi nelegate și warninguri. La Wolt, setările financiare sunt în `/channels?tab=integrations` pe canal: baza de comision, finanțarea promoțiilor și maparea taxelor.
 - **Meniu platforme: full sync rar, update mic când se poate.** Glovo full sync are limită de siguranță 5 reușite/zi/canal fără `force:true`. Dacă totalurile Glovo par greșite, verifică `settings.glovo.priceIsLineTotal`. Pentru Wolt, meniul poate trimite alergeni și `weekly_availability` din datele produselor/canalului.
+- **Disponibilitatea programata are sursa canonica separata.** Pentru ferestre zi+ora foloseste `availability_schedules`: Wolt primeste fereastra nativa la urmatorul sync de meniu, iar Glovo este comutat prin update mic per fereastra. Nu retrimite full menu doar ca sa inchizi/deschizi un produs pe ore.
 - **Confirmă prin re-citire, arată prin screenshot.** După o scriere (alocare, zonă, vehicul), tool-ul a întors `success` = e salvat — confirmă cu `list_*`/`get_*`, nu cu pixelul; și fă screenshot la pagină ca să-i arăți userului (spune-i să dea refresh dacă nu vede). Vezi `condu-chrome.md` regulile c și f.
 - **Motivul de eșec e standardizat** — `mark_delivery_failed` cere un `reason` din lista fixă (client absent, adresă greșită, refuzată etc.); tool-ul îți spune valorile valide dacă greșești.
 - **Ștergerea de entități întregi nu merge prin conexiune** — dezactivează (zonă `active:false`, vehicul `status:"inactive"`) sau ghidează userul să șteargă din aplicație.

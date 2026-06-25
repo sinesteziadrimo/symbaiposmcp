@@ -34,9 +34,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 1004 tool-uri** — Citire 434 · Speciale 5 · SQL 3 · Scriere per modul 562 (pe 19 module).
+**TOTAL: 1010 tool-uri** — Citire 436 · Speciale 5 · SQL 3 · Scriere per modul 566 (pe 19 module).
 
-## Citire (fără permisiune de modul) — 434 tool-uri
+## Citire (fără permisiune de modul) — 436 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 47
 - `compare_attribution_models` — Compară modelele de atribuire (last_click/first_click/linear/time_decay/position) pe canale: venit + conversii + ROAS per model. (parametri opționali: brandId, days)
@@ -87,7 +87,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `top_produse` — Cele mai vândute produse pe o perioadă — cantitate vândută, încasări, în câte bonuri a apărut și ponderea în venituri. (parametri opționali: perioada, startDate, endDate, brandId)
 - `vanzari_in_timp` — Distribuția vânzărilor în timp pe o perioadă, pentru a vedea tiparul și orele/zilele de vârf. (parametri opționali: perioada, startDate, endDate, brandId)
 
-### Produse, meniu, rețete & stoc — 82
+### Produse, meniu, rețete & stoc — 83
 - `analyze_recipes` — Analizează rețetele unui brand (completitudine, costuri, ingrediente lipsă). (necesită: brandId)
 - `detect_production_bottlenecks` — Detectează blocajele (bottlenecks) în producție: stații supraîncărcate, utilizare vs capacitate, pe orizont temporal. (parametri opționali: daysAhead)
 - `discover_site_inventory` — Descoperă scopul ADEVĂRAT al unui site înainte de copiere: numără produse/categorii/blog/pagini din surse independente (sitemap-index + feed-ul platformei Shopify/WooCommerce + X-WP-Total), nu din ce (necesită: url)
@@ -136,6 +136,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_hashtag_groups` — Listează grupurile de hashtag-uri salvate ale brandului (seturi reutilizabile pentru postări — favorite și cele mai folosite întâi). (parametri opționali: brandId)
 - `list_hotel_reservations` — Listează rezervările de cazare ale hotelului (cele mai recente întâi). (parametri opționali: brandId, locationId, status, limita)
 - `list_lots` — Listează loturile de stoc (FIFO/FEFO), opțional filtrate pe depozit și/sau produs. (parametri opționali: warehouseId, productId, limit)
+- `list_availability_schedules` — Listeaza programele de disponibilitate zi+ora ale brandului: produse/categorii/meniuri comandabile doar in anumite ferestre. (parametri opționali: brandId)
 - `list_menu_categories` — Listează toate categoriile de meniu pentru un brand sau meniu specific, cu numărul de produse din fiecare categorie. (parametri opționali: brandId, menuId)
 - `list_menu_items` — Listează produsele dintr-un meniu specific cu categoria de meniu și zona de depozitare. (necesită: menuId)
 - `list_menus` — Listează toate meniurile din sistem cu status și brand. (parametri opționali: brandId)
@@ -363,7 +364,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `request_scale_integration` — CERE echipei Symbai integrarea unui model NOU de cântar care nu e încă suportat. (necesită: manufacturer, model)
 - `view_brand_media` — Arată-ți EFECTIV o imagine din Biblioteca Media (sau de la un URL) ca s-o VEZI și să alegi ce atașezi la o postare. (parametri opționali: mediaAssetId, url)
 
-### Diverse — 127
+### Diverse — 128
 - `analyze_external_website` — Analizeaza read-only un website public si intoarce un source brief pentru a construi/replica rapid site-ul in builder: SEO, logo/favicon, culori, fonturi, navigatie, CTA-uri, imagini/video, sectiuni, (necesită: url)
 - `analyze_food_costs` — Analizează food cost-ul produselor unui brand. (necesită: brandId)
 - `analyze_procurement` — Analizează aprovizionarea unui brand (furnizori, prețuri, lead time-uri). (necesită: brandId)
@@ -415,6 +416,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_offer_scorecard` — Verdictul «Păstrează / Oprește» pentru o ofertă (auto-discount de pe bon) — a meritat sau nu, în lei, ONEST. (necesită: offerId)
 - `get_operator_assignments` — Detaliul unui operator: utilajele pe care e specializat, zonele de care răspunde, tura + stația de azi și CE ARE DE FĂCUT azi (operațiile fixate pe utilajele lui). (necesită: employeeId)
 - `get_pnl` — Raportul P&L (profit si pierdere) COMPLET pe o perioada, gata de aratat si explicat in chat: venituri nete, COGS, profit brut + marja, cost personal, OpEx, profit operational, profit net + marja neta, (parametri opționali: perioada, startDate, endDate, brandId)
+- `get_weekday_pnl` — P&L pe zilele saptamanii: Luni..Duminica cu venit, COGS, personal din ture, OpEx alocat, profit net, cea mai buna/slaba zi si warninguri. (parametri opționali: perioada, startDate, endDate, brandId)
 - `get_pnl_snapshot` — Citeste un P&L salvat (snapshot): totalurile inghetate + ajustarile manuale si efectul lor. (necesită: snapshotId)
 - `get_presentation` — Citește o prezentare salvată — implicit un REZUMAT (meta + numărători). (necesită: presentationId)
 - `get_presentation_library_item` — Citește UN singur element din bibliotecă (o durere / soluție / întrebare discovery / dovadă / obiecție / calcul) — întreg, dar mic. (necesită: presentationId, kind, itemId)
@@ -498,9 +500,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 562 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 566 tool-uri (gated de writeModules pe token)
 
-### produse_meniu — Produse & Meniuri — 63 tool-uri
+### produse_meniu — Produse & Meniuri — 65 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
 - `answer_bulk_import_question` — Raspunde la O intrebare de clarificare dintr-o sesiune de import (echivalentul unui click pe optiune in pagina de import, dar prin conexiune). (necesită: sessionId, questionId, optionId)
 - `apply_menu_prices` — Actualizează prețurile meniu items în bulk. (necesită: menuId, prices)
@@ -523,6 +525,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `bulk_set_product_images` — Setează imagini pentru MAI MULTE produse într-un singur apel (versiunea în masă a set_product_image). (necesită: images)
 - `bulk_update_menu_item_prices` — Actualizează prețurile mai multor menu items dintr-o dată, prin potrivire după nume. (necesită: brandId, items)
 - `bulk_update_products` — Actualizează produse în masă. (parametri opționali: productIds, updates, productUpdates)
+- `create_availability_schedule` — Creeaza un program de disponibilitate: produs/categorie/meniu vizibil si comandabil doar in anumite zile+ore/canale; nu modifica pretul. (necesită: name)
 - `create_allergen` — Creează un alergen (ex: Gluten, Lactate, Ouă) (necesită: name, brandId)
 - `create_menu` — Creează un meniu nou (principal, bar, livrare, kiosk). (necesită: name, brandId)
 - `create_menu_category` — Creează o categorie de meniu (ex. (necesită: name, brandId)
@@ -557,6 +560,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_product_seo` — Setează manual descrierea, slug-ul și/sau meta SEO (titlu/descriere/indexare) ale unui produs. (necesită: menuItemId)
 - `set_products_menu_category` — Setează categoria de meniu pe mai multe PRODUSE deodată (products.menu_category_id). (necesită: productIds)
 - `update_menu` — Actualizează un meniu existent (nume, status, setări) (necesită: menuId, brandId)
+- `update_availability_schedule` — Modifica un program de disponibilitate existent: zile, ore, canale, tinta sau active=false. (necesită: id)
 - `update_menu_category` — Actualizează o categorie de meniu existentă: redenumire (name), re-parentare (parentId — numărul părintelui din același brand, sau null pentru rădăcină), sortOrder, color. (necesită: categoryId)
 - `update_menu_category_fields` — Modifică o categorie de meniu existentă — field-setter generic: trimite DOAR câmpurile de schimbat (name, color, icon, parentId, sortOrder, brandId, imageUrl). (necesită: categoryId)
 - `update_menu_item` — Actualizează un menu item: preț, nume, disponibilitate, categorie, descriere, gramaj, ordine + câmpuri de MAGAZIN ONLINE (reducere, brand, material, vârstă, video, certificări). (necesită: brandId, menuItemId)
@@ -799,11 +803,13 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_social_post` — Editează o postare social media EXISTENTĂ (draft sau programată) după ID — fără a o șterge și recrea (recrearea îi schimbă ID-ul). (necesită: postId)
 - `update_website_promotion` — Actualizează un banner/pop-up promoțional de website (text, link, plasare, activă, fereastră de timp). (necesită: id)
 
-### financiar — Financiar & Contabilitate — 24 tool-uri
+### financiar — Financiar & Contabilitate — 26 tool-uri
 - `add_pnl_snapshot_adjustment` — Adauga pe un P&L salvat (snapshot) un venit, o cheltuiala sau un angajat SUPLIMENTAR care nu e in sistem (ex. (necesită: snapshotId, tip, label, amount)
+- `add_pnl_manual_day_expense` — Adauga o cheltuiala pe zile care nu e in acte inca (formatie, DJ, paza) pentru P&L-ul pe zile. (necesită: name, amount, days)
 - `apply_accounting_codes` — Aplică coduri contabile în bulk pe produse. (necesită: assignments)
 - `apply_pnl_industry_template` — Aplica un TEMPLATE DE INDUSTRIE pe P&L (un click -> set complet de KPI-uri + grupari de venituri optimizate pe tipul de business). (necesită: profile)
 - `close_cash_book_day` — ATENȚIE: operațiune legală cu efect definitiv. (necesită: registerId, businessDate)
+- `configure_pnl_day_allocation` — Seteaza cum se imparte o cheltuiala/categorie pe zilele saptamanii pentru P&L pe zile: egal, proportional cu incasarile, procent din venit, sume pe zi, ture. (necesită: method)
 - `configure_pnl_revenue_grouping` — Activeaza/dezactiveaza sau adauga o grupare de venituri (sub-sectiune pliabila la Venituri in P&L). (necesită: sourceField)
 - `create_accounting_account` — Adaugă un cont contabil nou în planul de conturi. (necesită: brandId, code, name, type)
 - `create_cash_book_entry` — Înregistrează o operațiune manuală în registrul de casă: încasare, plată, depunere/ridicare la bancă. (necesită: registerId, entryType, amount, description)
