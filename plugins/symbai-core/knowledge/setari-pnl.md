@@ -16,7 +16,7 @@ Deci „cum arată P&L-ul" se reglează în mare parte din **tipurile de produs*
 1. **Tipuri de produs** (pagina „Conturi pe Tip Produs", `/ai-product-types`) — *manela principală*. Fiecare tip (materie primă, marfă, produs finit, serviciu, chirie, utilități…) se leagă de o categorie P&L și de conturi contabile. Dacă vânzările sau cheltuielile cad în secțiunea greșită din P&L, aici se repară.
 2. **Setări → Setări P&L** (`/settings/pnl-categories`) — categoriile, grupările de venituri, pragurile semafor, KPI-urile și template-urile de industrie.
 
-## Pagina „Setări P&L" — cele 4 tab-uri
+## Pagina „Setări P&L" — cele 5 tab-uri
 
 ### 1. Template-uri industrie
 Un singur click aplică un set complet de KPI-uri + grupări de venituri optimizat pe tipul de business: **restaurant/bar, hotel, spa/parc, fabrică, magazin, e-commerce, servicii**. E **idempotent** — ce există deja nu se dublează. Recomandarea apare automat dacă ai setat domeniile de activitate în *Setări → General*. **Ăsta e primul pas pentru un client nou.**
@@ -31,7 +31,17 @@ Secțiunile mari ale raportului (Venituri, Alte venituri, COGS, Personal, și Op
 Sub-secțiunile pliabile care apar la „1. VENITURI": pe **Canal, Metodă de plată, Tip comandă, Ospătar, Brand, Locație, Interval orar, Categorie produs** etc. Le activezi/dezactivezi, le reordonezi, le dai etichete frumoase (`valoare_din_sistem = etichetă afișată`) și pot avea **auto-ascundere** când filtrezi deja pe brand/locație (ca să nu fie redundante).
 Inspirație: bar → adaugi Interval orar + Tip produs; lanț → adaugi Brand + Locație; delivery → adaugi Canal livrare.
 
-### 4. Setări (praguri + panouri tag)
+### 4. Pe zilele săptămânii
+Regulile care alimentează raportul **P&L pe zilele săptămânii** (`/reports/pnl-zile`). Pagina este `/settings/pnl-categories?tab=weekday`.
+
+- **Ce rezolvă:** facturile lunare sau costurile indirecte nu au mereu o zi clară; aici spui cum se împart pe Luni–Duminică ca să nu decizi programul după vânzări brute.
+- **Țintă:** un bucket standard (`labor`, `cogs`, `utilities`, `occupancy`, `opex`, `marketing`, `taxes` etc.) sau o categorie P&L anume (`pnlCategoryId`).
+- **Metode:** `equal_calendar` (egal pe fiecare zi calendaristică), `equal_weekday` (egal pe cele 7 zile), `revenue_weighted` (proporțional cu încasările), `percent_of_revenue` (ex. comision card 1.5%), `day_weights` (ponderi/sume pe zile, ex. vineri+sâmbătă mai mult), `actual` (data reală a documentului), `labor_shifts` / `labor_shifts_strict` (personal din ture reale).
+- **Cheltuieli manuale pe zile:** pentru costuri încă neînregistrate sau recurente pe anumite zile (formație live, DJ, pază suplimentară). Se văd clar în P&L-ul pe zile și nu înlocuiesc facturile reale.
+
+Prin MCP, citești cu `get_weekday_pnl`, configurezi o regulă cu `configure_pnl_day_allocation`, iar cheltuielile manuale pe zile se adaugă cu `add_pnl_manual_day_expense`. Dacă un tool lipsește pe o instanță mai veche, dă linkul la tab-ul de setări și explică metoda aleasă.
+
+### 5. Setări (praguri + panouri tag)
 - **Pragurile semafor** (verde/galben/roșu) pentru food cost, personal, **prime cost**, OPEX și marjă netă. Valorile pornesc de la nivelurile recomandate HoReCa România (food cost 28–32%, prime cost ≤60%, marjă netă ≥10%).
 - Comutatoarele „Defalcare după Tag" (Vânzări / COGS) care adaugă panouri pe tag-uri în raportul detaliat.
 
@@ -44,9 +54,10 @@ KPI-uri editabile cu **constructor de formulă**: agregare (sumă/medie/min/max)
 2. **Aplic template-ul de industrie** (tab Template-uri) → KPI + grupări gata.
 3. Mă asigur că **fiecare tip de produs e pe categoria P&L corectă** (asta schimbă efectiv ce vede clientul în raport).
 4. În mod avansat, **leg conturile OpEx** de categorii, ca facturile de chirie/utilități/marketing să cadă pe linia bună.
-5. Setez **pragurile** după așteptările lui.
-6. Adaug grupări/KPI personalizate la dorință.
-7. (opțional) salvez un P&L de referință și-i adaug cheltuielile din afara sistemului.
+5. Pentru decizii de program, setez **repartizarea pe zile** (personal din ture, utilități după încasări, chirie egal calendaristic, costuri weekend pe zilele corecte).
+6. Setez **pragurile** după așteptările lui.
+7. Adaug grupări/KPI personalizate la dorință.
+8. (opțional) salvez un P&L de referință și-i adaug cheltuielile din afara sistemului.
 
 ## P&L salvat (snapshot) + cheltuieli/venituri/angajați suplimentari
 
@@ -67,11 +78,13 @@ Export PDF / Excel atât pentru raportul live cât și pentru snapshot.
 
 **P&L pe livrări** este un segment configurabil salvat în `organization_settings.pnlSettings.deliverySegments`. Proprietarul alege brandul/locația de livrare, angajații a căror manoperă intră și regulile de cheltuieli (fix, procent din CA, 100% sau procent dintr-o categorie reală). Costurile de platformă vin automat din comenzile Glovo/Wolt/Bolt/Tazz (`channel_orders`): comision, taxe delivery/service/small-order și promoții suportate de firmă. Nu dubla aceste costuri ca regulă manuală decât dacă utilizatorul știe că datele platformei lipsesc; `get_delivery_pnl` va avertiza când există reguli manuale care par comisioane de platformă. Workflow agent: `list_delivery_pnl_segments` → `get_delivery_pnl(configId|segmentName, perioada)` și citești `data.platformPnl` pentru profit contribuție, marjă, discounturi, comenzi nelegate și warninguri. Dacă nu există segment, poți rula ad-hoc cu `brandId`, dar acel calcul este doar venit minus marfă plus costuri de platformă legate; pentru manoperă și cheltuieli trebuie configurat segmentul în `/reports/pnl-livrari`.
 
+**P&L pe zilele săptămânii** vine din raportul `/reports/pnl-zile` și folosește aceleași surse ca P&L-ul live, dar le descompune pe Luni–Duminică. Prin MCP, folosește `get_weekday_pnl(perioada, brandId?, locationId?)`. Pentru costuri fără zi naturală, configurează întâi regulile cu `configure_pnl_day_allocation` (ex. `utilities` proporțional cu încasările, `occupancy` egal calendaristic, `labor` pe ture) și adaugă costuri speciale cu `add_pnl_manual_day_expense` (ex. formație vineri, DJ sâmbătă). Explică mereu că `vanzari_in_timp(grupare:"zi_saptamana")` arată trafic/vânzări, iar `get_weekday_pnl` arată profit după costuri.
+
 ## Ce poate face asistentul prin conexiune (MCP) vs. ce se face în aplicație
 
 **Prin conexiune (MCP) — citire și configurare P&L:**
-- **Citire/explicare:** `get_pnl` (P&L complet cu semafor), `get_product_pnl` (profit pe produs/SKU + pierderi + reconciliere), `list_delivery_pnl_segments` + `get_delivery_pnl` (profit pe livrări segmentate), `compare_pnl_periods` (perioade + profit bridge), `get_pnl_config` (cum e configurat), `list_pnl_kpis` (KPI live), `list_pnl_snapshots` / `get_pnl_snapshot`.
-- **Configurare:** `apply_pnl_industry_template` (template de industrie — primul pas pt. client nou), `set_pnl_thresholds` (praguri semafor), `create_pnl_category`, `configure_pnl_revenue_grouping`.
+- **Citire/explicare:** `get_pnl` (P&L complet cu semafor), `get_weekday_pnl` (profit pe zilele săptămânii), `get_product_pnl` (profit pe produs/SKU + pierderi + reconciliere), `list_delivery_pnl_segments` + `get_delivery_pnl` (profit pe livrări segmentate), `compare_pnl_periods` (perioade + profit bridge), `get_pnl_config` (cum e configurat), `list_pnl_kpis` (KPI live), `list_pnl_snapshots` / `get_pnl_snapshot`.
+- **Configurare:** `apply_pnl_industry_template` (template de industrie — primul pas pt. client nou), `set_pnl_thresholds` (praguri semafor), `create_pnl_category`, `configure_pnl_revenue_grouping`, `configure_pnl_day_allocation` (reguli pentru P&L pe zile), `add_pnl_manual_day_expense` (costuri manuale pe zile).
 - **Închidere de lună:** `create_pnl_snapshot` (îngheață raportul), `add_pnl_snapshot_adjustment` (adaugă o cheltuială/venit suplimentar pe snapshot).
 - **Clasificarea (manela):** `create_product_type`, `update_product_type`, `update_product_type_accounts_per_unit` — leagă tipurile de produs la categorii (ce decide unde cad banii). Plus `raport_vanzari`, `analyze_food_costs`, `get_accounting_overview`, `execute_sql_query` (read-only).
 

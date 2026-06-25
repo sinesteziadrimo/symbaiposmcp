@@ -7,6 +7,7 @@ Modulul acoperă tot ce pleacă din local către client: comenzile de pe platfor
 
 ## Concepte
 - **Canal de livrare** — o conexiune cu o platformă externă (Glovo, Wolt, Bolt Food, Tazz): meniul se sincronizează spre platformă, comenzile vin automat în Symbai. Un canal poate fi Online/Offline și poate fi **pauzat** (cu motiv afișat).
+- **Program de disponibilitate** — regula zi+ora care face un produs, o categorie sau un meniu comandabil doar intr-o fereastra (ex. mic dejun Lu-Vi 08:00-11:00). Nu este oferta si nu reduce pretul; decide vizibil/comandabil pe POS, QR/portal si delivery.
 - **Livrator** — angajat marcat nominal „este livrator" în Flotă → tab Livratori. Doar angajații bifați pot primi comenzi de livrare; numărul de livratori se facturează separat (modul Livrator, 29€/livrator, raportat automat în Hub). Bifarea NU ascunde pagini.
 - **Schimb (tură de livrare)** — livrator + vehicul + km la plecare; se închide cu km la final. Un livrator e „activ" în dispecerat doar cu schimb deschis și poziție GPS recentă (15 min).
 - **Zonă de livrare** — arie pe hartă (desen liber sau localități alese cu contur administrativ automat; localitățile mici, fără contur disponibil pe hartă, se adaugă ca arie pătrată în jurul centrului, cu raza aleasă de tine) cu taxă de livrare, valoare minimă comandă, prag de livrare gratuită, ore limită și capacitate maximă de comenzi pe zi. Zonele sunt per locație.
@@ -90,6 +91,16 @@ Backpressure important: cand un canal are limita de comenzi pe ora sau este pus 
 
 Full menu sync construieste meniul din meniurile asignate canalului si imbogateste payload-ul cu optiuni/extras, alergeni, etichete dietetice, restrictii, disponibilitate si setari pe canal. Pentru Wolt se trimit si `product_information.allergens` si `weekly_availability` cand exista date. Pentru Glovo, full sync-ul are limita de siguranta de 5 reusite/zi pe canal; foloseste `force:true` doar cand userul intelege ca retrimiti intreg meniul, altfel prefera update-urile mici de pret/disponibilitate.
 
+### Disponibilitate programata: mic dejun, meniu de noapte, weekend
+
+Sursa canonica este `availability_schedules`, nu campurile custom Wolt legacy. Flux agent:
+1. Gasesti tinta: `search_products_db` pentru produs, `list_menu_categories` pentru categorie sau `list_menus` pentru meniu.
+2. Verifici ce exista: `list_availability_schedules(brandId)`.
+3. Creezi sau modifici: `create_availability_schedule` / `update_availability_schedule` (modul `produse_meniu`). Parametrii importanti: `targetType` (`product|category|menu`), `targetIds`, `daysOfWeek` (`0=Duminica..6=Sambata`), `timeStart`, `timeEnd`, `channels` (`pos|kiosk|website|qr|delivery`), `locationId` optional.
+4. Recitesti `list_availability_schedules` si ii spui userului unde se vede: `/menu/promotions`, tab **Disponibilitate**.
+
+Explica simplu: „produsul se vede si se poate comanda doar in fereastra aleasa". In afara ferestrei, portalul/QR il ascunde sau il dezactiveaza, POS-ul blocheaza comanda, Wolt primeste `weekly_availability` la urmatorul sync de meniu, iar Glovo se comuta prin update mic de disponibilitate (cron delta-only, fara full sync repetat). Daca o platforma cade, Symbai merge fail-open: nu blocheaza POS-ul pentru ca Glovo/Wolt nu raspunde.
+
 Campuri utile pe produse/canal:
 - Glovo: `custom:glovo_options`, `custom:glovo_dietary_labels`, `custom:glovo_restrictions`; canalul poate avea `settings.glovo.priceIsLineTotal` daca `price` din webhook vine ca total de linie, nu pret unitar.
 - Wolt: `custom:wolt_options`, `custom:wolt_weekly_availability`, `custom:wolt_delivery_methods`, `custom:wolt_restrictions`, `custom:wolt_*` pentru GTIN/SKU/alcool/depozit; canalul poate avea `settings.wolt.weeklyAvailability`.
@@ -114,12 +125,16 @@ Daca preturile Glovo par dublate sau cantitatea schimba totalul gresit, verifica
 - `get_portal_config` — configurația portalului de comenzi online (inclusiv livrare/ridicare).
 - `list_channel_orders` — listeaza comenzile de pe agregatori/canale externe (Glovo/Wolt/Bolt/Tazz) si iti da `channelOrderId` pentru actiuni.
 - `get_channel_order` — detaliul unei comenzi de agregator: canal, status, totaluri, iteme, metadata si timeline; foloseste-l ca read-back dupa orice actiune.
+- `list_availability_schedules` — programele zi+ora pentru produse/categorii/meniuri; primul pas cand userul intreaba „cand e disponibil micul dejun" sau „ce meniu e pe Wolt dimineata".
 
 **SQL (doar-citire, dacă token-ul are toggle-ul SQL):** `list_database_tables` → `describe_database_table` → `execute_sql_query` — pentru întrebări pe care rapoartele dedicate nu le acoperă (ex. livrări eșuate pe motiv).
 
 **Scriere (cere modulul de permisiune `setari` pe token):**
 - `create_delivery_channel` — configurează un canal de livrare (platformă, brand, locație). Pentru Glovo, asta doar creeaza inregistrarea; conectarea reala cere token + Store ID-uri in `/channels?tab=integrations`, apoi trimiterea celor trei URL-uri publice catre Glovo.
 - `configure_portal_general` — pornește/oprește livrarea și ridicarea personală pe portalul de comenzi online (allowDelivery / allowPickup).
+
+**Scriere disponibilitate meniu (cere `produse_meniu`):**
+- `create_availability_schedule` / `update_availability_schedule` — fac produsul/categoria/meniul comandabil doar in anumite zile+ore. Nu le folosi pentru reduceri de pret; pentru happy hour cu discount foloseste `create_offer`.
 
 **Scriere platforme livrare (cere `livrari`, cu exceptia refund-ului):**
 - `delay_channel_order`, `confirm_channel_preorder`, `replace_channel_order_items`, `mark_channel_deposits_returned`, `snooze_delivery_channel` — actiuni reale pe Glovo/Wolt si timeline Symbai. Pentru substituire, SGR si snooze cere confirmare explicita.

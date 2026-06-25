@@ -34,6 +34,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - **Meniu Fizic** (`/menu/physical`) — editor full-screen de meniu printabil (sidebar-ul aplicației se ascunde): formate A4/A3, paginare automată cu „Recalculează", copertă + pagini speciale, pagini finale cu valori nutriționale și alergeni, stiluri pe 3 niveluri (meniu → pagină → produs), export PDF/print; QR-ul de pe copertă e un QR dinamic editabil ulterior.
 - **Centru Meniu** (`/menu/center`, alias `/centru-meniu`) — panou pentru manageri: ce e „86" acum (cu motiv, cine, până când + buton Reactivează), câte produse n-au fotografie sau alergeni, căutare produs cu marcare „86" rapidă și alias-uri de căutare.
 - **Oferte** (`/menu/promotions`) — motorul de oferte care chiar reduce nota: 5 rețete (Reducere %, Happy Hour, Cadou la X lei, Cumperi X primești Y, Sumă fixă), pe canale (sală/kiosk/website/QR/delivery) și zile/ore. **Margin Guardrail** îți spune ÎNAINTE, în lei, dacă oferta vinde sub cost (verdict: pe plus / marjă subțire / pierzi bani — la pierdere butonul de pornire e blocat, dar poți „Publică oricum"). După lansare, **Scorecard** spune dacă oferta merită păstrată; există și panou Autopilot cu propuneri de la Sym, Win-Back Radar și Surprize.
+- **Disponibilitate programată** (tab în `/menu/promotions`) — reguli care fac produse, categorii sau meniuri comandabile doar în anumite zile/ore/canale (ex. mic dejun Lu–Vi 08:00–11:00). Nu schimbă prețul ca o ofertă; decide vizibil/comandabil. Se propagă pe POS, website, QR și livrări; pentru Wolt se trimite ca `weekly_availability`, iar Glovo se sincronizează pe ferestre/delta când începe sau expiră regula.
 
 **Catalog produse**
 - **Toate Produsele** (`/master-data`) — nomenclatorul complet, cu grupare pe Magazii, Categorii sau Categorii Meniu, fișa completă a produsului (poze, alergeni, taguri, magazie) și duplicarea unui meniu cu categorii și produse.
@@ -75,6 +76,12 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 1. /menu/promotions → cardul „Happy Hour" → alegi produsele/categoriile, procentul, zilele și fereastra orară, canalele.
 2. Te uiți la verdictul Margin Guardrail (în lei): dacă „pierzi bani", regândește sau confirmă explicit.
 3. Pornești oferta — se aplică automat pe notă în fereastra setată; după câteva zile verifici Scorecard-ul.
+
+**Programezi când se vede un produs (mic dejun / meniu de prânz / sezonier)**
+1. /menu/promotions → tab **Disponibilitate** → „Program nou".
+2. Alegi ținta: produse anume, categorii sau meniuri întregi; apoi zilele, ora de început/sfârșit și canalele (gol = toate).
+3. Alege dacă produsul se ascunde când e în afara ferestrei sau rămâne vizibil dar blocat; apoi verifică pe canalul relevant (POS, QR, website sau livrare).
+4. Pentru livrări, nu dubla programul în câmpuri custom Wolt/Glovo: disponibilitatea programată este sursa canonică.
 
 **Marchezi un produs indisponibil („86") și îl readuci**
 1. /menu/center → cauți produsul → marchezi „86" (cu motiv, opțional până la o oră).
@@ -165,7 +172,7 @@ Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (șter
 - **De ce nu pot porni oferta?** Margin Guardrail a calculat că vinde sub cost — butonul e blocat. Poți modifica oferta sau confirma explicit „Publică oricum". Dacă verdictul e „provizoriu", completează rețetele lipsă pentru un calcul sigur.
 - **Unde setez prețul de vânzare?** DOAR în meniu (Produse Meniu sau `add_menu_item`/`update_menu_item`). Pe fișa produsului există doar prețul de achiziție/recepție.
 - **De ce nu apare produsul pe kiosk/POS?** Verifică în Platforme ce meniuri sunt atribuite canalului și dacă produsul/categoria nu e exclus(ă); apoi verifică disponibilitatea (nu e „86", nu e „automat din stoc" cu stoc 0).
-- **De ce apare „indisponibil" deși am stoc?** Regulile de disponibilitate au 3 niveluri: per produs > per tip de produs > global. Un operator l-a putut marca „86" manual — vezi /menu/center cine și de ce.
+- **De ce apare „indisponibil" deși am stoc?** Verifică întâi disponibilitatea programată din `/menu/promotions` → tab Disponibilitate (zi/oră/canal), apoi regulile „automat din stoc" și „86". Un operator l-a putut marca „86" manual — vezi /menu/center cine și de ce.
 - **Ce cote TVA folosesc?** În România: 0%, 11%, 21%. Mâncarea preparată de regulă 11%, băuturile 21%. Nu folosi cotele vechi 5/9/19.
 - **Pachet meniu sau masă servită?** Pachet = grupare de produse care EXISTĂ deja separat în meniu. Masă servită = meniu de eveniment la preț fix la care NU cunoști rețeta la vânzare — costul se stabilește ulterior din consum.
 - **De ce nu pot importa rețetarul din Excel?** Conflictele de unitate de măsură (marcate galben) blochează importul până le rezolvi — intenționat, ca să nu-ți strice consumul.
