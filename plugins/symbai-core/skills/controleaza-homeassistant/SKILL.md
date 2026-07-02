@@ -10,7 +10,7 @@ Userul (proprietar/manager) vrea să vadă și să controleze echipamentele clă
 ## Înainte de orice
 1. Citește la nevoie **`knowledge/home-assistant.md`** (ce e integrarea, categoriile de echipamente, politica de control, ce poți și ce nu poți face) și **`knowledge/condu-chrome.md`** (doctrina: MCP întâi, deep-link, screenshot = livrabil).
 2. **Context per unitate**: integrarea e legată de o **locație**. La un singur local, tool-urile o deduc singure; la mai multe, ia `locationId` cu `list_locations` (sau întreabă „la care unitate?") și pasează-l în tool-uri.
-3. **Conectarea** se face o singură dată, din **Setări → Integrări → Home Assistant**: alegi unitatea, pui adresa Home Assistant (ex: `http://192.168.1.10:8123`) + un **Long-Lived Access Token** (din Home Assistant → Profil → Securitate), apeși **Testează** și **Salvează**. Dacă userul nu e conectat încă, ghidează-l acolo — tu nu poți introduce tokenul prin MCP (e secret, se scrie doar din pagină).
+3. **Conectarea** se face o singură dată, din **Setări → Integrări → Home Assistant**: alegi unitatea, pui adresa publică Home Assistant (Nabu Casa / Cloudflare Tunnel / domeniu public HTTPS) + un **Long-Lived Access Token** (din Home Assistant → Profil → Securitate), apeși **Testează** și **Salvează**. Nu recomanda IP local (`192.168.x.x`, `10.x.x.x`, `localhost`) pentru cloud — e blocat implicit pentru securitate; merge doar în instalări self-hosted/edge unde serverul Symbai e în aceeași rețea și accesul privat este activat. Dacă userul nu e conectat încă, ghidează-l acolo — tu nu poți introduce tokenul prin MCP (e secret, se scrie doar din pagină).
 4. **Navigare**: pagina e **`/integrations/home-assistant`**. Du-te direct (`navigate("/integrations/home-assistant")`), nu căuta prin meniuri. Link live: `gaseste_in_aplicatie("home assistant")`.
 
 ## Cele două surse de adevăr
@@ -43,7 +43,7 @@ Indiferent de politică, pentru acțiuni perturbatoare (loc de joacă, hotă, ve
 După `home_assistant_control`/`bulk_control`, tool-ul întoarce noua stare (`newState`). Spune-i clar userului ce s-a întâmplat („Hota e acum pornită."). Dacă userul vrea să VADĂ, deschide `/integrations/home-assistant`, comută pe unitatea corectă și fă-i screenshot.
 
 ## Dacă nu e conectat / nu vede dispozitive
-- Tool-ul răspunde „Home Assistant nu este conectat/activat pentru această unitate" → trimite userul la **Setări → Integrări → Home Assistant**, alege unitatea, pune adresa + token, Testează, Salvează, comută „Integrare activă" pe pornit.
+- Tool-ul răspunde „Home Assistant nu este conectat/activat pentru această unitate" → trimite userul la **Setări → Integrări → Home Assistant**, alege unitatea, pune adresa publică + token, Testează, Salvează, comută „Integrare activă" pe pornit.
 - „Văd doar o parte din dispozitive" → în panou apar implicit doar cele controlabile; senzorii (energie/solar) se adaugă manual cu **Adaugă echipament** (sau `home_assistant_add_equipment`).
 - 401 / „token respins" → tokenul a expirat sau e greșit; regenerează un Long-Lived Access Token în Home Assistant și salvează-l din nou.
 

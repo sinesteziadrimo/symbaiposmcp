@@ -12,7 +12,7 @@ Integrarea **Home Assistant** aduce echipamentele clădirii în Symbai: le vezi 
 Integrarea e **separată pentru fiecare unitate (locație)** — fiecare local își leagă propriul Home Assistant.
 1. **Setări → Integrări → Home Assistant**.
 2. Alege **unitatea**.
-3. Pune **adresa** Home Assistant (ex: `http://192.168.1.10:8123` sau adresa publică/Nabu Casa) și un **Long-Lived Access Token** (îl generezi în Home Assistant: click pe profil, jos la **Long-Lived Access Tokens → Create Token**).
+3. Pune **adresa publică** Home Assistant (Nabu Casa, Cloudflare Tunnel sau alt domeniu public HTTPS) și un **Long-Lived Access Token** (îl generezi în Home Assistant: click pe profil, jos la **Long-Lived Access Tokens → Create Token**). Un IP local de tip `192.168.x.x` merge doar în instalări self-hosted/edge unde serverul Symbai rulează în aceeași rețea și are opțiunea de acces privat activată.
 4. **Testează conexiunea** (vezi versiunea + câte dispozitive ai), apoi **Salvează** și pornește **Integrare activă**.
 Tokenul se păstrează **criptat** și nu mai poate fi citit înapoi — ca să-l schimbi, introduci unul nou.
 
@@ -50,5 +50,5 @@ Setarea se transmite automat în instrucțiunile asistentului. Din **pagină**, 
 - **„Nu este conectat / activat"** → completează adresa + token în Setări și pornește integrarea pentru acea unitate.
 - **401 / „token respins"** → tokenul a expirat sau e greșit; generează altul în Home Assistant și salvează-l.
 - **Văd doar o parte din dispozitive** → în Home Assistant, dispozitivele controlabile apar automat; senzorii îi adaugi manual.
-- **Adresa trebuie să fie accesibilă** din rețea de către serverul Symbai (adresă publică, Nabu Casa, sau tunel) — un IP local privat funcționează doar dacă serverul îl poate atinge.
+- **Adresa trebuie să fie accesibilă** din rețea de către serverul Symbai. În cloud folosește adresă publică/Nabu Casa/Cloudflare Tunnel; IP-urile private (`192.168.x.x`, `10.x.x.x`, `localhost`) sunt blocate implicit pentru securitate.
 - Ștergerea unui echipament din panou (sau a dispozitivului din Home Assistant) nu se face din Symbai — din panou doar îl scoți din listă.
