@@ -4,7 +4,9 @@
 
 ## Pe scurt
 
-„Intrări Marfă" e locul unde marfa de la furnizori intră oficial în stoc și în contabilitate. Drumul e mereu același: **factura intră → liniile facturii se leagă (mapează) la produsele tale + conturi → se creează NIR-ul → NIR-ul postat bagă marfa pe stoc și generează automat notele contabile.** Stocul NU se mișcă niciodată mai devreme — nici la „recepție din poză", nici la recepția pe comandă; doar NIR-ul postat mișcă stocul.
+„Intrări Marfă" e locul unde marfa de la furnizori intră oficial în stoc și în contabilitate. Drumul e mereu același: **factura intră → liniile facturii se leagă (mapează) la produsele tale + conturi → se creează NIR-ul → NIR-ul postat bagă marfa pe stoc și generează automat notele contabile.** Doar NIR-ul postat mișcă stocul — niciun pas de dinainte.
+
+**Recepția prin poze e configurabilă pe firma ta** (Setări → Stocuri → „Recepție din poză"): poți alege ca marfa să intre direct pe stoc dintr-o poză când totul e clar, sau să treacă mereu printr-o verificare, cine are voie să corecteze/adauge produse, și dacă recepțiile angajaților trec pe la un contabil. Vezi secțiunea **„Îți configurezi singur procedura"** de mai jos — asistentul îți poate explica ȘI seta totul prin conexiune, nu trebuie să umbli prin meniuri.
 
 ## Cele 5 taburi ale paginii
 
@@ -54,15 +56,39 @@ Când toate liniile sunt mapate și acceptate: alegi **depozitul (magazia)** și
 ### Contul vine din tipul produsului (chiar fără configurare)
 Nota contabilă la postare derivă contul de stoc din TIPUL canonic al produsului: raw_material→301, merchandise→371, consumable→302, packaging→381, service→628. Asta funcționează și dacă brandul are 0 tipuri de produs configurate (mapare implicită). Tipurile configurate în „Conturi pe Tip Produs" sunt pentru CONTURI PERSONALIZATE / override-uri, nu pentru cazul de bază. ⚠ La `map_invoice_line` (Calea B), dacă tipul nu permite derivarea, contul cade implicit pe 371 — de aceea produsul trebuie să aibă tipul corect.
 
-## Recepția din poză și reconcilierea cu eFactura (fluxul de la /smart-ordering)
+## Recepția prin poze — poți fotografia oricâte pagini, PDF-uri, facturi mari
 
-Cum funcționează **azi** (important de știut ca să nu pierzi facturi):
-1. Angajatul face „Recepție din poză" → se creează o **ciornă** în „Avize & Draft". **Marfa NU intră pe stoc în acest moment** și NU se creează NIR.
-2. Ca să intre pe stoc: cineva mapează liniile → **Aprobă** ciorna → **Creează NIR** cu magazie. Abia atunci se mișcă stocul.
-3. Când vine **eFactura oficială** de la ANAF (același furnizor + același număr + sumă apropiată), dacă ciorna din poză e **neaprobată**, sistemul o **înlocuiește automat** (supersede) — ciorna dispare, eFactura devine sursa oficială și apoi creezi UN singur NIR din ea. Așa nu intră marfa de două ori.
-4. Dacă suma de pe poză **diferă** de eFactura, NU se înlocuiește automat — primești un avertisment și trebuie să legi tu manual în tabul **Reconciliere** (butonul „Leagă").
+Cum merge captura:
+- Faci poză la factură sau aviz cu telefonul (sau încarci fișiere). **Poți adăuga mai multe poze** dacă factura are mai multe pagini — butonul devine „Fotografiază pagina 2, 3…" și sistemul le tratează pe TOATE ca un singur document. Merge și cu **PDF-uri cu mai multe pagini** (le desface singur) — util la facturile mari de la Metro/Selgros sau magazinele online cu zeci de produse.
+- Sistemul citește furnizorul, numărul, liniile cu cantități și prețuri, și recunoaște produsele din recepțiile anterioare. Cu fiecare factură verificată, următoarele de la același furnizor merg mai repede.
 
-> ⚠ Limitări reale (spune-i utilizatorului dacă întreabă): „Recepția din poză" nu pune marfa direct pe stoc; reconcilierea automată merge doar pe ciorne **neaprobate**; legarea manuală în Reconciliere se face **doar pe furnizor** (nu verifică suma/data) — deci verifică tu numărul și suma înainte de „Leagă", ca să nu legi două facturi diferite.
+Ce se întâmplă DUPĂ poză depinde de **modul ales de firmă** (Setări → Stocuri → „Recepție din poză"):
+1. **Doar ciornă** — se creează o ciornă în „Avize & Draft"; produsele se verifică și marfa intră pe stoc mai târziu, manual (mapare → Aprobă → Creează NIR). Comportamentul clasic, pentru firme prudente.
+2. **Verificare imediată (recomandat)** — după poză se deschide direct ecranul de verificare; confirmi produsele și marfa intră pe stoc într-un flux continuu, fără să cauți documentul prin liste.
+3. **Direct pe stoc** — dacă furnizorul e recunoscut, toate produsele sunt identificate automat și totalul se verifică matematic, marfa intră pe stoc **automat dintr-o singură poză** (se creează NIR-ul singur). Orice nelămurire (furnizor nerecunoscut, produs necunoscut, total care nu se verifică) trece automat la verificare, cu motive scrise pe înțeles — nu intră niciodată date greșite tăcut.
+
+**Produse care nu-s pe comandă:** dacă furnizorul a livrat ceva ce n-ai comandat, poți primi produsul extra pe stoc alegându-l din catalog direct la recepție — nu se mai pierde marfa fizică.
+
+**Reconcilierea cu eFactura oficială:** când vine eFactura de la ANAF pentru aceeași factură fizică (același furnizor + număr), sistemul evită dublarea: dacă ciorna din poză e neaprobată și sumele se potrivesc, eFactura o înlocuiește automat; dacă poza era deja aprobată/recepționată, eFactura oficială se atașează (nu se mai pierde) și un gard împiedică al doilea NIR pe aceeași factură. Sumele diferite → avertisment + legare manuală în tabul **Reconciliere**.
+
+## Îți configurezi singur procedura (asistentul îți explică ȘI face)
+
+Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește **propria procedură** din Setări → Stocuri → „Recepție din poză", sau cerându-i asistentului. Reguli disponibile (se aplică angajaților obișnuiți — ospătari, gestionari; **responsabilii cu drepturi financiare, ex. contabil/manager, pot oricum orice**):
+
+- **Modul de lucru** — doar ciornă / verificare imediată / direct pe stoc (vezi mai sus).
+- **Gestiunea implicită** — magazia pre-completată la fiecare recepție, ca angajatul să nu aleagă de fiecare dată.
+- **Poate corecta mapările?** — dacă e oprit, angajatul doar fotografiază, iar legăturile factură→produs le face un responsabil.
+- **Poate adăuga produse noi?** — dacă e oprit, produsele necunoscute așteaptă un responsabil.
+- **Recepțiile trec printr-o verificare?** — dacă e pornit, orice recepție făcută din poză de un angajat apare în lista **„Recepții de verificat"**; un contabil/manager vede exact ce s-a recepționat, de cine, și o poate corecta apoi bifa ca verificată.
+
+**Exemple de proceduri (spune-i utilizatorului că le poate alege):**
+- *„Ospătarul pozează, mapează și intră direct pe stoc"* → mod **direct** + toate permisiunile pornite.
+- *„Angajații doar pozează, restul face contabilul"* → mod **verificare imediată** + „corectare mapări" și „produse noi" **oprite** + „verificare" **pornită**.
+- *„Marfa intră pe stoc, dar contabilul verifică ulterior"* → mod **direct/verificare** + „verificare" **pornită** (contabilul găsește tot în „Recepții de verificat").
+
+**Asistentul poate face asta prin conexiune** (fără să intri în meniuri): `get_reception_policy` (îți spune ce e activ acum, pe înțeles), `configure_reception_policy` (schimbă modul / gestiunea / permisiunile / verificarea), `list_receptions_to_review` (ce recepții așteaptă verificarea contabilului), `mark_reception_reviewed` (bifează una ca verificată). Cere-i pur și simplu, ex.: „vreau ca angajații să doar pozeze, iar eu să verific" sau „setează recepția din poză să intre direct pe stoc".
+
+> ⚠ De reținut: modificarea unei recepții după ce marfa a fost consumată/vândută e blocată dacă ar lăsa stocul pe minus, iar dacă între timp s-a făcut inventar primești avertisment — sistemul te ferește de erori de stoc.
 
 ## Cum eviți să pierzi sau să dublezi facturi
 - Verifică periodic tabul **Reconciliere** (badge-ul roșu = documente nelegate) și **Calitate Inbox Facturi** (`/inventory/inbox-quality`) — semnalează eFacturi fără NIR, mapări sub 70%, NIR-uri ciornă vechi.
@@ -89,6 +115,12 @@ Cum funcționează **azi** (important de știut ca să nu pierzi facturi):
 **Scriere (cer modulul `financiar` = „Financiar & Contabilitate"):**
 - `create_incoming_invoice` — creează o factură de intrare manuală (ciornă) de la zero (hârtie/PDF fără eFactura/OCR): `invoiceNumber`, `invoiceDate`, `lines` (descriere + cantitate, opțional preț/TVA/`mappedProductId`) + furnizor (`supplierId` sau `supplierName`+`supplierCui`). Nu mișcă stoc — urmează `map_invoice_line` + `create_nir_from_invoice`.
 
+**Procedura recepției prin poze (configurare self-service):**
+- `get_reception_policy` (citire) — întoarce procedura curentă (mod draft/review/direct, gestiune implicită, dacă personalul poate corecta mapări / adăuga produse, dacă recepțiile trec printr-o verificare, toleranțe) + explicație pe înțeles. Cheam-o înainte de a schimba ceva, ca să spui utilizatorului ce e activ.
+- `configure_reception_policy` (scriere, modul `setari` = „Setări & Configurare") — schimbă procedura: `mode` ('draft'|'review'|'direct'), `defaultReceptionWarehouseId` (0 ca s-o scoți), `allowMappingEdits`, `allowNewProducts`, `requireReview`. Trimite doar câmpurile pe care le schimbi. Explică efectul înainte, mai ales pentru `mode:'direct'`.
+- `list_receptions_to_review` (citire) — recepțiile din poză ale personalului care așteaptă verificarea contabilului (când `requireReview` e pornit): NIR, furnizor, factură, gestiune, cine a recepționat, valoare.
+- `mark_reception_reviewed` (scriere, modul `financiar` = „Financiar & Contabilitate" — acțiune de responsabil) — bifează o recepție ca verificată (o scoate din coadă), după ce ai confirmat că e corectă.
+
 > **Recepția DIRECTĂ (fără factură în sistem)** se face complet prin MCP: `create_inventory_document` (GOODS_RECEIPT) → `post_inventory_document`. Marfa intră pe stoc + nota contabilă se generează automat.
 > **NIR-ul LEGAT de o factură existentă** se face ACUM tot prin MCP: după ce liniile sunt mapate (`map_invoice_line`), `create_nir_from_invoice({ invoiceId, warehouseId, confirm: true })` creează NIR-ul legat, îl postează pe stoc + generează notele contabile (nu mai trebuie aplicația). NU folosi `create_inventory_document` pentru o factură existentă — el nu primește `invoiceId` și ar dubla marfa.
 > **Factură manuală de la zero** (hârtie/PDF, fără eFactura/OCR): `create_incoming_invoice({ invoiceNumber, invoiceDate, lines })` o creează ca ciornă (nu mișcă stoc); apoi mapezi + `create_nir_from_invoice`.
@@ -109,4 +141,9 @@ Cum funcționează **azi** (important de știut ca să nu pierzi facturi):
 - **De ce serviciul a ajuns pe cont de marfă (371)?** Tipul produsului e greșit (marcat ca marfă/stocabil). Schimbă tipul sau contul pe linie. Prin MCP, `map_invoice_line` cu produs de tip serviciu rezolvă automat contul de cheltuială corect.
 - **Preț recepție = preț de vânzare?** Câmpul „Preț recepție" actualizează prețul de raft al produsului, dar stocul se valorează la **cost**, nu la prețul de vânzare cu adaos (378/4428 nu se postează încă). E informativ.
 - **Deductibilitatea TVA pe care am pus-o nu se vede în note?** Corect — azi se salvează ca informație pentru contabil, nu schimbă încă nota contabilă (TVA merge integral pe 4426).
+- **Vreau ca marfa să intre direct pe stoc din poză / vreau ca angajații doar să pozeze și eu să verific.** Se configurează per firmă în Setări → Stocuri → „Recepție din poză" sau prin asistent (`configure_reception_policy`). Vezi secțiunea „Îți configurezi singur procedura".
+- **Cum văd ce au recepționat angajații prin poză?** Dacă ai pornit verificarea, apar în lista „Recepții de verificat" (pagina Preluare Marfă) — sau cere asistentului `list_receptions_to_review`. Le poți deschide, corecta și bifa verificate.
+- **Factura are 5 pagini — pot poza tot?** Da. Adaugă câte poze e nevoie (butonul „Fotografiază pagina N") sau încarcă PDF-ul cu mai multe pagini; se analizează ca un singur document.
+- **A venit marfă necomandată — o pot primi?** Da, la recepția pe comandă alegi produsul extra din catalog și intră pe stoc cu urmă scrisă (dacă procedura firmei permite angajatului să adauge/mapeze).
+- **Am modificat o recepție și nu mă lasă / îmi dă avertisment de inventar.** Modificarea e blocată dacă ar lăsa stocul pe minus (marfă deja consumată/vândută) — anulează întâi consumul din aval. Dacă între timp s-a făcut inventar, primești avertisment să reverifici soldurile.
 - **„Permisiune insuficientă" la map_invoice_line / set_invoice_context?** Tokenul nu are modulul `inventar` („Stocuri & Recepție"). Activează-l din portal Hub → Acces AI.
