@@ -10,7 +10,7 @@ Caracteristica-cheie: pagina e **„template-aware"** — vocabularul și taburi
 
 ⚠ **NU există tool MCP dedicat pentru deal/pipeline** (creare/avansare deal, etape, reguli de capacitate, prezentări) — astea sunt **UI-only** pe `/sales-crm` și `/settings/sales-crm`. MCP-ul acoperă funnel-ul, playbook-urile, NBA, task-urile CRM, clienții/grupurile, loialitatea, rezervările și jocurile (vezi „Tool-uri MCP").
 
-⚠ **Loc CRM nominal (crm_seat)**: paginile de vânzări se văd DOAR de angajații nominalizați ca „User CRM" (locuri facturabile, în Setări → Sales CRM → Useri CRM). Regula se aplică inclusiv adminilor — fără nominalizare, nici adminul nu vede `/sales-crm`. „De ce nu văd CRM-ul?" = lipsă nominalizare, nu bug.
+⚠ **Loc CRM nominal**: paginile de vânzări se văd DOAR de angajații nominalizați ca „User CRM" (locuri facturabile, în Setări → Sales CRM → Useri CRM). Regula se aplică inclusiv adminilor — fără nominalizare, nici adminul nu vede `/sales-crm`. „De ce nu văd CRM-ul?" = lipsă nominalizare, nu bug.
 
 ## Concepte
 
@@ -49,7 +49,7 @@ Buton „**Wizard configurare rapidă**" (la prima deschidere: 3 pași cu ~20 ș
 2. **Pipelines & Etape** (`?tab=pipelines`) — definești coloanele Kanban: nume, culoare, probabilitate %, marcaj Won/Lost, ordonare drag-and-drop.
 3. **Tipuri rezervări/evenimente** (`?tab=event-types`) — tipurile (ex. „Petrecere copii", „Corporate", „Botez"), fiecare cu capabilitățile bifate (contract/jocuri/săli/personal/produse/chestionare) + **editor de șabloane de petrecere** (cronologia zilei: sosire, servire, tort… cu offset-uri de timp).
 4. **Vizibilitate features** (`?tab=visibility`) — control granular cu toggle-uri: ce taburi apar în CRM, ce funcții AI, ce câmpuri/widget-uri pe fișa de Deal și pe Eveniment, ce câmpuri în formularul „Lead Nou", suita Servicii (proiecte/time tracking/tickets/retainers), integrări (Cvent, WhatsApp Business, Google/Outlook Calendar), canale de comunicare.
-   Tot aici: **Useri CRM** (nominalizarea locurilor crm_seat).
+   Tot aici: **Useri CRM** (nominalizarea locurilor CRM facturabile).
 
 ## Fluxuri pas-cu-pas
 
@@ -86,7 +86,7 @@ Buton „**Wizard configurare rapidă**" (la prima deschidere: 3 pași cu ~20 ș
 
 ## Întrebări frecvente
 
-- **De ce nu văd pagina Sales CRM / Servicii?** → Lipsă **loc CRM nominal** (crm_seat). Nominalizează angajatul „User CRM" în Setări → Sales CRM → Useri CRM. Se aplică și adminilor.
+- **De ce nu văd pagina Sales CRM / Servicii?** → Lipsă **loc CRM nominal**. Nominalizează angajatul „User CRM" în Setări → Sales CRM → Useri CRM. Se aplică și adminilor.
 - **De ce nu apare un tab pe fișa evenimentului (Producție/Contract/Jocuri)?** → Taburile depind de **capabilitățile tipului de rezervare** (Setări → Sales CRM → Tipuri rezervări). Bifează capabilitatea respectivă; există și un nivel per brand care poate ascunde taburi.
 - **Cum fac ca o petrecere de parc să includă jocuri?** → Tipul de rezervare trebuie să aibă capabilitatea „**Jocuri/Atracții**" activată + lista de jocuri permise. Atunci pe fișă poți adăuga sesiuni de joc, cu meniu + sală + personal + contract, P&L consolidat.
 - **Vocabularul nu se potrivește (zice „rezervări" dar eu am petreceri)** → Schimbă stilul CRM în `/settings/sales-crm` → General (alege Parc de Distracții) — taburile și termenii se rescriu.
@@ -95,7 +95,7 @@ Buton „**Wizard configurare rapidă**" (la prima deschidere: 3 pași cu ~20 ș
 
 ## Pentru acces SQL
 
-Tabele principale: `sales_deals` / `sales_stages` / `sales_pipelines` / `sales_activities` / `sales_automations`, `reservation_type_configs` (capabilități per tip), `reservations` (+ `reservation_products`, `reservation_milestones`), `customers` (+ `customer_groups`). Exemple: „câte deal-uri deschise pe agent?" → `sales_deals` group by agent + status; „valoarea pipeline-ului pe etapă" → `sales_deals` join `sales_stages`.
+Cu permisiunea SQL activă pe token poți răspunde, doar prin citire, la întrebări care nu au tool dedicat: descoperă întâi structura cu `list_database_tables` → `describe_database_table`, apoi interoghează cu `execute_sql_query`. Exemple de întrebări: „câte deal-uri deschise are fiecare agent?", „ce valoare are pipeline-ul pe fiecare etapă?", „câte evenimente de tip «Petrecere copii» au fost luna asta?".
 
 ## Cross-link-uri
 

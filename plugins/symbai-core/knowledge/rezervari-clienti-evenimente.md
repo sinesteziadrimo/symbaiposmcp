@@ -1,6 +1,6 @@
 # Rezervări, Clienți & Evenimente
 
-> Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie` — el e sursa autoritară de navigare (întoarce link direct pe subdomeniul tenantului).
+> Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie` — el e sursa autoritară de navigare (întoarce link direct pe adresa contului tău).
 
 ## Pe scurt
 

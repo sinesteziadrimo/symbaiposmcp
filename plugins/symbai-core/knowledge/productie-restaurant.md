@@ -120,6 +120,8 @@ Semipreparatul finalizat e acum un produs pe stoc. Îl legi de un produs/prepara
 | „Nu văd nicăieri producția în meniu" | Verifică modul de producție în Setări → General (trebuie simplu / restaurant & evenimente); în mod fabrică pagina e ascunsă. |
 | „Îmi lipsesc ingrediente pentru ce am de produs — comandă-le" | `create_purchase_orders_from_requirements(commit:false, mode:"loose")` — îți arăt o previzualizare (ce lipsește, de la ce furnizor, cât), confirmi, apoi `commit:true` creează comenzi-ciornă către furnizori (alege automat furnizorul potrivit per material). Trimiterea rămâne din aplicație. |
 | „Povestește-mi ziua de producție / cum a mers azi" | `explain_production_day` — rezumat pe înțelesul tău: ce s-a produs, cât, ce trebuie atenție. |
+
+## Permisiuni MCP
 - **Citire** (rapoarte/liste) — nu cer modul de scriere: `list_recipes`, `get_recipe_details`, `list_recipe_ingredients`, `get_recipe_labels`, `get_production_sheet_config`, `run_bom_explosion`, `get_semipreparate_stock`, `get_stock_levels`, `exec_list_batches`, `exec_get_batch_progress`.
 - **Scriere lot / execuție** — cer modulul `productie` pe token: `exec_create_batch`, `exec_update_batch`, `exec_start_batch`, `exec_stop_batch`, `exec_resume_batch`, `exec_complete_batch`, `exec_reschedule_batch`.
 - **Scriere rețete** — cer modulul `retete` pe token: `create_recipe`, `update_recipe`, `add_recipe_ingredients`, `bulk_replace_recipe_ingredients`, `remove_recipe_ingredient`, `set_recipe_labels`, `set_production_sheet_config`.

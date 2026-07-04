@@ -16,7 +16,7 @@ Când userul zice „optimizează-mi site-ul / magazinul", „cât de bine stau 
 2. Prezintă userului pe limba lui: scorul, primele 3-5 probleme mari și ce câștigă reparându-le. Cere-i prioritățile.
 3. **Repară pe categorii**, în ordinea impactului din raport:
    - Produse fără descriere / descrieri slabe sau duplicate → skill `descrieri-produse-seo` (`bulk_optimize_product_seo`).
-   - Produse fără slug → `bulk_optimize_product_seo` le pune slug-uri ASCII. Pentru a repara DOAR slug-urile rapid (fără AI, deci instant și gratuit, pe mii de produse) folosește `bulk_optimize_product_seo({ slugsOnly: true })`. Produsele/categoriile NOI primesc acum slug **automat la creare** — golurile rămase sunt doar din importuri vechi.
+   - Produse fără slug → `bulk_optimize_product_seo` le pune slug-uri ASCII. Pentru a repara DOAR slug-urile rapid (fără AI, deci instant și gratuit, pe mii de produse) folosește `bulk_optimize_product_seo({ slugsOnly: true })`. Produsele/categoriile noi primesc slug **automat la creare** — golurile apar de regulă la datele aduse prin importuri vechi.
    - Pagini de categorie generice (titlu „Categorie — Magazin", fără text) → `set_category_seo` (titlu + meta + text intro/outro + slug per categorie). Verifică slug-urile categoriilor cu `list_menu_categories` (au câmp `slug`). Vezi `pagini-seo-2026.md` → secțiunea PLP.
    - Entitate/NAP/Google Business slabe → `update_brand`/`update_company` + skill `raspunde-recenzii` + pagina Google Maps.
    - Articole on-page slabe → secțiunea de mai jos (`seo_audit` + `update_blog_post`).

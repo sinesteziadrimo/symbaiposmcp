@@ -4,7 +4,7 @@
 
 ## Ideea în două fraze
 
-Pagina de import a aplicației (`Import din Excel`, pasul 2 din onboarding) are cel mai bun **motor de citire a fișierelor** (recunoaște encoding, numere românești, Excel renumit „.csv", exporturi SAGA/HTML, foi multiple) + normalizare + „Import Doctor" (duplicate, TVA invalid) + import **tranzacțional** (tot-sau-nimic). Dar **deciziile ei automate** — în ce magazie intră produsele, ce tip de produs e fiecare, ce categorie — **pot fi greșite**, pentru că le ia un model mic, pe reguli, fără contextul restaurantului.
+Pagina de import a aplicației (`Import din Excel`, pasul 2 din onboarding) are cel mai bun **motor de citire a fișierelor** (recunoaște encoding, numere românești, Excel renumit „.csv", exporturi SAGA/HTML, foi multiple) + normalizare + „Import Doctor" (duplicate, TVA invalid) + import **tranzacțional** (tot-sau-nimic). Dar **deciziile ei automate** — în ce magazie intră produsele, ce tip de produs e fiecare, ce categorie — **pot fi greșite**, pentru că le ia automat, fără contextul restaurantului.
 
 **Combinația câștigătoare**: lași pagina să **parseze** fișierele (motorul ei robust), dar **TU răspunzi la întrebările ei** (model mai deștept, mai mult context — citești fișierul, înțelegi că „Vin alb casă" e o băutură de vândut, nu o materie primă), și **după import verifici și corectezi prin conexiunea MCP** tot ce a ieșit strâmb. Pentru user e o singură experiență simplă: el îți dă fișierele, tu te ocupi de tot și îi explici la fiecare pas.
 
@@ -77,7 +77,7 @@ Pagina te întreabă, per fișier, lucrurile de mai jos. Pentru fiecare: **decid
 
 **Principiul peste tot:** pagina propune, tu decizi cu cap, userul confirmă doar ce contează. La fiecare decizie ne-evidentă, o frază pentru user: „Pun băuturile la Bar și mâncarea la Bucătărie, și marchez sticlele ca «marfă» — ok?".
 
-### Cum se comportă pagina concret (ca s-o conduci fără să te încurci) — verificat în cod
+### Cum se comportă pagina concret (ca s-o conduci fără să te încurci)
 
 - **Întrebările apar într-un carusel de carduri (un dialog) care se deschide SINGUR DUPĂ ce se termină analiza**, nu imediat după upload. Analiza rulează în fundal (streaming) și durează — **așteaptă, re-citește pagina până apare dialogul**; nu apăsa nimic presupunând că s-a terminat instant.
 - **Răspunde card cu card.** Alegi opțiunea potrivită; dacă un card cere **text scris** (ex. numele unei magazii/meniu nou), ordinea e: click pe opțiune → apare câmpul de text → scrii valoarea → confirmi (Next/Submit). Nu presupune că textul se completează singur.

@@ -81,7 +81,7 @@ Obligatorii: `brandId, customerName, guestCount, date (YYYY-MM-DD), time (HH:mm)
 
 ## Echivalentul în wizard-ul din aplicație
 
-Pasul **13 din 29** la `/onboarding/step/13` — „Rezervări & Finalizare Bază", ultimul pas din onboarding-ul de bază (pașii 1–13); agentul lui din aplicație („Sym Reservations") folosește aceleași tool-uri ca tine. Pagina pasului arată statistici live + butoane către Configurare Rezervări și Rezervări. Datele pe care le scrii prin conexiune SUNT văzute de wizard (statisticile și starea se actualizează), dar **progresul wizard-ului (bifa de pas completat) NU se actualizează prin conexiune** — utilizatorul bifează pasul manual dacă folosește și wizard-ul.
+Pasul **13** la `/onboarding/step/13` — „Rezervări & Finalizare Bază", ultimul pas din onboarding-ul de bază (pașii 1–13); agentul lui din aplicație („Sym Reservations") folosește aceleași tool-uri ca tine. Pagina pasului arată statistici live + butoane către Configurare Rezervări și Rezervări. Datele pe care le scrii prin conexiune SUNT văzute de wizard (statisticile și starea se actualizează), dar **progresul wizard-ului (bifa de pas completat) NU se actualizează prin conexiune** — utilizatorul bifează pasul manual dacă folosește și wizard-ul.
 
 ## Verificare la final
 

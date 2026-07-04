@@ -49,5 +49,5 @@ Dacă utilizatorul vede eroarea de mai sus: deschide fișierul, șterge DOAR int
 
 - **Aplicația nu a fost repornită complet** — conexiunile MCP se încarcă la pornirea sesiunii; închide de tot aplicația (nu doar fereastra) și redeschide.
 - **Config în scope local, alt folder** — `claude mcp add` rulat FĂRĂ `--scope user`; re-adaugă cu `--scope user`.
-- **„Permisiune insuficientă" la un tool** — conexiunea e OK; modulul de scriere nu e bifat pe token → portal Hub → Acces AI → butonul „Permisiuni" pe token (se aplică în ~1 minut).
+- **„Permisiune insuficientă" la un tool** — conexiunea e OK; modulul de scriere nu e bifat pe token → portal Hub → Acces AI → butonul „Permisiuni" pe token (se aplică în scurt timp, fără regenerarea tokenului).
 - **Accesul s-a oprit brusc după ce mergea** — tokenul a fost revocat (din portal sau de echipa Symbai) ori a expirat → verifică în portal, regenerează.

@@ -89,7 +89,7 @@ Dacă totul există deja (zone + mese + configurație), nu re-crea nimic — rap
 - **Imprimantă/ecran de bucătărie dedicate per zonă** — din proprietățile zonei în Designer (ține de faza de echipamente, doar amintește-i că există).
 - **Ștergeri** de zone/mese/configurații — nu există prin MCP; doar din aplicație.
 
-**Verificare după ce utilizatorul zice că a terminat:** re-citește `list_entities` cu `floor_configs` — pozițiile salvate din Designer apar în `configData`. Pentru QR: cu SQL activ, `execute_sql_query` cu `SELECT count(*) FROM table_qr_codes` comparat cu numărul de mese (`floor_tables`); fără SQL, întreabă utilizatorul ce procent de acoperire arată pagina de QR-uri.
+**Verificare după ce utilizatorul zice că a terminat:** re-citește `list_entities` cu `floor_configs` — pozițiile salvate din Designer apar în `configData`. Pentru QR: cu SQL activ, numără codurile QR de masă și compară cu numărul total de mese (găsești tabelele potrivite cu `list_database_tables`); fără SQL, întreabă utilizatorul ce procent de acoperire arată pagina de QR-uri.
 
 ## Echivalentul în wizard-ul din aplicație
 
@@ -113,7 +113,7 @@ Entitățile create prin MCP **apar** în panourile wizard-ului (pașii detectea
 2. **`add_sections_to_config` NU e idempotent** — fiecare apel ADAUGĂ raioane noi. Înainte de a-l (re)apela, citește `configData.sections` din `list_entities floor_configs`. La un timeout, verifică prin citire dacă scrierea a intrat; nu repeta orbește.
 3. **`dayOfWeek` începe cu 0=Duminică** (nu 1=Luni). „Luni–Vineri" = dayOfWeek 1–5.
 4. **`sectionId` e un string generat** (`sec_...`) din răspunsul lui `add_sections_to_config` — nu un număr, nu numele raionului. `tableDbIds` sunt id-urile rândurilor de masă (din `data.ids` la creare sau `list_entities floor_tables`).
-4b. **`assignedCount` la `assign_tables_to_section` = mese distincte.** Layout-ul ține și desktop, și mobile, dar mesajul/count-ul nu se mai dublează. Dacă ai cerut 10 `tableDbIds` și tool-ul spune 10, raportează userului „10 mese asignate", apoi verifică prin citire.
+4b. **`assignedCount` la `assign_tables_to_section` = mese distincte.** Harta ține două vederi (desktop și mobil), dar count-ul numără fiecare masă o singură dată. Dacă ai cerut 10 `tableDbIds` și tool-ul spune 10, raportează userului „10 mese asignate", apoi verifică prin citire.
 5. **Pozițiile meselor NU se setează prin MCP** — `update_floor_table` schimbă doar nume/locuri/formă (descrierea tool-ului menționează „poziție", dar nu există parametri x/y). Nu promite utilizatorului că aranjezi sala vizual; trimite-l în Designer.
 6. **`brandId` e cerut de scheme la mese** chiar dacă masa aparține de fapt zonei — pasează-l mereu, dar nu te baza pe filtrare per brand la mese.
 7. **Mesele create prin MCP nu au locație proprie setată** — aparțin locației prin zona lor. Filtrul `locationId` + `unassignedOnly` din `bulk_assign_tables_to_zone` nu le va găsi; folosește `tableIds` explicit.

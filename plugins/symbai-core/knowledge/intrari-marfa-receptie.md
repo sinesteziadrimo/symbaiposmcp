@@ -41,7 +41,7 @@ Tipul produsului (marfă, materii prime, consumabile, ambalaje, serviciu, utilit
 Dacă furnizorul facturează în „bax" dar tu ții produsul la bucată, pui **factorul de pachet** (ex. un bax = 24): cantitatea se înmulțește (×24), prețul unitar se împarte (÷24), iar valoarea originală din factură rămâne neatinsă. Se învață automat pentru data viitoare.
 
 ### Preț recepție / preț vânzare
-Pe linie poți pune prețul de raft (la marfă apare „Preț recepție", la restul „Preț vânzare"). Acesta actualizează `receptionPrice` pe produs (prețul de raft) și se reține pe NIR. **Atenție (corect contabil):** sistemul postează azi marfa pe stoc la **costul de achiziție**, NU la prețul de vânzare cu adaos (conturile 371/378/4428 de „recepție la preț de vânzare" sunt configurate dar nu se execută încă la postare). Deci prețul de recepție e informativ pentru raft, nu schimbă valoarea de stoc.
+Pe linie poți pune prețul de raft (la marfă apare „Preț recepție", la restul „Preț vânzare"). Acesta actualizează prețul de raft al produsului și se reține pe NIR. **Atenție (corect contabil):** sistemul postează azi marfa pe stoc la **costul de achiziție**, NU la prețul de vânzare cu adaos (conturile 371/378/4428 de „recepție la preț de vânzare" sunt configurate dar nu se execută încă la postare). Deci prețul de recepție e informativ pentru raft, nu schimbă valoarea de stoc.
 
 ### Deductibilitate TVA / cheltuială + cheltuieli în avans (471)
 Pe factură poți seta: deductibilitatea TVA (100% / 50% vehicule / pro-rata / 0% / custom), deductibilitatea cheltuielii (protocol 2%, social 5%, diurnă 2.5×, sponsorizare, perisabilități etc.) și cheltuieli în avans (cont 471 + nr. luni + dată). **Important:** azi aceste valori se **salvează ca informație** pentru contabil, dar NU schimbă încă notele contabile generate automat (TVA se trece integral pe 4426). Sunt utile ca etichetă/intenție, nu ca motor de calcul.
@@ -131,7 +131,7 @@ Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește *
 - **Factură existentă (Calea B):** `list_received_efactura(hasNir:false)` → `get_received_efactura_details` → pe fiecare linie nemapată `search_products_db` apoi `map_invoice_line` (cont auto din tip; `packMultiplier` pt. bax) → opțional `set_invoice_context` (magazie + deductibilitate) → `create_nir_from_invoice({ invoiceId, warehouseId, confirm:true })`. Verifică mereu prin **citire** (`get_received_efactura_details`, `list_received_efactura(hasNir:true)`), nu prin interfață (UI-ul se reîmprospătează la refresh).
 - **Factură de hârtie de la zero:** `create_incoming_invoice(...)` (ciornă) → mapezi liniile → `create_nir_from_invoice(...)` — Calea B integral prin MCP, fără aplicație.
 
-**SQL (toggle separat):** tabele `incoming_invoices` + `incoming_invoice_lines` (facturi intrare + linii), `inventory_documents` + `inventory_document_lines` (NIR-uri), `reception_notes` (diferențe), `mapping_rules` + `pack_conversions` (reguli învățate), `product_types` + `product_type_accounts` (conturi pe tip).
+**SQL (toggle separat, doar citire):** pentru întrebări la care tool-urile de mai sus nu ajung, descoperă tabelele cu `list_database_tables` + `describe_database_table`, apoi `execute_sql_query` (doar SELECT) — ex. facturi de intrare cu liniile lor, NIR-uri, note de diferențe, reguli de mapare învățate.
 
 ## Întrebări frecvente
 

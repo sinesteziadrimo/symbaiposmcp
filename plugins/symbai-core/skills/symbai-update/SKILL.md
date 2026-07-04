@@ -9,7 +9,7 @@ Pluginul `symbai-core` (skill-urile + folderul `knowledge/`) e descărcat din Gi
 
 > ⚠️ Notă pentru asistent: folderul **de cache** (`.../cache/symbai/symbai-core/<ver>`) nu e repo git — un `git pull` în el nu face nimic. Versiunea reală pe care se uită clientul vine din **clona de marketplace** (`.../plugins/marketplaces/symbai/`, care ESTE repo git). Sunt **DOUĂ cauze** pentru „nu se actualizează", verifică-le în ordine: (1) flag-ul `autoUpdate` lipsește (Pasul 1); (2) flag-ul e pus dar **clona de marketplace e blocată** — nu mai face fetch sau a divergeat, deci `git pull --ff-only` al clientului eșuează în tăcere (Pasul 0). La clienții care au flag-ul corect dar tot stau pe versiune veche, cauza e aproape mereu (2).
 
-> ✅ Din v0.22.x pluginul are un **hook de self-heal** (`SessionStart` → `scripts/self-heal-marketplace.mjs`) care reface clona de marketplace automat la pornire. Deci un client care a ajuns o dată pe o versiune cu hook-ul **nu se mai blochează niciodată**. Pașii de mai jos rămân pentru: clienți încă blocați pe o versiune VECHE (pre-hook), sau diagnostic manual.
+> ✅ Versiunile recente ale pluginului au un **hook de self-heal** (`SessionStart` → `scripts/self-heal-marketplace.mjs`) care reface clona de marketplace automat la pornire. Deci un client care a ajuns o dată pe o versiune cu hook-ul **nu se mai blochează niciodată**. Pașii de mai jos rămân pentru: clienți încă blocați pe o versiune VECHE (fără hook), sau diagnostic manual.
 
 ## 0. Diagnostic + reparare clonă de marketplace (cauza #1 când flag-ul e deja corect)
 
@@ -39,7 +39,7 @@ git status -sb            # arată ahead/behind + dacă e murdar
   V=$(grep -oE '"version"[^"]*"[^"]*"' "$MK/plugins/symbai-core/.claude-plugin/plugin.json" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
   cp -r "$MK/plugins/symbai-core" "$HOME/.claude/plugins/cache/symbai/symbai-core/$V"
   ```
-Apoi repornire. (Asta e exact ce a rezolvat incidentul „frozen pe 0.21.4", 2026-06-21.)
+Apoi repornire. (Aceasta e rezolvarea tipică pentru un plugin „înghețat" pe o versiune veche.)
 
 ## 1. Asigură auto-update-ul (asta rezolvă „nu se actualizează" definitiv)
 

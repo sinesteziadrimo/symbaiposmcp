@@ -18,7 +18,7 @@ Dacă tool-urile NU apar în sesiune → folosește skill-ul `conecteaza-account
 
 - **Citire**: completă pe tot (rapoarte, facturi, jurnal, declarații, parteneri, stocuri, salarizare, bancă).
 - **Scriere**: DOAR pe modulele bifate pe token (facturare, cheltuieli, contabilitate, declarații, parteneri, stocuri, salarizare, bancă, import, setări). „Permisiune insuficientă" pe un tool = modulul nu e bifat → utilizatorul recreează tokenul cu modulul dorit din Setări → Integrări.
-- **SQL read-only**: este un comutator separat (`sqlRead`) pe token. Folosește `list_database_tables` → `describe_database_table` → `execute_sql_query` doar pentru întrebări analitice neacoperite de rapoartele dedicate și doar pe view-uri `mcp_v_*`.
+- **SQL doar-citire**: este o opțiune separată, bifată la crearea tokenului. Folosește `list_database_tables` → `describe_database_table` → `execute_sql_query` doar pentru întrebări analitice neacoperite de rapoartele dedicate și doar pe view-urile expuse conexiunii (cele listate de `list_database_tables`).
 - **Salariile NU se setează prin MCP** (se gestionează în aplicație); poți crea/edita angajați fără sume de salariu.
 - Ștergerea de entități întregi nu e disponibilă prin MCP — recomandă ștergerea din aplicație.
 
@@ -26,7 +26,7 @@ Dacă tool-urile NU apar în sesiune → folosește skill-ul `conecteaza-account
 
 1. **Context întâi**: începe cu `get_dashboard` / listări relevante ca să înțelegi starea reală. Nu presupune.
 2. **Plan + confirmare pe acțiuni ireversibile**: postarea unei note contabile, depunerea la ANAF, închiderea perioadei, salarizarea, aplicarea unui document de stoc, ștergerea unei facturi — toate cer `confirm:true`. Explică ce se va întâmpla ÎNAINTE, apoi reapelează cu `confirm:true`.
-3. **Bani = zecimale (text)**: nu rotunji prin float. Notele contabile trebuie să aibă **debit = credit**.
+3. **Bani = sume zecimale transmise ca text**: nu le rotunji și nu le trunchia. Notele contabile trebuie să aibă **debit = credit**.
 4. **Țara contează**: cotele de TVA și formatul declarațiilor depind de țara firmei (RO/DE/FR/...). Verifică, nu presupune cote.
 5. **Verifică prin re-citire**: după o scriere, citește înapoi rezultatul și confirmă utilizatorului cu dovada (id-ul creat, soldul nou etc.). Nu raporta „gata" fără să fi verificat.
 

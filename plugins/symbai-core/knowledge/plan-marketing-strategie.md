@@ -30,7 +30,7 @@ Un plan de marketing bun nu e o listă de postări — e un lanț de decizii: **
 - `review_quarterly_marketing_plan(planId)` — real vs așteptat + recomandări de realocare. [marketing]
 - `get_marketing_scorecard(days, model?)` — înainte de buget: venit atribuit, spend ads, ROAS combinat, LTV:CAC pe canale și semnale sub 3. [citire]
 - `compare_attribution_models(days)` — verifică split-ul pe mai multe modele ca să nu realoci pe last-click umflat. [citire]
-- `get_ad_campaign_insights(campaignId, startDate?, endDate?)` — înainte de a opri/scalata o campanie: spend, CTR, CPC, CPA, conversii, ROAS, trend zilnic. [citire]
+- `get_ad_campaign_insights(campaignId, startDate?, endDate?)` — înainte de a opri/scala o campanie: spend, CTR, CPC, CPA, conversii, ROAS, trend zilnic. [citire]
 - `set_campaign_budget(campaignId, newDailyBudgetRon, confirm:true)` — schimbă bugetul zilnic; bani reali, confirm-first și respectă plafonul de token. [reclame]
 - `what_if_marketing_budget(brandId, baselineSplit, newSplit)` — simulează mutarea bugetului între canale. [citire]
 - `get_seasonal_calendar(quarter, year)` — evenimentele sezoniere + lead-time. [citire]

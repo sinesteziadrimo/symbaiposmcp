@@ -58,7 +58,7 @@ Fluxul e identic: verifică contul (`list_ad_accounts`) → confirmă bugetul + 
 - **Metrici reale / performanță**: `get_ad_campaign_insights(campaignId, startDate?, endDate?)` înainte să recomanzi pauză, scalare sau schimbare de buget. Uită-te la spend, CTR, CPC, CPA, conversii, ROAS și trend pe zile.
 - **Pune pe pauză** (oprește cheltuiala imediat): `pause_ad_campaign(campaignId)` — acțiune sigură, nu cere confirmare.
 - **Repornește**: `resume_ad_campaign(campaignId, confirm:true)` — reia cheltuiala, deci cere confirmarea utilizatorului.
-- **Schimbă bugetul zilnic**: `set_campaign_budget(campaignId, newDailyBudgetRon, confirm:true)` — bani reali. Întâi arată metricile, suma nouă în RON/zi și motivul, apoi cere OK explicit. Respectă plafonul adsDailyBudgetCap; dacă Meta refuză, nu promite că s-a schimbat.
+- **Schimbă bugetul zilnic**: `set_campaign_budget(campaignId, newDailyBudgetRon, confirm:true)` — bani reali. Întâi arată metricile, suma nouă în RON/zi și motivul, apoi cere OK explicit. Respectă plafonul de buget zilnic setat de proprietar pe token; dacă Meta refuză, nu promite că s-a schimbat.
 
 ## Reguli (IMPORTANT — bani reali)
 
@@ -73,7 +73,7 @@ Fluxul e identic: verifică contul (`list_ad_accounts`) → confirmă bugetul + 
 ## Exemplu
 
 > Utilizator: „promovează postarea cu meniul de vară pe Facebook, 30 de lei pe zi, o săptămână, în Timișoara"
-> 1. `list_ad_accounts` → cont Drimoland OK.
+> 1. `list_ad_accounts` → contul de reclame „Restaurantul Exemplu" e conectat, OK.
 > 2. `list_boostable_posts` → găsești postarea „Meniul de vară" (postId 961, Foto, FB+IG).
 > 3. Confirmi: „Promovez «Meniul de vară» pe Facebook, 30 RON/zi × 7 zile = ~210 RON, țintă Timișoara. Confirmi?" → utilizatorul: „da".
 > 4. `boost_post(postId:961, dailyBudgetRon:30, platform:"facebook", durationDays:7, locations:["Timișoara"], confirm:true)`.

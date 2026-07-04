@@ -99,7 +99,7 @@ Pentru o lista de 20.000 contacte, obiectivul nu este "trimitem maine la toti", 
 ## Intrebari Frecvente
 
 - **Cand trimit ca sa cresc open rate-ul?** Nu alege doar o ora fixa. Ruleaza `analyze_email_send_time_plan`, foloseste predictive sending si arata utilizatorului sloturile recomandate. Daca nu exista istoric, fallback HoReCa bun este 10:00-11:00, 15:00-16:00 si 18:00-19:00, dar validarea vine din datele brandului.
-- **Pot bate open rate-ul din ActiveCampaign?** Posibil, dar nu garantat doar prin schimbarea platformei. Sansele cresc daca folosesti datele POS pentru segmentare, warm-up corect, ore individuale, continut personalizat si masori click/conversie, nu doar open.
+- **Pot bate open rate-ul de pe vechea mea platforma de email (ex. ActiveCampaign)?** Posibil, dar nu garantat doar prin schimbarea platformei. Sansele cresc daca folosesti datele POS pentru segmentare, warm-up corect, ore individuale, continut personalizat si masori click/conversie, nu doar open.
 - **De ce open rate-ul pare ciudat?** Apple Mail Privacy Protection, proxy-uri si roboti pot umfla sau ascunde deschiderile. Foloseste reliable opens, click rate, CTOR, conversii, bounce si complaints.
 - **Ce fac daca bounce rate e mare?** Opresti cresterea volumului, verifici `list_email_logs`, cureti hard bounce/suppression, rulezi deliverability plan si trimiti urmatorul val doar catre contacte calde.
 - **Cum calculez ROI?** `get_email_conversion_attribution`; daca exista clickuri fara conversii atribuite, `reconcile_email_conversions` cu o fereastra de 7 zile dupa click.

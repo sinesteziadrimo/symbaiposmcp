@@ -2,11 +2,11 @@
 
 > Cum creezi, înțelegi și editezi MATERIALELE GRAFICE ale restaurantului (afișe, flyere, broșuri, table tents, postări social, șabloane QR de masă) prin conexiune (MCP) — fără clickuri. Fluxul complet + livrarea către user: skill-ul `materiale-grafice`. Conducerea Chrome (deep-link, screenshot ca livrabil) = `condu-chrome.md`. Pentru MENIUL fizic tipărit (alt modul) → `meniu-fizic-design.md`.
 
-## ⚠ READ FIRST — ai 14 tool-uri dedicate, lucrezi DECLARATIV, nu cu clickuri
+## ⚠ READ FIRST — ai tool-uri dedicate, lucrezi DECLARATIV, nu cu clickuri
 
 Materialele grafice se editează în studioul `/graphic-materials` (drag-drop). TU nu dai clickuri — designul e o structură pe care o citești, o transformi și o scrii prin tool-uri MCP semantice. Două căi, ambele excelente:
 
-1. **Pornește dintr-un ȘABLON** (cel mai rapid mod de a obține ceva frumos): `list_material_templates` → `create_material_from_template`. Sunt ≈23 șabloane profesioniste (promo, meniul zilei, voucher, story/post/cover social, multe carduri QR de masă). Completează automat numele brandului și locația; opțional recolorează la brand.
+1. **Pornește dintr-un ȘABLON** (cel mai rapid mod de a obține ceva frumos): `list_material_templates` → `create_material_from_template`. Există zeci de șabloane profesioniste (promo, meniul zilei, voucher, story/post/cover social, multe carduri QR de masă) — catalogul complet îl vezi cu `list_material_templates`. Completează automat numele brandului și locația; opțional recolorează la brand.
 2. **Compune de la zero ca un grafician**: `create_material_design` cu o listă de elemente (text, imagini, forme, sloturi QR) — sau gol, apoi adaugi cu `add_material_elements`. **Coordonatele sunt FRACȚIONALE (0..1 din coală)** — gândești în procente, nu în pixeli (ex. `x:0.5` = mijloc pe orizontală, `width:0.8` = 80% din lățime, `fontSize:0.08` = 8% din lățime).
 
 NU folosi `execute_sql_query` pe materiale și NU edita „brut" — tool-urile fac merge sigur (ating doar ce ceri). Permisiunea de scriere: modulul **`marketing_social`** („Marketing & Social Media"). „Permisiune insuficientă" → portal Hub → Acces AI.
@@ -20,12 +20,12 @@ Fiecare material are un **tip** și un **format** (dimensiune coală):
 
 Formatele uzuale (id-uri pt `format`): `a4-portrait`, `a4-landscape`, `a3-portrait`, `a5-flyer`, `a6-flyer`, `dl-flyer`, `ig-post`, `ig-story`, `fb-post`, `fb-event-cover`, `qr-table-a6`, `qr-table-a5`, `qr-table-a7`, `qr-table-tent`, `qr-card-85x55`, `qr-sticker-50`. Sau dimensiune custom în mm (`widthMm`+`heightMm`).
 
-## Cele 14 tool-uri MCP
+## Tool-urile MCP
 
 **CITIRE (mereu disponibile):**
 - `list_material_designs({brandId?, type?, includeArchived?})` — materialele salvate ale brandului (id, nume, tip, dimensiuni, nr. pagini/elemente). Punctul de start: îți dă `designId`-ul.
 - `get_material_design({designId})` — citește un material ca să-l ÎNȚELEGI: dimensiunile colii (mm + px), fundalul, și TOATE elementele cu `id`, tip, poziție (px **și procente**), dimensiune, conținut/culoare. Ia `id`-urile de element de aici pentru update/remove/arrange.
-- `list_material_templates({group?})` — cele ≈23 șabloane gata făcute (grup Print / Social / QR): `templateId` + descriere + dimensiuni. **Pornește de aici** pentru rezultate frumoase rapid.
+- `list_material_templates({group?})` — șabloanele gata făcute (grup Print / Social / QR): `templateId` + descriere + dimensiuni. **Pornește de aici** pentru rezultate frumoase rapid.
 
 **CREARE:**
 - `create_material_from_template({templateId, brandId?, name?, locationId?, tokens?, applyBrandColors?, useBrandFont?})` — material NOU dintr-un șablon. Completează `{{brand}}`/`{{location}}` automat; `tokens` pentru restul (ex. `{tableNumber:'12', code:'VARA10'}`); `applyBrandColors:true` recolorează la paleta brandului; `useBrandFont:true` pune fontul de brand. **RECOMANDAT ca prim pas** pentru majoritatea cererilor.

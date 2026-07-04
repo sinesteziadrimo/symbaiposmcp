@@ -37,7 +37,7 @@ Se activează din portalul Hub (hub.symbai.app) → Acces AI. Fără modul, tool
 
 ## Trei căi — când o alegi pe care
 
-- **Calea M — import fișier prin MCP (preferată când există tool-urile)**: Excel/CSV mic sau mediu, până la limita serverului (~6 MB decodat), fără nevoie de dovadă vizuală. Trimiți fișierul base64 cu `create_bulk_import_session_from_file`, răspunzi la întrebări prin `list_bulk_import_questions` / `answer_bulk_import_question`, apoi rulezi `import_bulk_session`. Pentru catalog furnizor: `import_supplier_catalog_from_file`. E aceeași logică de import, dar fără browser.
+- **Calea M — import fișier prin MCP (preferată când există tool-urile)**: Excel/CSV mic sau mediu (orientativ până în câțiva MB — peste, conexiunea refuză fișierul), fără nevoie de dovadă vizuală. Trimiți fișierul base64 cu `create_bulk_import_session_from_file`, răspunzi la întrebări prin `list_bulk_import_questions` / `answer_bulk_import_question`, apoi rulezi `import_bulk_session`. Pentru catalog furnizor: `import_supplier_catalog_from_file`. E aceeași logică de import, dar fără browser.
 - **Calea A — direct prin tool-uri (tu faci tot, fără pagină)**: fișiere mici-medii și curate (orientativ sub ~200-300 de rânduri), sau utilizatorul dictează lista. Control complet, zero context-switch. Pașii de execuție mai jos.
 - **Calea C — IMPORT ASISTAT (recomandată pentru fișiere reale)**: lași **pagina de import** să parseze fișierele (motorul ei robust pe encoding/numere RO/formate murdare + import tranzacțional), dar **TU răspunzi la întrebările ei** (în ce magazie, ce tip de produs, ce TVA, ce meniu — exact unde pagina greșește des) și **după import verifici și corectezi prin conexiune** tot ce a ieșit strâmb. În mod automat conduci pagina prin extensia Chrome; în mod asistat îi spui userului exact ce să încarce și ce să răspundă. Și mai inteligent: dacă fișierul e murdar/incomplet, **construiești tu un fișier canonic** (anteturi exacte → import determinist, fără întrebări) și **pre-creezi referințele prin MCP**, ba chiar **completezi datele lipsă din website/SmartMenu** cu permisiunea userului. **Playbook complet: `02b-import-asistat.md`** + `02c-import-sabloane-canonice.md` (fișier canonic + pre-creare + capcane) + `02d-import-surse-externe.md` (enrichment), sau skill-ul dedicat `importa-date`. Asta e calea de ales la fișiere mari, multe fișiere, exporturi SAGA/HTML, categorii de meniu, date lipsă, sau orice format care nu e fix cum trebuie.
 - **Calea B — wizard-ul „pe cont propriu"**: dacă userul preferă să facă singur importul în pagină, fără tine — `gaseste_in_aplicatie("import produse din excel")`. (Calea C e Calea B + tu răspunzi la întrebări și corectezi după — aproape mereu preferabilă.)
@@ -118,7 +118,7 @@ add_menu_item({ menuId: 5, productId: 123, price: 12.5, name: "Coca-Cola 330ml" 
 
 ## Echivalentul în wizard-ul din aplicație
 
-Pașii 2-5 din `/onboarding` (≈29 de pași în total):
+Pașii 2-5 din `/onboarding`:
 - **Pasul 2 — Import Date**: wizard-ul de fișiere (upload → analiză AI → revizuire → confirmare → import) + varianta „Meniul din PDF sau poze". 9 tipuri de entități importabile (produse, rețetar, articole meniu, gestiuni, furnizori, angajați, mișcări stoc…).
 - **Pasul 3 — Verificare**: dashboard de sănătate cu 5 verificări (gestiuni, TVA, meniu & prețuri, categorii goale, tipuri produse) + butoane de reparare automată.
 - **Pasul 4 — Gestiune & Stocuri**: ghid cu tururi prin paginile de magazii/NIR/inventar (informativ).
@@ -132,8 +132,8 @@ Datele create de tine prin MCP **sunt văzute** de wizard (pașii detectează en
 
 Replica verificării din pasul 3, prin citiri (+ corecții):
 1. `list_warehouses_full` → ≥1 gestiune; `get_warehouse_products_summary({ warehouseId })` pe fiecare → nicio gestiune goală neintenționat.
-2. `list_vat_rates` → există 0/11/21 (RO); produsele au cote valide — pe catalog mare, cu SQL: `SELECT id, name, vat_rate FROM products WHERE active = true AND vat_rate::numeric NOT IN (0,11,21) LIMIT 50`.
-3. `list_menus({ brandId })` → ≥1 meniu activ per brand; `list_menu_items({ menuId })` → fără articole cu preț 0/lipsă (sau SQL: `menu_items` cu `price <= 0`).
+2. `list_vat_rates` → există 0/11/21 (RO); produsele au cote valide — pe catalog mare, cu SQL read-only: găsește tabela de produse cu `list_database_tables`/`describe_database_table` și caută produsele active cu cote TVA în afara 0/11/21.
+3. `list_menus({ brandId })` → ≥1 meniu activ per brand; `list_menu_items({ menuId })` → fără articole cu preț 0/lipsă (sau, cu SQL read-only, caută articolele de meniu cu preț ≤ 0).
 4. `list_menu_categories({ brandId })` → fără categorii goale (dacă s-au folosit categorii).
 5. `list_product_types({ brandId })` → tipuri definite; produse fără tip → reparare cu `bulk_update_products({ productIds, updates: { productType: "raw_material" } })`.
 6. Dacă s-a setat stoc: spot-check `get_product_details({ productId })` pe 2-3 produse.

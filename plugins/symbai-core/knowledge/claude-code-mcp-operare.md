@@ -40,7 +40,7 @@ SQL read-only este fallback pentru intrebari punctuale fara tool dedicat. Nu fol
 
 ## Date Sensibile Si Redactare MCP
 
-MCP lucreaza pe date live, dar nu este un seif de parole. Serverul redacteaza intentionat campurile de tip credential sau secret din payload-ul `data`: parole/hash-uri, tokenuri OAuth/API, chei marketplace, parola SMTP criptata, configuratii router/UniFi, PIN/parola/CNP/salarii angajati, tokenuri de semnare contract si tokenuri publice de plata/tracking.
+MCP lucreaza pe date live, dar nu este un seif de parole. Serverul redacteaza intentionat campurile de tip credential sau secret din raspunsuri: parole, tokenuri OAuth/API, chei marketplace, parola SMTP, configuratii de retea/router, PIN/parola/CNP/salarii angajati, tokenuri de semnare contract si tokenuri publice de plata/tracking.
 
 Daca userul cere un secret in clar, nu incerca SQL sau workaround. Raspunsul corect: "nu pot vedea parola/tokenul in clar; pot verifica daca integrarea este configurata si te duc la pagina unde o regenerezi/reconectezi". Pentru diagnostic foloseste tool-ul semantic (`verifica_integrare`, `comms_get_status`, `list_courier_accounts`, `get_config_status`, `list_locations`, `list_suppliers`) si apoi link vizual prin `gaseste_in_aplicatie`/Chrome daca trebuie reconfigurat.
 
@@ -118,8 +118,8 @@ Cand un tool poate returna multe rezultate:
 
 Unele raspunsuri MCP sunt **slim intentionat** ca sa ramana sub limita de payload si sa nu cada tot raspunsul:
 
-- produse: pot lipsi embedding-uri, campuri personalizate, variante/jsonb grele si metadata de imagini; datele operationale usoare raman;
-- cereri de aprobare / timeline comanda: `cartSnapshot` si `items` nu sunt contract de output pentru cererile de aprobare; mapperul MCP le elimina intentionat si pastreaza `itemSummary` pentru produse/valoare;
+- produse: pot lipsi campurile grele (campuri personalizate detaliate, variante complete, metadata de imagini); datele operationale usoare raman;
+- cereri de aprobare / timeline comanda: `cartSnapshot` si `items` nu sunt contract de output pentru cererile de aprobare; raspunsul le omite intentionat si pastreaza `itemSummary` pentru produse/valoare;
 - campanii/template-uri/secvente email: HTML-ul complet, design JSON si pasii mari pot fi omise din raspunsurile de write/listare.
 
 Nu interpreta lipsa acestor blob-uri ca stergere sau bug. Pentru `list_operation_requests`, `get_table_status`, `get_employee_activity` si sectiunea `operationRequests` din `get_order_timeline`, raspunde din campurile usoare plus `itemSummary`; nu cauta `cartSnapshot`/`items` in payload-ul cererilor ca dovada. In `get_order_timeline`, liniile de comanda raman in sectiunea `items`; cererile de aprobare legate raman slim. Explica userului pe scurt ca raspunsul este optimizat, verifica rezultatul cu tool-ul de citire potrivit sau deschide pagina relevanta daca trebuie vazut continutul complet.

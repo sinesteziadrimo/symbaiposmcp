@@ -17,22 +17,22 @@ Dacă tool-urile NU apar → folosește skill-ul `conecteaza-supplier`.
 ## Permisiuni
 
 - **Citire**: completă (produse, clienți, comenzi, stocuri, prețuri, livrări, facturi, rapoarte).
-- **Scriere**: DOAR pe modulele bifate pe token (produse, clienți, comenzi, stocuri, prețuri, livrări, facturare, loialitate, crm, setări). `marketing` expune momentan doar status SMTP, iar `productie` nu are tool-uri MCP Supplier în implementarea curentă — verifică `tools/list` dacă apare o versiune mai nouă. „Permisiune insuficientă" = modulul nu e bifat → adminul recreează tokenul cu modulul dorit.
+- **Scriere**: DOAR pe modulele bifate pe token (produse, clienți, comenzi, stocuri, prețuri, livrări, facturare, loialitate, crm, setări). Pentru `marketing` și `productie`, sursa de adevăr e `tools/list` în sesiunea curentă — folosește doar tool-urile care apar acolo (marketingul poate expune doar verificarea configurării de email, iar producția poate să nu aibă încă tool-uri). „Permisiune insuficientă" = modulul nu e bifat → adminul recreează tokenul cu modulul dorit.
 - Ștergerea de entități întregi nu e disponibilă prin MCP — recomandă ștergerea din aplicație.
 
 ## Cum lucrezi (workflow sigur)
 
 1. **Context întâi**: `get_dashboard`, liste relevante. Nu presupune.
-2. **Comenzile NU au coloană de furnizor** — folosește mereu tool-urile dedicate de comenzi (sunt legate corect prin clienți). Nu încerca să filtrezi comenzile altfel.
+2. **Pentru comenzi, folosește DOAR tool-urile dedicate de comenzi** — ele întorc deja comenzile contului corect. Nu încerca să filtrezi sau să reconstruiești lista de comenzi pe alte căi.
 3. **Confirmă acțiunile ireversibile**: anularea unei comenzi, postarea unui document de stoc, procesarea unui retur (mișcă stocul), ștergerea unei plăți, trimiterea unei campanii — cer `confirm:true`. Explică întâi, apoi execută.
-4. **Bani = zecimale**: nu recalcula reducerile manual; prețul final vine din motorul de prețuri (liste/promoții/deal-uri/loialitate/contract).
+4. **Bani = sume zecimale exacte**: nu rotunji și nu recalcula reducerile manual; prețul final vine din motorul de prețuri (liste/promoții/deal-uri/loialitate/contract).
 5. **Idempotență la comenzi**: când creezi o comandă, folosește o cheie de idempotență dacă tool-ul o cere; o comandă deja existentă întoarsă = succes, nu duplicat.
 6. **Verifică prin re-citire** după scriere și arată dovada.
 
 ## Note de configurare
 
-- Unele capabilități (flotă, agenți, multi-depozit) sunt activate prin „business config" — dacă un tool întoarce gol/eroare, modulul poate fi dezactivat în Setări.
-- Sincronizarea cu contabilitatea cere ca furnizorul să fie conectat la Hub (hubLinked) — dacă nu e, tool-urile de sync contabil vor semnala asta.
+- Unele capabilități (flotă, agenți, multi-depozit) se activează din Setările aplicației — dacă un tool întoarce gol/eroare, modulul poate fi dezactivat acolo.
+- Sincronizarea cu contabilitatea cere ca furnizorul să fie conectat la Symbai Hub — dacă nu e, tool-urile de sincronizare contabilă vor semnala asta.
 
 ## Orientare
 

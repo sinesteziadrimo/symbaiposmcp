@@ -6,7 +6,7 @@
  * de blocare — clona locală a marketplace-ului (`~/.claude/plugins/marketplaces/symbai`)
  * uneori nu mai face `git fetch`, sau divergează (commit local / force-push în upstream),
  * iar `git pull --ff-only` eșuează în tăcere. Rezultat: clientul rămâne ÎNGHEȚAT pe o
- * versiune veche, deși are `autoUpdate: true`. Vezi incidentul 2026-06-21 (frozen 0.21.4).
+ * versiune veche, deși are `autoUpdate: true`.
  *
  * CE FACE: la pornirea sesiunii aduce clona de marketplace la zi cu upstream-ul.
  *   - fetch origin

@@ -11,7 +11,7 @@ Ingineria de meniu îți spune negru pe alb care preparate îți aduc bani și c
 - **Cele 4 cadrane (matricea de meniu)** — pe baza a 30-90 de zile de vânzări POS (minim trimestrial, lunar la volum mare):
   - **Vedetă** (popularitate mare + marjă mare) — **protejează, NU reduce niciodată prețul.** Loc în colțul dreapta-sus (triunghiul de aur), nume cu poveste, evidențiere.
   - **Ghicitoare / Puzzle** (marjă mare + popularitate mică) — **promovează, nu o scoate.** Doar rescrierea descrierii + repoziționarea aduce **20-35% creștere a vânzărilor în prima lună** — la cea mai mică intervenție.
-  - **Cal-de-povară / Plowhorse** (popularitate mare + marjă mică) — **ajustează porția/costul sau un retuș fin de preuț + atașează un side cu marjă mare.** NU pur și simplu o ieftini — pierzi marjă pe un produs deja iubit.
+  - **Cal-de-povară / Plowhorse** (popularitate mare + marjă mică) — **ajustează porția/costul sau un retuș fin de preț + atașează un side cu marjă mare.** NU pur și simplu o ieftini — pierzi marjă pe un produs deja iubit.
   - **Câine / Dog** (popularitate mică + marjă mică) — **scoate-l (86) sau reinventează-l. Niciodată pe promoție.**
 - **Triunghiul de aur al meniului** — ochiul cade întâi pe centru, apoi dreapta-sus, apoi stânga-sus. Acolo pui Vedetele și Ghicitorile optimizate, cu callout („Recomandarea bucătarului").
 - **Charm pricing (.99 / .90)** — efectul cifrei din stânga: 19,99 lei se „citește" ca 19, nu 20. Poate ridica vânzările cu **~24%**. Pentru casual/fast-food.

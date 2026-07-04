@@ -7,7 +7,7 @@ description: Importă datele clientului din fișiere Excel/CSV (produse, meniu, 
 
 Userul are fișiere (Excel/CSV exportate din vechiul sistem) și vrea datele în Symbai, corect, fără bătaie de cap. Tu faci toată munca și îi explici la fiecare pas — **cel mai important e să-i fie clar ce se întâmplă**.
 
-**De ce combinația, nu doar una:** pe build-urile noi poți încărca Excel/CSV direct prin MCP (fără browser) și păstrezi aceeași sesiune de întrebări/import ca pagina. Pentru fișiere mari, PDF/poze, upload vizual sau cazuri unde tool-urile lipsesc, pagina de import rămâne plasa de siguranță pe encoding, numere românești și formate murdare. În ambele cazuri, tu răspunzi mai bine la întrebările de mapare și corectezi după prin conexiunea MCP. Userul primește o experiență simplă, cu date corecte.
+**De ce combinația, nu doar una:** când tool-urile de import de fișier sunt disponibile în sesiune, poți încărca Excel/CSV direct prin MCP (fără browser) și păstrezi aceeași sesiune de întrebări/import ca pagina. Pentru fișiere mari, PDF/poze, upload vizual sau cazuri unde tool-urile lipsesc, pagina de import rămâne plasa de siguranță pe encoding, numere românești și formate murdare. În ambele cazuri, tu răspunzi mai bine la întrebările de mapare și corectezi după prin conexiunea MCP. Userul primește o experiență simplă, cu date corecte.
 
 La importuri mari sau murdare, citește și `knowledge/agent-operare-avansata.md`: tratează importul ca proiect de date cu citire, normalizare, verificare, corecții și raport de dovadă.
 
@@ -23,7 +23,7 @@ La importuri mari sau murdare, citește și `knowledge/agent-operare-avansata.md
 1. Citește playbook-ul: **`knowledge/onboarding/02b-import-asistat.md`** (orchestrarea + modurile + cele 6 faze + strategia inteligentă). Apoi, după caz: **`02c-import-sabloane-canonice.md`** (cum construiești fișierul perfect care importă determinist + pre-crearea referințelor prin MCP + catalogul de capcane) și **`02d-import-surse-externe.md`** (cum completezi datele lipsă din website/SmartMenu/marketplace/PDF, cu permisiune). Plus `02-import-date.md` (tool-uri MCP exacte, termeni produs≠articol≠rețetă) și „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`.
 2. Verifică **conexiunea MCP** (`list_brands`). Dacă tool-urile `symbai` lipsesc → skill-ul `conecteaza-symbai` întâi.
 3. Stabilește **modul** și spune-i userului în care ești, natural — ex.: „Pot importa fișierul direct prin conexiune dacă e Excel/CSV mic, sau pot deschide pagina de import când e nevoie de browser/upload vizual. Oricum, eu verific și corectez după." După alegere, confirmă modul și că, dacă ceva nu merge, te anunță.
-   - **Conexiune MCP** — preferat pentru Excel/CSV până la limita serverului (~6 MB decodat): `create_bulk_import_session_from_file` → întrebări → `import_bulk_session`.
+   - **Conexiune MCP** — preferat pentru fișiere Excel/CSV de dimensiuni obișnuite (până în câțiva MB; la fișiere prea mari tool-ul refuză clar și treci pe pagina de import): `create_bulk_import_session_from_file` → întrebări → `import_bulk_session`.
    - **Automat în browser** — extensia Chrome conectată + user logat în Symbai → TU conduci pagina (încarci, răspunzi la întrebări, apeși Importă).
    - **Asistat** — fără extensie → tu decizi tot și îi spui userului exact ce să încarce și ce să răspundă; **el dă click-urile, tu faci decizia + verificarea**.
    - În TOATE modurile, **verificarea și corecția prin conexiune (Faza E) le faci TU** — merg prin MCP, fără pagină.

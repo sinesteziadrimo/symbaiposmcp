@@ -42,7 +42,7 @@ Citește mereu cu un tool ÎNAINTE de a scrie. Numele de mai jos sunt tool-urile
 | „adu comenzile noi de pe eMAG" ⚠ EXTERN | `sync_emag_orders(accountId, pages?)` | `/ecommerce/marketplaces?tab=orders` |
 | „ce preparat e în poza asta / leagă poza de meniu" | `interpret_menu_photo(imageUrl)` | (vezi skill-ul `adauga-produs-reteta`) |
 
-**Deep-link sub-taburi** (`useTabFromUrl` — `?tab=` supraviețuiește refresh-ului): Marketplace `?tab=dashboard|accounts|orders|offers|logs` · Retururi `?tab=list|kpi|policies` · AWB `?tab=generate|awbs|reconcile|accounts`. Pentru orice altă rută exactă (Antifraudă, Livrare/zone, Recenzii produse, Websites) cere `gaseste_in_aplicatie(...)`.
+**Deep-link sub-taburi** (parametrul `?tab=` supraviețuiește refresh-ului): Marketplace `?tab=dashboard|accounts|orders|offers|logs` · Retururi `?tab=list|kpi|policies` · AWB `?tab=generate|awbs|reconcile|accounts`. Pentru orice altă rută exactă (Antifraudă, Livrare/zone, Recenzii produse, Websites) cere `gaseste_in_aplicatie(...)`.
 
 ## Rețete (ordinea pașilor)
 

@@ -107,5 +107,5 @@ Un program de puncte care funcționează nu se câștigă din mecanica complicat
 
 - `knowledge/email-marketing.md` — secvențele de win-back, aniversare și expiry-reminder pe email.
 - `knowledge/marketing-social.md` — anunțul programului și conținutul organic.
-- `skill-ul \`gestioneaza-crm\`` — pipeline, segmente, automatizări de retenție.
-- `skill-ul \`raspunde-recenzii\`` — recenziile ca input pentru loialitate și goodwill.
+- skill-ul `gestioneaza-crm` — pipeline, segmente, automatizări de retenție.
+- skill-ul `raspunde-recenzii` — recenziile ca input pentru loialitate și goodwill.

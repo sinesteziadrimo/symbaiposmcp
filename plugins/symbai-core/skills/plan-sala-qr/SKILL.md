@@ -33,7 +33,7 @@ Tabel intenție → tool MCP (toate scrierile cer modulul **Setări & Configurar
 **Citirile (mereu disponibile, fără modul):** `get_floor_config`, `list_zone_routing`, `list_floor_config_schedules`, `list_dynamic_qr_codes`, `list_qr_field_presets`.
 
 ## Cum NAVIGHEZI (deep-link stabil — NU click prin meniu)
-- **Designerul de sală** (unde se DESENEAZĂ): `navigate("/plan-sala")`. Aici tu nu lucrezi cu mouse-ul — doar deschizi pagina ca să ARĂȚI rezultatul mutărilor tale prin MCP (canvas-ul reflectă schimbarea, fiindcă tool-urile scriu în `configData.zonesMap`). ⚠ Selecția configurației/brandului e în dropdown-urile din capul paginii (nu în URL) și se poate reseta la refresh — re-verifică.
+- **Designerul de sală** (unde se DESENEAZĂ): `navigate("/plan-sala")`. Aici tu nu lucrezi cu mouse-ul — doar deschizi pagina ca să ARĂȚI rezultatul mutărilor tale prin MCP (canvas-ul reflectă schimbarea — tool-urile scriu direct în configurația de sală). ⚠ Selecția configurației/brandului e în dropdown-urile din capul paginii (nu în URL) și se poate reseta la refresh — re-verifică.
 - **Viewer-ul LIVE** (read-only, operațiuni): `navigate("/floorplan")` — pentru a-i arăta userului starea live a meselor, NU pentru editare.
 - **Coduri QR**: `navigate("/qr-codes")` (tab QR Mese) și `navigate("/qr-codes?tab=dynamic")` (QR-uri dinamice — link scurt, contor scanări, export PNG/SVG/PDF). De aici userul printează/exportă.
 - **Reguli QR per raion** (preset câmpuri pe rutarea comenzii): `navigate("/staff?tab=floor-schedule")` (Program Salon). **Contexte QR** (Terasă/Piscină/Cameră): `navigate("/settings/qr-contexts")`.
@@ -58,7 +58,7 @@ Aproape tot e prin MCP. Click pe element (nu pe pixeli, după `read_page`/`find`
 - **Șabloane QR și text custom**: șablonul se editează în Materiale grafice; `qr-slot` marchează locul codului, `{{tableNumber}}` variază per masă, iar `{{customText1}}`...`{{customText4}}` sunt completate manual per PDF (ex. Parter/Etaj).
 - **Confirmă-prin-citire**, nu „pare bine pe ecran": după scriere, re-citește cu `get_floor_config`/`list_*`. Tool-ul a întors `success` = e salvat; spune-i userului să dea refresh, nu repeta scrierea (`condu-chrome.md`, regula f).
 - **Permisiune**: scrierile cer modulul `setari` (Setări & Configurare). „Permisiune insuficientă" → portal Hub → Acces AI → bifează modulul.
-- **Limbaj de restaurant**, nu jargon: „mut masa", „aranjez terasa", „grupez mesele pe ospătari", „rutez zona la barul corect", „QR care duce la promoție" — nu `configData.zonesMap`/`sectionId`/`redirectUrl`.
+- **Limbaj de restaurant**, nu jargon: „mut masa", „aranjez terasa", „grupez mesele pe ospătari", „rutez zona la barul corect", „QR care duce la promoție" — nu jargon tehnic (id-uri sau nume de câmpuri interne).
 
 ## Legături
 - Doctrina generală Chrome (deep-link, screenshot = livrabil, click pe element, fallback fără extensie) → `knowledge/condu-chrome.md`.

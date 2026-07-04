@@ -47,7 +47,7 @@ Dacă userul îți dă un URL („fă-mi site ca X" / „copiază magazinul de p
 - **Comparație vizuală:** verifică homepage, dropdown deschis, o pagină de meniu/catalog, o pagină de atracție și blog/galerie. Dacă browserul nu merge, spune blocajul și validează cât poți prin build + HTTP + screenshot-uri date de user.
 
 ### Capcane de mapare componentă (fidelitate de design) — citește înainte de a mapa secțiuni
-Aceleași greșeli au stricat o clonă reală (drimoland.ro, Strapi/Next). Bifează-le pe FIECARE secțiune (detalii complete: `../../knowledge/website-copy-intake.md` + skill-ul `copiaza-website`):
+Aceleași greșeli au stricat o clonă reală (un site pe CMS modern, tip Strapi/Next). Bifează-le pe FIECARE secțiune (detalii complete: `../../knowledge/website-copy-intake.md` + skill-ul `copiaza-website`):
 - **Culorile sunt SEMANTICE — nu vopsi o secțiune întreagă cu o culoare-accent.** Calibrează pe culorile COMPUTED ale site-ului real (inspectează în Chrome): navy = eroi, light-blue = benzi de conținut, roz/galben = ACCENTE (boxuri, benzi de recenzii), niciodată erou full-bleed. O culoare de „box" din sursă (ex. DarkTextBox) e boxul din spatele IMAGINII, nu fundalul secțiunii. Un text+imagine fără culoare → fundal light implicit, FĂRĂ box inventat.
 - **Poza e des în câmp neevident** (`image` gol; reală în `imageMask`/`picture`/`heroSectionSliderItems[]`/`backgroundImage`). Probează TOATE câmpurile de imagine înainte să spui „fără poză". Cutia decorativă din spate = o IMAGINE (`imageBackgroundMask`), nu o culoare.
 - **Recenzii doar-imagine** (screenshot, fără text) → `gallery`, nu testimoniale goale; recenzii cu text+poză → `testimonials` cu stil valid (`cards`, `carousel`, `minimal`, `magazine`, `masonry`, `bubbles`) sau `custom-html` scoped pentru layout image-top fidel. Nu folosi `style:"photo"`: nu mai este enum valid în catalog. **Tabele de preț** → componenta `pricing`. **Liste „scroll list"** → carduri din itemele imbricate + poza de secțiune. **ProductsList** ca secțiune de pagină → imaginea de meniu.
@@ -149,7 +149,7 @@ Explica userului rezultatul in limbaj vizual ("am reprodus hero-ul cu panou diag
 9. **⚠ VERIFICĂ cu `audit_shop_health` + repară** (vezi mai jos) — ÎNAINTE de a-i spune userului că e gata.
 
 ## 🛍️ Pagina de produs completă (PDP) — „produsul arată sărac pe site"
-Când userul cere o pagină de produs bogată (ca la Bebebliss/eMAG) sau spune că „produsul arată sărac", **urmează rețeta din `knowledge/website-builder-pdp.md`** (listă de bife + tool per câmp). Pe scurt, completezi pe `update_menu_item` (plus poze/recomandări/pachet):
+Când userul cere o pagină de produs bogată (ca la marile magazine online, ex. eMAG) sau spune că „produsul arată sărac", **urmează rețeta din `knowledge/website-builder-pdp.md`** (listă de bife + tool per câmp). Pe scurt, completezi pe `update_menu_item` (plus poze/recomandări/pachet):
 - **Galerie ≥3 poze** (`bulk_set_product_images`, prima = coperta) + **descriere lungă** (`descriptionHtml`; `description` rămâne textul scurt) + **specificații** (`specs`, sau `bulk_set_product_custom_values` pe multe produse).
 - **Preț redus** (`compareAtPrice` = preț vechi) + **garanție** (`warrantyMonths`) + **cod produs** (`displaySku`) + **certificări** (`safetyCert`) + **etichete** (`badges`) + **rate** (`installmentMonths`).
 - **FAQ** (`faq`) + **video** (`videoUrl`).

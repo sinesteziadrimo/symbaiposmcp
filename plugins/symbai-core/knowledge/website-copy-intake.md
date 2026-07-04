@@ -2,13 +2,13 @@
 
 > ⚠ Pentru un site MARE / catalog mare / „copiaza TOT site-ul" foloseste skill-ul `copiaza-website` (orchestrare pe ore + coada durabila + sub-agenti + verificare obiectiva). Acolo scopul real vine din `discover_site_inventory` (sitemap + feed platforma), crawl-ul ruleaza pe server prin `start_site_clone_crawl`, mapezi din `get_cached_page` si declari „gata" doar cand trec toate portile: `clone_parity_diff`, `clone_fidelity_audit` si `clone_coverage_audit` dau `pass:true`. `clone_fidelity_audit` verifică și specs PDP + variantele produselor, nu doar nume/poze/preț. La migrare de domeniu, după porți rulezi `clone_redirect_map` întâi dry-run, apoi `apply:true`, ca URL-urile vechi de produse/categorii să facă 301 spre Symbai. Ghidul de mai jos ramane pentru INTAKE rapid (site mic/mediu) si pentru regulile de paritate vizuala.
 
-Foloseste acest ghid cand proprietarul cere: "copiaza site-ul X", "fa site-ul ca X", "adu-mi site-ul existent pe Symbai" sau cand trebuie reprodus local un website public in NexusPOS.
+Foloseste acest ghid cand proprietarul cere: "copiaza site-ul X", "fa site-ul ca X", "adu-mi site-ul existent pe Symbai" sau cand trebuie reprodus fidel un website public pe platforma Symbai.
 
 ## Regula principala
 
 Nu livra o aproximare doar de homepage. O copiere buna inseamna: URL-uri pastrate, header real, dropdown-uri reale, toate slide-urile importante, pagini-cheie, blog/articole reale daca exista, footer, SEO si verificare vizuala.
 
-Pentru site-uri bogate (ex. Drimoland), nu considera o pagina "copiata" daca ai pus doar hero + 1-2 sectiuni. Daca sursa are zeci de componente, texte lungi, carduri, preturi, video, galerie sau formular, trebuie sa construiesti o pagina lunga care pastreaza inventarul real al componentelor, chiar daca lucrul dureaza mult.
+Pentru site-uri bogate, nu considera o pagina "copiata" daca ai pus doar hero + 1-2 sectiuni. Daca sursa are zeci de componente, texte lungi, carduri, preturi, video, galerie sau formular, trebuie sa construiesti o pagina lunga care pastreaza inventarul real al componentelor, chiar daca lucrul dureaza mult.
 
 ## Intake obligatoriu
 
@@ -40,8 +40,8 @@ Pentru fiecare URL copiat, noteaza rapid:
 Regula de oprire: inainte sa spui "am copiat pagina", compara numarul de sectiuni extrase cu numarul de componente locale. Daca local ai 2-3 blocuri si sursa are 10+, munca NU este gata.
 
 ## Capcane de mapare a componentelor (paritate de design) — citeste inainte de a mapa
-Capcane reale care au stricat o clona (drimoland.ro, Strapi/Next). Bifeaza-le pe FIECARE sectiune:
-- **Culorile sunt SEMANTICE.** Nu vopsi o sectiune intreaga cu o culoare-accent. Calibreaza pe culorile COMPUTED ale site-ului real (inspecteaza in Chrome: ex. `bg-blue`=#13235b navy, `bg-lightblue`=#d0ebf6). Navy = eroi, light-blue = benzi de continut, roz/galben = ACCENTE (boxuri, benzi de recenzii), niciodata erou full-bleed. O culoare de „box" din sursa (DarkTextBox `boxColor`) e boxul din spatele IMAGINII, nu fundalul sectiunii (sectiunea e navy cand textul e alb). Un text+imagine fara culoare → fundal light-blue implicit, FARA box inventat.
+Capcane reale intalnite la clonarea site-urilor construite pe CMS-uri moderne (ex. Strapi/Next.js). Bifeaza-le pe FIECARE sectiune:
+- **Culorile sunt SEMANTICE.** Nu vopsi o sectiune intreaga cu o culoare-accent. Calibreaza pe culorile COMPUTED ale site-ului real (inspecteaza in browser, nu ghici dupa numele claselor CSS). Tipic: o culoare inchisa de brand = eroi, o nuanta deschisa = benzi de continut, culorile vii = ACCENTE (boxuri, benzi de recenzii) — niciodata erou full-bleed. O culoare de „box" din sursa e adesea boxul din spatele IMAGINII, nu fundalul sectiunii (sectiunea ramane inchisa cand textul e alb). Un text+imagine fara culoare in sursa → fundalul deschis implicit al temei, FARA box inventat.
 - **Poza e des in camp neevident.** `image` e gol; reala in `imageMask`, `picture` (ImageCards), `heroSectionSliderItems[]` (hero), `backgroundImage` (scroll-list). Probeaza TOATE campurile de imagine inainte sa spui „fara poza". Cutia decorativa din spate = o IMAGINE (`imageBackgroundMask`), nu o culoare. Banda colorata de sectiune = camp real (`backgroundColor`/`box`+`boxColor`) → seteaza `sectionBg` + `sectionTextColor`.
 - **Blog = Markdown** (renderul de blog nu afiseaza HTML brut) → converteste HTML→Markdown; restaureaza entitatile dublu-escapate (`&amp;nbsp;`→`&nbsp;`).
 - **Link-uri in corpul rich-text / `descriptionHtml` / `custom-html`** NU trec prin localizatorul de href → rescrie-le MANUAL la slug-ul intern (altfel clickul pleaca de pe clona).
@@ -51,7 +51,7 @@ Capcane reale care au stricat o clona (drimoland.ro, Strapi/Next). Bifeaza-le pe
 - **NU activa „extra"-uri decorative implicite** pe care sursa nu le are: blog `showSidebar`/newsletter, badge „Popular"/„Recomandat", toggle de facturare, „featured hero". Un element IN PLUS strica fidelitatea la fel ca unul lipsa.
 - **Fiecare ruta randeaza continutul EI** (acasa ≠ meniu; `/blog` = listarea blogului). Fallback tacut la home = pagina LIPSA. Verifica prin **citire** (`get_website_page`) + **vizual in Chrome** langa original; re-importa dupa ORICE fix de mapare inainte de re-verificare.
 
-## Update 2026-06-24 - mapari native noi
+## Mapari native pentru pattern-uri frecvente
 
 La copiere fidela, nu sari la `custom-html` pentru aceste pattern-uri:
 
@@ -79,7 +79,7 @@ La copiere fidela, nu sari la `custom-html` pentru aceste pattern-uri:
 
 Pentru pagini de meniu restaurant nu copia doar cateva produse manuale. Daca sursa este Next.js/Strapi, cauta in `__NEXT_DATA__` dupa componente de tip `ComponentCmsDataProductsList` sau echivalent si extrage toate categoriile si produsele.
 
-Pastreaza pe fiecare produs: `name`, `description`, `price`, `weight`, `imageUrl`, `gallery`, `nutritionalInfo`, `ingredients`, `allergens` si id-ul sursa daca exista. La Drimoland pozele produselor vin din `attributes.media.data[].attributes.url`, nu din campuri simple `image`/`images`; verifica mai multe forme inainte sa concluzionezi ca lipsesc pozele.
+Pastreaza pe fiecare produs: `name`, `description`, `price`, `weight`, `imageUrl`, `gallery`, `nutritionalInfo`, `ingredients`, `allergens` si id-ul sursa daca exista. La site-urile pe Strapi, pozele produselor vin adesea din campuri imbricate (ex. `attributes.media.data[].attributes.url`), nu din campuri simple `image`/`images`; verifica mai multe forme inainte sa concluzionezi ca lipsesc pozele.
 
 Inainte de scrieri in baza POS, fa audit read-only: `list_brands` -> `list_menus` -> `list_menu_items`/`search_products_db` -> `get_product_details` pe esantioane. Nu face update/import masiv de produse fara dry-run si confirmare, deoarece schimba meniul live. Pentru preview local, `static-menu-board` este acceptabil daca pastreaza structura si datele reale; pentru productie, sincronizeaza apoi catalogul POS. (Cand fidelitatea conteaza: un `ProductsList` al sursei se mapeaza la imaginea de meniu sau la catalogul POS real — nu ramane un board static cu date inventate.)
 
@@ -94,7 +94,7 @@ Blogul este continut editorial, nu o simpla sectiune de carduri. Daca sursa are 
 5. Importa articolele ca entitati Blog cu `bulk_create_blog_posts(dryRun:true)` prima data, verifica `redirectsCreated`, apoi scriere reala; daca instanta nu are inca bulk, foloseste `create_blog_post` pe loturi mici si spune explicit limita.
 6. Dupa import, verifica `list_blog_posts` si un esantion cu `get_blog_post`; numarul local trebuie sa fie egal cu numarul sursa sau diferenta sa fie justificata.
 
-Reviewerul refuza PASS daca blogul sursa are articole, dar local exista doar pagina `/blog` fara `blog-listing`, articole statice hardcodate, 1-2 drafturi junk sau continut rezumat in loc de articole reale.
+Nu considera blogul copiat daca sursa are articole, dar local exista doar pagina `/blog` fara `blog-listing`, articole statice scrise de mana, 1-2 ciorne de umplutura sau continut rezumat in loc de articole reale.
 
 ## Checklist de paritate
 
@@ -106,13 +106,13 @@ Reviewerul refuza PASS daca blogul sursa are articole, dar local exista doar pag
 - **Meniu/produse:** toate categoriile, toate produsele, pozele produselor, pretul, gramajul si detaliile nutritionale/alergeni daca exista. Bara orizontala de categorii ramane sticky, marcheaza categoria activa, se recentreaza la scroll si click-ul pe categorie deruleaza la sectiunea corecta.
 - **Footer:** coloane de linkuri, contact, social, program, date firma daca exista.
 - **Mobile:** header si cardurile trebuie sa incapa fara text suprapus.
-- **Verificare:** screenshot sau browser real. Daca browser automation e blocat, valideaza cu HTTP local + build-uri concentrate si spune eroarea exacta.
+- **Verificare:** screenshot sau browser real, langa site-ul original. Daca nu poti deschide browserul, cere userului screenshot-uri si spune explicit ce nu ai putut verifica — nu declara paritatea „gata" nevazuta.
 
-## Componente NexusPOS create/improved pentru astfel de copii
+## Componente utile pentru astfel de copii
 
 ### `hero-slider` cu `contentBoxStyle:"source-card"`
 
-Foloseste pentru site-uri cu hero pe imagine si card text colorat peste imagine, inclusiv Drimoland-style.
+Foloseste pentru site-uri cu hero pe imagine si card text colorat peste imagine.
 
 Campuri utile:
 
@@ -134,32 +134,12 @@ Campuri utile:
 
 Pastreaza URL-ul `/meniu` si structura categoriilor vizibile. Bara de categorii trebuie sa ramana vizibila la scroll si sa faca scroll-spy pe categoria curenta; click-ul pe o categorie trebuie sa sara la sectiunea ei cu offset pentru header. Dupa importul complet de catalog, componenta statica poate fi inlocuita cu o sectiune legata la produse reale.
 
-## Exemplu Drimoland/NexusPOS
+## Exemplu generic — site bogat cu multe pagini (parc de distractii / restaurant mare)
 
-Pentru o copie locala Drimoland in NexusPOS:
+Cum arata o copie fidela pentru un site amplu, de exemplu „Parcul Exemplu" (parc de distractii cu restaurant):
 
-- Ruta scurta: `/drimoland-local`.
-- Preview renderer: `/pos/website?preview=drimoland&page=/...`.
-- Pagini minime: `/`, `/taramul-fermecat`, `/loc-de-joaca`, `/outdoor`, `/vr`, `/board-games`, `/rezervare-masa`, `/aniversari-petreceri-copii`, `/team-building`, `/saptamana-altfel-scoli-gradinite`, `/serbari`, `/meniu`, `/meniu-lazzurro`, `/torturi-si-candy-bar`, `/catering`, `/despre-noi`, `/afterschool`, `/vacanta`, `/ateliere-copii`, `/poveste-drimoland`, `/curs-parenting`, `/blog`, `/galerie`, `/lazzurro`, `/contact`.
-- Header-ul trebuie sa aiba dropdown-uri pentru atractii, bilete/rezervari, meniu si de interes.
-- Hero-ul trebuie sa foloseasca slide-uri multiple cu CTA-uri diferite, nu doar primul slide.
-- Meniul Drimoland se extrage din pagina `/meniu`: asteapta 11 categorii si 67 produse in snapshot-ul actual; verifica pozele din `attributes.media` si noteaza separat produsele fara poza in sursa.
-
-## Browser/runtime gotcha
-
-Daca browserul Codex/Chrome e instalat dar bridge-ul cade cu `CreateProcessAsUserW failed: 5`, trateaza-l ca blocaj de runtime Windows, nu ca bug al paginii. Raporteaza-l explicit si verifica ce poti prin:
-
-- `Invoke-WebRequest` pe URL-ul local.
-- build concentrat cu `esbuild` pe fisierele atinse.
-- `git diff --check`.
-- screenshot-uri primite de la user pana cand bridge-ul browser functioneaza.
-
-## Validare minima in NexusPOS
-
-Nu rula full `tsc` pe tot repo-ul doar pentru o schimbare de website. Preferabil:
-
-- `npx.cmd esbuild client/src/pages/pos/POSWebsite.tsx --platform=browser --format=esm --bundle --packages=external --outfile=.tmp/poswebsite-check.mjs --log-level=error`
-- `npx.cmd esbuild shared/wb-component-catalog.ts --platform=node --format=esm --bundle --packages=external --outfile=.tmp/wb-catalog-check.mjs --log-level=error`
-- `npx.cmd esbuild server/mcp-ecommerce.ts --platform=node --format=esm --bundle --packages=external --outfile=.tmp/mcp-ecommerce-check.mjs --log-level=error`
-- un script de audit care numara categoriile/produsele/pozele din config-ul generat si le compara cu sursa.
-- HTTP 200 pe paginile locale importante.
+- **Pagini minime pastrate cu slug-urile lor originale:** homepage, paginile fiecarei atractii, rezervari, pagini de evenimente (aniversari, team-building, serbari), meniu (eventual meniuri separate pe restaurante), catering, despre noi, blog, galerie, contact. Nu redenumi si nu comasa rutele — fiecare URL indexat trebuie sa existe si pe copie.
+- **Header cu dropdown-urile reale:** grupele din meniul sursei (ex. atractii, bilete/rezervari, meniu, „de interes"), reconstruite 1:1 cu `update_website_navigation items[]` + `children[]`.
+- **Hero cu toate slide-urile** si CTA-urile lor diferite, nu doar primul slide.
+- **Meniul de restaurant complet:** extrage TOATE categoriile si produsele din pagina de meniu a sursei, compara numarul lor cu ce ai importat (ex. sursa are 11 categorii si 67 de produse → local trebuie sa ai acelasi numar sau o diferenta justificata) si noteaza separat produsele fara poza in sursa.
+- **Verificare finala:** portile de paritate (`clone_parity_diff`, `clone_fidelity_audit`, `clone_coverage_audit`) plus comparatie vizuala pagina cu pagina langa original.

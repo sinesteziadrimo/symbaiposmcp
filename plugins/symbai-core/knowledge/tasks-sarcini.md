@@ -91,15 +91,15 @@ Cel mai rapid: deschide panoul **„Cine va vedea asta și când"** pe listă (s
 
 ## Tool-uri MCP pentru sarcini
 
-> **⚠ Notă deploy**: tool-urile **noi** de mai jos (țintire rol+tură+raion, recurență, dovadă + citire/finalizare) ajung LIVE pe conexiune **abia după deploy-ul nexuspos (≥ v19.2.121)**. Tool-urile **de bază** `create_task_list` / `create_task` / `bulk_create_tasks` (listă/sarcină SIMPLĂ — titlu, prioritate, responsabil, dată — fără țintă/recurență/dovadă) există deja dinainte. Până la deploy, pentru modelul complet lucrezi **prin interfață** (paginile de mai sus, eventual cu extensia Chrome) și citești starea prin **SQL read-only**. Verifică la conectare ce tool-uri apar — modelul e fail-closed: ce nu e în listă, nu se poate apela încă.
+> **⚠ Notă disponibilitate**: catalogul complet de tool-uri îl vezi la conectare — dacă un tool de mai jos nu apare în listă, instanța ta nu are încă versiunea care îl include și nu poate fi apelat (ce nu e în listă nu merge „pe încercate"). Tool-urile **de bază** `create_task_list` / `create_task` / `bulk_create_tasks` (listă/sarcină SIMPLĂ — titlu, prioritate, responsabil, dată — fără țintă/recurență/dovadă) există de mult. Dacă cele de țintire/dovadă lipsesc, lucrezi pentru modelul complet **prin interfață** (paginile de mai sus, eventual cu extensia Chrome) și citești starea prin tool-urile de citire sau SQL doar-citire.
 
-Citire (după deploy):
+Citire:
 - `list_task_lists` — listele de sarcini ale brandului/locației (cu țintă, recurență, culoare).
 - `list_tasks` / `get_task` — sarcinile (filtre pe listă, instanțe vs șabloane, ziua-instanță).
 - `get_task_dashboard` — per listă: De făcut / În lucru / Gata / Întârziate / total / procent.
 - `get_my_tasks` — feed-ul unui angajat pe o zi (Întârziate / Azi / Următoarele / Generale / Finalizate azi), cu motivul vizibilității per sarcină.
 
-Scriere — modulul **personal** pe token (după deploy):
+Scriere — modulul **personal** pe token:
 - **`create_targeted_task_list`** — listă nouă cu **țintă** (`targetRoleId`/`targetShift`/`targetSection`/`locationId`), recurență, oră-limită, culoare, șablon da/nu. ⚠ ACESTA e tool-ul pentru modelul nou — **NU** `create_task_list` (cel de bază, fără țintă).
 - `update_task_list` — modifică ținta/recurența/ora/culoarea/activ.
 - `clone_task_list` — clonează o listă (cu sarcinile-șablon) — pentru șabloane / duplicare.
@@ -110,23 +110,18 @@ Scriere — modulul **personal** pe token (după deploy):
 
 Tool-urile de bază `create_task_list` / `create_task` / `bulk_create_tasks` rămân utile pentru liste/sarcini simple (fără țintă/dovadă). Pentru **șabloane** nu există un tool de „preset-uri gata făcute": îți construiești propria listă bună o dată, o salvezi ca șablon (`isTemplate`) și o refolosești cu `clone_task_list`.
 
-## Exemple SQL (read-only)
+## Pentru acces SQL (doar-citire)
 
-Tabele cheie: `task_lists` (listele, cu `targetRoleId`, `targetShift`, `targetSection`, `recurrence`, `recurrenceDays`, `dueTime`, `color`, `active`; coloanele vechi `role`/`shift` păstrate doar pentru afișare) și `tasks` (sarcinile, cu `dueTime`, `occurrenceDate`, `templateTaskId`, `isTemplate`, `requiresProof`, `completionPhotoUrl`/`completionNote`/`completionValue`, `requiresVerification`/`verifiedBy`/`verifiedAt`, `escalationLevel`, `estimatedMinutes`).
+Dacă tokenul are activat accesul SQL, descoperă întâi structura cu `list_database_tables` → `describe_database_table`, apoi interoghează cu `execute_sql_query` (SELECT-only, coloane explicite, LIMIT obligatoriu). Există tabele separate pentru liste (cu țintă, recurență, oră-limită) și pentru sarcini (instanțe vs șabloane, dovadă, verificare).
 
-- Listele active cu țintă: `SELECT id, title, target_role_id, target_shift, target_section, recurrence, due_time FROM task_lists WHERE active = true`.
-- Sarcinile întârziate de azi (instanțe, nu șabloane): `SELECT id, title, due_time, status FROM tasks WHERE is_template = false AND status != 'completed' AND occurrence_date = CURRENT_DATE`.
-- Câte sarcini a finalizat azi un angajat: `SELECT count(*) FROM tasks WHERE completed_by = :employeeId AND completed_at::date = CURRENT_DATE`.
-- Sarcini care încă așteaptă verificarea managerului: `SELECT id, title FROM tasks WHERE requires_verification = true AND status = 'completed' AND verified_at IS NULL`.
-
-(Workflow SQL: `list_database_tables` → `describe_database_table` → `execute_sql_query`; SELECT-only, coloane explicite, LIMIT obligatoriu.)
+Întrebări exemplu: „ce liste active cu țintă există?", „ce sarcini de azi sunt întârziate?" (atenție: filtrează instanțele zilei, nu șabloanele), „câte sarcini a finalizat azi un angajat?", „ce sarcini bifate mai așteaptă verificarea managerului?". De regulă însă, tool-urile dedicate (`list_task_lists`, `list_tasks`, `get_task_dashboard`, `get_my_tasks`) răspund mai simplu la aceleași întrebări.
 
 ## Întrebări frecvente și capcane
 
 - **De ce nu vede angajatul o sarcină?** Vezi „Modelul de vizibilitate" mai sus — cel mai des: nu e azi în tură, are alt rol/raion decât ținta listei, locația nu se potrivește, sau lista e dezactivată. Verifică rapid cu panoul „Cine va vedea asta și când".
 - **Am pus lista pe rol/tură dar tot nu apare la nimeni.** În modelul vechi rolul/tura erau decorative. Acum trebuie setată **ținta** (`targetRoleId`/`targetShift`/`targetSection`), nu doar vechile câmpuri text — folosește builder-ul nou de listă, nu un import vechi.
-- **⚠ Am pus `targetSection` (raion) dar nu ajunge la nimeni, deși turele par corecte (testat live).** Vizibilitatea pe raion se uită la raionul de pe `staff_schedule`-ul angajatului. Dacă turele au fost create prin MCP, raionul lipsește de acolo: `create_staff_schedule` n-are param de raion, iar raionul pus cu `create_shift` stă în tabela `shifts` (ignorată de vizibilitatea sarcinilor). → Țintește pe **rol + tură** (lasă `targetSection` gol) SAU pune raionul pe tură din aplicație (Planificator → Secțiune Atribuită). Test rapid: `update_task_list(taskListId, targetSection:"")` apoi `get_my_tasks` — dacă acum apare, raionul era cauza.
-- **Sarcina recurentă nu apare azi.** Instanțele zilei se generează pe cloud (cron de noapte + la deschiderea `/my-tasks`/dashboard); nu se generează retroactiv pentru zile trecute. Dacă tot lipsește, verifică dacă lista e activă și recurența se potrivește zilei (ex. `weekly` cu zilele corecte).
+- **⚠ Am pus `targetSection` (raion) dar sarcina nu ajunge la nimeni, deși turele par corecte.** Vizibilitatea pe raion se uită la raionul setat pe **programul angajatului din Planificator** (Secțiune Atribuită). Turele create prin conexiune (MCP) nu au raion setat acolo, deci ținta pe raion nu prinde pe nimeni. → Țintește pe **rol + tură** (lasă `targetSection` gol) SAU pune raionul pe tură din aplicație (Planificator → Secțiune Atribuită). Test rapid: `update_task_list(taskListId, targetSection:"")` apoi `get_my_tasks` — dacă acum apare, raionul era cauza.
+- **Sarcina recurentă nu apare azi.** Instanțele zilei se generează pe cloud (automat, peste noapte, și la deschiderea `/my-tasks`/dashboard); nu se generează retroactiv pentru zile trecute. Dacă tot lipsește, verifică dacă lista e activă și recurența se potrivește zilei (ex. `weekly` cu zilele corecte).
 - **De ce „Finalizate” arăta mai puțin decât bifasem?** Vechiul ecran nu număra și sarcinile generale făcute de tine — noul `/my-tasks` numără ambele (atribuite + generale).
 - **Bifez dar rămâne „de confirmat”.** Sarcina cere **verificare** — un manager trebuie s-o valideze din aplicație (butonul de verificare pe sarcina bifată; nu există tool MCP dedicat). Fără verificare, sarcina e gata la bifare.
 - **Pot șterge o listă/sarcină prin conexiune?** Nu — ștergerile de entități întregi se fac din aplicație. Prin MCP poți crea/edita/bifa, nu șterge liste/sarcini întregi.

@@ -38,7 +38,7 @@ Memoria de brand e „briefingul" pe care îl citesc toate tool-urile de conțin
 - **Stil**: emoji da/nu și câți, lungime preferată, prețuri în lei, formule de adresare (tu/dumneavoastră).
 - **Concurenți**: 2-3 nume + diferențiatorul față de fiecare.
 - **Dovezi**: rating + nr. recenzii, preparat-vedetă, furnizor/ingredient local, ani, viteză — faptele pe care conținutul are voie să se sprijine.
-Apoi testează coerența: cere `marketing_generate_post` sau `marketing_generate_post` pentru o postare-mostră (ori `generate_content_brief` pentru un articol) și vezi dacă „sună a brand". Dacă sună generic, memoria e prea vagă — adaugă specific (un preparat anume, o frază tipică). Module care citesc memoria: `marketing_generate_post`, `bulk_schedule_social_posts`, `create_email_campaign`, reclamele, `generate_content_brief`, `gbp_create_post`, `reply_to_retail_review`.
+Apoi testează coerența: cere `marketing_generate_post` pentru o postare-mostră (ori `generate_content_brief` pentru un articol) și vezi dacă „sună a brand". Dacă sună generic, memoria e prea vagă — adaugă specific (un preparat anume, o frază tipică). Module care citesc memoria: `marketing_generate_post`, `bulk_schedule_social_posts`, `create_email_campaign`, reclamele, `generate_content_brief`, `gbp_create_post`, `reply_to_retail_review`.
 
 ### 3. Derivă segmentul de bază din date (cui te adresezi cu adevărat)
 Când proprietarul zice „clienții mei sunt toți" — datele spun altceva.

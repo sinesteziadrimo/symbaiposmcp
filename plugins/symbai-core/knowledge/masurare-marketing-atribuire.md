@@ -4,7 +4,7 @@
 
 ## Pe scurt
 
-Acesta e playbook-ul „analistului de marketing": cum afli ce canal aduce de fapt bani, nu doar click-uri. Există trei niveluri de adevăr, în ordinea încrederii: **atribuirea** (îți dă direcția — ce canal pare să tragă), **MMM-lite** (verificare de bun-simț, vânzări vs. cheltuială pe săptămâni) și **incrementalitatea / holdout** (adevărul real — cât ai fi vândut OOricum dacă opreai canalul). Regula de aur: arată MEREU cel puțin **2 modele de atribuire una lângă alta**, pentru că un singur model minte. Platformele de reclame (Meta/Google/TikTok) își umflă ROAS-ul raportat de **~2,3 ori** — niciodată nu lua decizia de buget doar pe cifra lor.
+Acesta e playbook-ul „analistului de marketing": cum afli ce canal aduce de fapt bani, nu doar click-uri. Există trei niveluri de adevăr, în ordinea încrederii: **atribuirea** (îți dă direcția — ce canal pare să tragă), **MMM-lite** (verificare de bun-simț, vânzări vs. cheltuială pe săptămâni) și **incrementalitatea / holdout** (adevărul real — cât ai fi vândut oricum dacă opreai canalul). Regula de aur: arată MEREU cel puțin **2 modele de atribuire una lângă alta**, pentru că un singur model minte. Platformele de reclame (Meta/Google/TikTok) își umflă ROAS-ul raportat de **~2,3 ori** — niciodată nu lua decizia de buget doar pe cifra lor.
 
 Claude lucrează cu cifre, în lei, și spune onest unde e estimare și unde e dovadă. Verifică MER, CAC, LTV:CAC pe datele reale din Symbai (POS + loialitate), nu pe „senzații".
 
@@ -99,4 +99,4 @@ Toate sunt de **citire** [citire] — măsurarea nu cheltuie și nu trimite nimi
 - `knowledge/email-marketing.md` — KPI email, livrabilitate, predictive sending, conversii atribuite.
 - `knowledge/strategie-marketing-plan.md` — planul trimestrial, 70/20/10, what-if buget pe baza atribuirii.
 - `knowledge/loialitate-fidelizare.md` — economia LTV, retenție, win-back măsurat cu holdout.
-- `skill-ul \`rapoarte-preturi\`` — întrebări despre vânzări, food cost, marjă, P&L și comparații pe perioade.
+- skill-ul `rapoarte-preturi` — întrebări despre vânzări, food cost, marjă, P&L și comparații pe perioade.

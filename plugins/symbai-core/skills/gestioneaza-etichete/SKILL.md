@@ -16,7 +16,7 @@ Toate scrierile cer modulul **`produse_meniu`** pe token; lipsă → „permisiu
 ## Inventarul de pornire (citește înainte să întrebi)
 
 1. `list_brands` → `brandId` (obligatoriu la `create_tag`; trimite-l peste tot unde e acceptat). La multi-brand, dacă cererea nu spune care → întreabă o dată.
-2. `list_tag_summary(brandId)` → ce etichete există + câte produse au. **Refolosește etichetele existente** (același nume, nu variante noi) — au deja reguli de rutare în spate. NU recrea „BAR" dacă există „BAR DRUNKEN".
+2. `list_tag_summary(brandId)` → ce etichete există + câte produse au. **Refolosește etichetele existente** (același nume, nu variante noi) — au deja reguli de rutare în spate. NU recrea „BAR" dacă există „BAR TERASĂ".
 3. `list_menu_categories(brandId)` → structura REALĂ (ierarhică, cu path complet). Orice filtru pe categorie pleacă de aici — nu inventa ramuri.
 4. `list_untagged_products(brandId)` → ce a rămas neetichetat.
 
@@ -41,7 +41,7 @@ Pentru filtre de meniu/portal/campanii: „Recomandat", „Nou", „Vegan", „P
 
 ## Rețeta 3 — Audit și curățenie
 
-1. `list_tag_summary(brandId)` → vezi dubluri de nume („Bar" vs „bar" vs „BAR DRUNKEN"), taguri goale (0 asignări), taguri cu `brand_id` null.
+1. `list_tag_summary(brandId)` → vezi dubluri de nume („Bar" vs „bar" vs „BAR TERASĂ"), etichete goale (0 asignări), etichete fără brand asociat.
 2. `list_untagged_products(brandId)` → produse fără rutare (= bonuri care nu ies). Etichetează-le sau confirmă cu utilizatorul că intenționat nu se trimit nicăieri.
 3. **Scoate o etichetă greșită**: `bulk_remove_tag(tagId, ...aceleași filtre)` sau `bulk_remove_tag(tagId, entityIds:[...])`. (Pentru „scoate tagul de pe produse" NU e nevoie de ștergerea tagului.)
 4. **Ștergerea tagului gol** se face DOAR din aplicație — `gaseste_in_aplicatie("pagina de etichete produse")`, dă-i link-ul.
@@ -59,7 +59,7 @@ Fără extensie → dă-i link-ul și spune-i ce să vadă.
 
 După orice scriere:
 - `list_tag_summary(brandId)` → eticheta există, are numărul de produse așteptat, fără dubluri.
-- `search_products_db(tagNames:["bar"])` → spot-check că tagul întoarce produsele corecte. **Folosește asta, NU `get_product_details`** — `get_product_details` întoarce un vector de embedding uriaș care umple contextul degeaba.
+- `search_products_db(tagNames:["bar"])` → spot-check că tagul întoarce produsele corecte. **Folosește asta, NU `get_product_details`** — `get_product_details` întoarce un răspuns foarte voluminos care umple contextul degeaba.
 - `list_untagged_products(brandId)` → gol (sau doar ce intenționat nu se rutează).
 Interfața se actualizează abia după refresh — succes la tool = salvat, nu repeta scrierea.
 

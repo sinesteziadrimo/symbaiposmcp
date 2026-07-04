@@ -2,9 +2,9 @@
 
 > Anexă la `prezentare-vanzare.md`. Aici e lista EXHAUSTIVĂ a câmpurilor pe care le poate seta proprietarul în editorul de prezentări (Setări → CRM → Configurare prezentare). **Construcție HIBRIDĂ: multe câmpuri se pot seta și prin MCP** (completând JSON — vezi **`prezentare-vanzare-mcp.md`** pentru formele JSON exacte și ce cheie top-level acoperă fiecare tab); restul, plus editarea vizuală fină + Preview + rularea, se fac din **interfață** cu extensia Chrome (`claude-in-chrome`) + user logat. Regula hibridă: cheile „mici" (intro/temă/ofertă/flux/tipologii) le pui rapid prin MCP; editarea per-item pe biblioteci mari (dureri/soluții/discovery din gold-standard — `libraryOverride` de sute de KB) o faci în UI. **Regulă: dacă userul îți cere ORICE câmp de mai jos, îl poți seta** — prin MCP dacă e o cheie acoperită, altfel navighează la tabul potrivit și completează-l. Singurele excepții sunt în secțiunea „⚠ Câmpuri legacy" (există în date, dar NU au control în UI — nu le promite).
 
-Convenții valoare: `text` (scris liber) · `nr` (numeric) · `on/off` (comutator) · `listă` (alegere dintr-un set) · `culoare` (hex/selector) · `formulă` · `imagine` (URL sau Upload R2) · `chips` (multi-selecție on/off).
+Convenții valoare: `text` (scris liber) · `nr` (numeric) · `on/off` (comutator) · `listă` (alegere dintr-un set) · `culoare` (hex/selector) · `formulă` · `imagine` (URL sau Upload) · `chips` (multi-selecție on/off).
 
-**Antet / ecran de start** (sus, peste taburi): **Nume prezentare** · **Titlu ecran de start** · **Subtitlu ecran de start** (ce vede prospectul) · **Imagine ecran de start** (`coverImageUrl` — URL, fundal peste degrade) + **Focalizare** (`coverImageObjectPosition`, ex „50% 30%") · **Domeniu de activitate**. ✅ controale în PresentationConfigTab; setabile și prin `patch_presentation`.
+**Antet / ecran de start** (sus, peste taburi): **Nume prezentare** · **Titlu ecran de start** · **Subtitlu ecran de start** (ce vede prospectul) · **Imagine ecran de start** (`coverImageUrl` — URL, fundal peste degrade) + **Focalizare** (`coverImageObjectPosition`, ex „50% 30%") · **Domeniu de activitate**. ✅ controale în tabul de configurare al prezentării; setabile și prin `patch_presentation`.
 
 ---
 
@@ -35,7 +35,7 @@ Câmpuri întrebare: **Text întrebare** `text` · **Hint** `text` · **Cheie te
 - (Alegere cu imagini) **URL/Upload imagine** + **Focalizare**.
 - (icon-cards) **Iconiță** `listă` (set Lucide) · **Descriere** `text` · **Poză card** `imagine` (`imageUrl`) + **Focalizare** (`imageObjectPosition`, ex. `50% 35%`). În wishlist, poza apare full-bleed pe card cu overlay și hover/lift; fără poză, cardul rămâne pe gradient + icon.
 - **🖥 Pe ecran când e ales** (reveal): **Text** `text` (suportă `{cheie}`) · **Unde apare** `listă` (Auto/Peste poză centrat/Peste poză jos/Sub întrebare/Sub răspunsuri) · **Mărime** S/M/L/XL · **Culoare text** `culoare` · **Culoare fundal** `culoare` · **Poză la alegere** URL/Upload + focalizare · **⏭ Direct mai departe** `on/off`.
-- **🖼 Slide separat după răspuns** (followUpSlide, ✅ 2026-06-19 — DIFERIT de reveal: un slide ÎNTREG dedicat, nu text pe slide-ul curent): **Activ** `on/off` · **Kicker** `text` (`{cheie}`) · **Titlu** `text` · **Text** `text` · **Bullete** (Text + **Iconiță** Lucide) · **Poză** URL/Upload + **Focalizare** · **Layout** `listă` (Poză fundal/Poză laterală/Plin pe culoare) · **Culoare accent** `culoare`. Apare imediat ce clientul alege răspunsul → buton „Mai departe" la întrebarea următoare. Doar pe întrebări Discovery (nu Intro).
+- **🖼 Slide separat după răspuns** (followUpSlide — DIFERIT de reveal: un slide ÎNTREG dedicat, nu text pe slide-ul curent): **Activ** `on/off` · **Kicker** `text` (`{cheie}`) · **Titlu** `text` · **Text** `text` · **Bullete** (Text + **Iconiță** Lucide) · **Poză** URL/Upload + **Focalizare** · **Layout** `listă` (Poză fundal/Poză laterală/Plin pe culoare) · **Culoare accent** `culoare`. Apare imediat ce clientul alege răspunsul → buton „Mai departe" la întrebarea următoare. Doar pe întrebări Discovery (nu Intro).
 - **💔 Ce dureri semnalează** (vezi §4).
 
 ## 4. Legare răspuns → durere (panoul „💔 dureri", la Intro/Discovery/wishlist)
@@ -51,7 +51,7 @@ Câmpuri Intro (`{cheie}`) · `lead.customer.*` (firstName/lastName/name/company
 
 ## 7. DURERE (tab Dureri)
 - **Cover image** `imagine` · **Titlu** `text` · **Descriere emoțională** `text` · **Cod intern** (read-only) · **Tags** `text` (virgulă) · **Importanță** `listă`: Scăzută/Medie/Mare/Critică (decide ordinea).
-- **Eticheta de pe slide** `text` (eyebrow-ul de deasupra titlului; default „Problema ta") · **Arată eticheta** `on/off` (debifează ca s-o ascunzi — utilă pentru operatori cu experiență, ca să nu sune acuzator). ✅ controale în PainsEditor.
+- **Eticheta de pe slide** `text` (eyebrow-ul de deasupra titlului; default „Problema ta") · **Arată eticheta** `on/off` (debifează ca s-o ascunzi — utilă pentru operatori cu experiență, ca să nu sune acuzator). ✅ controale în tabul Dureri.
 - **Soluții care REZOLVĂ** `chips` (bidirecțional) · **Tipologii unde e dominantă** `chips` · „Apare automat când răspunsul Discovery…" (read-only, se editează în Discovery).
 - **Coach (doar agent)**: **Tips** / **Întrebări** / **Note** — liste de texte.
 - Acțiuni tab: „Setup Symbai (6 dureri)", „Adaugă rapid" (chips presetate), „Durere custom", filtru pe importanță, căutare, reordonare drag.
@@ -110,7 +110,7 @@ Fiecare bloc: drag reordonare, duplică, șterge. Interpolare `{{variabile}}` î
 - **Nume intern** `text` · **Cheie tehnică** `text` · **Titlu slide** `text`.
 - **Tip** `listă` (4): **Formulă matematică** / **Listă cheltuieli** (comparativ live) / **Cost amânare** (slider) / **Payback period**.
   - Formulă: **Inputs** (Nume `{var}` + Cheie sursă din răspuns/intro + Default `nr` + Etichetă) · **Formulă** `formulă` (`+ - * / ( )`, `{var}`) · **Output template** (`{result}`) · **Body template**.
-  - Listă cheltuieli: **Etichetă/Cost Symbai** + **Perioada** (RON lună/an) · **Orizonturi** (lună/an/3 ani/5 ani) · **Highlight cea mai mare economie** `on/off` · **Categorii** (Icon emoji + Etichetă + Hint + Sugestii [nume+cost]). ✅ 2026-06-19: **Doar costurile actuale (fără preț Symbai)** `on/off` (currentCostOnly — ascunde coloana „Cu Symbai", arată doar cât plătește clientul ACUM) · **Plasare** `listă` Înainte/După ofertă (placement) · **Reia cheltuielile din alt calcul** `listă` (comparativeItemsFromCalculationId — calculul de fază 2, după ofertă, preia liniile introduse live în faza 1 și arată economia). ✅ 2026-06-23: buton **Configurează calcul în 2 faze** pe cardul comparative-list creează/lege automat faza 1 + faza 2; echivalent MCP: `setup_two_phase_calculation`. ✅ 2026-06-23: **Preț hibrid abonament + comision** — **Moneda costului fix** `symbaiCostCurrency` (`RON`/`EUR`), **Curs €→lei** `symbaiEurRate`, **% din vânzări** `symbaiRevenuePercent`, **Etichetă câmp estimat** `revenueEstimateLabel`, **Valoare implicită estimat vânzări** `revenueEstimateDefault`, **Perioada estimatului** `revenueEstimatePeriod` (`month`/`year`). În rulare apare câmpul live pentru estimat; formula vizibilă este fix + procent × vânzări estimate.
+  - Listă cheltuieli: **Etichetă/Cost Symbai** + **Perioada** (RON lună/an) · **Orizonturi** (lună/an/3 ani/5 ani) · **Highlight cea mai mare economie** `on/off` · **Categorii** (Icon emoji + Etichetă + Hint + Sugestii [nume+cost]). **Doar costurile actuale (fără preț Symbai)** `on/off` (currentCostOnly — ascunde coloana „Cu Symbai", arată doar cât plătește clientul ACUM) · **Plasare** `listă` Înainte/După ofertă (placement) · **Reia cheltuielile din alt calcul** `listă` (comparativeItemsFromCalculationId — calculul de fază 2, după ofertă, preia liniile introduse live în faza 1 și arată economia). Buton **Configurează calcul în 2 faze** pe cardul comparative-list creează/leagă automat faza 1 + faza 2; echivalent MCP: `setup_two_phase_calculation`. **Preț hibrid abonament + comision** — **Moneda costului fix** `symbaiCostCurrency` (`RON`/`EUR`), **Curs €→lei** `symbaiEurRate`, **% din vânzări** `symbaiRevenuePercent`, **Etichetă câmp estimat** `revenueEstimateLabel`, **Valoare implicită estimat vânzări** `revenueEstimateDefault`, **Perioada estimatului** `revenueEstimatePeriod` (`month`/`year`). În rulare apare câmpul live pentru estimat; formula vizibilă este fix + procent × vânzări estimate.
   - Cost amânare: **Sursa pierderii** `listă` (din listă cheltuieli / valoare fixă / formulă) · **Delay default** `nr` (impl. 6) · **Delay max** `nr` (impl. 24).
   - Payback: **Setup cost** `nr` · **Benchmark industry (luni)** `nr` · **Sursa economiei** `listă`.
 - **Slide vizual** `on/off` → conținut bogat.
@@ -138,7 +138,7 @@ Comun fiecărui pas: **Comutator on/off** · **Apare: Mereu / condiție** (§5) 
 - **6 Obiecții**: **Obiecții în joc** `chips` (gol = toate relevante).
 - **7 Dovezi**: **Câte** `nr` 1–10 (impl. 2) + override/tipologie + condiție.
 - **8 Ofertă**: **Ofertă** `listă` (anume / „Automat prima") + condiție.
-- **9 Calcul după ofertă** `on/off` (✅ 2026-06-19, implicit OFF — calculationAfterOffer): **Calcul** `listă` (un calcul cu **Plasare = După ofertă**). Tipic: faza 1 arată costul actual fără preț (§13 currentCostOnly), apoi oferta, apoi acest pas reia cheltuielile și arată economia vs prețul tău.
+- **9 Calcul după ofertă** `on/off` (implicit OFF — calculationAfterOffer): **Calcul** `listă` (un calcul cu **Plasare = După ofertă**). Tipic: faza 1 arată costul actual fără preț (§13 currentCostOnly), apoi oferta, apoi acest pas reia cheltuielile și arată economia vs prețul tău.
 
 ## 16. Cele 2 slide-uri de TRANZIȚIE (inline în pasul 3)
 - **Slide 1 „De la probleme la posibilități"**: **Titlu** · **Text introductiv** · **Conținut** = editor conținut bogat (coloanele Acum↔Cu noi etc., §9).
@@ -162,7 +162,7 @@ Comun fiecărui pas: **Comutator on/off** · **Apare: Mereu / condiție** (§5) 
 - **Durere**: intensity probe, qualification rules, slide presentation (always/qualified/manual-only/never, minIntensity, priority, requireAgentConfirmation), suggestedWalkthroughFeatureIds.
 - **Soluție**: `demoUrl`, flag `highlight` (WOW) pe walkthrough.
 - **Calcul**: maparea valorilor SELECT→număr (`valueMap`), categoria semantică (cost_save/revenue_lift/time_save/risk_reduction/experience_uplift), textele de coaching (tips/întrebări/note).
-- **Ofertă**: trust signals (badge-uri garanție/GDPR — se afișează dacă-s setate, dar din temă/cod), tema ofertei, mesaj post-acceptare, sufix perioadă custom, gradient card custom, `recommendedForTypologies`, `availableForTierIds` (addon per pachet), sumă fixă plată (`fixedAmount`), detalii automatizare (prioritate task/assignee/destinatar/offset rezervare/condiție).
+- **Ofertă**: trust signals (badge-uri garanție/GDPR — se afișează dacă-s setate, dar fără buton în editor), tema ofertei, mesaj post-acceptare, sufix perioadă custom, gradient card custom, `recommendedForTypologies`, `availableForTierIds` (addon per pachet), sumă fixă plată (`fixedAmount`), detalii automatizare (prioritate task/assignee/destinatar/offset rezervare/condiție).
 Pe acestea motorul folosește valori implicite — dacă userul le cere, explică-i că nu există buton și că se acoperă din temă/comportament implicit (sau trimite `trimite_ticket_symbai` ca sugestie).
 
 ## Cross-link

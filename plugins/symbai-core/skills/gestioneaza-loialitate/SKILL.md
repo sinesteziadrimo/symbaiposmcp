@@ -60,7 +60,7 @@ Acum există tool-uri MCP dedicate pentru programul POS. Folosește-le întâi p
 - Cine sunt clienții valoroși / cine merită contactat acum → `list_nba_suggestions` (coada Next-Best-Action: hot lead, `win_back`, `upsell`, `review_request`, birthday — cu scor 0-100 și motivul).
 - Ce s-a întâmplat cu un client (comenzi/comunicări/context) → `get_customer_timeline(customerId)`.
 - Cum merge conversia per surse → `get_crm_funnel`.
-- SQL SELECT-only doar ca ultim fallback; pentru puncte POS preferă `get_customer_loyalty`, nu interoga brut `loyalty_transactions`.
+- SQL SELECT-only doar ca ultim fallback; pentru puncte POS preferă `get_customer_loyalty`, nu interoga brut tabelele de puncte prin SQL.
 
 **Ce SCRII prin MCP:**
 - Pornești/oprești și setezi programul → `set_pos_loyalty_settings(active?, earnRate?, redeemValue?, signupBonusPoints?, onlinePaymentBonusPoints?, birthdayBonusActive?, birthdayBonus?, happyHourActive?, excludeTax?, excludeTip?, excludeDelivery?)`. Confirmă verbal valorile-cheie înainte să schimbi regula, fiindcă afectează punctele viitoare.

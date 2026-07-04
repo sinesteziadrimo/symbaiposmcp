@@ -9,7 +9,7 @@ Userul (proprietar/manager de fabrică, laborator, brutărie, distribuitor) vrea
 
 ## Înainte de orice
 1. Citește **`knowledge/b2b-comenzi-wholesale.md`** (conceptele complete: client B2B, catalog/preț contractat, bax vs bucată, depozit de expediere, stările comenzii, reguli de picking & documente, aviz → acceptare → factură, retail/ASN-SSCC — plus toate paginile și fluxurile), **`knowledge/agent-operare-avansata.md`** (confirm-first + verificare prin re-citire) și **`knowledge/condu-chrome.md`** (doctrina „MCP întâi → deep-link → click pe element doar la nevoie; screenshot = livrabilul"). Nu repet aici regula de Chrome — o aplici de acolo.
-2. **Context**: `list_brands` + `list_locations` ca să afli `brandId`/`locationId` (multe tool-uri le acceptă ca filtru opțional). Comenzile B2B sunt cloud (NU pe edge) — `list_b2b_orders` citește direct din bază și e sursa de adevăr (interfața are cache; spune-i userului să dea refresh dacă nu vede).
+2. **Context**: `list_brands` + `list_locations` ca să afli `brandId`/`locationId` (multe tool-uri le acceptă ca filtru opțional). Comenzile B2B stau în cloud — `list_b2b_orders` citește direct din bază și e sursa de adevăr (interfața are cache; spune-i userului să dea refresh dacă nu vede).
 3. **Modelul mental al stării**: `draft → confirmed →` (fazele de producție `planned`/`in_production_partial`/`in_production`/`ready`, calculate AUTOMAT din loturi) `→ picking → packed → avizata → acceptata → facturata → dispatched → delivered`. Stările de aviz/factură (`avizata`/`acceptata`/`facturata`) **NU se setează manual** — vin doar din acțiunile de documente. Cele de producție se RECALCULEAZĂ din loturi (`recompute_b2b_order_status`), nu se forțează.
 
 ## Pagina și deep-link-urile (ca să ARĂȚI userului)
@@ -59,10 +59,10 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 - **Prețul de contract, nu cel de retail.** Leagă produsul de client (`create_b2b_client_product`) și pune `clientProductId` pe linie, altfel riști preț greșit la facturare.
 - **Confirmă prin re-citire, arată prin screenshot.** Tool-ul a întors `success` = e salvat — confirmă cu `list_b2b_orders`/`get_b2b_order_items`, nu cu pixelul; fă screenshot la `?order=<id>` ca să-i arăți userului. Vezi `condu-chrome.md` regulile c și f.
 - **Ștergerea de comenzi/clienți întregi NU merge prin conexiune** — anulează (`update_b2b_order(status:"cancelled")`) sau ghidează userul să șteargă din aplicație. Dacă era facturată, storno din `/finance`.
-- **Limbaj de business, nu jargon** („pregătește comanda", „poate fi livrată la termen", „ce-mi trebuie ca s-o produc") — nu `legalEntityId`/`runRef`/`provisionalShift`.
+- **Limbaj de business, nu jargon** („pregătește comanda", „poate fi livrată la termen", „ce-mi trebuie ca s-o produc") — nu `legalEntityId`/`depotId`/`provisionalShift`.
 
 ## Permisiuni (modul pe token)
-- **Citirile** (`list_b2b_orders`, `list_b2b_clients`, `list_b2b_client_depots`, `get_b2b_order_items`, `get_b2b_order_documents`, `get_b2b_picking_plan`, `get_retail_distribution_readiness`, **`plan_b2b_order`** — preview, nu scrie nimic) **nu cer permisiune de modul** — merg mereu (token = tenantul, read complet). Deci poți mereu să ARĂȚI și să planifici în preview.
+- **Citirile** (`list_b2b_orders`, `list_b2b_clients`, `list_b2b_client_depots`, `get_b2b_order_items`, `get_b2b_order_documents`, `get_b2b_picking_plan`, `get_retail_distribution_readiness`, **`plan_b2b_order`** — preview, nu scrie nimic) **nu cer permisiune de modul** — merg mereu (tokenul are citire completă pe toată instanța clientului). Deci poți mereu să ARĂȚI și să planifici în preview.
 - **Scrierile pe comandă/client** (`create_b2b_order`, `update_b2b_order`, `create_b2b_client`, `update_b2b_client`, depots, `create_b2b_client_product`, `confirm_b2b_picking`, `generate_b2b_aviz`, `accept_b2b_aviz`, `generate_b2b_invoice`, `generate_b2b_retail_shipment_plan`, **`recompute_b2b_order_status`**) cer modulul **`Furnizori`** (`furnizori`) pe token.
 - **`apply_b2b_order_plan`** cere modulul **`Producție`** (`productie`) — creează loturi de producție. Deci preview-ul (plan) merge cu read, dar EXECUȚIA cere modulul Producție pe token.
 - **`set_b2b_picking_rules`** cere modulul **`Setări & Configurare`** (`setari`).
@@ -70,7 +70,7 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 - „Permisiune insuficientă" pe un tool → portal Hub → **Acces AI** → bifează modulul respectiv pe token.
 
 ## Legături
-- Concepte complete + clienți/catalog/reguli + fluxuri + capcane + FAQ + tabele SQL → `knowledge/b2b-comenzi-wholesale.md`.
+- Concepte complete + clienți/catalog/reguli + fluxuri + capcane + FAQ → `knowledge/b2b-comenzi-wholesale.md`.
 - Cum conduci Chrome (deep-link, screenshot = livrabil, click pe element doar la nevoie, unitatea activă, fallback fără extensie) → `knowledge/condu-chrome.md`.
 - Rute exacte + sub-tab-uri `?tab=` → `gaseste_in_aplicatie(termen)` / `knowledge/navigare-rapida.md` (skill `gaseste-pagina`).
 - Producția pe larg (loturi, operații, MPS/MRP, fabrică) → skill-ul `productie-flux` + `knowledge/productie-fabrica.md`. Comenzi de la FURNIZORI (aprovizionare) → skill-ul `comanda-furnizor`. Facturare fiscală pe larg → skill-ul `rapoarte-preturi` / knowledge `finante-facturare-contabilitate.md`.

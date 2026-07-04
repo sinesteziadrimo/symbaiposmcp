@@ -1,10 +1,10 @@
 # Symbai Accounting — privire de ansamblu (client-facing)
 
-Symbai Accounting e platforma de contabilitate AI-first, multi-țară (RO, DE, GB, US, FR, ES, IT, PL, HU, SG), cu partidă dublă, integrare eFactura ANAF și sincronizare cu Symbai POS și Symbai Supplier. Prin conexiunea MCP (`symbai-accounting`), un asistent AI poate citi datele și executa acțiuni reale pe contabilitatea firmei — fără cont Symbai Hub.
+Symbai Accounting e platforma de contabilitate AI-first, multi-țară (printre care RO, DE, FR, ES, IT, PL, HU, GB, US — lista curentă de țări o vezi în aplicație), cu partidă dublă, integrare eFactura ANAF și sincronizare cu Symbai POS și Symbai Supplier. Prin conexiunea MCP (`symbai-accounting`), un asistent AI poate citi datele și executa acțiuni reale pe contabilitatea firmei — fără cont Symbai Hub.
 
 ## Modulele și ce fac
 
-| Modul | Ce acoperă | Modul de scriere (token) |
+| Modul | Ce acoperă | Scriere prin token |
 |---|---|---|
 | **Tablou de bord & Rapoarte** | KPI firmă, balanță de verificare, P&L, cash-flow, bilanț, vânzări/achiziții, vechime datorii | citire (mereu) |
 | **Facturi de vânzare (AR)** | facturi emise, facturare eFactura, serii fiscale | `facturare` |
@@ -31,5 +31,5 @@ Symbai Accounting e platforma de contabilitate AI-first, multi-țară (RO, DE, G
 
 - Citește datele reale înainte de orice acțiune; nu presupune cote de TVA sau solduri.
 - Acțiunile ireversibile (depunere ANAF, închidere perioadă, salarizare, aplicare document stoc, ștergere factură, postare notă) cer `confirm:true` — explică întâi, apoi execută.
-- Banii sunt zecimale (text); nu rotunji prin float; notele contabile trebuie echilibrate.
+- Banii sunt sume zecimale transmise ca text — nu le rotunji și nu le trunchia; notele contabile trebuie echilibrate.
 - După scriere, verifică prin re-citire și arată dovada.

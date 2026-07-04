@@ -6,14 +6,14 @@
 - **21%** — cota standard.
 - **11%** — cota redusă (alimente, medicamente, cărți, cazare, anumite servicii — lista exactă la zi în Codul Fiscal).
 - **0% / scutit** — export, livrări intracomunitare scutite, anumite operațiuni scutite (cu/fără drept de deducere).
-- ⚠ Cota redusă de **5% a fost eliminată din august 2025**. Pentru documente după acea dată nu folosi 5%. Cotele sunt **dependente de data documentului** — respectă data, nu data de azi.
+- ⚠ Cotele reduse vechi de **9% și 5% au fost eliminate din august 2025** (înlocuite de 11%). Pentru documente de după acea dată nu le folosi. Cotele sunt **dependente de data documentului** — respectă data documentului, nu data de azi.
 
 ## Plătitor de TVA
-- **Lunar** sau **trimestrial** (`vatPeriod` pe firmă). Decontul = **D300**, termen uzual **25** ale lunii următoare perioadei.
+- **Lunar** sau **trimestrial** — regimul TVA e setat pe firmă (vezi datele firmei cu `get_company`). Decontul = **D300**, termen uzual **25** ale lunii următoare perioadei.
 - Sub plafonul de înregistrare → neplătitor (regim special de scutire) — verifică plafonul curent.
 
 ## Tipuri de operațiuni
-- **TVA la încasare** (`vat_on_cash=true`): TVA devine exigibilă la încasare/plată, nu la facturare. Se folosește 4428 (neexigibilă) → 4427/4426 la încasare.
+- **TVA la încasare** (regim opțional, activat pe firmă): TVA devine exigibilă la încasare/plată, nu la facturare. Se folosește 4428 (neexigibilă) → 4427/4426 la încasare.
 - **Taxare inversă** (reverse charge): pentru anumite bunuri/servicii între plătitori de TVA — furnizorul nu colectează, cumpărătorul aplică 4426 și 4427 simultan (nu se plătește efectiv).
 - **Intracomunitar**: achiziții/livrări intra-UE — taxare inversă pe achiziții, raportare în **D390 (VIES)** și **D394** după caz. Necesită cod valid de TVA (VIES).
 - **Import/export** extra-UE: TVA în vamă / scutire la export.

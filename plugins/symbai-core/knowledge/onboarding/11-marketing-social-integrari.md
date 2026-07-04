@@ -57,12 +57,12 @@ create_delivery_channel(platform="glovo", brandId=1, locationId=2, isActive=true
 ```
 `platform` ∈ `glovo | wolt | bolt_food | tazz | own`. Verifică întâi `list_entities(entityType="delivery_channels", brandId=1)` să nu dublezi. Atenție: tool-ul doar DECLARĂ canalul — cheile API ale platformei și activarea efectivă a fluxului de comenzi se fac din aplicație (vezi secțiunea următoare).
 
-Pentru Glovo, dupa ce canalul exista, explica workflow-ul oficial in limbaj simplu:
-- userul are nevoie de Partner API token, Glovo Store ID si Store Address External ID de la Glovo;
-- in pagina Integrari livrare Symbai apar URL-urile publice de trimis la Glovo: dispatch webhook, cancellation webhook si Menu JSON URL;
-- full menu sync valideaza meniul, apoi trimite la Glovo un `menuUrl`; modificarile mici de pret/disponibilitate merg prin bulk update;
-- auto-accept smart Glovo foloseste traficul real din KDS ca sa trimita `committedPreparationTime`; daca ETA calculat trece peste limita maxima, comanda ramane pentru accept manual;
-- accept/ready/pickup se trimit catre Glovo din Symbai, dar API-ul public Glovo nu expune reject/anulare generica din restaurant. Pentru refuz/anulare, userul foloseste Glovo/suport Glovo si Symbai primeste webhook-ul de anulare.
+Pentru Glovo, după ce canalul există, explică fluxul oficial în limbaj simplu:
+- utilizatorul are nevoie de la Glovo de: Partner API token, Glovo Store ID și Store Address External ID;
+- în pagina de integrări livrare din Symbai apar URL-urile publice de trimis la Glovo: dispatch webhook, cancellation webhook și Menu JSON URL;
+- sincronizarea completă de meniu validează meniul, apoi trimite la Glovo un `menuUrl`; modificările mici de preț/disponibilitate merg prin actualizare în masă;
+- auto-accept-ul inteligent Glovo folosește traficul real din bucătărie (KDS) ca să promită un timp de pregătire realist; dacă ETA calculat trece peste limita maximă, comanda rămâne pentru accept manual;
+- accept/gata/predare se trimit către Glovo din Symbai, dar platforma Glovo nu permite refuz/anulare generică din restaurant. Pentru refuz/anulare, utilizatorul folosește aplicația/suportul Glovo, iar anularea se reflectă apoi automat în Symbai.
 
 **Pas 4 — O regulă de notificare simplă (modul `setari`, opțional):**
 ```
@@ -81,7 +81,7 @@ Obligatorii: `name, brandId, triggerType, actionType`. `triggerType` ∈ `custom
 - **Credențialele API ale platformelor** (App ID/Secret Meta, TikTok, LinkedIn) — tab-ul de credențiale din pagina conturilor sociale; de regulă sunt deja puse central de Symbai. `verifica_integrare` îți spune dacă lipsesc; TikTok e gestionat central — dacă lipsește configurarea, trimite `trimite_ticket_symbai`, nu chinui userul.
 - **Reguli de automatizare „bogate"** (discount automat, vouchere, puncte fidelitate, mesaje WhatsApp la evenimente — motorul cu zeci de declanșatoare și acțiuni combinabile): `gaseste_in_aplicatie(intrebare="acțiuni automate reguli clienți")` — acolo există și un agent AI in-app care construiește regula din limbaj natural. După ce userul termină, nu ai citire dedicată — folosește SQL (`automation_rules`) dacă e activ, altfel cere-i să-ți spună numele regulii create.
 - **Viva Wallet (plăți card) și ANAF e-Factura** — apar în pasul de integrări al wizard-ului, dar țin de fazele de plăți/finanțe: `gaseste_in_aplicatie(intrebare="integrare Viva Wallet")` / `gaseste_in_aplicatie(intrebare="integrare ANAF e-Factura")`. Pentru istoricul configurărilor de integrare deja făcute, citește `read_integration_memory_files(fileType="integrations")`.
-- **Cheile/activarea platformelor de livrare** (după `create_delivery_channel`): `gaseste_in_aplicatie(intrebare="integrări canale livrare Glovo")`. Pentru Glovo, cere tokenul/Store ID-urile de la Glovo, apoi copiaza din Symbai cele trei URL-uri publice: dispatch webhook, cancellation webhook si Menu JSON URL.
+- **Cheile/activarea platformelor de livrare** (după `create_delivery_channel`): `gaseste_in_aplicatie(intrebare="integrări canale livrare Glovo")`. Pentru Glovo, cere tokenul/Store ID-urile de la Glovo, apoi copiază din Symbai cele trei URL-uri publice: dispatch webhook, cancellation webhook și Menu JSON URL.
 - **Inbox-ul unificat, calendarul de conținut, reclamele, boost** — operare zilnică din aplicație; tu doar dai linkul cu `gaseste_in_aplicatie`.
 - **Ștergerea** unui cont social / canal / regulă — doar din aplicație (prin MCP nu există ștergeri).
 
@@ -106,7 +106,7 @@ Pașii **18–21 din 29**: `/onboarding/step/18` Social Media, `/19` Email Marke
 - **Toate bifele de permisiuni** în dialogul Meta — o permisiune debifată „merge azi" și pică la prima postare, cu erori greu de legat de cauză.
 - **Fără `scheduledAt` = ciornă** — nu se publică singură. Și `cancel_social_post` merge doar pe draft/scheduled/failed (+retry) — o postare publicată nu se mai anulează prin tool; ștergerea de pe platformă se face pe platformă.
 - **`create_notification_rule` ≠ motorul „Acțiuni Automate".** Tool-ul scrie o regulă SIMPLĂ de notificare (trigger → email/sms/push). Regulile promovate de wizard-ul pasului 21 (discount automat, voucher de ziua de naștere, puncte fidelitate) sunt ALTĂ entitate, configurabilă doar din aplicație. Nu promite prin tool ce face doar motorul mare.
-- **`create_delivery_channel` nu aduce comenzile.** Creează doar înregistrarea canalului; fără cheile API puse în aplicație si fara activarea platformei, comenzile de pe platformă NU intră în POS. Pentru Glovo, nu promite reject/anulare din Symbai: accept/ready/pickup merg prin Partner API, auto-accept smart poate calcula ETA din KDS, dar refuzul/anularea se fac in Glovo/suport Glovo si se reflecta in Symbai prin webhook.
+- **`create_delivery_channel` nu aduce comenzile.** Creează doar înregistrarea canalului; fără cheile API puse în aplicație și fără activarea platformei, comenzile de pe platformă NU intră în POS. Pentru Glovo, nu promite refuz/anulare din Symbai: accept/gata/predare merg prin conexiunea oficială, auto-accept-ul inteligent poate calcula ETA din KDS, dar refuzul/anularea se fac în aplicația/suportul Glovo și se reflectă apoi automat în Symbai.
 - **Multi-brand: fiecare brand ↔ pagina lui.** Confirmă perechea brand–pagină ÎNAINTE ca userul să aprobe în dialogul Meta; conectarea paginii greșite la brandul greșit se vede abia la prima postare.
 - **`mediaUrls` trebuie să fie URL-uri publice** — folosește `browse_brand_media` pentru cele din biblioteca brandului; nu inventa căi locale.
 - **Jargon interzis în conversație**: nu spune „OAuth/token/API/endpoint" — spune „link de conectare", „conexiunea a expirat, o refacem într-un minut", „cheile platformei". WhatsApp/Glovo rămân nume de produse, sunt OK.

@@ -8,9 +8,9 @@ description: Creează și editează materiale grafice profesionale pentru restau
 Userul vrea un material grafic care arată profesionist (afiș, flyer, postare, QR de masă etc.). Tu îl construiești și-l rafinezi prin conexiune (citești + scrii designul cu tool-uri), nu prin clickuri. **Cel mai important: pornește din șabloane pentru calitate rapidă, personalizează pe brandul lui, și arată-i rezultatul.**
 
 ## Înainte de orice
-1. Citește **`knowledge/materiale-grafice.md`** (cele 14 tool-uri MCP + modelul de element cu coordonate FRACȚIONALE + principiile de design + cheatsheet-ul de cereri) și **`knowledge/condu-chrome.md`** (cum arăți rezultatul: deep-link + screenshot = livrabil).
+1. Citește **`knowledge/materiale-grafice.md`** (tool-urile MCP de materiale grafice + modelul de element cu coordonate FRACȚIONALE + principiile de design + cheatsheet-ul de cereri) și **`knowledge/condu-chrome.md`** (cum arăți rezultatul: deep-link + screenshot = livrabil).
 2. **Context**: `list_brands` (+ `list_locations` dacă userul a numit o locație) → `brandId`. Materialele sunt legate de brand.
-3. **Vezi ce există**: `list_material_designs({brandId})` (materiale salvate) și `list_material_templates()` (cele ≈23 șabloane: Print / Social / QR).
+3. **Vezi ce există**: `list_material_designs({brandId})` (materiale salvate) și `list_material_templates()` (șabloanele gata făcute, pe grupele Print / Social / QR — catalogul complet îl vezi la apel).
 
 ## Fluxul (4 pași)
 
@@ -31,7 +31,7 @@ Userul vrea un material grafic care arată profesionist (afiș, flyer, postare, 
 - **Permisiune**: scrierea cere modulul `marketing_social` („Marketing & Social Media"). „Permisiune insuficientă" → portal Hub → Acces AI.
 
 ## Legături
-- Cele 14 tool-uri + modelul de element + cheatsheet de cereri → `knowledge/materiale-grafice.md`.
+- Tool-urile MCP + modelul de element + cheatsheet de cereri → `knowledge/materiale-grafice.md` (secțiunile „Tool-urile MCP" + „Cheatsheet").
 - Cum conduci Chrome (deep-link, screenshot = livrabil) → `knowledge/condu-chrome.md`.
 - Coduri QR de masă (generare + print în lot pe șablon) → `knowledge/plan-sala-qr.md` + pagina „Coduri QR".
 - Meniul fizic tipărit (alt modul) → skill-ul `meniu-fizic`.

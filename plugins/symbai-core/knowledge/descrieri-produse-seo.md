@@ -42,6 +42,6 @@
 
 ## Greșeli frecvente
 - Aceeași descriere lipită pe variante (mărimi/culori) → diferențiază sau folosește o pagină-părinte.
-- Descrieri trează doar din specificații seci, fără beneficii → nu convertesc.
+- Descrieri făcute doar din specificații seci, fără beneficii → nu convertesc.
 - Bullet-uri cu adjective goale („cel mai bun", „premium") fără dovadă → ignorate.
 - Specificații prinse în imagini → invizibile pentru Google/AI.

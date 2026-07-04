@@ -6,7 +6,7 @@ description: Creează, programează, modifică, aprobă și publică postări pe
 # Programează o postare social media
 
 1. Vezi ce conturi sunt conectate: `list_social_accounts` (opțional pe `brandId`). Dacă nu există niciun cont activ pe platforma cerută, conectează-l rapid prin MCP:
-   - `genereaza_link_conectare(platforma)` — `platforma` ∈ `facebook`/`tiktok`/`youtube`/`linkedin`/`google_business` (opțional `brandId`). Întoarce un link OAuth pe care utilizatorul îl deschide în browserul LUI, logat în contul care administrează pagina; tokenul ajunge direct pe server, expiră în ~10 min. După ce confirmă, verifică cu `verifica_integrare`.
+   - `genereaza_link_conectare(platforma)` — `platforma` ∈ `facebook`/`tiktok`/`youtube`/`linkedin`/`google_business` (opțional `brandId`). Întoarce un link de conectare (OAuth) pe care utilizatorul îl deschide în browserul LUI, logat în contul care administrează pagina; linkul expiră în ~10 minute, deci să-l deschidă imediat — conectarea se finalizează automat și în siguranță. După ce confirmă, verifică cu `verifica_integrare`.
    - Instagram NU are link separat: după ce Facebook e conectat, leagă-l cu `conecteaza_instagram_din_facebook` (opțional `brandId`). Cere pagina Facebook cu permisiuni Instagram + un cont IG Business/Creator asociat; la eroare transmite mesajul exact.
    - Alternativ, dă link la pagina de conturi cu `gaseste_in_aplicatie("conturi social media")`.
 2. Compune textul postării împreună cu utilizatorul (sau propune 2-3 variante dacă ți-o cere). Ține cont de brand și de ce vrea să promoveze.

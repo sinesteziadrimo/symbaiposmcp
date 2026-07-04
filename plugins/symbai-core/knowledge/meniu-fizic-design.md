@@ -2,7 +2,7 @@
 
 > Cum citești, înțelegi și modifici meniul fizic tipăribil (`/menu/physical`) prin conexiune. Fluxul complet + finalizarea produselor: skill-ul `meniu-fizic` + `meniu-fizic-pricing.md`. Acest fișier = grammar-ul config-ului (ce poți schimba și cum). Conducerea Chrome (deep-link, screenshot ca livrabil, click doar la nevoie) = `condu-chrome.md`.
 
-## ⚠ READ FIRST — ai 14 tool-uri dedicate, NU mai lucra cu SQL + REPLACE
+## ⚠ READ FIRST — ai tool-uri dedicate, NU mai lucra cu SQL + REPLACE
 
 Editarea meniului fizic are **tool-uri MCP semantice** — sunt **calea principală**. NU mai citi config-ul cu `execute_sql_query("SELECT config …")` (SQL trunchiază celula `config` la ~2000 caractere → citești date rupte) și NU mai rescrie config-ul ÎNTREG cu `update_menu_display_config` (REPLACE — dacă omiți un câmp, îl PIERZI). În loc:
 
@@ -10,18 +10,18 @@ Editarea meniului fizic are **tool-uri MCP semantice** — sunt **calea principa
 - **SCRII prin field-setter cu merge server-side** (atinge DOAR ce ceri, restul rămâne): `set_physical_menu_config_fields` / `_category_fields` / `_page_fields` / `_item_fields` — fiecare cu `fields{}` (setezi) + `clear[]` (resetezi la moștenire/global, ca butoanele „Resetează"). NU mai e read-modify-write-întreg.
 - **STRUCTURĂ** (poziții/pagini/categorii) prin primitive: `swap_physical_menu_items`, `move_physical_menu_item`, `set_physical_menu_item_photo`, `reorder_physical_menu_categories`, `add_/remove_physical_menu_page_element`.
 
-`update_menu_display_config` (REPLACE) rămâne DOAR ultima soluție, pentru un câmp structural pe care niciun tool nu-l acoperă — și atunci tot citești întâi întreg cu `get_physical_menu_config(section:'raw')`. Catalogul complet al celor 14 tool-uri + tabelul intenție→tool: secțiunea „Cele 14 tool-uri MCP" mai jos.
+`update_menu_display_config` (REPLACE) rămâne DOAR ultima soluție, pentru un câmp structural pe care niciun tool nu-l acoperă — și atunci tot citești întâi întreg cu `get_physical_menu_config(section:'raw')`. Catalogul complet al tool-urilor + tabelul intenție→tool: secțiunea „Tool-urile MCP" mai jos.
 
 ## Găsește meniul fizic potrivit + navighează (CERCETARE ÎNTÂI)
 
-Clientul zice „du-te la meniul fizic de la Berărescu" / „aranjează meniul de print". NU sări la editare — întâi află EXACT pe ce lucrezi. Modelul real e pe 3 niveluri: **un BRAND are mai multe MENIURI, iar un meniu are unul sau mai multe DESIGNURI**.
+Clientul zice „du-te la meniul fizic al restaurantului" / „aranjează meniul de print". NU sări la editare — întâi află EXACT pe ce lucrezi. Modelul real e pe 3 niveluri: **un BRAND are mai multe MENIURI, iar un meniu are unul sau mai multe DESIGNURI**.
 
-1. **Nume brand/locație → brandId**: `list_brands` (+ `list_locations` dacă clientul a numit o LOCAȚIE — locația aparține unui brand). Potrivește numele („Berărescu") → `brandId`. Meniurile fizice sunt legate de BRAND.
-2. **Meniurile brandului**: `list_menus(brandId)` → toate meniurile + `id` + `name`. Un brand are deseori mai multe (ex. Berărescu, brand 63: „Meniu Berarescu" = id 76, „Meniu Berarescu print bauturi" = 116, „Meniu Berarescu print mancare" = 119). **Cel „de print"** se recunoaște după nume (conține „print"/„tipar"/„fizic"). Dacă-s mai multe candidate → **listează-le și întreabă clientul pe care** (băuturi? mâncare? general?).
-3. **Designurile meniului ales** (un meniu poate avea mai multe): **`list_physical_menu_designs({brandId, menuId})`** (NU SQL) → întoarce pentru fiecare design `configId`, `name`, `menuId`, format, nr. categorii/produse/pagini. Fiecare = un DESIGN (ex. „Design 1", „Design 2"). **`configId` = id-ul pe care îl editezi** cu tool-urile de mai jos. Fără `menuId` îți listează designurile TUTUROR meniurilor brandului. Dacă-s mai multe designuri → **arată-i-le clientului (eventual screenshot) și întreabă în care** lucrezi. Atenție la duplicate (pot exista 2× „Design 2"). (Sub capotă sunt rânduri în `menu_display_configs` cu `profile_type = 'physical-menu-<menuId>'`; un `physical-menu-X` fără meniu corespondent = config orfan, meniul a fost șters → ignoră-l.)
-4. **Navighează**: URL direct **`/menu/physical`** (designer full-screen) SAU pagina `/menu` → tab „Meniu Fizic" — ambele deschid ACELAȘI designer. Link live: `gaseste_in_aplicatie("meniu fizic")`. ⚠ **Brandul + meniul + designul se aleg din dropdown-urile din capul paginii, NU din URL** — nu există deep-link cu `?brand=`/`?config=`. Selecția se ține minte în browser (localStorage) per brand+meniu. Deci fluxul real: deschizi `/menu/physical` → din cele 3 dropdown-uri alegi brandul (Berărescu) → meniul (cel de print) → designul.
+1. **Nume brand/locație → brandId**: `list_brands` (+ `list_locations` dacă clientul a numit o LOCAȚIE — locația aparține unui brand). Potrivește numele spus de client → `brandId`. Meniurile fizice sunt legate de BRAND.
+2. **Meniurile brandului**: `list_menus(brandId)` → toate meniurile + `id` + `name`. Un brand are deseori mai multe (ex. „Restaurantul Exemplu" poate avea „Meniu Exemplu", „Meniu Exemplu print băuturi", „Meniu Exemplu print mâncare"). **Cel „de print"** se recunoaște după nume (conține „print"/„tipar"/„fizic"). Dacă-s mai multe candidate → **listează-le și întreabă clientul pe care** (băuturi? mâncare? general?).
+3. **Designurile meniului ales** (un meniu poate avea mai multe): **`list_physical_menu_designs({brandId, menuId})`** (NU SQL) → întoarce pentru fiecare design `configId`, `name`, `menuId`, format, nr. categorii/produse/pagini. Fiecare = un DESIGN (ex. „Design 1", „Design 2"). **`configId` = id-ul pe care îl editezi** cu tool-urile de mai jos. Fără `menuId` îți listează designurile TUTUROR meniurilor brandului. Dacă-s mai multe designuri → **arată-i-le clientului (eventual screenshot) și întreabă în care** lucrezi. Atenție la duplicate (pot exista două designuri cu același nume). (Un design al cărui meniu nu mai există = design orfan, meniul a fost șters → ignoră-l.)
+4. **Navighează**: URL direct **`/menu/physical`** (designer full-screen) SAU pagina `/menu` → tab „Meniu Fizic" — ambele deschid ACELAȘI designer. Link live: `gaseste_in_aplicatie("meniu fizic")`. ⚠ **Brandul + meniul + designul se aleg din dropdown-urile din capul paginii, NU din URL** — nu există deep-link cu `?brand=`/`?config=`. Selecția se ține minte în browser (localStorage) per brand+meniu. Deci fluxul real: deschizi `/menu/physical` → din cele 3 dropdown-uri alegi brandul → meniul (cel de print) → designul.
 
-   > **⚠ REGULA CELOR 3 DROPDOWN-URI (verifică ÎNTÂI, înainte de orice modificare sau screenshot):** în toolbar-ul din capul paginii sunt 3 selectoare în ordine: **(1) Unitate/Brand** → **(2) Meniu** → **(3) Design**. Verifică-le în această ordine de fiecare dată. Greșeală comună: ești pe brandul corect dar pe meniul greșit (ex. „Meniu Drimoland" în loc de „Meniu Drimoland Print") sau pe design-ul greșit (ex. „Implicit" în loc de „Design 5") — și modifici sau faci screenshot pe config-ul greșit. Un brand poate avea 2+ meniuri cu nume similare (ex. „Meniu Drimoland" = meniu digital/digital, „Meniu Drimoland Print" = cel de tipărit); un meniu poate avea 7+ designuri. Nu presupune că e cel corect — citește dropdown-ul.
+   > **⚠ REGULA CELOR 3 DROPDOWN-URI (verifică ÎNTÂI, înainte de orice modificare sau screenshot):** în toolbar-ul din capul paginii sunt 3 selectoare în ordine: **(1) Unitate/Brand** → **(2) Meniu** → **(3) Design**. Verifică-le în această ordine de fiecare dată. Greșeală comună: ești pe brandul corect dar pe meniul greșit (ex. „Meniu Exemplu" în loc de „Meniu Exemplu Print") sau pe design-ul greșit (ex. „Implicit" în loc de „Design 5") — și modifici sau faci screenshot pe config-ul greșit. Un brand poate avea 2+ meniuri cu nume similare (ex. „Meniu Exemplu" = meniul digital, „Meniu Exemplu Print" = cel de tipărit); un meniu poate avea multe designuri. Nu presupune că e cel corect — citește dropdown-ul.
 5. **Design / meniu NOU**: un DESIGN nou la un meniu existent se face DOAR în pagină — butonul **„Designuri"** → „design nou" sau „duplică" unul existent (NU prin MCP: `create_menu_display_config` nu acceptă `physical-menu-*`). Un MENIU fizic nou de tot → creează întâi meniul (din `/menu/pricing` / tool-uri meniu), apoi adaugi un design pe el. Ghidează clientul pas cu pas.
 
 ## Cum funcționează (mecanica reală)
@@ -30,7 +30,7 @@ Meniul fizic e un **config JSON** (obiectul `PhysicalMenuConfig`, ~120 chei) sal
 
 Fluxul corect:
 1. **Identifică designul** (brand → meniu → design, mai sus) ca să ai `configId`-ul (din `list_physical_menu_designs`).
-2. **CITEȘTE pe secțiuni** (NU SQL — SQL trunchiază `config` la ~2000 caractere): `get_physical_menu_config(configId, section)` pentru global/categorii/o pagină, `get_physical_menu_item(configId, …)` pentru produse. Vezi „Cele 14 tool-uri MCP".
+2. **CITEȘTE pe secțiuni** (NU SQL — SQL trunchiază `config` la ~2000 caractere): `get_physical_menu_config(configId, section)` pentru global/categorii/o pagină, `get_physical_menu_item(configId, …)` pentru produse. Vezi „Tool-urile MCP".
 3. **MODIFICĂ prin field-setter** — trimiți DOAR câmpurile de schimbat (`fields{}`) și/sau cele de resetat la moștenire (`clear[]`). Serverul face merge, NU REPLACE → restul configului rămâne intact. Structura (poziții/pagini/categorii) → primitivele `swap`/`move`/`reorder`/`set_…_photo`/`add_/remove_…_element`. Permisiune: modulul **`setari`** (aceeași ca update_menu_display_config).
 4. **Uită-te la rezultat** (vision/Chrome) și iterează (vezi „Bucla de vision"); confirmă schimbarea re-citind cu un `get_*` (confirmă-prin-citire, `condu-chrome.md`).
 
@@ -38,7 +38,7 @@ Fluxul corect:
 
 ⚠ **`update_menu_display_config` (REPLACE) = ULTIMA SOLUȚIE.** Îl folosești DOAR pentru un câmp structural rar pe care niciun tool dedicat nu-l acoperă (ex. `pinnedPages`, `pageAssignments` rescris în bloc) — și atunci citești ÎNTÂI întreg cu `get_physical_menu_config(section:'raw')`, modifici, scrii tot înapoi (omiterea unui câmp = pierdere). Pentru orice altceva folosește field-setterele — sunt mai sigure.
 
-## Cele 14 tool-uri MCP (calea principală)
+## Tool-urile MCP (calea principală)
 
 ⚠ La toate scrierile, **`productId` = `menu_items.id`** (NU products.id) și **`categoryId` = `menu_categories.id`**. Răspunsurile zic „(reîncarcă designerul)" pentru că UI-ul are cache — citește regula de cache mai jos.
 
@@ -112,7 +112,7 @@ Tu (Claude extern) vezi paginile prin **extensia Chrome**: deschizi `/menu/physi
 - **Poze stricate (URL 404)**: dacă URL-ul pozei nu mai e valid, în preview/export apare un placeholder (iconiță 🍽️) în loc de imagine goală. Recovery: pune alt `customImageUrl` valid, sau golește-l (revine la poza din catalog).
 
 ### Text (fonturi, mărimi, culori)
-- **Font (atenție la 2 convenții diferite!)**: cele globale de tip *picker* — `config.fontFamily` (corp/descriere) și `config.titleFont` (titluri) — primesc ID-ul fontului (ex. `"playfair"`, `"nunito"`) din cele 28 `FONT_OPTIONS`. Override-urile per sub-element — `titleFontFamily`/`descriptionFontFamily`/`priceFontFamily`/`gramajFontFamily` (pe item, pe `pageOverrides[i]` și global) și `categoryTitleFontFamily` — primesc un STRING CSS complet (ex. `"'Playfair Display','Georgia',serif"`), NU ID-ul. Pe element freeform: `fontFamily` = tot string CSS. ⚠ `categoryTitleFontFamily` există DOAR la nivel de categorie (`config.categories[].categoryTitleFontFamily`) și global, NU pe `pageOverrides[i]` — nu poți schimba fontul titlului de categorie doar pe o pagină.
+- **Font (atenție la 2 convenții diferite!)**: cele globale de tip *picker* — `config.fontFamily` (corp/descriere) și `config.titleFont` (titluri) — primesc ID-ul fontului (ex. `"playfair"`, `"nunito"`) din lista de fonturi a designerului. Override-urile per sub-element — `titleFontFamily`/`descriptionFontFamily`/`priceFontFamily`/`gramajFontFamily` (pe item, pe `pageOverrides[i]` și global) și `categoryTitleFontFamily` — primesc un STRING CSS complet (ex. `"'Playfair Display','Georgia',serif"`), NU ID-ul. Pe element freeform: `fontFamily` = tot string CSS. ⚠ `categoryTitleFontFamily` există DOAR la nivel de categorie (`config.categories[].categoryTitleFontFamily`) și global, NU pe `pageOverrides[i]` — nu poți schimba fontul titlului de categorie doar pe o pagină.
 - **Mărime**: presete `titleSizeGlobal`/`descriptionSizeGlobal`/`gramajSizeGlobal`/`priceSizeGlobal`/`categoryTitleSizeGlobal` (small/medium/large) + `*SizeCustomPx`; per produs la fel (`titleSize`+`titleSizeCustomPx` etc.).
 - **Culoare/stil**: `titleColor`/`descriptionColor`/`priceColor`/`gramajColor`/`categoryTitleColor`/`accentColor`/`textColor`/`backgroundColor`; `*LineHeight`, `*LetterSpacing`, `*Opacity`; `priceStyle`, `descriptionAlign`, `categoryTitleUnderline`.
 - **Cascada de culori (paleta conduce titlurile)**: paleta = 3 culori — `backgroundColor` (Fundal), `textColor` (Text), `accentColor` (Accent). **Titlul de produs urmează `textColor`, titlul de categorie urmează `accentColor`** — DAR doar dacă NU sunt setate explicit `titleColor`/`categoryTitleColor`. Dacă o temă (look) sau un șablon a pus culori explicite pe titluri, acelea „bat" paleta și schimbarea paletei nu le mai mișcă. Ca titlurile să urmeze din nou paleta, **omite (golește) din config** `titleColor`, `categoryTitleColor`, `priceColor`, `descriptionColor`, `gramajColor` → re-derivă din Text/Accent. (În app: apăsarea unui „Template Design" sau editarea swatch-ului Text/Accent face automat această golire; reglaj individual rămâne în tab-ul „Stil".)
@@ -130,7 +130,7 @@ Tu (Claude extern) vezi paginile prin **extensia Chrome**: deschizi `/menu/physi
 
 ### Fundal & rame
 - `backgroundType` (solid/gradient/image/split) + `backgroundColor`/`backgroundGradientColor2`/`backgroundImageUrl`/`backgroundImageOpacity`/`backgroundSplitColor2`. Per-pagină via `pageOverrides[idx].backgroundType/backgroundImageUrl`.
-- `pageBorderEnabled`/`pageBorderColor`/`pageBorderWidth`/`pageBorderStyle`/`pageBorderImageUrl` (rama colorată groasă = semnătura Design 2); `coverBorder*`.
+- `pageBorderEnabled`/`pageBorderColor`/`pageBorderWidth`/`pageBorderStyle`/`pageBorderImageUrl` (rama colorată groasă în jurul paginii); `coverBorder*`.
 
 ### Detalii fundal, ramă, copertă (câmpuri care lipseau)
 - **Split fundal**: `backgroundType:"split"` + `backgroundColor` + `backgroundSplitColor2` + `backgroundSplitDirection` (`horizontal`|`vertical`) — două culori, contrast dramatic pe copertă/pagina finală. **DOAR GLOBAL** — split-ul NU poate fi aplicat per-pagină.
@@ -139,7 +139,7 @@ Tu (Claude extern) vezi paginile prin **extensia Chrome**: deschizi `/menu/physi
 - **Per-pagină**: pe `pageOverrides[idx]` poți pune fundal diferit — `backgroundType` (`solid`/`gradient`/`image` DOAR — split nu e disponibil pe pagini), `backgroundGradientColor2`, `backgroundGradientDirection`, `backgroundImageUrl`, `backgroundImageOpacity` — ex. copertă cu split (global), paginile interne cu gradient subtil, finala cu solid.
 
 ### Elemente libere (adaugă poze/text/forme/evidențieri)
-- `freeformElements[]` global SAU `pageOverrides[idx].freeformElements[]`: fiecare = `{ type: text|image|separator|shape, x, y, width, height, fontFamily?, content?, imageUrl?, z, rotation, scaleX/Y }`. ⚠ Coordonatele sunt în **px LOGICE = mm × PAGE_SCALE (2.8)**. Cu astea inserezi poze decorative, casete de text, separatoare, forme, evidențieri pe orice pagină.
+- `freeformElements[]` global SAU `pageOverrides[idx].freeformElements[]`: fiecare = `{ type: text|image|separator|shape, x, y, width, height, fontFamily?, content?, imageUrl?, z, rotation, scaleX/Y }`. ⚠ Coordonatele sunt în **px LOGICE = mm × 2,8**. Cu astea inserezi poze decorative, casete de text, separatoare, forme, evidențieri pe orice pagină.
 - **Evidențiere produs** (featured): per produs `featuredStyle` + `featuredAccentColor`/`featuredBorderWidthPx`/`featuredGlowIntensity`/`featuredCornerRadius`/`featuredBadgeText`/`featuredBgOpacity` — scoate în evidență un produs (chenar/glow/badge).
 
 #### Câmpurile complete ale unui element liber
@@ -279,7 +279,7 @@ Reguli rapide: (1) Date care trebuie să apară peste tot → CATALOG (`update_m
 
 ## Teme — aplică-le în app, fine-tuning prin MCP
 
-Sunt **13 teme** (`bistro-navy` = cea mai bună, ADN-ul „Design 2": navy+crem, Nunito, 2-col, poze mari dreapta, ramă pal groasă; restul: fine-dining text-only, steakhouse, patisserie card, editorial 4-col A3-landscape...).
+Există un set de teme predefinite (`bistro-navy` = cea mai echilibrată: navy+crem, Nunito, 2-col, poze mari dreapta, ramă pal groasă; restul: fine-dining text-only, steakhouse, patisserie card, editorial 4-col A3-landscape...).
 
 ⚠ **Aplicarea unei teme NU se reproduce scriind doar config-ul.** `applyTheme` rulează ENGINE-SIDE în designer: selecția eroilor (seed determinist), decorul per-pagină, repaginarea. Deci:
 1. **Schimbarea temei** se face ÎN designer — userul apasă tema, SAU tu prin Chrome apeși „Aplică tema". Arată-i userului 2-3 teme și întreabă-l care-i place (vision: screenshot fiecare).
@@ -287,8 +287,8 @@ Sunt **13 teme** (`bistro-navy` = cea mai bună, ADN-ul „Design 2": navy+crem,
 
 Scrierea `activeThemeId` în config = semnal că tema se re-aplică la load, dar nu reproduce gramatica — nu te baza pe ea pentru „look-ul" temei; aplică tema în app.
 
-### Cele 13 teme + ce face „gramatica de poze"
-Alege tema după tipul localului. Cele 13: `bistro-navy` (ADN-ul Design 2 — navy+crem, Nunito, poze mari), `fine-dining-elegant` (text-only, serif), `modern-minimalist`, `rustic-trattoria`, `bold-street-food`, `cafe-brunch-warm-minimal`, `cocktail-bar-dark` (speakeasy nocturn), `classic-wine-list`, `asian-izakaya`, `patisserie-dessert` (carduri rose-gold), `health-vegan-fresh`, `steakhouse-grill` (accent oxblood), `editorial-bistro-a3l` (4-col A3-landscape).
+### Temele + ce face „gramatica de poze"
+Alege tema după tipul localului. Printre ele: `bistro-navy` (navy+crem, Nunito, poze mari), `fine-dining-elegant` (text-only, serif), `modern-minimalist`, `rustic-trattoria`, `bold-street-food`, `cafe-brunch-warm-minimal`, `cocktail-bar-dark` (speakeasy nocturn), `classic-wine-list`, `asian-izakaya`, `patisserie-dessert` (carduri rose-gold), `health-vegan-fresh`, `steakhouse-grill` (accent oxblood), `editorial-bistro-a3l` (4-col A3-landscape).
 
 **De ce nu rescrii tema din config** (mecanica care explică fine-tuning-ul corect):
 - **Distribuția eroilor e DETERMINISTĂ** (nu random): tema alege ce produse devin „eroi" cu poză mare pe baza unui seed fix (tema + categorie). La re-aplicare → ACEIAȘI eroi. În designer userul confirmă recomandarea într-o modală ÎNAINTE de aplicare. După aplicare, eroii stau pe itemi ca `photoRole:"hero"`. Fine-tuning corect: dacă un produs nu merită statut de erou (n-are poză bună), pe acel item șterge `photoRole` și pune `photoSize:"small"`.
@@ -321,7 +321,7 @@ La `formatType: "a3-booklet"`, engine-ul **forțează automat** `totalPages % 4 
 
 ## Export PDF, formate și pagini speciale
 
-**Cum se exportă**: PDF-ul se generează pe SERVER (nu prin print din browser, ca să fie DPI/dimensiuni controlate) — randează HTML-ul designului cu dimensiuni exacte per format (`@page` = mărimea formatului). Imaginile din galerie/R2 se înglobează în HTML înainte de export (self-contained), deci nu depind de rețea la randare. Tu nu setezi nimic manual aici — alegi formatul și conținutul, restul e automat.
+**Cum se exportă**: PDF-ul se generează pe SERVER (nu prin print din browser, ca să fie DPI/dimensiuni controlate) — randează HTML-ul designului cu dimensiuni exacte per format (`@page` = mărimea formatului). Imaginile din galerie se înglobează în documentul de export (self-contained), deci nu depind de rețea la randare. Tu nu setezi nimic manual aici — alegi formatul și conținutul, restul e automat.
 
 **Formate** (`formatType`): `a4-individual` (210×297mm, vertical), `a3-booklet` (broșură pliată, engine forțează multiplu de 4 pagini), `a3-single` (297×420mm), `a3-landscape` (420×297mm — placemat de masă, 4 coloane). Doar `a3-booklet` are constrângerea multiplu-de-4.
 
@@ -341,7 +341,7 @@ Pentru fiecare pagină: screenshot (Chrome) → întreabă-te ca un grafician: *
 
 ## Gotchas (durabile)
 
-- **Calea principală = cele 14 tool-uri MCP** (`get_physical_menu_*` citire, `set_physical_menu_*_fields` + `swap`/`move`/`reorder`/`set_…_photo`/`…_page_element` scriere). Scriu cu MERGE (atinge doar ce ceri). `update_menu_display_config` (REPLACE) = doar ultima soluție pentru un câmp structural neacoperit, și atunci citește întreg cu `get_physical_menu_config(section:'raw')` întâi. NU citi configul cu SQL (trunchiat la ~2000 caractere).
+- **Calea principală = tool-urile MCP dedicate** (`get_physical_menu_*` citire, `set_physical_menu_*_fields` + `swap`/`move`/`reorder`/`set_…_photo`/`…_page_element` scriere). Scriu cu MERGE (atinge doar ce ceri). `update_menu_display_config` (REPLACE) = doar ultima soluție pentru un câmp structural neacoperit, și atunci citește întreg cu `get_physical_menu_config(section:'raw')` întâi. NU citi configul cu SQL (trunchiat la ~2000 caractere).
 - **`productId` = `menu_items.id`**, **`categoryId` = `menu_categories.id`** (NU products.id). Vânzările/galeria folosesc products.id — nu le încrucișa.
 - **`photoWidthCustomPx` și `photoColFrac` se exclud** — la setarea uneia, șterge cealaltă (+`photoAspectNum`/`photoRole`).
 - **Freeform = px logice (mm×2.8)** — nu pune px de ecran.

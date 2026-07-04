@@ -10,7 +10,7 @@ Userul (proprietar/manager) vrea să vadă și să controleze echipamentele clă
 ## Înainte de orice
 1. Citește la nevoie **`knowledge/home-assistant.md`** (ce e integrarea, categoriile de echipamente, politica de control, ce poți și ce nu poți face) și **`knowledge/condu-chrome.md`** (doctrina: MCP întâi, deep-link, screenshot = livrabil).
 2. **Context per unitate**: integrarea e legată de o **locație**. La un singur local, tool-urile o deduc singure; la mai multe, ia `locationId` cu `list_locations` (sau întreabă „la care unitate?") și pasează-l în tool-uri.
-3. **Conectarea** se face o singură dată, din **Setări → Integrări → Home Assistant**: alegi unitatea, pui adresa publică Home Assistant (Nabu Casa / Cloudflare Tunnel / domeniu public HTTPS) + un **Long-Lived Access Token** (din Home Assistant → Profil → Securitate), apeși **Testează** și **Salvează**. Nu recomanda IP local (`192.168.x.x`, `10.x.x.x`, `localhost`) pentru cloud — e blocat implicit pentru securitate; merge doar în instalări self-hosted/edge unde serverul Symbai e în aceeași rețea și accesul privat este activat. Dacă userul nu e conectat încă, ghidează-l acolo — tu nu poți introduce tokenul prin MCP (e secret, se scrie doar din pagină).
+3. **Conectarea** se face o singură dată, din **Setări → Integrări → Home Assistant**: alegi unitatea, pui adresa publică Home Assistant (Nabu Casa / Cloudflare Tunnel / domeniu public HTTPS) + un **Long-Lived Access Token** (din Home Assistant → Profil → Securitate), apeși **Testează** și **Salvează**. Nu recomanda IP local (`192.168.x.x`, `10.x.x.x`, `localhost`) pentru cloud — e blocat implicit pentru securitate; merge doar când Symbai rulează pe un server local, în aceeași rețea cu Home Assistant, și accesul privat este activat. Dacă userul nu e conectat încă, ghidează-l acolo — tu nu poți introduce tokenul prin MCP (e secret, se scrie doar din pagină).
 4. **Navigare**: pagina e **`/integrations/home-assistant`**. Du-te direct (`navigate("/integrations/home-assistant")`), nu căuta prin meniuri. Link live: `gaseste_in_aplicatie("home assistant")`.
 
 ## Cele două surse de adevăr
@@ -37,7 +37,7 @@ Ventilație · Hotă · Climatizare / VRF · Marchize / Terasă · Lumini · Loc
 `home_assistant_list_devices` întoarce câmpul **`controlPolicy`**:
 - **`confirm`** (recomandat): CERE confirmarea userului ÎNAINTE de a porni/opri ceva — ex. „Confirmi că pornesc hota la bucătărie?". Abia după „da" apelezi `home_assistant_control`.
 - **`direct`**: execuți imediat, fără confirmare.
-Indiferent de politică, pentru acțiuni perturbatoare (loc de joacă, hotă, ventilație, lazer-tag) confirmă dacă cererea pare neașteptată. Niciodată nu porni echipamente „de probă" fără acordul userului — sunt dispozitive fizice reale într-un local cu clienți.
+Indiferent de politică, pentru acțiuni perturbatoare (loc de joacă, hotă, ventilație, laser tag) confirmă dacă cererea pare neașteptată. Niciodată nu porni echipamente „de probă" fără acordul userului — sunt dispozitive fizice reale într-un local cu clienți.
 
 ## Verifică REAL după comandă
 După `home_assistant_control`/`bulk_control`, tool-ul întoarce noua stare (`newState`). Spune-i clar userului ce s-a întâmplat („Hota e acum pornită."). Dacă userul vrea să VADĂ, deschide `/integrations/home-assistant`, comută pe unitatea corectă și fă-i screenshot.

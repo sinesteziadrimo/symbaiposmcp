@@ -65,5 +65,5 @@ Dacă `claude-in-chrome` nu e disponibilă (extensia nu e instalată/conectată 
 
 ## Legături
 - Navigare (cele 3 pașii: află ruta → deschide → confirmă) + comutarea unității → `navigare.md`; cheat-sheet rute → `navigare-rapida.md`.
-- Aplicarea concretă pe meniul fizic (cele 14 tool-uri + cele 3 dropdown-uri + bucla de vision) → skill-ul `meniu-fizic` + `meniu-fizic-design.md`.
+- Aplicarea concretă pe meniul fizic (tool-urile dedicate de design + cele 3 dropdown-uri + bucla de vision) → skill-ul `meniu-fizic` + `meniu-fizic-design.md`.
 - Aplicarea pe import (pagina parsează, tu decizi) → skill-ul `importa-date`; pe prezentări → skill-ul `construieste-prezentare`; pe conectare Meta → skill-ul `conecteaza-meta`.

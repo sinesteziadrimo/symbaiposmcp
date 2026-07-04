@@ -34,7 +34,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - **Meniu Fizic** (`/menu/physical`) — editor full-screen de meniu printabil (sidebar-ul aplicației se ascunde): formate A4/A3, paginare automată cu „Recalculează", copertă + pagini speciale, pagini finale cu valori nutriționale și alergeni, stiluri pe 3 niveluri (meniu → pagină → produs), export PDF/print; QR-ul de pe copertă e un QR dinamic editabil ulterior.
 - **Centru Meniu** (`/menu/center`, alias `/centru-meniu`) — panou pentru manageri: ce e „86" acum (cu motiv, cine, până când + buton Reactivează), câte produse n-au fotografie sau alergeni, căutare produs cu marcare „86" rapidă și alias-uri de căutare.
 - **Oferte** (`/menu/promotions`) — motorul de oferte care chiar reduce nota: 5 rețete (Reducere %, Happy Hour, Cadou la X lei, Cumperi X primești Y, Sumă fixă), pe canale (sală/kiosk/website/QR/delivery) și zile/ore. **Margin Guardrail** îți spune ÎNAINTE, în lei, dacă oferta vinde sub cost (verdict: pe plus / marjă subțire / pierzi bani — la pierdere butonul de pornire e blocat, dar poți „Publică oricum"). După lansare, **Scorecard** spune dacă oferta merită păstrată; există și panou Autopilot cu propuneri de la Sym, Win-Back Radar și Surprize.
-- **Disponibilitate programată** (tab în `/menu/promotions`) — reguli care fac produse, categorii sau meniuri comandabile doar în anumite zile/ore/canale (ex. mic dejun Lu–Vi 08:00–11:00). Nu schimbă prețul ca o ofertă; decide vizibil/comandabil. Se propagă pe POS, website, QR și livrări; pentru Wolt se trimite ca `weekly_availability`, iar Glovo se sincronizează pe ferestre/delta când începe sau expiră regula.
+- **Disponibilitate programată** (tab în `/menu/promotions`) — reguli care fac produse, categorii sau meniuri comandabile doar în anumite zile/ore/canale (ex. mic dejun Lu–Vi 08:00–11:00). Nu schimbă prețul ca o ofertă; decide vizibil/comandabil. Se propagă pe POS, website, QR și livrări; pentru Wolt și Glovo programul se sincronizează automat pe ferestrele de disponibilitate ale platformei, când începe sau expiră regula.
 
 **Catalog produse**
 - **Toate Produsele** (`/master-data`) — nomenclatorul complet, cu grupare pe Magazii, Categorii sau Categorii Meniu, fișa completă a produsului (poze, alergeni, taguri, magazie) și duplicarea unui meniu cu categorii și produse.
@@ -117,7 +117,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - `list_menus`, `list_menu_items`, `list_menu_categories` — meniurile, articolele și categoriile, cu prețuri. Pentru meniuri mari, `list_menu_items` face compact automat; cere `categoryId`/`limit`/`offset` pentru pagini sau folosește `export_menu`.
 - `export_menu(menuId, format)` — export tabelar complet al meniului (csv/tsv/markdown/json) cu calea ierarhică a categoriei, produs, preț, TVA și disponibilitate. E cea mai bună citire pentru audit, comparație cu sursa sau predare către user.
 - `search_products_db`, `get_product_details` — căutare în catalog și fișa completă a unui produs (taguri, gestiune, rețetă).
-- `list_recipes`, `get_recipe_details`, `list_recipe_ingredients`, `run_bom_explosion` — rețete, ingrediente, necesar de materii prime la o cantitate dată. Dacă userul întreabă pe un brand/unitate anume, dă `brandId`: `list_recipes` întoarce rețetele acelui brand + rețetele globale (`brandId` gol), nu tot tenantul.
+- `list_recipes`, `get_recipe_details`, `list_recipe_ingredients`, `run_bom_explosion` — rețete, ingrediente, necesar de materii prime la o cantitate dată. Dacă userul întreabă pe un brand/unitate anume, dă `brandId`: `list_recipes` întoarce rețetele acelui brand + rețetele globale (`brandId` gol), nu toată compania.
 - `analyze_food_costs`, `analyze_recipes`, `generate_report` (tip `food_cost`) — analiza costurilor și completitudinii rețetelor. Pentru `analyze_recipes`, folosește `brandId` explicit; cifrele sunt pe brand + globale, nu agregate peste toate brandurile.
 - `list_product_types`, `get_product_type_details` — tipurile de produs cu proprietăți și conturi.
 - `list_vat_rates`, `list_tags`, `list_untagged_products` — cote TVA, etichete, produse fără etichetă.
@@ -155,14 +155,14 @@ Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (șter
 - **Pozele în masă cu potrivire automată**: dacă ai zeci de poze fără să știi exact ce produs e fiecare, pagina Poze Bulk Meniu (`/menu/pricing/bulk-photos`) le potrivește cu AI. Prin MCP pui poza pe un produs anume cu `set_product_image` (când ai URL-ul și produsul).
 - **Ștergerile de entități** (produse, meniuri, oferte) + **Autopilot / Win-Back Radar / Surprize** din pagina Oferte: din aplicație. (Crearea/editarea ofertelor merge prin MCP — vezi `create_offer` / `update_offer` mai sus.)
 
-**⚠ Capcane de tool-uri (verificate în cod):**
+**⚠ Capcane de tool-uri:**
 - `add_menu_item` e UPSERT: dacă produsul e deja în meniu, câmpurile trimise se aplică pe item-ul existent (nu mai e „există deja, ignorat"). Numele afișat ia implicit numele produsului dacă nu trimiți `name`.
 - La meniuri mari, nu cere tot meniul enriched dintr-un singur `list_menu_items`: fără `limit` și peste prag răspunsul devine compact automat. Pentru un tabel complet folosește `export_menu`; pentru detalii folosește `categoryId`/`limit`/`offset` sau `compact:false` pe o pagină mică.
 - `set_product_image`: URL-ul trebuie PUBLIC (http/https, nu IP intern); imaginea se descarcă și se optimizează — dacă URL-ul pică, dă eroare clară, nu poză moartă.
 - Dedupe silențios cu success: `create_product` (nume exact), `create_menu`, `create_tag`, `create_allergen`, `create_menu_category` (nume+brand) întorc entitatea existentă FĂRĂ a aplica parametrii trimiși — caută înainte, citește răspunsul.
 - `create_recipe`: dă MEREU `productId` explicit (altfel match parțial pe nume sau auto-creează produs nou). `add_recipe_ingredients`: folosește `productId`, nu `productName` (typo = produs raw_material auto-creat).
 - `set_product_allergens` ÎNLOCUIEȘTE tot setul de alergeni al produsului. Alergenii din rețetă se moștenesc automat.
-- `auto_create_menu_from_products` pe tenant viu = toate produsele nemeniuite intră cu preț 0 într-un meniu activ. `bulk_update_menu_item_prices` fără `brandId` = match pe nume în tot sistemul.
+- `auto_create_menu_from_products` pe un cont cu date reale = toate produsele nemeniuite intră cu preț 0 într-un meniu activ. `bulk_update_menu_item_prices` fără `brandId` = match pe nume în tot sistemul.
 - Schimbarea gestiunii (`warehouseId`) pe un produs cu stoc declanșează transfer contabil automat (document + note).
 - `standardCost` este fallback de cost, nu mișcare de stoc: nu creează loturi, nu schimbă CMP și prima recepție reală îl umbrește.
 

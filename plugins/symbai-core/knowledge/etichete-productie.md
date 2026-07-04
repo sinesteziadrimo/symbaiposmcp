@@ -1,6 +1,6 @@
 # Etichete de producție — design frumos + printare pe rețetă/lot (valabilitate, alergeni, cod de bare)
 
-> Cum pui etichete profesioniste pe semipreparatele și produsele tale: le DESENEZI o singură dată în Materiale Grafice (cu cod de bare și câmpuri care se completează automat — lot, dată, valabilitate, alergeni), le legi de o rețetă ca „implicite", și apoi le PRINTEZI dintr-un singur buton când lotul e gata — pe o imprimantă de etichete (Zebra/termică) sau ca PDF. Designul materialelor în general → `materiale-grafice.md`. Imprimante & Print Agent → `echipamente-kds-imprimante.md`. Fluxul de producție (loturi) → `productie-restaurant.md`.
+> Cum pui etichete profesioniste pe semipreparatele și produsele tale: le DESENEZI o singură dată în Materiale Grafice (cu cod de bare și câmpuri care se completează automat — lot, dată, valabilitate, alergeni), le legi de o rețetă ca „implicite", și apoi le PRINTEZI dintr-un singur buton când lotul e gata — pe o imprimantă de etichete (Zebra/termică) sau ca PDF. Designul materialelor în general → `materiale-grafice.md`. Imprimante & configurarea lor → `echipamente-kds-imprimante.md`. Fluxul de producție (loturi) → `productie-restaurant.md`.
 
 ## ⚠ READ FIRST — eticheta = un material grafic „de tip Etichetă", legat de rețetă, printat la lot
 
@@ -42,7 +42,7 @@ Le pui pe etichetă din butonul „Câmp dinamic" din editor (sau le scrii direc
 - Prefixele sunt compoziție liberă: scrii „Lot: {{lot}}" și iese „Lot: L240617-1".
 
 ## Imprimanta de etichete
-- **ZPL (Zebra & termice de rețea)** — calea recomandată pentru imprimantele de etichete pe rolă. Imprimanta trebuie să fie **pe rețea, cu IP** (configurat în Setări → Imprimante). Sistemul transformă designul în imaginea etichetei și o trimite la imprimantă prin Print Agent — nu trebuie nimic instalat în plus.
+- **ZPL (Zebra & termice de rețea)** — calea recomandată pentru imprimantele de etichete pe rolă. Imprimanta trebuie să fie **pe rețea, cu IP** (configurat în Setări → Imprimante). Sistemul transformă designul în imaginea etichetei și o trimite direct la imprimantă — nu trebuie nimic instalat în plus.
 - **PDF** — pentru coli A4 cu etichete autocolante sau pentru a verifica/arhiva. Butonul „Descarcă PDF" din fereastra de printare. Nu necesită imprimantă specială.
 - **Configurare** (o dată, în Setări → Imprimante → „Imprimantă Etichete"): limbajul (ZPL/PDF), rezoluția (203/300/600 DPI — 203 e standardul) și, opțional, dimensiunea fizică a etichetei (dacă o lași goală, se ia din șablon).
 
@@ -64,7 +64,7 @@ Pentru palet: desenează în Materiale Grafice un șablon de etichetă cu un **Q
 ## Tool-uri MCP utile (ce poți face direct pentru user)
 - **`print_designed_label({ brandId, recipeId? / batchId? / productId?, designId?, printerId?, copies?, output? })`** — printează eticheta. Dacă NU dai `designId`, alege automat eticheta implicită legată de rețetă/produs (sau cea implicită pe brand). `output` poate fi `auto` (ZPL la imprimantă), `pdf` (întoarce PDF) sau lași gol. Pentru un lot, dă `batchId` — completează singur lotul/data/valabilitatea. `copies` 1-9999 (ex. 4 = un palet, sau câte unități are lotul).
 - **`configure_operation_completion({ operationId, labelTemplateId?, labelCount?, autoPrintLabels?, completionRequiresLabel?, labelApplicationTarget? })`** (fabrică) — leagă un șablon de etichetă de o OPERAȚIE din flux: ce design (`labelTemplateId` = id din `list_material_designs type:'label'`), câte copii implicit, print automat la finalizare, etichetare obligatorie și unde se lipește. Apoi operatorul printează de pe tableta de stație.
-- `list_printers({ brandId?, locationId? })` — vezi imprimantele configurate (tip, IP, stare LIVE). Pentru etichete cauți tipul „Etichete"; `status:"online"` înseamnă că poate tipări acum, `offline`/`unassigned` înseamnă că trebuie rezolvat PC-ul/Print Agentul sau folosit PDF.
+- `list_printers({ brandId?, locationId? })` — vezi imprimantele configurate (tip, IP, stare LIVE). Pentru etichete cauți tipul „Etichete"; `status:"online"` înseamnă că poate tipări acum, `offline`/`unassigned` înseamnă că trebuie verificată legătura imprimantei (vezi `echipamente-kds-imprimante.md`) sau folosit PDF.
 - `list_material_designs({ brandId, type:'label' })` — șabloanele de etichetă existente.
 - `list_material_templates()` + `create_material_from_template(...)` + tool-urile de editare — pentru a DESENA/ajusta eticheta (vezi `materiale-grafice.md`, modul declarativ, fără clickuri).
 - `list_recipes` / `get_recipe_labels` / `set_recipe_labels` — rețetele și etichetele/valabilitatea legate de ele.
@@ -77,7 +77,7 @@ Pentru palet: desenează în Materiale Grafice un șablon de etichetă cu un **Q
 - „Pune eticheta X pe operația de ambalare / să iasă automat la finalizare" (fabrică) → `configure_operation_completion({ operationId, labelTemplateId, autoPrintLabels:true })`; pentru a obliga eticheta înainte de finalizare adaugă `completionRequiresLabel:true`.
 - „Dă-mi un PDF cu eticheta" → `print_designed_label({ ..., output:'pdf' })`.
 - „Setează eticheta asta ca implicită pentru rețeta Y" → din Materiale Grafice, pe etichetă, „Setează ca etichetă implicită" (UI). (Asistentul ghidează userul — legarea se face din aplicație.)
-- „Nu am imprimantă de etichete / nu iese pe Zebra" → verifici cu `list_printers` (există una de tip Etichete, pe rețea, cu IP și `status:"online"`?). Dacă lipsește sau e `offline`/`unassigned`, ghidezi: Setări → Imprimante → adaugă/leagă „Imprimantă Etichete" și verifică PC-ul cu Print Agent. Vezi `echipamente-kds-imprimante.md`.
+- „Nu am imprimantă de etichete / nu iese pe Zebra" → verifici cu `list_printers` (există una de tip Etichete, pe rețea, cu IP și `status:"online"`?). Dacă lipsește sau e `offline`/`unassigned`, ghidezi: Setări → Imprimante → adaugă/leagă „Imprimantă Etichete" și verifică legătura cu imprimanta. Vezi `echipamente-kds-imprimante.md`.
 - „Unde fac etichete?" → `gaseste_in_aplicatie("etichete")` (du-l în Materiale Grafice → Etichete) sau `gaseste_in_aplicatie("printează etichetă")` (Producție).
 
 ## Reguli & capcane (cele care contează)
@@ -91,7 +91,7 @@ Pentru palet: desenează în Materiale Grafice un șablon de etichetă cu un **Q
 
 ## Legături
 - Cum DESENEZI eticheta (cele 14 tool-uri + coordonate fracționale + cod de bare + câmpuri dinamice) → `materiale-grafice.md` + skill-ul `materiale-grafice`.
-- Imprimante de etichete, Print Agent, configurare, testare → `echipamente-kds-imprimante.md`.
+- Imprimante de etichete, configurare, testare → `echipamente-kds-imprimante.md`.
 - Loturi de producție, finalizare, valabilitate, alergeni pe rețetă → `productie-restaurant.md` (sau `productie-fabrica.md` la fabrici).
 - Pagina exactă → `gaseste_in_aplicatie("etichete")` (design) / `gaseste_in_aplicatie("printează etichetă")` (producție).
 - Blocaj (ceva ce nu se poate prin conexiune) → `trimite_ticket_symbai` + ghidează în app.

@@ -4,7 +4,7 @@
 
 ## De ce un fișier „canonic" = importul devine determinist
 
-Motorul de import are un mapper determinist (`ruleBasedAutoMap`) care alimentează pipeline-ul AI. **Atenție la realitate**: AI-ul (generator + evaluator) rulează MEREU — nu există un mod „zero AI". DAR **dacă fișierul are anteturile EXACT ca numele câmpurilor țintă** (sau un alias recunoscut) + valori în enum-uri valide, mapper-ul determinist propune corect de la început, iar AI-ul doar **confirmă** (nu mai are de ghicit). Efectul practic: **maparea iese corectă din prima și întrebările de clarificare scad mult** (de regulă 0–2 minore, nu zero garantat), iar greșelile de mapare aproape dispar. Asta e cea mai inteligentă cale: **TU (Claude) construiești fișierul perfect**, motorul îl importă rapid și sigur.
+Motorul de import are un strat de mapare determinist care alimentează analiza AI. **Atenție la realitate**: analiza AI rulează MEREU — nu există un mod „zero AI". DAR **dacă fișierul are anteturile EXACT ca numele câmpurilor țintă** (sau un alias recunoscut) + valori în enum-uri valide, mapper-ul determinist propune corect de la început, iar AI-ul doar **confirmă** (nu mai are de ghicit). Efectul practic: **maparea iese corectă din prima și întrebările de clarificare scad mult** (de regulă 0–2 minore, nu zero garantat), iar greșelile de mapare aproape dispar. Asta e cea mai inteligentă cale: **TU (Claude) construiești fișierul perfect**, motorul îl importă rapid și sigur.
 
 Două moduri de a obține fișierul canonic:
 1. **Rescrii fișierul userului** într-unul canonic (redenumești coloane, normalizezi valori, separi compozitele) — și-l imporți pe acela.
@@ -99,13 +99,13 @@ Verifică întâi ce există (`list_warehouses_full`, `list_menu_categories(bran
 
 **Module de bifat pe token pentru pre-creare**: `produse_meniu` (gestiuni, categorii de meniu, cote TVA, sub-zone, taguri), `financiar` (tipuri de produs), `furnizori` (furnizori). Citirile (`list_*`, `search_products_db`) merg fără permisiune.
 
-## Capcanele importului automat — și cum le previi (catalog din cod)
+## Capcanele importului automat — și cum le previi (catalog de capcane cunoscute)
 
 Astea sunt locurile unde importul „pe cont propriu" greșește. Tu le previi prin: fișier canonic + pre-creare refs + verificare. Vânează-le mereu.
 
 **Gestiuni**
 - *Tot într-o gestiune greșită* (fallback „Magazie"): pune coloana `warehouse` explicit pe fiecare rând; pre-creează gestiunile.
-- *Nume fuzzy* („Bar" prinde „Bar Drunken"): folosește numele EXACT al gestiunii existente; nu te baza pe potrivire parțială.
+- *Nume fuzzy* („Bar" poate prinde și „Bar Terasă"): folosește numele EXACT al gestiunii existente; nu te baza pe potrivire parțială.
 - *Compozite* („Bar Capsare" = gestiune + categorie): separă în `warehouse=Bar` + `menuCategory=Capsare`.
 - *Multi-locație fără locație*: la create_warehouse pe tenant cu >1 locație, dă MEREU `locationId` (altfel stoc fantomă).
 

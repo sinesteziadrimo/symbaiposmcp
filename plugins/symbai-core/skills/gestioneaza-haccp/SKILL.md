@@ -5,7 +5,7 @@ description: Ține siguranța alimentară (HACCP) la zi prin conexiune (MCP) —
 
 # HACCP hands-free — siguranța alimentară prin conexiune (MCP), nu prin click
 
-Userul (proprietar/bucătar-șef/manager) vrea să țină evidența HACCP fără să se chinuie prin taburile paginii. Tu faci munca prin **tool-urile MCP** (citești și scrii date reale pe instanța lui), navighezi la pagina HACCP prin **deep-link stabil** (`/haccp?tab=…`) și-i **arăți rezultatul pe ecran** (screenshot) — clickul rămâne ultima soluție. Cele 12 tool-uri acoperă tot ciclul: temperaturi, incidente, curățenie, răcire rapidă, recall și lista clienților expuși. **Cel mai important: spune-i clar ce-ai notat și arată-i jurnalul.**
+Userul (proprietar/bucătar-șef/manager) vrea să țină evidența HACCP fără să se chinuie prin taburile paginii. Tu faci munca prin **tool-urile MCP** (citești și scrii date reale pe instanța lui), navighezi la pagina HACCP prin **deep-link stabil** (`/haccp?tab=…`) și-i **arăți rezultatul pe ecran** (screenshot) — clickul rămâne ultima soluție. Tool-urile MCP acoperă tot ciclul: temperaturi, incidente, curățenie, răcire rapidă, recall și lista clienților expuși. **Cel mai important: spune-i clar ce-ai notat și arată-i jurnalul.**
 
 ## Înainte de orice
 1. Citește (la nevoie) **`knowledge/agent-operare-avansata.md`** (confirmare, dovadă, incident/recall), **`knowledge/haccp.md`** (ce înseamnă fiecare jurnal, pragurile uzuale, ce e răcirea rapidă/recall, cum se leagă de producție/loturi) și **`knowledge/condu-chrome.md`** (doctrina generală: MCP întâi, deep-link, screenshot = livrabil, click pe element doar când chiar nu există API).

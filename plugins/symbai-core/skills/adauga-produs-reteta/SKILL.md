@@ -17,7 +17,7 @@ Regula de bază peste tot: **nu inventa NIMIC** — nici prețuri, nici gramaje,
 
 1. **Întreabă userul de unde vin datele**: website-ul restaurantului? PDF cu meniul? Excel/export din vechiul POS? poze? pagina de Glovo/Wolt? Cere-i fișierele direct în chat.
 2. **Website**: ia conținutul URL-ului. Dacă HTML-ul vine gol → e un SPA (React/Angular/Vue); **caută API-ul din spate** — platformele de meniu au de regulă un endpoint JSON public (exemplu real: SmartMenu servește totul din Firebase Realtime DB, `https://smart-menu-...firebasedatabase.app/restaurant-menus/{slug}.json` → categorii → produse, cu name/price/description/weight/allergens/imageUrl per produs). Dacă nu găsești API-ul, cere userului un export sau screenshot-uri — nu ghici conținutul.
-3. **Per produs vrei**: nume, preț, categorie/secție (bucătărie vs bar), descriere, gramaj, alergeni, poză (URL), **slug-ul SEO din URL** (ultimul segment, ex. `site.ro/scaun-auto-0-13-kg` → `scaun-auto-0-13-kg`), codurile de scanner dacă există (`sku`, `barcode`, `ean` — critic la retail), și pentru băuturi: cum se vinde (sticlă întreagă vs porție turnată).
+3. **Per produs vrei**: nume, preț, categorie/secție (bucătărie vs bar), descriere, gramaj, alergeni, poză (URL), **slug-ul SEO din URL** (ultimul segment, ex. `site-exemplu.ro/limonada-de-casa` → `limonada-de-casa`), codurile de scanner dacă există (`sku`, `barcode`, `ean` — critic la retail), și pentru băuturi: cum se vinde (sticlă întreagă vs porție turnată).
    - **Slug-ul sursă**: la magazine care se MUTĂ pe Symbai, trimite slug-ul vechi ca arg `slug` la `add_menu_item`/`bulk_add_menu_items` (și `create_menu_category`) ca să PĂSTREZI URL-urile indexate (continuitate SEO, fără 404). Dacă nu-l trimiți, platforma generează automat unul curat din nume. Detalii: `knowledge/onboarding/02d-import-surse-externe.md` → „Slug-ul SEO din URL-ul sursei".
 4. **Inventariază ce lipsește** și pune userului **UN singur set compact de întrebări**, nu câte una pe rând.
 5. Alternativă in-app (propune-o când userul are PDF/poze/Excel și preferă să nu treci tu prin MCP): paginile `/menu/import-pdf` (extrage produse + prețuri + poze + design) și `/ai-bulk-import` (Excel cu mapare AI) fac importul direct în aplicație.
@@ -26,7 +26,7 @@ Regula de bază peste tot: **nu inventa NIMIC** — nici prețuri, nici gramaje,
 
 1. `list_brands` + `list_locations` + `list_menus` — brandul și meniul țintă. Dacă creezi meniu nou cu `create_menu`: se naște **draft** — activează-l cu `update_menu(status: "active")`.
 2. `list_product_types(brandId)` — tipurile de produs REALE ale clientului (poate avea tipuri custom; folosește-le pe ale lui).
-3. **Stilul de taguri**: `list_tag_summary` + `list_tags` — vezi ce taguri există și câte produse are fiecare (ex. „BAR" 115 produse, „BUCATARIE" 113). **Tagurile existente au deja reguli de rutare către imprimante/KDS — refolosește-le întocmai** (același nume, nu variante noi). Cu SQL read activ, verifică ce taguri au rute: `SELECT t.name, r.printer_id, r.screen_ids FROM tag_routing_rules r JOIN tags t ON t.id=r.tag_id WHERE r.active`.
+3. **Stilul de taguri**: `list_tag_summary` + `list_tags` — vezi ce taguri există și câte produse are fiecare (ex. „BAR" și „BUCATARIE", fiecare cu zeci de produse). **Tagurile existente au deja reguli de rutare către imprimante/KDS — refolosește-le întocmai** (același nume, nu variante noi). Care taguri au deja reguli de rutare active vezi cu `list_tag_routing_rules`.
 4. `list_menu_categories(brandId)` — structura categoriilor (e ierarhică).
 5. **Stilul de bar**: `search_products_db` pe 2-3 băuturi cheie (ex. „vodka", „cola") + `get_warehouse_products_summary` pe gestiunea barului — vezi dacă clientul ține băuturile ca **marfă la bucată** sau ca **materie primă la litru cu rețete de porționare (40 ml)**. Introdu produsele noi ÎN ACELAȘI stil.
 6. **Dedupe**: `search_products_db` pe fiecare nume nou înainte de creare. `create_product` face dedupe doar pe nume EXACT — „Coca Cola" vs „Coca-Cola" creează dublură.
@@ -46,7 +46,7 @@ Arborele de decizie (confirmat de clasificatorul oficial Symbai):
 | Ingredient cumpărat | `raw_material` | unitatea de achiziție (kg/l/buc) | NU |
 | Meniu de eveniment la preț fix, fără rețetă cunoscută | `masa_servita` — NU e în enum-ul create_product; creează-l ca tip custom cu `create_product_type(brandId, code, name, …conturi)`, apoi folosește `code`-ul tău la creare | — | NU (cost ulterior prin fișă de consum) |
 
-- **Capcana unității la spirtoase**: sticla TREBUIE ținută la **l** (litri). Dacă e în „buc", rețeta „40 ml" e neconvertibilă → consumă 0.04 BUCĂȚI per shot, **fără niciun avertisment prin MCP** (incident real: COGS ×1000, stocuri −12.000 kg). Conversia e automată DOAR în aceeași familie: g↔kg, ml↔cl↔dl↔l.
+- **Capcana unității la spirtoase**: sticla TREBUIE ținută la **l** (litri). Dacă e în „buc", rețeta „40 ml" e neconvertibilă → consumă 0.04 BUCĂȚI per shot, **fără niciun avertisment prin MCP** (greșeala clasică: food cost de sute de ori mai mare și stocuri negative absurde). Conversia e automată DOAR în aceeași familie: g↔kg, ml↔cl↔dl↔l.
 - **TVA România: 0 / 11 / 21.** Mâncare preparată și băuturi nealcoolice de regulă 11; **alcoolul mereu 21**; setează `vat` explicit la creare. La import HoReCa fără TVA, serverul are fallback determinist (alimente/apă 11, alcool/băuturi zaharoase/cafea/non-food/incert 21), dar explicitul câștigă.
 - **Marfa fără rețetă e normală** (nu e o problemă de date); un `finished_good` fără rețetă E o problemă — nu scade stoc și rămâne necostat în P&L.
 
@@ -67,11 +67,11 @@ Construiește tabelul complet ÎNAINTE de orice scriere și arată-l userului: n
 8. **Alergeni**: `set_product_allergens(productId, allergenIds)` — ⚠ ÎNLOCUIEȘTE tot setul, citește întâi ce are produsul. Dacă lista de alergeni e goală, cere userului să ruleze seed-ul UE din pagina Alergeni. Produsele cu rețetă moștenesc automat alergenii ingredientelor — setează manual doar ce nu vine din rețetă.
 9. **TVA la final**: dacă au rămas găuri, `auto_assign_vat_batch` (cu onlyMissing) + verificare prin citire.
 10. **Stoc inițial** doar dacă userul îl cere: `set_initial_stock` (creează document de ajustare + mișcări reale).
-11. Anti-capcane: NU folosi `auto_create_menu_from_products` pe un tenant viu (bagă TOATE produsele nemeniuite cu preț 0 într-un meniu activ); la `bulk_update_menu_item_prices` dă MEREU `brandId` (altfel face match pe nume în tot sistemul); NU schimba `warehouseId` pe produse cu stoc „din curățenie" (declanșează transfer contabil automat); `standardCost` nu mișcă stoc și nu înlocuiește NIR-ul.
+11. Anti-capcane: NU folosi `auto_create_menu_from_products` pe un cont viu, cu date reale (bagă TOATE produsele nemeniuite cu preț 0 într-un meniu activ); la `bulk_update_menu_item_prices` dă MEREU `brandId` (altfel face match pe nume în tot sistemul); NU schimba `warehouseId` pe produse cu stoc „din curățenie" (declanșează transfer contabil automat); `standardCost` nu mișcă stoc și nu înlocuiește NIR-ul.
 
 ## Faza 5 — Verifică prin CITIRE (niciodată prin UI)
 
-- `list_menu_items(menuId)` — numărul și prețurile vs sursă. Pentru meniuri mari folosește `export_menu(menuId, "markdown"|"csv")` ca tabel complet sau paginează `list_menu_items` cu `categoryId`/`limit`/`offset`; răspunsul compact automat nu conține toate detaliile enriched.
+- `list_menu_items(menuId)` — numărul și prețurile vs sursă. Pentru meniuri mari folosește `export_menu(menuId, "markdown"|"csv")` ca tabel complet sau paginează `list_menu_items` cu `categoryId`/`limit`/`offset`; răspunsul compact automat nu conține toate detaliile (descriere, gramaj, poze).
 - `list_untagged_products` — niciun produs nou fără tag de rutare.
 - `analyze_recipes(brandId)` — rețete incomplete / ingrediente lipsă.
 - `analyze_food_costs` sau `generate_report(food_cost)` — un cost absurd (150%+) = aproape sigur unitate greșită în rețetă.

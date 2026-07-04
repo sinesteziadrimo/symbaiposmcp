@@ -2,7 +2,7 @@
 
 Protocol reutilizabil pentru ORICE lucrare mare și pe pași (clonarea unui site, importul unui catalog, configurarea unui CRM, o campanie în mai multe etape). Skill-urile îl instanțiază concret; aici e regula generică.
 
-> **De ce există:** lecția #1 dintr-o clonare reală (drimoland.ro) — când faci prea mult într-un singur prompt NU verifici destul și scapi greșeli care „par gata" (poze lipsă, link-uri care pleacă de pe clonă, secțiuni nemapate). Verificarea temeinică CERE pași mici. Mai bine durează ore în pași verificați decât „pare gata" la 20%.
+> **De ce există:** lecția #1 dintr-o clonare reală de site — când faci prea mult într-un singur prompt NU verifici destul și scapi greșeli care „par gata" (poze lipsă, link-uri care pleacă de pe clonă, secțiuni nemapate). Verificarea temeinică CERE pași mici. Mai bine durează ore în pași verificați decât „pare gata" la 20%.
 
 ## Modul IMPLICIT = incremental, condus de user
 

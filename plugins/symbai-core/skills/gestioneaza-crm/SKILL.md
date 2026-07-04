@@ -8,11 +8,11 @@ description: Gestionează CRM-ul de vânzări Symbai — pipeline de lead-uri/de
 Ești asistentul Symbai care ajută clientul (proprietar/manager) să-și conducă vânzările și evenimentele pe pipeline: cereri → deal-uri pe etape → avans/contract → câștigat → încasat. Acoperă restaurante, săli de evenimente, hoteluri, **parcuri de distracții** (petreceri copii, team-building, atracții) și firme de servicii. Pentru **prezentarea de vânzare** (pitch-ul cu slide-uri dinamice din tabul «Prezentare») folosește skill-ul separat `construieste-prezentare`.
 
 ## Înainte de orice
-1. Citește **`knowledge/agent-operare-avansata.md`** pentru standardul de lucru cap-coadă, apoi **`knowledge/crm-vanzari-pipeline.md`** (pagina `/sales-crm` cu cele 11 taburi, pipeline Kanban + lifecycle deal, fișa de eveniment, funcții AI, adaptarea per vertical, configurarea `/settings/sales-crm`) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`. Mecanica detaliată a rezervărilor/evenimentelor (BEO, contract e-sign, avans, P&L) e în `knowledge/rezervari-clienti-evenimente.md`; jocurile/atracțiile în `knowledge/jocuri-activitati.md`.
+1. Citește **`knowledge/agent-operare-avansata.md`** pentru standardul de lucru cap-coadă, apoi **`knowledge/crm-vanzari-pipeline.md`** (pagina `/sales-crm` cu toate taburile ei, pipeline Kanban + lifecycle deal, fișa de eveniment, funcții AI, adaptarea per vertical, configurarea `/settings/sales-crm`) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`. Mecanica detaliată a rezervărilor/evenimentelor (BEO, contract e-sign, avans, P&L) e în `knowledge/rezervari-clienti-evenimente.md`; jocurile/atracțiile în `knowledge/jocuri-activitati.md`.
 2. **Context mereu întâi**: `list_brands` + `list_locations` (ai nevoie de `brandId`/`locationId`). Stare rezervări: `get_reservations_overview`. Pâlnie: `get_crm_funnel`.
 3. **⚠ Două limite importante:**
    - **Deal/pipeline/etape/capacity/prezentări = UI-only** — NU există tool MCP. Le faci navigând în aplicație (ideal cu extensia Chrome + user logat). Prin MCP faci: rezervări, jocuri, clienți/grupuri, loialitate, și citești funnel/NBA/task-uri.
-   - **Loc CRM nominal (crm_seat)**: paginile `/sales-crm` se văd DOAR de angajații nominalizați „User CRM" (Setări → Sales CRM → Useri CRM) — inclusiv adminii. „Nu văd CRM-ul" = lipsă nominalizare, nu bug.
+   - **Loc CRM nominal**: paginile `/sales-crm` se văd DOAR de angajații nominalizați „User CRM" (Setări → Sales CRM → Useri CRM) — inclusiv adminii. „Nu văd CRM-ul" = lipsă nominalizare, nu bug.
 
 ## Regula de aur
 
@@ -23,7 +23,7 @@ ID-uri, nu nume (`brandId`, `locationId`, `gameId`). **Caută înainte de a crea
 2. **Stilul CRM** (tab General): Restaurant / **Parc de Distracții** / Cafenea-Bar / Sală Evenimente-Hotel / Servicii — schimbă vocabularul și taburile (ex. „Pipeline" → „Pipeline Petreceri" la parc).
 3. **Etape pipeline** (`?tab=pipelines`): nume, culoare, probabilitate %, marcaj Won/Lost, reordonare drag-and-drop.
 4. **Tipuri de evenimente** (`?tab=event-types`): definești tipurile (Petrecere copii, Corporate, Botez…) + bifezi **capabilitățile**: Sală/Cameră, Personal, **Jocuri/Atracții**, Produse, Contract, Chestionar (+ Producție/Cheltuieli/BEO). Capabilitatea care decide ce taburi apar pe fișă. Tot aici: editor de **șabloane de petrecere** (cronologia zilei).
-5. **Vizibilitate** (`?tab=visibility`): ce taburi/funcții AI/câmpuri apar. Tot aici **Useri CRM** (nominalizare crm_seat).
+5. **Vizibilitate** (`?tab=visibility`): ce taburi/funcții AI/câmpuri apar. Tot aici **Useri CRM** (nominalizarea celor care văd paginile CRM).
 
 ## (b) Lucrează pipeline-ul de vânzări (UI)
 1. `/sales-crm` → **Pipeline**. Cardurile (lead-uri/evenimente) se trag drag-and-drop între etape. Pe card: **Lead Score 0-100**, Avans ✓/✗, Contract ✓/✗, „Avansează la etapa următoare".
@@ -69,7 +69,7 @@ Tabul «Prezentare» din `/sales-crm` rulează pitch-ul de vânzare cu slide-uri
 - **Prezentarea** (tabul Prezentare): integral UI → skill `construieste-prezentare`.
 
 ## Diagnostic rapid
-- **„Nu văd pagina CRM"** → lipsă loc CRM nominal (crm_seat): nominalizează „User CRM" în Setări → Sales CRM → Useri CRM (și pentru admin).
+- **„Nu văd pagina CRM"** → lipsă loc CRM nominal: nominalizează „User CRM" în Setări → Sales CRM → Useri CRM (și pentru admin).
 - **„Nu apare un tab pe fișa evenimentului (Jocuri/Producție/Contract)"** → capabilitatea nu e bifată pe tipul de rezervare (`?tab=event-types`); poate fi și ascuns la nivel de brand.
 - **„Vocabularul nu se potrivește"** → schimbă stilul CRM (`/settings/sales-crm` → General → Parc de Distracții).
 - **„Cardul nu avansează / Won nu merge"** → lipsesc etape marcate Won/Lost în `?tab=pipelines`.
@@ -77,7 +77,7 @@ Tabul «Prezentare» din `/sales-crm` rulează pitch-ul de vânzare cu slide-uri
 - **„Clientul nu poate rezerva online un grup mare"** → limitele min/max sunt pe rezervările ONLINE; din POS personalul poate depăși.
 
 ## Verifică prin CITIRE (nu prin UI)
-După scriere: `get_reservations_overview` / `get_game_details` / `list_portal_games` / `get_crm_funnel` confirmă. Succes la tool = salvat — nu repeta, spune userului să dea refresh. Audit „cine a creat/anulat" → `jurnal_activitate` (categorii „Rezervări"/„Contracte"/„SERVICES_CRM"). Pentru deal/pipeline (UI-only) verifici vizual (Chrome) sau cu SQL read-only (`sales_deals`/`sales_stages`).
+După scriere: `get_reservations_overview` / `get_game_details` / `list_portal_games` / `get_crm_funnel` confirmă. Succes la tool = salvat — nu repeta, spune userului să dea refresh. Audit „cine a creat/anulat" → `jurnal_activitate` (categorii „Rezervări"/„Contracte"/„SERVICES_CRM"). Pentru deal/pipeline (UI-only) verifici vizual (Chrome) sau cu acces SQL read-only (găsești tabelele de deal-uri/etape cu `list_database_tables`).
 
 ## Permisiuni & legături
 - Scrieri: rezervări/jocuri-rezervare/clienți/loialitate = modul **«Rezervări & Clienți»** (`rezervari_clienti`); configurare jocuri/rezervări = modul **«Setări & Configurare»** (`setari`). „Permisiune insuficientă" → modulul nu e pe token → portal Hub → Acces AI. Deal/pipeline/prezentări = UI-only (fără modul MCP).

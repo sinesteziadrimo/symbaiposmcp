@@ -23,7 +23,7 @@ Fără modulul potrivit, tool-urile de scriere întorc „permisiune insuficient
 2. `list_product_types(brandId)` — fiecare tip cu proprietăți (canSell, hasStock, hasRecipe, hasReceptionPrice...) și conturile pe momente.
 3. `list_accounting_accounts(brandId)` — planul de conturi, grupat pe clase; cu `codePrefix: "7"` doar veniturile etc.
 4. `list_locations` — câte locații există (decide dacă are sens discuția despre conturi analitice per locație).
-5. `list_entities(entityType: "haccp_sensors")` și `list_entities(entityType: "cleaning_tasks")` — ce există deja pe partea DSV. La aceste două entități `brandId` e IGNORAT (tabelele n-au coloana) — uită-te la `locationId` din rezultate.
+5. `list_entities(entityType: "haccp_sensors")` și `list_entities(entityType: "cleaning_tasks")` — ce există deja pe partea DSV. La aceste două entități filtrul `brandId` e IGNORAT — uită-te la `locationId` din rezultate.
 6. `get_accounting_sync_status(brandId)` — doar dacă userul pomenește de contabil/Symbai Accounting.
 
 **Întrebările MINIME:**
@@ -152,13 +152,13 @@ Pașii **15, 16 și 17** din `/onboarding`: pasul 15 „DSV Chef — HACCP & Con
 
 - **TVA România = 0% / 11% / 21%** (alimente 11, alcool/standard 21) — NICIODATĂ 5/9/19, chiar dacă exemple mai vechi din aplicație le mai amintesc. La calcule de adaos/TVA neexigibilă folosește cotele corecte.
 - **`update_product_type` cu `accounts` = înlocuire totală a conturilor globale.** Trimite doar delta → pierzi restul conturilor și contabilitatea automată se strică silențios. Citește întâi setul complet cu `get_product_type_details` și retrimite-l integral cu modificarea.
-- **Override per locație DOAR prin `update_product_type_accounts_per_unit`.** Schema lui `update_product_type` acceptă `locationId` pe conturi, dar implementarea le ignoră la inserare — nu ajung nicăieri. Nu raporta bug; folosește tool-ul dedicat.
+- **Override per locație DOAR prin `update_product_type_accounts_per_unit`.** Schema lui `update_product_type` acceptă `locationId` pe conturi, dar valorile trimise acolo sunt ignorate — nu ajung nicăieri. Nu raporta bug; folosește tool-ul dedicat.
 - **378 și 4428 aparțin DOAR momentului `nir`** (adaosul comercial la mărfuri). Pe `invoice_entry` sunt eliminate automat la update (silențios la update global, cu avertisment la per-unit) — dacă „dispare" un cont, asta e cauza. La `create_product_type` filtrul NU rulează — pune-le corect de la început.
 - **401 (Furnizori) și 4111 (Clienți) NU primesc analitice** — `401.X`/`4111.X` sunt corectate automat la codul de bază; analiticele per partener se creează singure la facturare. Nu insista.
 - **Conturile analitice cu punct se creează automat** în planul de conturi când le folosești în `accounts[]` — nu chema `create_accounting_account` preventiv pentru ele.
 - **`create_product_type` și `create_accounting_account` întorc EROARE la duplicate** (cu ID-ul/numele existent în mesaj), nu entitatea existentă — citește mesajul și treci pe update, nu reîncerca cu alt cod inventat.
 - **Idempotența `create_haccp_sensor` e pe nume GLOBAL** (nu per locație): „Frigider Bucătărie" la două locații → al doilea apel întoarce senzorul primei locații. Include locația în nume la multi-locație („Frigider Bucătărie — Centru").
-- **`create_haccp_sensor.alertEnabled` e acceptat dar ignorat** de implementarea curentă — nu promite utilizatorului că ai activat/dezactivat alertele prin conexiune; alertele se gestionează din pagina HACCP.
+- **`create_haccp_sensor.alertEnabled` e acceptat dar deocamdată ignorat** — nu promite utilizatorului că ai activat/dezactivat alertele prin conexiune; alertele se gestionează din pagina HACCP.
 - **`create_cleaning_task`: `responsibleRole` și `checklistItems` ajung ca TEXT în notele sarcinii**, nu câmpuri structurate — e ok pentru checklist-ul afișat, dar nu te aștepta la asignare automată pe rol.
 - **`create_expense.accountingCode` ajunge doar ca notă text** — nu generează notă contabilă pe acel cont. Contabilitatea automată vine din conturile tipurilor de produs + documente (NIR, vânzări), nu din cheltuielile manuale.
 - **Conturile fără tipuri = rapoarte goale.** Dacă produsele reale au `productType` neasignat sau tip fără conturi, NIR-urile și vânzările NU generează note contabile — verifică și legătura produs→tip (fazele de produse), nu doar tipurile în sine.

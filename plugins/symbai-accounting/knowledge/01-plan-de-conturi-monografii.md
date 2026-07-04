@@ -1,6 +1,6 @@
 # Plan de conturi RO + monografii contabile uzuale
 
-> Reper de lucru (OMFP 1802/2014). Verifică planul exact al firmei cu `list_accounts`; analiticele pot diferi.
+> Reper de lucru (OMFP 1802/2014). Verifică planul exact al firmei cu `list_accounts`; analiticele pot diferi. Cotele din exemple (TVA, contribuții) sunt orientative — pentru valorile la zi vezi `02-tva.md` și `04-salarizare-si-regimuri.md`.
 
 ## Clasele de conturi (prima cifră)
 
@@ -37,7 +37,7 @@
 
 **Amortizare lunară:** `6811 = 281x` (amortizarea imobilizării).
 
-**TVA la încasare (vat_on_cash):** la facturare TVA e neexigibilă `4428`; la încasare se exigibilizează: `4428 = 4427` (vânzare) / `4426 = 4428` (cumpărare).
+**TVA la încasare (dacă firma are regimul activ):** la facturare TVA e neexigibilă `4428`; la încasare se exigibilizează: `4428 = 4427` (vânzare) / `4426 = 4428` (cumpărare).
 
 **Închidere TVA (lunar/trimestrial):** `4427 = 4426` și diferența → `4423 TVA de plată` sau `4424 TVA de recuperat`.
 

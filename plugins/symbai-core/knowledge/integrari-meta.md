@@ -31,7 +31,6 @@ Ghid de CONCEPTE pentru conectarea Meta la Symbai. Pașii concreți de lucru sun
 ## Specific UE (relevant pentru reclame)
 
 - Reclamele care rulează în UE cer câmpurile **DSA** („cine beneficiază / cine plătește") — Symbai le completează automat din datele brandului, dar Meta poate cere confirmarea lor în Ads Manager la prima campanie.
-- Extensia de browser Codex (OpenAI) nu e disponibilă în UE; extensia Claude in Chrome funcționează — relevant doar pentru modul de ghidare, nu pentru integrarea în sine.
 
 ## Probleme frecvente — dicționar rapid
 

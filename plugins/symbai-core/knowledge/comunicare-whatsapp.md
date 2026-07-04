@@ -24,7 +24,7 @@ Symbai adună într-un singur inbox mesajele de la clienți de pe toate canalele
 ## Fluxuri pas-cu-pas
 
 1. **Conectezi WhatsApp Business**: /social-media → tab WhatsApp Business → urmezi pașii (numărul trebuie verificat, permisiuni Business API). Nu cere niciodată parole — aprobi în browserul tău.
-2. **Răspunzi la un mesaj primit**: deschizi inbox-ul → vezi conversația → ceri o sugestie AI → ajustezi → trimiți. Prin conexiune: `list_conversations` (vezi conversațiile) → `get_conversation_messages` (citești firul).
+2. **Răspunzi la un mesaj primit**: deschizi inbox-ul → vezi conversația → ceri o sugestie AI → ajustezi → trimiți. Prin conexiune: `list_conversations` (vezi conversațiile) → `get_conversation_messages` (citești firul) → `reply_to_conversation` (trimiți răspunsul, doar după ce utilizatorul confirmă textul).
 3. **Verifici dacă poți trimite un mesaj de marketing** către un client: `check_marketing_allowed` (verifică consimțământul + fereastra permisă).
 4. **Vezi rapid conversațiile recente** (pentru context, ex. înainte de o campanie): `marketing_recent_conversations`.
 5. **Verifici starea canalelor de comunicare** (ce e conectat, dacă merge): `comms_get_status`.
@@ -33,7 +33,8 @@ Symbai adună într-un singur inbox mesajele de la clienți de pe toate canalele
 ## Tool-uri MCP utile
 
 - Citire: `list_conversations`, `get_conversation_messages`, `list_whatsapp_accounts`, `comms_get_status`, `marketing_recent_conversations`, `check_marketing_allowed`.
-- Trimiterea efectivă a mesajelor către clienți se face din inbox-ul aplicației (cu sugestie AI); prin conexiune predomină citirea + verificările de consimțământ. Confirmă în `tools-mcp.md` ce acțiuni de scriere sunt disponibile pe tokenul tău.
+- Scriere (trimiteri REALE către clienți — confirmă mereu cu utilizatorul înainte): `reply_to_conversation` (răspunzi într-o conversație existentă, pe canalul ei nativ — WhatsApp / Messenger / Instagram), `send_whatsapp_message` (mesaj text către un număr), `send_whatsapp_media` (imagine/document/video printr-un link public).
+- Înainte de orice mesaj cu caracter de marketing rulează `check_marketing_allowed`. Ce tool-uri de scriere sunt disponibile pe tokenul tău vezi în catalogul din `tools-mcp.md`.
 
 ## Întrebări frecvente
 

@@ -4,7 +4,7 @@
 > Acest ghid = **ce pui pe pagina de produs ca să arate bogată și să convertească** + ce tool MCP completează fiecare lucru. Pentru construirea site-ului în ansamblu (pagini, categorii, filtre, hero, footer) vezi `website-builder.md`. Pentru textul descrierii (SEO, anti-duplicat, lungime) vezi `descrieri-produse-seo.md`.
 
 ## De ce contează
-O pagină de produs „sărac" — doar o poză, un preț și două rânduri de text — pierde clienți: arată neîngrijit, nu răspunde la întrebări, nu dă încredere. Magazinele mari (tip Bebebliss, eMAG, Decathlon) au pe fiecare produs: galerie de poze, descriere lungă cu tab-uri, tabel de specificații, preț redus vizibil, garanție, rate, întrebări frecvente, produse compatibile și pachete. Tot ce urmează se pune **prin conexiune (MCP), fără click-uri** — pe `add_menu_item` / `update_menu_item` (produsul în meniu) plus câteva tool-uri dedicate pentru poze, recomandări și pachete.
+O pagină de produs „sărac" — doar o poză, un preț și două rânduri de text — pierde clienți: arată neîngrijit, nu răspunde la întrebări, nu dă încredere. Magazinele mari (tip eMAG, Decathlon) au pe fiecare produs: galerie de poze, descriere lungă cu tab-uri, tabel de specificații, preț redus vizibil, garanție, rate, întrebări frecvente, produse compatibile și pachete. Tot ce urmează se pune **prin conexiune (MCP), fără click-uri** — pe `add_menu_item` / `update_menu_item` (produsul în meniu) plus câteva tool-uri dedicate pentru poze, recomandări și pachete.
 
 ## Lista de bife — o pagină de produs completă
 Bifează-le pe fiecare produs important (cel puțin best-sellers + produsele cu marjă mare). Coada lungă: măcar poze + descriere + specificații.

@@ -1,12 +1,12 @@
-# Protocol: Website Builder-Reviewer Loop
+# Protocol: Website Builder-Reviewer Loop (istoric)
+
+> Acest protocol aparține vechiului skill `website-agent-loop`, înlocuit de `copiaza-website`. Rămâne aici doar ca referință pentru rulările pornite pe vechiul model.
 
 ## Contract de orchestrare
 
-Orchestratorul tine lista de iteratii si decide cine scrie. Subagentii pot fi folositi pentru lucru, dar live writes se fac secvential: Builder termina, apoi Reviewer verifica read-only, apoi Builder repara.
+Orchestratorul ține lista de iterații și decide cine scrie. Subagenții pot fi folosiți pentru lucru, dar scrierile reale se fac secvențial: Builder termină, apoi Reviewer verifică read-only, apoi Builder repară.
 
-Pentru un loop de cateva ore in Codex, starea poate sta in thread/automation. Pentru un loop de zile sau integrat in POS, starea trebuie sa fie persistenta in NexusPOS: run id, iteratii, snapshots, findings, artifacte si lock per `brandId + websiteId`.
-
-Starea minima pe fiecare iteratie:
+Pentru un loop lung (ore sau zile), starea fiecărei iterații se păstrează într-un loc durabil (fișier de lucru / notițe ale rulării), ca să poți relua fără să pierzi firul:
 
 ```text
 iteration:
@@ -23,7 +23,7 @@ stopDecision:
 
 ## Gate de completitudine pentru site-uri complexe
 
-Pentru site-uri de tip Drimoland, loop-ul nu trece pe PASS dupa homepage sau dupa primele componente vizibile. Fiecare iteratie trebuie sa mentina un tabel scurt:
+Pentru site-uri mari (multe pagini, catalog bogat, blog), loop-ul nu trece pe PASS după homepage sau după primele componente vizibile. Fiecare iterație trebuie să mențină un tabel scurt:
 
 ```text
 pageSlug:
@@ -35,7 +35,7 @@ seoOk:
 status: pending|fixed|blocked
 ```
 
-Inventariaza toate linkurile din header/dropdown/footer si toate `canonicalSlugs`; fiecare slug are pagina locala, redirect pastrat sau blocaj explicit. Pentru pagini de meniu/catalog adauga audit separat:
+Inventariază toate linkurile din header/dropdown/footer și toate slug-urile canonice; fiecare slug are pagină locală, redirect păstrat sau blocaj explicit. Pentru pagini de meniu/catalog adaugă audit separat:
 
 ```text
 menuAudit:
@@ -45,13 +45,13 @@ sourceProductsWithImages:
 localCategories:
 localProducts:
 localProductsWithImages:
-dbReadOnlySamples:
+readOnlySamples:
 writeNeeded: none|dry-run-required|confirmed
 ```
 
-Reviewerul trebuie sa refuze PASS daca lipsesc pagini din navigatie, daca un meniu are produse exemplu in locul produselor reale, daca pozele produselor nu au fost cautate in structurile reale ale sursei (ex. `attributes.media`), sau daca bara de categorii nu este sticky/scroll-spy/click-to-section.
+Reviewerul trebuie să refuze PASS dacă lipsesc pagini din navigație, dacă un meniu are produse-exemplu în locul produselor reale, dacă pozele produselor nu au fost căutate în datele reale ale sursei (nu doar în HTML-ul vizibil), sau dacă bara de categorii nu este sticky/scroll-spy/click-to-section.
 
-Pentru site-uri cu blog, adauga audit separat:
+Pentru site-uri cu blog, adaugă audit separat:
 
 ```text
 blogAudit:
@@ -67,86 +67,78 @@ missingArticles:
 writeNeeded: none|dry-run-required|confirmed
 ```
 
-Reviewerul trebuie sa refuze PASS daca sursa are blog si local lipseste pagina `/blog` cu `blog-listing`, daca articolele sunt carduri statice in loc de entitati Blog, daca `localArticleCount` este mai mic decat `sourceArticleCount` fara justificare, daca lipsesc slug-uri/canonical/date/imagini de coperta, sau daca au ramas drafturi placeholder de test.
+Reviewerul trebuie să refuze PASS dacă sursa are blog și local lipsește pagina `/blog` cu `blog-listing`, dacă articolele sunt carduri statice în loc de articole reale de blog, dacă `localArticleCount` este mai mic decât `sourceArticleCount` fără justificare, dacă lipsesc slug-uri/canonical/date/imagini de copertă, sau dacă au rămas ciorne placeholder de test.
 
 ## Guardrails non-negociabile
 
-- Reviewer read-only real cand se poate: token fara module de scriere sau rol separat. Daca exista doar acelasi token, marcheaza verificarea ca prompt-only read-only.
-- Lock per site/run. Nu porni doua pass-uri Builder pe acelasi website simultan.
-- Snapshot inainte de orice replace/editare mare: config website, navigatie, footer, pagini, audit initial si, daca se atinge catalogul, categorii/produse relevante.
+- Reviewer read-only real când se poate: un token fără module de scriere. Dacă există doar același token, marchează verificarea ca „read-only doar prin instrucțiune".
+- Un singur Builder pe același website la un moment dat — nu porni două pass-uri de scriere simultan.
+- Snapshot înainte de orice replace/editare mare: config website, navigație, footer, pagini, audit inițial și, dacă se atinge catalogul, categoriile/produsele relevante.
 - `apply_website_template(confirmReplace:true)` cere confirmare + snapshot + criteriu de rollback.
-- Dupa fiecare write, citeste inapoi (`list_websites`, config/audit) si nu repeta acelasi write doar pentru ca UI-ul are cache.
-- Daca se implementeaza POS-side, adauga dry-run/diff/preview pentru website writes; auditul post-factum singur nu e suficient.
-- Daca se cere GPT-5.5 xhigh din codul POS, verifica allowlist-ul/model settings local si actualizeaza-l explicit; nu presupune ca serverul accepta modelul doar pentru ca subagentii Codex il accepta.
+- După fiecare scriere, citește înapoi (`list_websites`, config/audit) și nu repeta aceeași scriere doar pentru că interfața pare neschimbată — aplicația ține datele în cache în browser și se actualizează la refresh.
 
 ## Prompt Builder
 
 ```text
-Esti Builder Agent pentru Symbai Website Loop. Foloseste modelul GPT-5.5 cu reasoning xhigh.
+Ești Builder Agent pentru Symbai Website Loop.
 
-Scop: construieste/imbunatateste website-ul Symbai pentru brandul <targetBrand>, pornind de la <sourceUrl>.
+Scop: construiește/îmbunătățește website-ul Symbai pentru brandul <targetBrand>, pornind de la <sourceUrl>.
 
 Reguli:
-- Nu esti singur in codebase; nu rescrie WIP strain si nu da revert la schimbari pe care nu le-ai facut.
-- Foloseste skill-ul construieste-website si knowledge-ul de website builder.
-- Incepe cu citiri reale: list_brands, list_locations, list_websites, list_website_component_catalog, get_ecommerce_settings, list_menu_items/list_menu_categories, audit_shop_health.
-- Pentru sursa, ruleaza analyze_external_website(crawlPages:true,maxPages:12) si fa screenshot/intake unde se poate.
-- Foloseste componente standard prima data. custom-html doar fallback controlat.
-- Dupa scrieri, ruleaza audit_shop_health si verifica prin link/screenshot sau raporteaza blocajul browserului.
-- Inainte de replace/editari masive, creeaza snapshot si noteaza cum revii inapoi.
-- Daca atingi cod POS, tine difful minim, ruleaza verificari targetate si listeaza fisierele schimbate.
-- Nu comite, nu push-ui si nu modifica persistent memory fara cerere explicita.
+- Folosește skill-ul construieste-website și cunoștințele de website builder.
+- Începe cu citiri reale: list_brands, list_locations, list_websites, list_website_component_catalog, get_ecommerce_settings, list_menu_items/list_menu_categories, audit_shop_health.
+- Pentru sursă, rulează analyze_external_website(crawlPages:true) și fă screenshot/intake unde se poate.
+- Folosește componente standard prima dată. custom-html doar ca fallback controlat.
+- După scrieri, rulează audit_shop_health și verifică prin link/screenshot sau raportează blocajul browserului.
+- Înainte de replace/editări masive, creează snapshot și notează cum revii înapoi.
 
-Returneaza evidence pack:
-1. Ce ai schimbat in Symbai.
+Returnează un evidence pack:
+1. Ce ai schimbat în Symbai.
 2. Linkuri/pagini verificate.
-3. Audit si probleme ramase.
-4. Diff-uri/fisiere cod atinse.
-5. Ce ar trebui sa verifice Reviewer.
+3. Audit și probleme rămase.
+4. Ce ar trebui să verifice Reviewer.
 ```
 
 ## Prompt Reviewer
 
 ```text
-Esti Reviewer Agent pentru Symbai Website Loop. Foloseste modelul GPT-5.5 cu reasoning xhigh. Lucrezi STRICT read-only.
+Ești Reviewer Agent pentru Symbai Website Loop. Lucrezi STRICT read-only.
 
-Scop: verifica critic rezultatul Builderului pentru <sourceUrl> -> <targetBrand>.
+Scop: verifică critic rezultatul Builderului pentru <sourceUrl> -> <targetBrand>.
 
-Interdictii:
-- Nu scrii in MCP.
-- Nu editezi fisiere.
+Interdicții:
+- Nu scrii nimic prin conexiune.
 - Nu repari direct.
 
-Verifica:
-- Paritate vizuala: homepage, header/nav/dropdown, hero/slider, categorii/meniu, pagina produs/serviciu, footer.
-- Functional: categorii fara produse, filtre, CTA-uri, linkuri, pagina de contact/legal, cos/checkout daca este magazin.
-- SEO/migrare: slug-uri, URL map, meta, canonical pages, blog/galerie/pagini importante.
-- Blog migration: daca sursa are blog, verifica paginarea, numarul articolelor, `list_blog_posts`, pagina `/blog` cu `blog-listing`, slug-uri, canonical, imagini si articole placeholder.
-- Store health: audit_shop_health fara error; warn-urile sunt explicate.
-- Code review daca exista diff POS: regressii, rute SSR, preview/live parity, build/test gaps, securitate custom-html.
-- Worktree hygiene: WIP strain, fisiere temporare, schimbari neexplicate.
+Verifică:
+- Paritate vizuală: homepage, header/nav/dropdown, hero/slider, categorii/meniu, pagină produs/serviciu, footer.
+- Funcțional: categorii fără produse, filtre, CTA-uri, linkuri, pagina de contact/legal, coș/checkout dacă este magazin.
+- SEO/migrare: slug-uri, harta URL-urilor, meta, pagini canonice, blog/galerie/pagini importante.
+- Migrarea blogului: dacă sursa are blog, verifică paginarea, numărul articolelor, list_blog_posts, pagina /blog cu blog-listing, slug-uri, canonical, imagini și articolele placeholder.
+- Sănătatea magazinului: audit_shop_health fără erori; warn-urile sunt explicate.
+- Siguranța componentelor custom-html, dacă există.
 
 Output:
-- Findings intai, ordonate P0/P1/P2/P3.
-- Pentru fiecare finding: dovada, impact, fix cerut, criteriu de acceptare.
+- Findings întâi, ordonate P0/P1/P2/P3.
+- Pentru fiecare finding: dovadă, impact, fix cerut, criteriu de acceptare.
 - La final: verdict PASS / NEEDS_FIX / BLOCKED.
 ```
 
 ## Prompt de reparare
 
 ```text
-Continua ca Builder Agent. Ai feedback-ul Reviewerului de mai jos. Repara doar defectele listate sau dependentele lor directe. Pastreaza partile deja bune. Dupa reparare, returneaza evidence pack nou si marcheaza fiecare finding ca fixed / not fixed / blocked.
+Continuă ca Builder Agent. Ai feedback-ul Reviewerului de mai jos. Repară doar defectele listate sau dependențele lor directe. Păstrează părțile deja bune. După reparare, returnează un evidence pack nou și marchează fiecare finding ca fixed / not fixed / blocked.
 ```
 
-## Candidat de invatare
+## Candidat de învățare
 
-Transforma o lectie in skill/knowledge doar cand sunt adevarate toate:
+Transformă o lecție în skill/knowledge doar când sunt adevărate toate:
 
-- defectul a fost observat in rezultat real sau test local;
-- exista cauza explicita, nu doar gust estetic;
-- regula va ajuta si la alte website-uri, nu doar la brandul curent;
-- nu contrazice `construieste-website`, `website-builder.md` sau tool docs live;
-- patch-ul este mic, verificabil si nu amesteca WIP strain.
+- defectul a fost observat într-un rezultat real, nu doar bănuit;
+- există cauză explicită, nu doar gust estetic;
+- regula va ajuta și la alte website-uri, nu doar la brandul curent;
+- nu contrazice `construieste-website`, `website-builder.md` sau documentația live a tool-urilor;
+- schimbarea propusă e mică și verificabilă.
 
 Format propus:
 
@@ -159,23 +151,14 @@ targetFile:
 evidence:
 ```
 
-## Automatizare lunga
+## Automatizare lungă
 
-Pentru rulari de ore/zile, promptul automatizarii trebuie sa includa toate intrarile. Nu folosi placeholder-e.
+Pentru rulări de ore/zile, promptul automatizării trebuie să includă toate intrările. Nu folosi placeholder-e.
 
 Template scurt:
 
 ```text
-Use $website-agent-loop to continue the guarded Builder/Reviewer loop for sourceUrl=<url>, targetBrand=<brand>, mode=<mode>. Respect max one builder write pass plus one reviewer pass per wakeup. Stop and report if audit_shop_health has no errors and reviewer has no P0/P1, or if blocked by missing permission/browser/MCP. Do not commit or push unless explicitly requested.
+Use $website-agent-loop to continue the guarded Builder/Reviewer loop for sourceUrl=<url>, targetBrand=<brand>, mode=<mode>. Respect max one builder write pass plus one reviewer pass per wakeup. Stop and report if audit_shop_health has no errors and reviewer has no P0/P1, or if blocked by missing permission/browser/MCP.
 ```
 
-## Cand trebuie cod POS, nu doar skill
-
-Daca cerinta este un produs intern care ruleaza singur zile intregi, creeaza un design/patch NexusPOS inainte de rulare live:
-
-- tabele/entitati pentru `website_copy_runs`, `website_copy_iterations`, `website_copy_findings`, snapshots si artifacte;
-- lock tranzactional pe `brandId + websiteId`;
-- endpoint/tool read-only pentru reviewer si write whitelist pentru builder;
-- preview/diff pentru `set_website_page_content`, `update_website_navigation`, `set_website_footer`, `apply_website_template` si custom components;
-- allowlist model/reasoning pentru `gpt-5.5` si `xhigh`;
-- teste pentru lock, snapshot, retry idempotent, reviewer read-only si rollback.
+Pentru rulări noi, folosește însă skill-ul `copiaza-website` — are inventar onest al sursei, crawl pe server, coadă durabilă și verificare obiectivă cu `clone_parity_diff`.

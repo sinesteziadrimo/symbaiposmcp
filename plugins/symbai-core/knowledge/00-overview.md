@@ -19,8 +19,8 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **Finanțe** — casierie (registru de casă), închidere de zi, facturi, e-Factura ANAF, contabilitate. → `finante-facturare-contabilitate.md`
 - **Marketing & Website** — postări social media, e-mail, ads, coduri QR (→ `marketing-social.md`); **site-ul public / magazinul online** — builder (pagini, componente, ierarhie de categorii, filtre faceted, hero, footer, pagini legale, temă) → `website-builder.md` + `ecommerce-magazin-online.md`
 - **Echipamente** — imprimante, ecrane bucătărie (KDS), agentul de imprimare, serverul local (edge), dispozitive. → `echipamente-kds-imprimante.md`
-- **Aplicatii native Expo** — Symbai POS, Symbai Portal si Symbai Staff: runtime POS mobil (plan sala pe telefon, Actiuni masa, zoom/pan, etichete mese), configurare app.json, branding, emulator Android, build nativ, GP/Viva app2app, push notifications. → `expo-aplicatii-mobile.md`
-- **Aplicatie Staff in POS web** — cardul `In Aplicatie Staff` de pe `/menu/platforms`: profiluri pentru livratori/agenti/task-uri/CRM, preview telefon si legatura cu rolurile reale din Personal. → `expo-aplicatii-mobile.md` + skill `configureaza-aplicatie-staff`
+- **Aplicații mobile native** — Symbai POS, Symbai Portal și Symbai Staff: POS-ul pe telefon (plan de sală, Acțiuni masă, zoom/pan, etichete mese), branding-ul aplicațiilor, plăți card pe același telefon (Viva / Global Payments) și notificări push. → `expo-aplicatii-mobile.md`
+- **Aplicație Staff în POS web** — cardul „În Aplicație Staff" de pe `/menu/platforms`: profiluri pentru livratori/agenți/task-uri/CRM, previzualizare pe telefon și legătura cu rolurile reale din Personal. → `expo-aplicatii-mobile.md` + skill `configureaza-aplicatie-staff`
 - **Setări & Administrare** — locații, branduri, TVA, metode de plată, utilizatori și roluri, integrări, abonament. → `setari-administrare.md`
 - **AI în aplicație** — asistentul Sym (butonul plutitor) + agenții specialiști. → `asistentul-ai-in-aplicatie.md`
 
@@ -38,7 +38,7 @@ Fișiere de referință transversale: `agent-operare-avansata.md` (standardul de
 
 ## Ecosistemul Symbai (în afara instanței POS)
 
-- **Portalul Hub** (`hub.symbai.app`) — contul clientului la Symbai: abonament, facturile Symbai, contracte și secțiunea **Acces AI** (de unde se generează tokenul conexiunii MCP și se instalează acest plugin). Hub-ul este și sursa versiunii publice pentru clienții POS noi; dacă un cont abia creat pare pe build vechi, verifică versiunea/provisioning-ul în Hub înainte să tratezi lipsa funcțiilor ca problemă de configurare în POS. Întrebări despre abonament/factura Symbai → portalul Hub, nu aplicația POS.
+- **Portalul Hub** (`hub.symbai.app`) — contul clientului la Symbai: abonament, facturile Symbai, contracte și secțiunea **Acces AI** (de unde se generează tokenul conexiunii MCP și se instalează acest plugin). Dacă un cont abia creat pare să nu aibă funcțiile cele mai noi, verifică în portalul Hub că instanța e adusă la zi înainte să tratezi lipsa funcțiilor ca problemă de configurare în POS. Întrebări despre abonament/factura Symbai → portalul Hub, nu aplicația POS.
 - **Symbai Supplier** — platforma furnizorilor; un furnizor conectat primește comenzile direct, iar cataloagele se sincronizează automat.
 - **Serverul local (edge)** — un calculator în restaurant care ține POS-ul funcțional și imprimarea bonurilor chiar și fără internet. Detalii în `echipamente-kds-imprimante.md`.
 
@@ -54,7 +54,7 @@ Symbai e multi-rol: proprietar, manager, ospătar, bucătar etc. Fiecare vede do
 
 ### 1. Filtrare automată când utilizatorul menționează o unitate specifică
 
-Când utilizatorul întreabă ceva legat de rapoarte, vânzări, P&L, stoc, personal sau orice alt modul și menționează explicit un brand, o locație sau o unitate (ex. „la Riviere", „pe Berarescu", „pentru Drimoland", „la terasa X"), **filtrează OBLIGATORIU** cu `brandId` și/sau `locationId` corespunzătoare. Nu prezenta date agregate pentru toate unitățile când se cere explicit una singură.
+Când utilizatorul întreabă ceva legat de rapoarte, vânzări, P&L, stoc, personal sau orice alt modul și menționează explicit un brand, o locație sau o unitate (ex. „la Restaurantul Central", „pe Brandul Exemplu", „la terasa X"), **filtrează OBLIGATORIU** cu `brandId` și/sau `locationId` corespunzătoare. Nu prezenta date agregate pentru toate unitățile când se cere explicit una singură.
 
 Flux:
 1. Dacă nu ai deja `brandId`/`locationId` pentru unitatea menționată → rulează `list_brands` + `list_locations` întâi.
@@ -67,7 +67,7 @@ Notă MCP: `list_brands` este intenționat un rezumat slim și ne-secret pentru 
 
 Când utilizatorul spune „arată-mi", „du-mă la", „deschide", „vreau să văd în aplicație" sau orice variantă similară:
 1. Folosește `gaseste_in_aplicatie` pentru a obține linkul exact al paginii.
-2. Navighează în Chrome cu `mcp__Claude_in_Chrome__navigate` la acel link.
+2. Navighează la acel link în Chrome prin extensia Claude in Chrome (tool-ul de navigare al extensiei), dacă e conectată.
 3. Fă un screenshot (sau descrie ce e pe ecran) ca să confirmi că pagina s-a deschis.
 
 Nu te limita la a da un link în chat — deschide activ pagina în browser și arată-o.

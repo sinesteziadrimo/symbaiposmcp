@@ -28,7 +28,7 @@ description: Ghidează conectarea contului Meta la Symbai — pagina Facebook, I
   1. deschide link-ul în browserul unde e logat în contul care administrează pagina;
   2. în dialogul Meta, selectează **pagina restaurantului** (nu profilul personal; dacă are mai multe pagini, pe cea corectă);
   3. **bifează TOATE permisiunile** — orice debifare înseamnă postări eșuate mai târziu.
-- Link-ul expiră în ~10 minute — dacă a întârziat, generează altul fără să comentezi.
+- Link-ul expiră după câteva minute — dacă utilizatorul a întârziat, generează altul fără să comentezi.
 - Când zice că a terminat: `verifica_integrare("meta")`. Dacă tokenul e valid → confirmă și treci mai departe.
 
 ## Pasul 2 — Instagram Business

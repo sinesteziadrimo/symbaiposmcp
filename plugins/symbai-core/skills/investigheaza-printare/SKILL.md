@@ -16,7 +16,7 @@ Scop: afli EXACT ce s-a întâmplat cu o imprimantă, o casă fiscală sau un bo
 
 - `get_order_timeline(orderId)` — ce s-a comandat, dacă s-a trimis la bucătărie, ce plăți, dacă s-a tipărit fiscal.
 - `get_order_payments(orderId)` — fiecare plată + dacă are bon fiscal tipărit.
-- Dacă ai acces SQL pe token: `execute_sql_query` (doar SELECT) pe `print_jobs` și `print_job_events` (coloane explicite + WHERE pe `order_id`/`device_id` + LIMIT) — vezi câte joburi de printare are comanda, statusul lor (queued/sent/sent_to_edge/done/error) și numerele de bon. **Două joburi fiscale „done" pe aceeași comandă = bon dublat. Un job rămas „sent_to_edge" fără „done" = bonul nu s-a confirmat (probabil nu a ieșit).**
+- Dacă ai acces SQL pe token: `execute_sql_query` (doar SELECT) pe tabelele de joburi de printare și evenimentele lor (le găsești cu `list_database_tables` → `describe_database_table`; coloane explicite + WHERE pe comanda/dispozitivul vizat + LIMIT) — vezi câte joburi de printare are comanda, statusul lor (queued/sent/sent_to_edge/done/error) și numerele de bon. **Două joburi fiscale „done" pe aceeași comandă = bon dublat. Un job rămas „sent_to_edge" fără „done" = bonul nu s-a confirmat (probabil nu a ieșit).**
 
 ## Pasul 2 — Cere logurile reale (NOU — le iei singur)
 
@@ -42,16 +42,16 @@ Received job pj_xxxx (fiscal) from edge ...
 Job pj_xxxx (fiscal) -> completed. Receipt #NNNNN
 ```
 - **Bon DUBLAT**: DOUĂ linii „Received job" diferite (de obicei una `pj_...` și una `pj_edge_...`) pentru aceeași comandă, ambele cu „completed. Receipt #N" pe numere consecutive → bonul s-a tipărit de două ori. Grep pe numărul comenzii sau pe ambele numere de bon ca să confirmi.
-- **Bon care NU a ieșit**: „writing file" dar fără „completed", sau `TIMEOUT` (Fisco/casa nu a preluat fișierul) / `CONSUMED` (preluat, dar fără confirmare).
+- **Bon care NU a ieșit**: „writing file" dar fără „completed", sau `TIMEOUT` (programul casei fiscale nu a preluat fișierul) / `CONSUMED` (preluat, dar fără confirmare).
 - **Casă instabilă**: multe `pa_start` / `pa_stopping` / `connect_fail` / `code=1006` într-un interval scurt = Print Agent-ul se tot repornește/deconectează (cauză frecventă atât pentru bonuri neieșite cât și pentru dublări).
 
-**Edge Server (source: "edge")** — cauți: `POST /api/orders/<id>/print` (cine a cerut bonul), `completed by device N`, și avertismente de sincronizare (`abandoned after ... sync retries`, `code=1006`, `cloud_reachable`).
+**Edge Server (source: "edge")** — cauți: liniile cu `print` + numărul comenzii (cine a cerut bonul), `completed by device N`, și avertismente de sincronizare (`abandoned after ... sync retries`, `code=1006`, `cloud_reachable`).
 
 ## Pasul 4 — Explică + acționează
 
 - Spune userului în cuvinte simple ce s-a întâmplat (ex. „bonul comenzii 35550 s-a tipărit de două ori pentru că au plecat două cereri simultan, una din cloud și una din serverul local; casa era instabilă în acel moment").
 - Dacă e o problemă de configurare (imprimantă oprită, fără hârtie, IP greșit, PC oprit) → spune ce trebuie reparat fizic.
-- Dacă pare un defect al platformei (ex. dublare la dual-write, comportament repetabil) → deschide un ticket la echipa Symbai cu `trimite_ticket_symbai` (atașează numărul comenzii, numerele de bon și `dumpId`-urile relevante).
+- Dacă pare un defect al platformei (ex. bon dublat repetabil când pleacă două cereri simultan, din cloud și din serverul local) → deschide un ticket la echipa Symbai cu `trimite_ticket_symbai` (atașează numărul comenzii, numerele de bon și `dumpId`-urile relevante).
 - Pentru bonuri fiscale dublate → atrage atenția că e o chestiune ANAF (de reconciliat cu contabilul), nu doar o iritație.
 
 ## Reguli
@@ -60,5 +60,5 @@ Job pj_xxxx (fiscal) -> completed. Receipt #NNNNN
 - **Filtrează mereu** logurile cu `grep` — nu cere și nu încerca să citești tot fișierul (poate avea zeci de mii de linii).
 - **Răbdare la dump**: după `request_device_logs` așteaptă ~60s înainte de `read_device_logs`; dacă PC-ul/PA-ul e offline, dump-ul nu vine — spune asta clar.
 - **Confidențialitate**: logurile au IP-uri și nume de angajați (de aceea cer drept de „Setări" pe token); token-urile sunt mascate automat. Nu le împrăștia — sintetizează ce e relevant.
-- **Acces**: dacă tool-urile de loguri îți spun că lipsește dreptul, userul îl activează din portal Hub → Acces AI (modulul Setări). Pentru `execute_sql_query` pe `print_jobs` e nevoie de dreptul „Interogări SQL".
+- **Acces**: dacă tool-urile de loguri îți spun că lipsește dreptul, userul îl activează din portal Hub → Acces AI (modulul Setări). Pentru interogările SQL pe joburile de printare e nevoie de dreptul „Interogări SQL".
 - Numere de bon și sume contează — citează-le exact.

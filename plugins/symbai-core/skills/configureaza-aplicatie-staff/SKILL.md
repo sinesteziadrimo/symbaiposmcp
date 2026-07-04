@@ -1,123 +1,114 @@
 ---
 name: configureaza-aplicatie-staff
-description: Configureaza si explica Aplicatia Staff / Symbai Staff din POS web: cardul "In Aplicatie Staff" de pe /menu/platforms, profiluri pentru livratori, agenti teren, CRM, task-uri, preluare marfa, productie/fabrica, containere QR, preview telefon cu butoane clickabile si legatura cu rolurile reale din Personal. Foloseste la "configureaza Aplicatie Staff", "Symbai Staff", "expo-sales", "ce vede livratorul", "ce vede operatorul de fabrica", "container QR pe mobil", "preview livrator", "ascunde CRM pentru livratori", "agent teren in aplicatia staff", "rol pentru previzualizare", "profil livrator cu vanzari", "aplicatia angajatilor".
+description: Configurează și explică Aplicația Staff / Symbai Staff din POS web: cardul „În Aplicație Staff" de pe /menu/platforms, profiluri pentru livratori, agenți teren, CRM, task-uri, preluare marfă, producție/fabrică, containere QR, preview telefon cu butoane clickabile și legătura cu rolurile reale din Personal. Folosește la „configurează Aplicație Staff", „Symbai Staff", „expo-sales", „ce vede livratorul", „ce vede operatorul de fabrică", „container QR pe mobil", „preview livrator", „ascunde CRM pentru livratori", „agent teren în aplicația staff", „rol pentru previzualizare", „profil livrator cu vânzări", „aplicația angajaților".
 ---
 
-# Configureaza Aplicatie Staff
+# Configurează Aplicația Staff
 
-Userul vrea sa configureze sau sa inteleaga **Symbai Staff**: aplicatia angajatilor pentru livratori, agenti de teren, CRM/vanzari, task-uri, receptie, operare marfa si productie/fabrica cu containere QR. Configurarea user-facing se face in POS web pe **/menu/platforms** prin cardul **"In Aplicatie Staff"**.
+Userul vrea să configureze sau să înțeleagă **Symbai Staff**: aplicația angajaților pentru livratori, agenți de teren, CRM/vânzări, task-uri, recepție, operare marfă și producție/fabrică cu containere QR. Configurarea se face în POS web pe **/menu/platforms**, prin cardul **„În Aplicație Staff"**.
 
 Nu confunda:
-- **Platforma Clienti / Portalul clientilor** = ce vede clientul public, skill `configureaza-portal`, tool-uri `configure_portal_*`.
-- **In Aplicatie Staff / Symbai Staff** = ce vede angajatul in app-ul staff, profiluri si preview, acest skill.
-- **Build nativ Expo** = app.json/assets/prebuild/build in repo, referinta `expo-aplicatii-mobile.md`; nu se schimba din dialog.
+- **Platforma Clienți / Portalul clienților** = ce vede clientul public → skill `configureaza-portal`, tool-uri `configure_portal_*`.
+- **În Aplicație Staff / Symbai Staff** = ce vede angajatul în aplicația staff, profiluri și preview → acest skill.
+- **Aplicația mobilă în sine** (cea instalată pe telefonul angajatului) se actualizează ca orice aplicație de telefon — nu se modifică din acest dialog.
 
-## Inainte de orice
+## Înainte de orice
 
-1. Citeste `knowledge/expo-aplicatii-mobile.md` pentru configuratia curenta, branding, app.json, emulator si build.
-2. Pentru roluri si permisiuni reale citeste `knowledge/personal-hr.md`.
-3. Pentru livratori si dispecerat citeste `knowledge/livrari-comenzi-online.md`.
-4. Pentru agenti de vanzari / CRM teren citeste `knowledge/crm-vanzari-pipeline.md`.
-5. Pentru productie/fabrica, containere QR si predari intre statii citeste `knowledge/productie-fabrica.md`.
-6. Pentru navigare si screenshot citeste `knowledge/condu-chrome.md`.
+1. Citește `knowledge/expo-aplicatii-mobile.md` pentru cum funcționează aplicația mobilă Symbai Staff.
+2. Pentru roluri și permisiuni reale citește `knowledge/personal-hr.md`.
+3. Pentru livratori și dispecerat citește `knowledge/livrari-comenzi-online.md`.
+4. Pentru agenți de vânzări / CRM teren citește `knowledge/crm-vanzari-pipeline.md`.
+5. Pentru producție/fabrică, containere QR și predări între stații citește `knowledge/productie-fabrica.md`.
+6. Pentru navigare și screenshot citește `knowledge/condu-chrome.md`.
 
-## Ce configureaza dialogul
+## Ce configurează dialogul
 
-Dialogul **In Aplicatie Staff** configureaza o previzualizare si niste preferinte de afisare pentru canalul `expo-sales`. In cod, configurarea este salvata pe device-ul POS cu `channelId = "expo-sales"` in `portalDisplayConfig`.
+Dialogul **„În Aplicație Staff"** configurează o previzualizare și preferințe de afișare pentru aplicația angajaților:
+- **profilul afișat implicit** în preview;
+- **densitatea** — mod ghidat (cu explicații) sau compact;
+- **hinturile pentru manager** — dacă preview-ul arată explicații;
+- **ajustări mici de funcții** per profil (ce module apar).
 
-Campurile reale:
-- `defaultPreviewProfile` = presetul afisat implicit.
-- `density` = `guided` sau `compact`.
-- `showManagerHints` = daca preview-ul arata explicatii pentru manager.
-- `profileOverrides` = toggle-uri de feature per preset.
-
-Important: toggle-urile din "Ajustari mici" **nu schimba permisiunile rolului**. Pentru acces real modifici rolurile in **Personal -> Roluri** (`/staff?tab=roles`). Dialogul doar arata si ajusteaza modul in care se simplifica aplicatia pentru profilul ales.
+Important: toggle-urile din „Ajustări mici" **nu schimbă permisiunile rolului**. Pentru acces real modifici rolurile în **Personal → Roluri** (`/staff?tab=roles`). Dialogul doar arată și ajustează modul în care se simplifică aplicația pentru profilul ales.
 
 ## Profiluri rapide
 
-| Preset | ID | Cand il alegi | Feature-uri principale | Permisiuni recomandate |
-|---|---|---|---|---|
-| 1. Angajat simplu | `tasks_basic` | curatenie, ajutor, personal fara vanzari/stoc | Task-uri proprii | `tasks_view` |
-| 2. Operare marfa / bucatarie | `stock_kitchen` | receptie marfa, bucatarie, pregatiri, operator fabrica | Task-uri, Preluare marfa, Bucatarie/productie, Fabrica, containere QR | `tasks_view`, `stock_receive`, `kds_view` + permisiunile de productie ale rolului |
-| 3. Receptie + marfa | `reception_stock` | front-desk, rezervari, preluare marfa | Task-uri, Receptie, Mesaje, Preluare marfa | `tasks_view`, `reservations_view`, `stock_receive` |
-| 4. Livrator simplu | `driver_basic` | sofer/livrator care nu vede CRM | Livrari, Rapoarte | `fleet_drive`, `delivery_view`, `delivery_status_update` |
-| 5. Livrator cu vanzari | `driver_sales` | livrator care poate crea lead/follow-up | Livrari, Vanzare pe livrare, CRM, Mesaje, Rapoarte, Apeluri | `fleet_drive`, `delivery_view`, `delivery_status_update`, `crm_access`, `report_sales` |
-| 6. Vanzari / CRM in locatie | `sales_location` | agent in locatie / call-center | CRM, Task-uri, Mesaje, Rapoarte, Apeluri | `crm_access`, `tasks_view`, `report_sales` |
-| 7. Vanzari / CRM cu vizite | `sales_field` | agent teren cu traseu si check-in | CRM, Vizite clienti, Task-uri, Mesaje, Rapoarte, Apeluri | `crm_access`, `tasks_view`, `report_sales` |
+| Preset | Când îl alegi | Funcții principale | Permisiuni recomandate pe rolul real |
+|---|---|---|---|
+| 1. Angajat simplu | curățenie, ajutor, personal fără vânzări/stoc | Task-uri proprii | vede sarcinile proprii |
+| 2. Operare marfă / bucătărie | recepție marfă, bucătărie, pregătiri, operator fabrică | Task-uri, Preluare marfă, Bucătărie/producție, Fabrică, containere QR | sarcini + recepție marfă + ecran bucătărie + permisiunile de producție ale rolului |
+| 3. Recepție + marfă | front-desk, rezervări, preluare marfă | Task-uri, Recepție, Mesaje, Preluare marfă | sarcini + vedere rezervări + recepție marfă |
+| 4. Livrator simplu | șofer/livrator care nu vede CRM | Livrări, Rapoarte | livrări (vedere + actualizare status) + condus flotă |
+| 5. Livrator cu vânzări | livrator care poate crea lead/follow-up | Livrări, Vânzare pe livrare, CRM, Mesaje, Rapoarte, Apeluri | livrări + acces CRM + rapoarte de vânzări |
+| 6. Vânzări / CRM în locație | agent în locație / call-center | CRM, Task-uri, Mesaje, Rapoarte, Apeluri | acces CRM + sarcini + rapoarte de vânzări |
+| 7. Vânzări / CRM cu vizite | agent de teren cu traseu și check-in | CRM, Vizite clienți, Task-uri, Mesaje, Rapoarte, Apeluri | acces CRM + sarcini + rapoarte de vânzări |
 
-Feature-uri toggle:
-`tasks`, `stockReceiving`, `kitchenPickup`, `reception`, `deliveries`, `deliverySales`, `salesCrm`, `fieldVisits`, `messages`, `reports`, `callDesk`.
+Funcțiile care se pot porni/opri per profil: Sarcini, Preluare marfă, Bucătărie/producție, Recepție, Livrări, Vânzare pe livrare, CRM, Vizite clienți, Mesaje, Rapoarte, Apeluri.
 
-## Ce vede efectiv angajatul in app
+## Ce vede efectiv angajatul în aplicație
 
-- **Sarcini**: profilul poate avea toggle `tasks`, dar runtime-ul curent nu mai are ecran separat `MyTasks` si nu mai expune deep-link-uri `symbai-staff://tasks` / `task/<id>`. Pentru sarcini reale foloseste skill-ul `gestioneaza-sarcini` si verificarea prin `get_my_tasks`.
-- **Fabrica**: tabul **Fabrica** are subtaburi **Azi**, **Scan**, **QC**, **Etichete**, **Retete**. Din lista de operatii operatorul poate porni/finaliza operatii si marca QC OK/blocat; scanarea QR returneaza container/lot/batch si poate porni urmatoarea operatie sau printa eticheta containerului scanat.
-- **Etichete productie**: operatorul alege o imprimanta activa si printeaza eticheta pentru ultimul container scanat sau pentru containerele vizibile din operatiile zilei. Nu promite creare container nou daca nu vezi butonul in runtime.
-- **Container / QR**: nu trimite userul la deep-link `symbai-staff://container/<qrCode>`. Pentru detalii/verificare, agentul foloseste `exec_scan_container` / `exec_get_container_info`; pentru actiunea fizica operatorul scaneaza in tabul **Scan** sau in scannerul web.
+- **Sarcini**: profilul poate avea funcția Sarcini pornită, dar aplicația nu are un ecran separat de sarcini către care să trimiți scurtături directe. Pentru sarcini reale folosește skill-ul `gestioneaza-sarcini` și verificarea prin `get_my_tasks`.
+- **Fabrică**: tabul **Fabrică** are subtaburi **Azi**, **Scan**, **QC**, **Etichete**, **Rețete**. Din lista de operații operatorul poate porni/finaliza operații și marca QC OK/blocat; scanarea QR returnează container/lot/șarjă și poate porni următoarea operație sau printa eticheta containerului scanat.
+- **Etichete producție**: operatorul alege o imprimantă activă și printează eticheta pentru ultimul container scanat sau pentru containerele vizibile din operațiile zilei. Nu promite crearea unui container nou dacă nu vezi butonul în aplicație.
+- **Container / QR**: nu trimite userul la linkuri directe de container. Pentru detalii/verificare, tu folosești `exec_scan_container` / `exec_get_container_info`; pentru acțiunea fizică operatorul scanează în tabul **Scan** din aplicație sau în scannerul web.
 
-Important: acestea sunt actiuni fizice in aplicatia mobila. Prin MCP poti crea/citi sarcini, productie, loturi, QC si handovers, dar nu simulezi camera sau imprimanta din chat; trimite operatorul in Symbai Staff si verifica apoi prin citire.
+Important: acestea sunt acțiuni fizice în aplicația mobilă. Prin MCP poți crea/citi sarcini, producție, loturi, QC și predări, dar nu simulezi camera sau imprimanta din chat; trimite operatorul în Symbai Staff și verifică apoi prin citire.
 
 ## Preview-ul de telefon
 
-Preview-ul este gandit ca un telefon real in brandul Symbai POS. Butoanele sunt clickabile pentru simulare si ajuta userul sa inteleaga ce vede angajatul.
+Preview-ul e gândit ca un telefon real, în brandul Symbai. Butoanele sunt clickabile pentru simulare și îl ajută pe user să înțeleagă ce vede angajatul.
 
 Pentru profilul **Livrator simplu**:
-- primul tab este **Livrari**;
+- primul tab este **Livrări**;
 - nu apare tabul **Mai mult**;
 - CRM-ul este ascuns;
-- vede tura activa, GPS live, numar comenzi active, ruta si cash;
-- vede urmatoarea oprire, coada de livrari si statusul comenzii;
-- butoane de simulare: **Traseu**, **Suna**, **Problema**, **Pornesc cursa**, **Am ajuns**, **Poza**, **Incasez**, **Marchez livrata**, **Reiau simularea**;
-- "Marchez livrata" devine disponibil doar dupa dovada foto si incasare cash in preview.
+- vede tura activă, GPS live, numărul de comenzi active, ruta și cash-ul;
+- vede următoarea oprire, coada de livrări și statusul comenzii;
+- butoane de simulare: **Traseu**, **Sună**, **Problemă**, **Pornesc cursa**, **Am ajuns**, **Poză**, **Încasez**, **Marchez livrată**, **Reiau simularea**;
+- „Marchez livrată" devine disponibil doar după dovada foto și încasarea cash în preview.
 
 Pentru profiluri mixte:
-- taburile se aleg din feature-uri: Azi/Acasa, Fabrica, Livrari, Pipeline, Actiuni, Mesaje, Mai mult;
-- tabul **Azi/Sarcini** arata sarcinile proprii si dovada ceruta;
-- tabul **Fabrica** arata operatiile active, scanarea containerelor, QC/hold si etichetele QR;
-- tabul **Livrari** are **Vezi ruta** si **Suna client**;
-- tabul **Pipeline** arata lead-uri/deal-uri;
-- tabul **Actiuni** are apel rapid, check-in vizita, follow-up;
-- tabul **Mesaje** arata WhatsApp/Portal/Intern;
-- tabul **Mai mult** arata Profil, Rapoarte, Notificari.
+- taburile se aleg din funcțiile active: Azi/Acasă, Fabrică, Livrări, Pipeline, Acțiuni, Mesaje, Mai mult;
+- tabul **Azi/Sarcini** arată sarcinile proprii și dovada cerută;
+- tabul **Fabrică** arată operațiile active, scanarea containerelor, QC/blocaje și etichetele QR;
+- tabul **Livrări** are **Vezi ruta** și **Sună client**;
+- tabul **Pipeline** arată lead-uri/deal-uri;
+- tabul **Acțiuni** are apel rapid, check-in vizită, follow-up;
+- tabul **Mesaje** arată WhatsApp/Portal/Intern;
+- tabul **Mai mult** arată Profil, Rapoarte, Notificări.
 
-## Branding obligatoriu
+## Denumiri corecte
 
-Foloseste numai identitatea Symbai:
-- logo lung: `/brand/symbai-logo-left.png`;
-- mark S: `/brand/symbai-mark-dark.png`;
-- culori: `#001858` dark blue, `#0771D5` blue, `#10D0B0` teal;
-- copy user-facing: **Symbai Staff**, **Aplicatie Staff**, **In Aplicatie Staff**.
+Cu userul folosește numai denumirile oficiale: **Symbai Staff**, **Aplicație Staff**, **În Aplicație Staff**. „expo-sales" e doar un identificator tehnic de canal — nu-l folosi în conversația cu userul.
 
-Nu folosi `N`, `Nexus` sau "Expo Sales" in UI pentru user. `expo-sales` ramane doar nume tehnic de folder/canal.
-
-Daca userul vede in emulator un logo vechi `N`, explica scurt: cel mai probabil sunt assets native/cache stale. Verifica `expo-sales/assets/*`, ruleaza `npx.cmd expo prebuild --platform android --no-install`, curata cache Metro si testeaza build-ul Android nativ daca schimbarea e pe icon/splash.
+Dacă userul vede în aplicație un logo sau un nume vechi, cel mai probabil are o versiune veche a aplicației sau un cache vechi: recomandă-i să actualizeze aplicația Symbai Staff de pe telefon; dacă problema persistă, raportează cu `trimite_ticket_symbai`.
 
 ## Workflow
 
-1. Afla ce rol/profil vrea userul: livrator simplu, livrator cu vanzari, agent teren, receptie, bucatarie/marfa sau angajat simplu.
-2. Daca cere permisiuni reale, deschide/foloseste **Personal -> Roluri** (`/staff?tab=roles`) si nu confunda cu preview-ul.
-3. Navigheaza la **/menu/platforms** si deschide cardul **In Aplicatie Staff**.
-4. Selecteaza presetul sau un **Rol real:** din dropdown.
-5. Ajusteaza **Mod compact**, **Hinturi manager** si feature-urile doar daca userul cere sau profilul recomandat are nevoie.
-6. Click-uieste taburile din telefon si, pentru livrator, ruleaza simularea traseu -> apel -> status -> poza/incasare -> livrata.
-7. Salveaza cu **Salveaza Aplicatie Staff**.
-8. Re-deschide dialogul si verifica: profilul implicit, badge-urile de feature, taburile si brandingul.
-9. Daca userul vrea dovada vizuala, fa screenshot la dialog si la preview-ul de telefon. Pentru fluxuri native reale (camera, scan QR, print eticheta), foloseste emulatorul Android si arata screenshot din Symbai Staff, nu doar preview-ul web.
+1. Află ce rol/profil vrea userul: livrator simplu, livrator cu vânzări, agent de teren, recepție, bucătărie/marfă sau angajat simplu.
+2. Dacă cere permisiuni reale, deschide/folosește **Personal → Roluri** (`/staff?tab=roles`) și nu confunda cu preview-ul.
+3. Navighează la **/menu/platforms** și deschide cardul **„În Aplicație Staff"**.
+4. Selectează presetul sau un **rol real** din dropdown.
+5. Ajustează **Mod compact**, **Hinturi manager** și funcțiile doar dacă userul cere sau profilul recomandat are nevoie.
+6. Click pe taburile din telefonul de preview și, pentru livrator, rulează simularea: traseu → apel → status → poză/încasare → livrată.
+7. Salvează cu **Salvează Aplicație Staff**.
+8. Redeschide dialogul și verifică: profilul implicit, badge-urile de funcții, taburile și denumirile.
+9. Dacă userul vrea dovadă vizuală, fă screenshot la dialog și la preview-ul de telefon. Pentru fluxurile reale (cameră, scanare QR, printare etichetă), testarea se face pe un telefon cu aplicația Symbai Staff instalată — preview-ul web e doar simulare.
 
 ## Ce se poate prin MCP
 
-In catalogul curent nu exista un tool dedicat `configure_expo_staff` / `configure_staff_app`. Pentru configurarea dialogului folosesti UI/Chrome. Pentru roluri reale si permisiuni folosesti tool-urile de Personal daca sunt disponibile in conexiunea clientului, altfel ghidezi userul in `/staff?tab=roles`.
+Dialogul „În Aplicație Staff" nu are tool dedicat de configurare prin conexiune — configurarea se face din pagină (tu poți conduce browserul prin extensia Chrome sau ghidezi userul pas cu pas). Pentru roluri reale și permisiuni folosește tool-urile de Personal dacă sunt disponibile pe conexiunea clientului; altfel ghidezi userul în `/staff?tab=roles`.
 
-Pentru orice actiune reala de livrare (asignare sofer, status comanda, incident, flota) foloseste skill-ul `gestioneaza-livrari` si tool-urile de livrari. Dialogul **In Aplicatie Staff** este preview/config de afisare, nu dispecerat operational.
+Pentru orice acțiune reală de livrare (asignare șofer, status comandă, incident, flotă) folosește skill-ul `gestioneaza-livrari` și tool-urile de livrări. Dialogul **„În Aplicație Staff"** este preview/configurare de afișare, nu dispecerat operațional.
 
-Pentru sarcini reale foloseste skill-ul `gestioneaza-sarcini` si tool-urile de Personal. Pentru fabrici foloseste `productie-flux` / `productie-fabrica`: MCP-ul citeste si scrie productia, dar actiunile fizice pe containere (scanare camera, print) se fac in Symbai Staff sau in scannerul web, apoi verifici prin `exec_scan_container` / `exec_get_container_info` / `exec_list_handovers`.
+Pentru sarcini reale folosește skill-ul `gestioneaza-sarcini`. Pentru fabrici folosește `productie-flux` / `productie-fabrica`: prin MCP citești și scrii producția, dar acțiunile fizice pe containere (scanare cu camera, printare) se fac în Symbai Staff sau în scannerul web, apoi verifici prin `exec_scan_container` / `exec_get_container_info` / `exec_list_handovers`.
 
-## Raspunsuri scurte utile
+## Răspunsuri scurte utile
 
-- "Ce vede livratorul?" -> deschide `In Aplicatie Staff`, preset `4. Livrator simplu`, arata telefonul: Livrari, ruta, suna, status, poza, incasare, marcare livrata.
-- "Vreau livrator fara CRM" -> preset `driver_basic`; verifica sa fie active doar Livrari/Rapoarte si sa nu apara Pipeline/Actiuni/Mai mult.
-- "Vreau livrator care poate vinde" -> preset `driver_sales`; are livrari + pipeline + mesaje + apeluri.
-- "Ce vede operatorul de fabrica?" -> preset `stock_kitchen` sau rol real cu productie; arata tabul Fabrica: Azi, Scan, QC, Etichete, Retete.
-- "Vreau sa printez eticheta unui container de pe telefon" -> in Symbai Staff, Fabrica -> Scan (scaneaza containerul) -> Etichete -> `Printeaza ultimul container scanat`; verifica apoi prin `exec_get_container_info`.
-- "De ce nu vede agentul X CRM?" -> verifica rolul real in Personal si permisiunile `crm_access`; preview-ul nu acorda permisiuni.
-- "De ce arata alt logo?" -> verifica branding/assets/prebuild; nu schimba denumirea produsului.
+- „Ce vede livratorul?" → deschide „În Aplicație Staff", preset **Livrator simplu**, arată telefonul: Livrări, rută, sună, status, poză, încasare, marcare livrată.
+- „Vreau livrator fără CRM" → preset **Livrator simplu**; verifică să fie active doar Livrări/Rapoarte și să nu apară Pipeline/Acțiuni/Mai mult.
+- „Vreau livrator care poate vinde" → preset **Livrator cu vânzări**; are livrări + pipeline + mesaje + apeluri.
+- „Ce vede operatorul de fabrică?" → preset **Operare marfă / bucătărie** sau rol real cu producție; arată tabul Fabrică: Azi, Scan, QC, Etichete, Rețete.
+- „Vreau să printez eticheta unui container de pe telefon" → în Symbai Staff: Fabrică → Scan (scanează containerul) → Etichete → „Printează ultimul container scanat"; verifică apoi prin `exec_get_container_info`.
+- „De ce nu vede agentul X CRM-ul?" → verifică rolul real în Personal și permisiunea de acces CRM; preview-ul nu acordă permisiuni.
+- „De ce arată alt logo?" → versiune veche de aplicație sau cache — recomandă actualizarea aplicației; dacă persistă, trimite ticket.

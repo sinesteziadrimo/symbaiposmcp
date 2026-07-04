@@ -81,7 +81,7 @@ Formula de confirmare buna:
 
 Daca raspunsul nu e un "da/confirm" clar, nu trimiti.
 
-## Liste Mari, De Tip Drimonad 20.000 Contacte
+## Liste Mari (zeci de mii de contacte)
 
 Pentru liste mari, scopul este cresterea reala a performantei, nu doar livrare rapida:
 

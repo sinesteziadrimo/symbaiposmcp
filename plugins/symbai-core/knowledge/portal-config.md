@@ -8,7 +8,7 @@
 
 Configurarea se face în pagina **/menu/platforms** (alias `/portal-config`), care deschide un **dialog cu 5 tab-uri** (General, Texte, Funcționalități, Aspect, QR). Dialogul e fragil de operat prin mouse — de aceea preferi **tool-urile MCP**, care citesc config-ul și scriu doar ce ceri, fără click prin tab-uri. Și ca userul să VADĂ în browserul lui ce schimbi, ai `spotlight_portal_tab` (deschide modala + comută tab/secțiune live).
 
-Pe aceeasi pagina exista si cardul **"In Aplicatie Staff"**. Acela NU configureaza portalul clientilor; configureaza preview-ul aplicatiei **Symbai Staff** pentru livratori/agenti/angajati. Pentru el foloseste `expo-aplicatii-mobile.md` + skill-ul `configureaza-aplicatie-staff`. Nu folosi `configure_portal_*` pentru Aplicatie Staff.
+Pe aceeași pagină există și cardul **„In Aplicatie Staff"**. Acela NU configurează portalul clienților; configurează preview-ul aplicației **Symbai Staff** pentru livratori/agenți/angajați. Pentru el folosește `expo-aplicatii-mobile.md` + skill-ul `configureaza-aplicatie-staff`. Nu folosi `configure_portal_*` pentru Aplicație Staff.
 
 ## Discovery — întreabă inteligent înainte să configurezi
 
@@ -98,14 +98,14 @@ Important de înțeles ca să-i explici userului — comanda QR NU ajunge la cin
 **Veriga critică, des uitată:** comanda ajunge la ospătarul corect DOAR dacă **tura lui e legată de raionul mesei**. Raioanele se desenează în planul de sală (`plan-sala-qr.md`), iar ospătarul se pune pe raion în **modalul de tură** din **Program Salon / Planificator Ture** (`/staff?tab=scheduler` → „Secțiune Atribuită"; ce aranjament e activ pe zi → `/staff?tab=floor-schedule`). Vezi skill-ul `gestioneaza-personal`. Dacă userul zice „comanda QR ajunge la cine nu trebuie / nu ajunge la nimeni" → verifică: (a) raionul mesei, (b) tura ospătarului legată de acel raion, (c) că e cineva în tură.
 
 ## Unde trăiește fiecare setare (de ce contează la citire/scriere)
-- Aspect, texte, funcționalități, afișare, config meniu → pe „device"-ul de portal (per brand/locație). Le scrii cu `configure_portal_*` respective.
-- **Config QR** (nivel + mod plată + preset brand) → în alt loc (profilul „table-clients" al meniului), NU pe device. De aceea are tool separat (`configure_portal_qr`) și apare în `get_portal_config` sub `qrConfig`.
+- Aspect, texte, funcționalități, afișare, config meniu → în configurația de portal a brandului (opțional per locație). Le scrii cu `configure_portal_*` respective.
+- **Config QR** (nivel + mod plată + preset brand) → se salvează separat (pe canalul de meniu „table-clients"), nu împreună cu restul configurației de portal. De aceea are tool separat (`configure_portal_qr`) și apare în `get_portal_config` sub `qrConfig`.
 - Preseturile QR per **zonă/raion** → în Program Salon, nu în dialogul portalului.
 - Rutarea efectivă a comenzii → în planul de sală (raioane) + turele din Personal.
 
 ## Pagini
 - **Configurare Portal** (`/menu/platforms`, alias `/portal-config`) — cardul „Configurare Platformă Clienți" deschide dialogul cu 5 tab-uri (General / Texte / Funcționalități / Aspect / QR). Are selector de unitate (sus) dacă brandul are mai multe locații. ⚠ Tab-urile dialogului NU sunt adresabile prin `?tab=` în URL (e o modală în pagină) — DAR le poți deschide/comuta live cu `spotlight_portal_tab` ca userul să vadă. În rest, modificările le faci prin MCP.
-- **Aplicatie Staff** (`/menu/platforms`) — cardul „In Aplicatie Staff" deschide dialogul de preview pentru Symbai Staff: profiluri livrator/agent teren/CRM/task-uri, branding Symbai, telefon interactiv. Nu e portal public si nu are tool MCP dedicat in catalogul curent. Vezi `expo-aplicatii-mobile.md` + skill `configureaza-aplicatie-staff`.
+- **Aplicație Staff** (`/menu/platforms`) — cardul „In Aplicatie Staff" deschide dialogul de preview pentru Symbai Staff: profiluri livrator/agent teren/CRM/task-uri, branding Symbai, telefon interactiv. Nu e portal public și nu are tool MCP dedicat în catalogul curent. Vezi `expo-aplicatii-mobile.md` + skill `configureaza-aplicatie-staff`.
 - **Jocuri** (`/portal-games`) — atracții/jocuri (liste, programe, prețuri, excepții). → `jocuri-activitati.md`.
 - **Atracții** (`/portal-attractions`) — vizualizarea publică a atracțiilor.
 - **Misiuni & Recompense** (`/portal-missions`) — gamificarea; din MCP doar pornești modulul (`gamification: true`), configurarea fină e în pagină.

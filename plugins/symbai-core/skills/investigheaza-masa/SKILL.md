@@ -18,7 +18,7 @@ Scop: răspunzi clar și RAPID la „ce se întâmplă / ce s-a întâmplat / ce
 
 Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_timeline` cu orderId-ul returnat aici.
 
-**Dacă userul vrea să scoată clientul de pe masă**: în POS Mobile, chip-ul clientului are acum buton `X` / „fără client". Acțiunea golește `customerId`/numele clientului pe comenzile active ale mesei și resetează discountul la 0, ca să nu rămână reducerea clientului vechi. Dacă nu există tool MCP dedicat pe tenant, deschide POS-ul prin browser/Chrome logat și arată butonul; apoi verifică prin `get_table_status` / `get_order_timeline`.
+**Dacă userul vrea să scoată clientul de pe masă**: în POS Mobile, chip-ul clientului are buton `X` / „fără client". Acțiunea scoate clientul (și numele lui) de pe comenzile active ale mesei și resetează discountul la 0, ca să nu rămână reducerea clientului vechi. Dacă nu există tool MCP dedicat pe tenant, deschide POS-ul prin browser/Chrome logat și arată butonul; apoi verifică prin `get_table_status` / `get_order_timeline`.
 
 ### 2. „Ce a făcut ospătarul X?" → `get_employee_activity`
 `get_employee_activity(employeeName: "Ion", date: "2026-06-16")` — `date` e opțional (implicit azi). Întoarce consolidat: bonuri finalizate, cât a vândut, bacșiș, bon mediu, mese lucrate, prima/ultima activitate, PLUS cererile lui de aprobare grupate pe tip (retururi/discounturi/casă/transferuri) și cele rămase în așteptare. Dacă numele se potrivește cu mai mulți angajați, tool-ul îți cere numele complet.
@@ -29,9 +29,9 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 `list_operation_requests(status: "pending")` — vezi toate cererile în așteptare cu tot ce-ți trebuie ca să decizi: tip, ospătar, masă, produse, valoare, motiv. Filtre utile: `type` (return/house/discount/customer/...), `employeeName` (toate cererile unui ospătar), `dateFrom`/`dateTo`. Întoarce și un rezumat (câte pe fiecare tip, top aprobatori). Nu include `shadow_order_conflict` nici în listă, nici în total; pentru acelea mergi la pasul 3b.
 
 ### 3b. „Am conflict de sincronizare / shadow / Viva" → `list_shadow_order_conflicts`
-`list_shadow_order_conflicts(status: "active")` — citește conflictele tehnice cloud-edge din Control Operațional. Sunt separate de cererile normale de aprobare și NU se aprobă cu `respond_operation_request`.
-- Pentru `kind="new_item_on_terminal_parent"`: după 2026-06-21, produsele acoperite de subtotalul încasat se inserează automat; dacă mai vezi `conflictCode="viva_confirmed"`, produsul nou DEPĂȘEȘTE suma de produse acoperită de plata Viva. Explică managerului: „plata Viva e reală și suma e fixată; produsul acesta nu este acoperit de tranzacția confirmată".
-- Workflow: `list_shadow_order_conflicts(orderId?/status:"active")` → dacă e nevoie de povestea notei, `get_order_timeline(orderId)` + `get_order_payments(orderId)` → dă link la Control Operațional (`/operations`) pentru decizie vizuală. Dacă tool-ul nu există încă pe tenant, folosește SQL read-only pe `operation_requests` cu `type='shadow_order_conflict'`.
+`list_shadow_order_conflicts(status: "active")` — citește conflictele tehnice de sincronizare (între cloud și serverul local) din Control Operațional. Sunt separate de cererile normale de aprobare și NU se aprobă cu `respond_operation_request`.
+- Pentru `kind="new_item_on_terminal_parent"`: produsele acoperite de subtotalul încasat se inserează automat; dacă vezi `conflictCode="viva_confirmed"`, produsul nou DEPĂȘEȘTE suma de produse acoperită de plata Viva. Explică managerului: „plata Viva e reală și suma e fixată; produsul acesta nu este acoperit de tranzacția confirmată".
+- Workflow: `list_shadow_order_conflicts(orderId?/status:"active")` → dacă e nevoie de povestea notei, `get_order_timeline(orderId)` + `get_order_payments(orderId)` → dă link la Control Operațional (`/operations`) pentru decizie vizuală. Dacă tool-ul nu există încă pe instanță, trimite userul la pagina Control Operațional; alternativ, dacă tokenul are acces SQL doar-citire, poți căuta singur cererile de tip conflict de sincronizare (descoperă structura cu `list_database_tables` → `describe_database_table`).
 
 ### 4. „Aprobă / respinge cererea" → `respond_operation_request`
 `respond_operation_request(requestId: 123, action: "approve", approvedBy: "Nume Manager", note: "…")` — aprobă sau respinge direct. Produce efectele complete (statusul produselor se actualizează, ospătarul primește notificare, se emit bonuri de retur la bucătărie, totul intră în jurnal).
@@ -49,7 +49,7 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 Începe cu `get_order_timeline(orderId)` ca să vezi dacă produsele au fost marcate trimise la bucătărie și dacă există bonuri/tichete. Apoi folosește tool-urile KDS unde există (`list_kds_screens`, `get_kds_order_history`, `get_kds_sessions`, `get_kds_timeline`) sau dă link la Monitorizare KDS din aplicație.
 
 - Dacă produsul apare **nerutat**, problema e tag/rutare: verifică `list_tag_summary`, `list_tag_routing_rules` și pagina Setări → Rutare Taguri.
-- Dacă `order_items.sentToKitchenAt` există, dar lipsesc bonurile KDS pe o locație cu Edge principal, explică: serverul local are o reconciliere automată care recuperează bonurile lipsă după aproximativ 1-2 minute și le trimite idempotent pe KDS/imprimantă.
+- Dacă în cronologia comenzii produsele apar marcate ca trimise la bucătărie, dar lipsesc bonurile KDS pe o locație cu server local principal, explică: serverul local are o reconciliere automată care recuperează bonurile lipsă după aproximativ 1-2 minute și le trimite o singură dată pe KDS/imprimantă (fără dubluri).
 - Dacă după câteva minute tot lipsesc, verifică rolul serverului local (principal vs secundar), ecranul KDS oprit/stale și jurnalul de activitate. Nu spune „s-a pierdut definitiv" fără dovadă.
 
 ### 7. Cronologie completă / orice eveniment → `jurnal_activitate`
@@ -58,7 +58,7 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 ## Reguli
 
 - Începe cu tool-ul cel mai specific (masă → `get_table_status`; ospătar → `get_employee_activity`; aprobări → `list_operation_requests`). Cobori la `jurnal_activitate`/`get_order_timeline` doar pentru detaliu.
-- Nu amesteca aprobările de ospătar cu `shadow_order_conflict`: pentru conflicte cloud-edge folosește `list_shadow_order_conflicts`; sunt decizii de Control Operațional, nu cereri normale de aprobare.
+- Nu amesteca aprobările de ospătar cu `shadow_order_conflict`: pentru conflictele de sincronizare folosește `list_shadow_order_conflicts`; sunt decizii de Control Operațional, nu cereri normale de aprobare.
 - Cronologie pe oră/minut; folosește nume de ospătar/manager, nu ID-uri.
 - Pentru „cine a aprobat / cine a anulat" — citește autorul din eveniment, nu presupune.
 - Sume în RON. Nu arunca date brute — sintetizează.
@@ -66,4 +66,4 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 - Dacă nu găsești ceva: verifică numărul mesei/notei sau ora, lărgește perioada, sau întreabă utilizatorul. La mese cu același număr în locații diferite, trimite și `locationId`.
 
 ## Corelări complexe (rar) — SQL
-Dacă tokenul are acces SQL și ai nevoie de corelări pe care tool-urile de mai sus nu le dau (ex. cât a stat o comandă în bucătărie, agregări custom): `list_database_tables` → `describe_database_table` → `execute_sql_query` (doar SELECT) pe `orders` / `order_items` / `operation_requests` / `order_payments` / `audit_logs`, cu coloane explicite + WHERE + LIMIT. Dacă tokenul NU are SQL, tool-urile dedicate acoperă aproape tot — pentru analize chiar complexe, spune utilizatorului că poate activa „Interogări SQL" din portal Hub → Acces AI.
+Dacă tokenul are acces SQL și ai nevoie de corelări pe care tool-urile de mai sus nu le dau (ex. cât a stat o comandă în bucătărie, agregări custom): `list_database_tables` → `describe_database_table` → `execute_sql_query` (doar SELECT) pe tabelele de comenzi, produse pe comandă, plăți, cereri de aprobare și jurnal de audit — cu coloane explicite + WHERE + LIMIT. Dacă tokenul NU are SQL, tool-urile dedicate acoperă aproape tot — pentru analize chiar complexe, spune utilizatorului că poate activa „Interogări SQL" din portal Hub → Acces AI.

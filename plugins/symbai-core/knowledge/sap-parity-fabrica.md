@@ -36,7 +36,7 @@ Regula de aur: **răspunde onest**. Dacă Symbai face echivalentul, arată tool-
 |---|---|---|
 | MIGO / goods receipt + NIR | recepție marfă pe lot | `create_reception_note` / NIR din factură; `create_nir_from_invoice` |
 | MB52/MMBE stock overview | stoc pe gestiune/lot | `get_stock_levels`, `list_lots`, `get_warehouse_products_summary` |
-| MSC1N Batch master | lot cu caracteristici | `lots` (data fab./valabilitate, status QC, cost) — FEFO încorporat |
+| MSC1N Batch master | lot cu caracteristici | `list_lots` / `get_lot_details` — loturi cu dată fabricație/valabilitate, status QC, cost; FEFO încorporat |
 | ME21N PO + ME2M | comandă furnizor | `create_purchase_order`, `receive_purchase_order`, `analyze_procurement`; din MRP: `create_purchase_orders_from_requirements(commit:false→preview, commit:true→DRAFT PO)` |
 
 ## CO-PC — cost de producție
@@ -44,7 +44,7 @@ Regula de aur: **răspunde onest**. Dacă Symbai face echivalentul, arată tool-
 |---|---|---|
 | CK11N/CK40N Standard cost | calculație cost de plan | `get_production_cost_estimate` (material+scrap + manoperă + utilaj + overhead, defalcat) |
 | KKS1/KKS2 Variance | abateri standard vs actual | `get_production_cost_variance` (abatere preț vs cantitate/randament per material) |
-| Co-products / by-products | alocare cost co-produse | `recipe_outputs` cu `costAllocationPercent` |
+| Co-products / by-products | alocare cost co-produse | ieșiri multiple pe rețetă cu procent de alocare a costului (`add_recipe_outputs`) |
 
 ## PM — mentenanță · SD/EDI · etichetare · HACCP
 - **PM (IW31 work order / downtime):** `create_equipment_downtime`/`list_equipment_downtime`; plannerul exclude echipamentul în mentenanță. (Gap: OEE dedicat — azi utilizare/downtime brut, `get_equipment_utilization`.)

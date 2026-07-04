@@ -20,14 +20,14 @@ Segmentele și sugestiile trebuie să fie proaspete, altfel trimiți greșit. [c
 
 Fiecare rețetă are un declanșator, un canal recomandat și un ritm. Pe scurt:
 
-| Rețetă | Pe cine ținteș­ti | Canal | Reper 2026 |
+| Rețetă | Pe cine țintești | Canal | Reper 2026 |
 |---|---|---|---|
 | **Win-back** | inactivi de **30 zile** (prima atingere), apoi 60/90 | email → push → WhatsApp, escaladat | recuperezi **12-18%** din inactivi; fereastra de aur **Joi/Vineri 16:00-18:00** |
 | **At-risk** | scădere de frecvență (drop-alert), încă nu plecat | push scurt + email blând | prinde intenția ÎNAINTE să dispară |
 | **Aniversare** | clienți cu ziua în **14 zile** | email + push personal | cel mai mare venit/mesaj din HoReCa (**~85 lei/răscumpărare**); fără grup de control (e personal) |
 | **VIP / fideli** | Campioni, top-LTV, aproape de un tier nou | push „mai ai X puncte până la Gold" + email | membrii vizitează **+22%** și cheltuie **+18-38%** |
 
-**Regula rețetei:** un client *pierdut* primește un ofertă; un client *fidel* primește recunoaștere (puncte, status, mulțumire), nu o reducere de care n-are nevoie. Nu da reduceri cui ar fi cumpărat oricum.
+**Regula rețetei:** un client *pierdut* primește o ofertă; un client *fidel* primește recunoaștere (puncte, status, mulțumire), nu o reducere de care n-are nevoie. Nu da reduceri cui ar fi cumpărat oricum.
 
 ## 3. Dimensionează audiența (vezi EXACT câți și dacă au voie)
 

@@ -37,7 +37,7 @@ Fără modulul potrivit, tool-urile de scriere întorc „permisiune insuficient
 
 ## Pașii de execuție — tool-urile MCP exacte
 
-**Pasul 0 — inventar.** Rulează citirile de mai sus. Dacă brandurile/locațiile menționate de utilizator EXISTĂ deja → nu recrea nimic, confirmă („Am găsit Riviere în sistem") și sari la ce lipsește.
+**Pasul 0 — inventar.** Rulează citirile de mai sus. Dacă brandurile/locațiile menționate de utilizator EXISTĂ deja → nu recrea nimic, confirmă („Am găsit «Restaurantul Exemplu» în sistem") și sari la ce lipsește.
 
 **Pasul 1 — CUI ÎNTÂI (regula de aur).** Înainte de a crea branduri/locații pentru o firmă nouă, obține CUI-ul și rulează:
 ```
@@ -101,7 +101,7 @@ create_vat_rate(name: "TVA 11% Alimente", rate: 11)
 - **`lookup_company_cui` e clasificat „citire", dar SCRIE**: salvează datele firmei, setează țara RO dacă lipsea și creează cotele TVA. NU-l apela cu CUI-uri de probă/ghicite. Funcționează doar pentru firme din România (registrul ANAF).
 - **Numele legal ANAF ≠ numele brandului.** „SC GASTRO INVEST SRL" e firma; brandul e „La Famiglia". Nu boteza branduri după denumirea juridică.
 - **Idempotența e pe NUME (case-insensitive, fără spații marginale)** la `create_brand`/`create_location`. Dacă un apel pare să fi eșuat, verifică întâi cu `list_*` — NU recrea cu nume ușor diferit („Centru Vechi 2"), creezi duplicate reale.
-- **IBAN prin `update_company` (istoric)** — până la fix-ul din 12.06.2026, parametrul `iban` exista în schemă dar implementarea îl ignora silențios (la fel la `create_supplier`/`update_supplier`); acum se salvează în contul bancar. Pe instalări care nu au încă fix-ul, verifică după apel: dacă IBAN-ul lipsește, trimite utilizatorul în Setări → Date companie și poți raporta cu `trimite_ticket_symbai`.
+- **IBAN prin `update_company`** — pe instalările la zi se salvează în contul bancar; pe instalări mai vechi parametrul `iban` poate fi ignorat în tăcere (la fel la `create_supplier`/`update_supplier`). Verifică printr-o citire după apel: dacă IBAN-ul lipsește, trimite utilizatorul în Setări → Date companie și poți raporta cu `trimite_ticket_symbai`.
 - **Cote TVA**: dedupe pe procent, nu pe nume — nu poți avea două cote cu același procent. Ignoră exemplul vechi „19, 9, 5" din descrierea tool-ului: pentru RO cotele corecte sunt 0/11/21. Cotele sunt GLOBALE (fără brandId).
 - **Brand fără locație legată = nefuncțional.** Wizard-ul îl marchează „⚠ Nu are nicio locație asociată încă", dar butonul „Următorul pas" cere doar minim O asociere în total — un AL DOILEA brand fără locație NU blochează continuarea, deci wizard-ul nu te prinde. După orice creare, verifică legăturile în `list_locations`.
 - **Mutare brand = unlink + link.** Doar `link_brand_location` pe locația nouă lasă brandul legat și la cea veche.

@@ -1,192 +1,90 @@
-# Aplicatii Expo native: Symbai POS, Symbai Portal, Symbai Staff
+# Aplicațiile mobile Symbai: Symbai POS, Symbai Portal, Symbai Staff
 
-Aceasta este referinta rapida pentru Claude Code cand lucreaza pe aplicatiile native Expo din `nexuspos/`: `expo-mobile`, `expo-portal`, `expo-sales`.
+> Ghid pentru cele trei aplicații mobile native ale platformei — ce face fiecare, cine le folosește, unde se configurează și cum răspunzi la întrebările frecvente. Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie`.
 
-Codul real este sursa de adevar: verifica mereu `app.json`, `package.json`, `src/services/api.ts`, `src/services/edgeDiscovery.ts` si assets-urile din app-ul afectat inainte sa raspunzi sau sa modifici.
+## Cele 3 aplicații
 
-## Cele 3 aplicatii
-
-| Folder | Nume produs | Rol | Android | iOS | Scheme |
-|---|---|---|---|---|---|
-| `expo-mobile/` | `Symbai POS` | aplicatia nativa POS pentru ospatari, bar, receptie si operatiuni la masa | `com.symbai.waiter` | `com.symbai.waiter` | `symbai-viva-callback` |
-| `expo-portal/` | `Symbai Portal` | aplicatia clientului: meniu, comenzi, cont, activitati/portal clienti | `com.symbai.portal` | `com.symbai.portal` | `symbai-portal` |
-| `expo-sales/` | `Symbai Staff` | aplicatia angajatilor: livratori, agenti teren, CRM/vanzari, task-uri, productie/fabrica si containere QR | `com.symbai.staff` | `com.symbai.staff` | `symbai-staff` |
-
-`expo-sales` este doar numele tehnic al folderului. In UI, documentatie client-facing si preview-uri foloseste **Symbai Staff** sau **Aplicatie Staff**, nu "Expo Sales".
-
-## Config app.json verificata
-
-| App | `name` | `slug` | EAS projectId | Culori relevante |
-|---|---|---|---|---|
-| `expo-mobile` | `Symbai POS` | `symbai-pos` | `0b94c42d-0f8e-4ded-91c2-b759b9c557ca` | splash/adaptive `#1e293b`, notificari `#1e293b` |
-| `expo-portal` | `Symbai Portal` | `symbai-portal` | `19e6cff0-326f-41a3-b38e-ce01c2be2403` | splash/adaptive `#001858`, notificari `#0771D5` |
-| `expo-sales` | `Symbai Staff` | `symbai-staff` | `024efb8f-5593-4590-9421-f8baf64b29ac` | splash/adaptive `#001858`, notificari `#0771D5` |
-
-Owner EAS curent: `mp-river-side`.
-
-## Runtime actual in Symbai POS
-
-`expo-mobile` este aplicatia nativa **Symbai POS** pentru ospatari/bar/receptie. Cand userul intreaba de ecranul de mese de pe telefon, de "Actiuni masa", de zoom pe planul de sala sau de etichete dublate de tip "Masa Masa 7", raspunsul agentului trebuie sa porneasca de aici:
-
-- **Etichete mese**: aplicatia normalizeaza numele mesei peste Rooms, Order, Guest si preview nota. Pentru mese simple afiseaza `Masa 7`; pe carduri compacte sau pe harta afiseaza `M7`; pentru nume reale precum `Terasa VIP` pastreaza numele fara sa forteze prefix. Nu spune userului sa redenumeasca mesele doar ca sa scape de dublarea "Masa".
-- **Ecranul de sali**: pe telefoane inguste headerul se compacteaza automat pana sub ~480px, selectorul de unitate ramane in stanga, iar iconurile POS/alerte/housekeeping/chat/setari/profil raman accesibile fara sa impinga planul.
-- **Planul de sala pe telefon**: canvasul are pan/pinch, double tap, inertie dupa drag, zoom minim adaptat la dimensiunea planului, butoane flotante `+ / zoom / -` si reset safe-area. Butonul din mijloc arata zoomul relativ curent, nu text fix `1x`. Incadrarea tine cont si de mesele/decorurile care ies din dimensiunea de baza a canvasului, deci nu considera un plan "taiat" doar pentru ca `canvasWidth/canvasHeight` par mici. Culorile cardurilor spun ownership-ul: masa mea, masa altui ospatar, neatribuita, comanda QR eligibila pentru preluare, modificari offline/ne trimise si rezervare. Pentru dovada vizuala foloseste emulator Android sau device real; arata screenshot cu Rooms -> planul salii, nu doar un build/typecheck.
-- **Paritate plan sala Expo/POS web**: aplicatia nativa foloseste layout-ul complet de plan sala (geometria `desktop`) si citeste programarea activa + mesele pe locatia selectata. Daca userul spune ca pe telefon vede alta sala sau mese din alta locatie, verifica intai unitatea activa, Program Salon (`/staff?tab=floor-schedule`) si `get_floor_config(section:"tables")`; nu presupune ca este un layout mobil separat.
-- **Trimitere comanda**: in aplicatia nativa, butonul **Trimite** raspunde imediat (feedback tactil + animatie scurta), blocheaza instant a doua apasare si trimite doar produsele noi. Dupa succes poate reveni la sala inainte ca refresh-ul de mese/comenzi/KDS sa se termine; actualizarea se face in fundal si nu inseamna ca produsele s-au pierdut. Daca ospatarul apasa Trimite fara produse noi, app-ul afiseaza doar mesajul informativ. Pentru verificare foloseste emulator/device real cu server lent sau retea slaba si apoi confirma prin `get_order_timeline` / `jurnal_activitate`, nu doar prin senzatia din UI.
-- **Push POS / KDS pentru personal**: tokenul Expo se inregistreaza global dupa login + consimtamant, nu doar cand ospatarul intra in ecranul Rooms. Notificarile de bucatarie `kitchen_started` / `kitchen_ready` pot fi trimise pe canal Android separat fara sunet (`symbai-pos-kitchen-silent`) cand payload-ul are `silent` / `silentNotification`; in foreground aplicatia respecta acel payload si nu reda sunet. Daca userul spune ca notificarea de „preparat gata" suna desi KDS-ul e setat silentios, verifica payload-ul staff notification + canalul Android, nu campaniile de marketing push.
-- **Cantitati si clienti pe nota**: cantitatile fractionare/zecimale venite din server se afiseaza curat in cos, split si preview nota (ex. `1.5`, `0.25`, fara `NaN` sau zerouri inutile), iar totalurile folosesc aceeasi cantitate numerica. Cand masa are mai multi clienti/scaune, produsele noi si cele trimise se grupeaza pe client; produsele fara client apar la **Comune masa**, cu subtotal pe grup. Pentru dovezi native verifica in emulator/device real o nota cu cantitati fractionare si minim doi clienti, apoi confirma timeline-ul prin MCP daca e nevoie.
-- **Actiuni masa**: in ecranul comenzii, cele 3 puncte deschid un bottom sheet scrollabil, compact pe telefoane mici, nu un meniu lung. Acolo sunt actiunile: Printeaza Nota, Transfer, Preia Masa, Transfera Produse, Partajeaza, Mesaj Bucatarie, Imparte Nota, Masa Servita, Reprint Bon Fiscal, Retur, Casa, Discount, Beneficiu Personal, Client, Firma si configuratiile de afisare cand exista mai multe.
-- **Masa Servita**: comutatorul ramane o actiune pe masa. Explica simplu: pe bonul fiscal produsele se grupeaza ca "Masa servita" pe cote TVA; nu schimba continutul real al notei.
-- **Plata la masa**: dialogul de bacsis trebuie sa apara imediat cand ospatarul apasa plata; trimiterea produselor netrimise, verificarea sumei pe server si pregatirea orderului ruleaza in fundal. Cand ospatarul apasa "Continua" spre metoda de plata, app-ul asteapta pregatirea daca nu e gata. Daca vezi blocaje, testeaza cu produse netrimise + server lent, nu doar cash simplu.
-- **GP tom app2app local**: daca aplicatia nativa GP intoarce `cancelled` sau `failed`, Symbai POS finalizeaza imediat incercarea ca anulata/esuta si revine la metoda de plata; nu trebuie sa astepte polling-ul. Pentru `uncertain`/`confirmed`, polling-ul/serverul raman sursa de adevar. La device gresit pentru executia locala, plata se marcheaza failed si se deblocheaza UI-ul.
-
-Pentru lucru practic: datele de sala/configuratie se citesc si se modifica prin tool-urile de plan de sala (`get_floor_config`, `set_floor_table_geometry`, `arrange_tables_grid`, `move_tables_to_section`, `set_zone_routing` etc.), iar aplicatia nativa doar confirma cum vede ospatarul. Browser/Chrome este suficient pentru POS web; pentru comportament nativ (gesturi, safe-area, bottom sheet, app2app plati) foloseste skill-ul de emulator Android si screenshot.
-
-## Branding obligatoriu
-
-- Foloseste identitatea Symbai: logo-ul/mark-ul cu **S** din Symbai POS, culorile albastre Symbai, denumirile `Symbai POS`, `Symbai Portal`, `Symbai Staff`.
-- Nu folosi iconite vechi `N`, branding `Nexus` sau titluri user-facing `Expo Sales`.
-- Daca tenantul are logo propriu, il poti afisa ca logo de locatie/brand in interiorul app-ului, dar icon-ul/splash-ul aplicatiei raman Symbai.
-- Dupa schimbari de icon/splash/app.json, ruleaza prebuild ca sa regenerezi resursele Android native.
-
-Assets de verificat:
-
-- `assets/icon.png`
-- `assets/adaptive-icon.png`
-- `assets/splash-icon.png`
-- dupa prebuild: `android/app/src/main/res/**`
-
-## Configurare in POS web: /menu/platforms
-
-Aceeasi pagina are doua configurari diferite si Claude trebuie sa le separe clar:
-
-| Card / dialog | Pentru cine | Skill corect | Tool-uri |
-|---|---|---|---|
-| `Configurare Platforma Clienti` | clientii publici: portal, QR, meniu, comenzi, jocuri | `configureaza-portal` | `get_portal_config`, `configure_portal_*`, `configure_portal_qr`, `spotlight_portal_tab` |
-| `In Aplicatie Staff` | angajati: livratori, agenti teren, CRM, task-uri, receptie, marfa, fabrica/containere QR | `configureaza-aplicatie-staff` | UI/Chrome; nu exista tool MCP dedicat pentru acest dialog in catalogul curent |
-
-### In Aplicatie Staff / Symbai Staff
-
-Dialogul **In Aplicatie Staff** configureaza preview-ul si profilul implicit pentru canalul `expo-sales`. In cod, configurarea se salveaza pe device-ul POS cu `channelId = "expo-sales"` in `portalDisplayConfig`.
-
-Campuri reale:
-
-- `defaultPreviewProfile`: presetul implicit pentru preview.
-- `density`: `guided` sau `compact`.
-- `showManagerHints`: arata/ascunde sumarul explicativ pentru manager.
-- `profileOverrides`: toggle-uri de feature pe preset.
-
-Nu confunda cu permisiunile reale: toggle-urile din dialog nu dau acces angajatului. Accesul real vine din rolurile din Personal (`/staff?tab=roles`) si permisiuni precum `crm_access`, `fleet_drive`, `delivery_view`, `delivery_status_update`, `tasks_view`, `stock_receive`, `kds_view`, `reservations_view`, `report_sales`.
-
-Preseturi verificate in cod (`shared/expo-sales-profile.ts`):
-
-| Preset | ID | Ce arata |
+| Aplicație | Pentru cine | Ce face |
 |---|---|---|
-| `1. Angajat simplu` | `tasks_basic` | task-uri proprii, fara CRM/stoc |
-| `2. Operare marfa / bucatarie` | `stock_kitchen` | task-uri, preluare marfa, bucatarie/productie |
-| `3. Receptie + marfa` | `reception_stock` | receptie, rezervari, mesaje, preluare marfa |
-| `4. Livrator simplu` | `driver_basic` | livrari, statusuri, rapoarte; CRM ascuns |
-| `5. Livrator cu vanzari` | `driver_sales` | livrari + CRM + mesaje + apeluri + rapoarte |
-| `6. Vanzari / CRM in locatie` | `sales_location` | CRM locatie, apeluri, mesaje, rapoarte |
-| `7. Vanzari / CRM cu vizite` | `sales_field` | CRM teren, traseu zilnic, check-in si vizite |
+| **Symbai POS** | ospătari, bar, recepție | operarea meselor de pe telefon: plan de sală, comenzi, plăți la masă, notificări de bucătărie |
+| **Symbai Portal** | clienții localului | meniu, comenzi, cont de client, activități/atracții din portal |
+| **Symbai Staff** | angajați: livratori, agenți de teren, vânzări/CRM, sarcini, producție/fabrică | aplicația echipei: livrări, sarcini, recepție marfă, operare de fabrică cu scanare QR |
 
-Feature-uri toggle: `tasks`, `stockReceiving`, `kitchenPickup`, `reception`, `deliveries`, `deliverySales`, `salesCrm`, `fieldVisits`, `messages`, `reports`, `callDesk`.
+În conversații și în orice text pentru utilizator folosește numele de produs: **Symbai POS**, **Symbai Portal**, **Symbai Staff** (sau „Aplicația Staff").
 
-### Runtime actual in Symbai Staff
+## Symbai POS — aplicația ospătarului (comportamente de știut)
 
-Ce vede angajatul in aplicatia nativa depinde de profilul rezolvat din rol/feature-uri:
+Când utilizatorul întreabă de ecranul de mese de pe telefon, de „Acțiuni masă" sau de planul de sală mobil, pornește de aici:
 
-- **Sarcini**: toggle-ul `tasks` ramane parte din profilul de preview/rol, dar runtime-ul curent nu mai are ecran separat `MyTasks` si nu mai expune deep-link-uri `symbai-staff://tasks` / `task/<id>`. Pentru sarcini reale foloseste tool-urile/POS web (`gestioneaza-sarcini`) si verifica prin `get_my_tasks`.
-- **Fabrica**: rolurile cu productie/factoryOps vad tabul **Fabrica** cu subtaburi **Azi**, **Scan**, **QC**, **Etichete**, **Retete**. Din lista de operatii poti porni/finaliza operatii si marca QC OK/blocat; scanarea QR returneaza container/lot/batch si poate porni urmatoarea operatie sau printa eticheta containerului scanat.
-- **Etichete productie**: tabul **Etichete** alege o imprimanta activa si printeaza eticheta pentru ultimul container scanat sau pentru containerele afisate din operatiile zilei. Nu promite creare container nou din app-ul curent daca nu vezi butonul in runtime.
-- **Container / QR**: nu mai trimite userul la deep-link `symbai-staff://container/<qrCode>`. Operatorul foloseste tabul **Scan** din Symbai Staff sau scannerul web; pentru detalii bogate si verificare agentul foloseste `exec_scan_container` / `exec_get_container_info`.
+- **Numele meselor**: aplicația afișează numele mesei curat peste tot (sală, comandă, notă). Pentru mese simple arată `Masa 7`; pe carduri compacte sau pe hartă arată `M7`; numele reale precum `Terasa VIP` rămân neschimbate. Nu sfătui utilizatorul să redenumească mesele ca să scape de un afișaj dublat gen „Masa Masa 7" — afișarea e tratată de aplicație.
+- **Planul de sală pe telefon**: are pan/pinch, dublu-tap pentru zoom, butoane flotante `+ / zoom / −` și reîncadrare automată. Butonul din mijloc arată nivelul de zoom curent. Culorile cardurilor de masă arată situația: masa mea, masa altui ospătar, neatribuită, comandă QR care poate fi preluată, modificări netrimise (offline) și rezervare.
+- **Paritate cu planul din POS web**: aplicația mobilă folosește exact același plan de sală (aceeași geometrie) și citește programarea activă + mesele pe unitatea selectată. Dacă utilizatorul spune că pe telefon vede altă sală sau mese din altă locație, verifică întâi unitatea activă, Program Salon (`/staff?tab=floor-schedule`) și `get_floor_config(section:"tables")` — nu există un „layout mobil separat".
+- **Trimiterea comenzii**: butonul **Trimite** răspunde imediat (feedback tactil), blochează instant a doua apăsare și trimite doar produsele noi. După succes, ospătarul poate reveni la sală înainte ca listele să se reîmprospăteze — actualizarea continuă în fundal și NU înseamnă că produsele s-au pierdut. Pentru verificare reală folosește `get_order_timeline` / `jurnal_activitate`, nu doar impresia din ecran.
+- **Cantități și clienți pe notă**: cantitățile fracționare (ex. `1.5`, `0.25`) se afișează curat în coș, la împărțirea notei și pe previzualizare. Când masa are mai mulți clienți/scaune, produsele se grupează pe client; cele fără client apar la **Comune masă**, cu subtotal pe grup.
+- **Acțiuni masă**: cele 3 puncte din ecranul comenzii deschid o listă compactă (bottom sheet) cu: Printează Nota, Transfer, Preia Masa, Transferă Produse, Partajează, Mesaj Bucătărie, Împarte Nota, Masă Servită, Reprint Bon Fiscal, Retur, Casă, Discount, Beneficiu Personal, Client, Firmă.
+- **Masă Servită**: e o opțiune pe masă. Explică simplu: pe bonul fiscal produsele se grupează ca „Masă servită" pe cote TVA; conținutul real al notei nu se schimbă.
+- **Plata la masă**: dialogul de bacșiș apare imediat ce ospătarul apasă plata; trimiterea produselor rămase și verificarea sumei rulează în fundal. Dacă apasă „Continuă" spre metoda de plată înainte ca pregătirea să fie gata, aplicația așteaptă singură.
+- **Plăți cu cardul (aplicație de plată pe același dispozitiv)**: dacă aplicația de plată a băncii/procesatorului întoarce „anulat" sau „eșuat", Symbai POS revine imediat la alegerea metodei de plată — nota rămâne de plată și se poate reîncerca fără blocaj. Doar la rezultat incert plata rămâne în verificare până confirmă serverul.
+- **Notificări pentru personal**: notificarea de „preparat gata" de la bucătărie poate fi silențioasă (fără sunet), după setările ecranului de bucătărie. Dacă utilizatorul spune că sună deși a setat silențios, problema ține de notificările de personal/bucătărie, nu de campaniile de marketing push.
 
-Pentru agenti, explica simplu: MCP-ul poate citi/scrie datele de productie si sarcini, dar actiunile fizice de teren (camera, printare eticheta, operatie facuta la utilaj) se fac in **Symbai Staff** sau in scannerul web, nu din chat. Pentru dovada vizuala nativa foloseste emulatorul Android si screenshot; pentru dialogul de configurare din POS web foloseste Chrome pe `/menu/platforms`.
+Pentru date și modificări reale de plan de sală folosește tool-urile dedicate (`get_floor_config`, `set_floor_table_geometry`, `arrange_tables_grid`, `move_tables_to_section`, `set_zone_routing` etc.) — aplicația mobilă doar reflectă ce vede ospătarul.
 
-Preview-ul de livrator este clickabil si trebuie explicat ca o simulare realista: `Traseu`, `Suna`, `Problema`, `Pornesc cursa`, `Am ajuns`, `Poza`, `Incasez`, `Marchez livrata`, `Reiau simularea`. Pentru `driver_basic`, app-ul este livrator-focused: primul tab este `Livrari`, CRM-ul nu apare si `Mai mult` este ascuns.
+## Configurare în POS web: `/menu/platforms`
 
-Branding in preview:
+Aceeași pagină are DOUĂ configurări diferite — nu le confunda:
 
-- logo lung: `/brand/symbai-logo-left.png`;
-- mark S: `/brand/symbai-mark-dark.png`;
-- culori: `#001858`, `#0771D5`, `#10D0B0`;
-- texte user-facing: `Symbai Staff`, `Aplicatie Staff`, `In Aplicatie Staff`.
+| Card / dialog | Pentru cine | Cum lucrezi |
+|---|---|---|
+| `Configurare Platformă Clienți` | clienții publici: portal, QR, meniu, comenzi, jocuri | skill `configureaza-portal`; tool-uri `get_portal_config`, `configure_portal_*`, `configure_portal_qr`, `spotlight_portal_tab` |
+| `În Aplicație Staff` | angajați: livratori, agenți teren, CRM, sarcini, recepție, marfă, fabrică | din aplicație (dialogul de pe pagină); nu există tool de conexiune dedicat pentru acest dialog |
 
-## Server URL si emulator
+### Dialogul „În Aplicație Staff"
 
-Regula de baza: `localhost` din Android emulator inseamna emulatorul, nu PC-ul.
+Configurează **previzualizarea** și profilul implicit pentru Symbai Staff: presetul implicit, densitatea afișării (ghidată sau compactă), sumarul explicativ pentru manager și ce funcții apar pe fiecare preset.
 
-- Backend local pe PC: foloseste `http://10.0.2.2:3000` in Android emulator.
-- Device fizic in LAN: foloseste IP-ul PC-ului sau URL-ul HTTPS al tenantului.
-- Cloud canonical URL si runtime/edge URL sunt concepte diferite. Nu persista URL-ul edge LAN ca URL cloud canonical.
-- Edge discovery trebuie sa seteze URL-ul tranzient cu `{ persist: false }`.
+**Important — nu confunda cu permisiunile reale:** comutatoarele din acest dialog NU dau acces angajatului. Accesul real vine din rolurile din Personal (`/staff?tab=roles`) — permisiuni precum CRM, condus/livrări, vizualizare și actualizare statusuri de livrare, sarcini, recepție marfă, ecran bucătărie, rezervări, rapoarte de vânzări.
 
-Chei canonical storage:
+Preseturi disponibile:
 
-- `expo-mobile`: `symbai_cloud_api_url`
-- `expo-portal`: `portal_cloud_base_url`
-- `expo-sales`: `staff_cloud_base_url`
+| Preset | Ce arată |
+|---|---|
+| 1. Angajat simplu | sarcini proprii, fără CRM/stoc |
+| 2. Operare marfă / bucătărie | sarcini, preluare marfă, bucătărie/producție |
+| 3. Recepție + marfă | recepție, rezervări, mesaje, preluare marfă |
+| 4. Livrator simplu | livrări, statusuri, rapoarte; CRM ascuns |
+| 5. Livrator cu vânzări | livrări + CRM + mesaje + apeluri + rapoarte |
+| 6. Vânzări / CRM în locație | CRM locație, apeluri, mesaje, rapoarte |
+| 7. Vânzări / CRM cu vizite | CRM teren, traseu zilnic, check-in și vizite |
 
-## Build si test
+Previzualizarea de livrator din dialog e clickabilă — explic-o ca pe o simulare realistă: `Traseu`, `Sună`, `Problemă`, `Pornesc cursa`, `Am ajuns`, `Poză`, `Încasez`, `Marchez livrată`. Pentru „Livrator simplu", aplicația e centrată pe livrări: primul tab e `Livrări`, iar CRM-ul nu apare.
 
-Comenzi uzuale, rulate in folderul app-ului afectat:
+## Symbai Staff — ce vede angajatul în aplicație
 
-```powershell
-npx.cmd tsc -p tsconfig.json --noEmit --pretty false
-npx.cmd expo prebuild --platform android --no-install
-npx.cmd expo run:android
-```
+Ce apare în aplicație depinde de profilul rezolvat din rol + funcțiile activate:
 
-`expo-mobile` are scripturile `android`/`ios` pe `expo run:*` (dev-client/native), nu pe Expo Go. Pentru schimbări native (splash, secure-store backup rules, deep links, pluginuri, plăți, notificări) folosește `expo run:android` sau Gradle/EAS; `expo start` singur nu validează resursele native generate.
+- **Sarcini**: sarcinile reale se gestionează prin tool-uri sau din POS web (vezi skill-ul `gestioneaza-sarcini`) și se verifică prin `get_my_tasks`. Nu promite un ecran separat de sarcini în aplicație dacă nu îl vezi în versiunea curentă.
+- **Fabrică**: rolurile cu producție văd tabul **Fabrică** cu subtaburi **Azi**, **Scan**, **QC**, **Etichete**, **Rețete**. Din lista de operații se pot porni/finaliza operații și marca QC OK/blocat; scanarea unui cod QR arată containerul/lotul și poate porni următoarea operație sau printa eticheta containerului scanat.
+- **Etichete de producție**: tabul **Etichete** alege o imprimantă activă și printează eticheta pentru ultimul container scanat sau pentru containerele din operațiile zilei. Nu promite funcții (ex. creare container nou) pe care nu le vezi în aplicație.
+- **Scanare QR**: operatorul folosește tabul **Scan** din Symbai Staff sau scannerul web. Pentru detalii bogate și verificare, asistentul folosește `exec_scan_container` / `exec_get_container_info`.
 
-Pentru Android build real foloseste EAS sau Gradle dupa prebuild, in functie de task. Pentru iOS nativ real este nevoie de macOS/Xcode sau EAS Build; pe Windows nu promite testare iOS nativa locala.
+Explică simplu: prin conexiune poți citi/scrie datele de producție și sarcini, dar acțiunile fizice de teren (camera, printarea etichetei, operația la utilaj) se fac în **Symbai Staff** sau în scannerul web, nu din chat.
 
-Checklist minim cand modifici o aplicatie Expo:
+## Notificări push
 
-1. Verifica `app.json` si assets.
-2. Ruleaza typecheck-ul.
-3. Porneste pe Android emulator cand fluxul este UI/native.
-4. Fa screenshot la splash/login/home si la ecranul schimbat.
-5. Daca schimbarea implica plugin nativ, deep link, plata, camera, locatie sau notificari, testeaza build nativ Android, nu doar Expo Go.
+- Notificările către personal (comenzi, bucătărie) sunt **tranzacționale**, nu campanii de marketing: NU folosi `preview_push_audience` / `send_push_campaign` pentru ele. Dacă un angajat nu primește notificări, verifică dacă s-a logat în aplicație și a acceptat notificările pe telefon.
+- Notificarea de „preparat gata" poate fi silențioasă după setările ecranului de bucătărie — vezi secțiunea Symbai POS de mai sus.
+- În POS-ul din browser (PWA), notificările depind de permisiunea browserului; la probleme de tip „nu sună" / „nu apare în fundal" / „apăs pe notificare și nu se deschide", verifică permisiunea de notificări a browserului și că aplicația web e instalată/deschisă — nu campaniile push.
 
-## Plati native si GP app2app
+## Branding
 
-`expo-mobile` include flow-uri native pentru plati:
+- Aplicațiile folosesc identitatea Symbai (logo-ul cu **S**, culorile albastre Symbai) și numele `Symbai POS`, `Symbai Portal`, `Symbai Staff`.
+- Dacă firma are logo propriu, acesta apare ca logo de locație/brand în interiorul aplicației; icoana și ecranul de pornire ale aplicației rămân Symbai.
 
-- Viva: scheme `symbai-viva-callback`, query scheme `vivapayclient`, plugin `withAndroidVivaQueries`.
-- Global Payments: plugin `withGpAppToApp`.
+## Unde trimiți utilizatorul în POS web
 
-Pentru GP app2app:
-
-- Nu inventa TID-uri in cod sau in documentatie.
-- Daca device-ul are TID/config GP si aplicatia GP nativa instalata, flow-ul trebuie sa fie identificabil in UI ca plata card GP app2app.
-- Testul corect este pe Android build nativ cu aplicatia GP disponibila; Expo Go nu valideaza complet pluginurile native.
-- Daca flow-ul intoarce in app dupa plata, verifica si callback-ul, status polling si mesajele pentru plata incerta/esuata.
-- Pentru regresii GP pe `expo-mobile`, verifica explicit: local app2app cu anulare/refuz in GP tom se inchide imediat in Symbai POS; stale GP/Viva state se curata la o noua plata; dupa refuz/anulare, nota ramane de plata si metoda poate fi reapasata fara blocaj.
-
-## Push notifications
-
-- Pastreaza numele produsului in copy-ul notificarii.
-- `expo-portal` si `expo-sales` folosesc culoarea de notificari `#0771D5`.
-- `expo-mobile` foloseste `#1e293b`.
-- Verifica in `app.json` pluginul `expo-notifications`, icon-ul si permisiunile native.
-- In `expo-mobile`, canalele Android POS sunt: `default` (fallback), `orders` (comenzi POS) si `symbai-pos-kitchen-silent` (KDS/preparat gata fara sunet). Pentru staff notifications de KDS, serverul rezolva `sound`, `channelId` si `priority` din payload; nu forta `sound:"default"` daca mesajul este silentios.
-- Push tranzactional catre personal/KDS nu se trateaza ca o campanie marketing: nu folosesti `preview_push_audience` / `send_push_campaign`, ci verifici tokenul angajatului si fluxul server `persistStaffNotification` -> `sendPushToEmployee`.
-- In PWA web/POS, runtime-ul de notificari (`pwa-notification-runtime`) gestioneaza permisiunea browserului, sunetul si notificarea cand tabul este ascuns; service worker-ul asculta `notificationclick` si focalizeaza/navigheaza PWA-ul la URL-ul din payload. Pentru buguri de tip „nu suna", „nu apare in background" sau „tap pe notificare nu deschide POS/KDS", foloseste browser-control/Chrome cu PWA instalabila sau tab ascuns si arata dovada (toast/sunet, notificare sistem, focus dupa click), nu tool-urile de campanii push.
-
-## Conflicte frecvente
-
-- Se vede icon vechi `N`: assets native stale; verifica `assets/*`, ruleaza `expo prebuild`, curata cache Metro daca e nevoie.
-- App-ul nu vede backend-ul local in emulator: foloseste `10.0.2.2`, nu `localhost`.
-- `expo-sales` apare in UI: redenumeste user-facing la `Symbai Staff` / `Aplicatie Staff`.
-- iOS nu poate fi testat local pe Windows: spune explicit limita si foloseste EAS/macOS pentru build nativ.
-- Edge URL ramane blocat dupa schimbare de retea: verifica sa nu fi fost persistat runtime URL-ul LAN.
-
-## Unde trimiti userul in POS web
-
-- Configurarea platformei clientilor: `/menu/platforms` sau alias `/portal-config`, card `Configurare Platforma Clienti`, skill `configureaza-portal`.
-- Configurarea Aplicatiei Staff: `/menu/platforms`, card `In Aplicatie Staff`, skill `configureaza-aplicatie-staff`.
-- Roluri si permisiuni reale pentru angajati: `/staff?tab=roles`.
-- Integrari plati GP/Viva: `/settings?tab=integrations`.
-- Server/edge/print agent: `/settings?tab=edge-server`.
-- Imprimante/case de marcat: `/settings?tab=printers`.
+- Configurarea platformei clienților: `/menu/platforms` (sau alias `/portal-config`), cardul `Configurare Platformă Clienți`, skill `configureaza-portal`.
+- Configurarea Aplicației Staff: `/menu/platforms`, cardul `În Aplicație Staff`.
+- Roluri și permisiuni reale pentru angajați: `/staff?tab=roles`.
+- Integrări de plăți cu cardul: `/settings?tab=integrations`.
+- Serverul local al restaurantului: `/settings?tab=edge-server`.
+- Imprimante / case de marcat: `/settings?tab=printers`.

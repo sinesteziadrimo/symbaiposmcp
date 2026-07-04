@@ -37,6 +37,6 @@ Rulează `audit_website_seo` → îți spune câte produse sunt fără descriere
 - **Onest cu userul**: descrierile sunt punct de pornire bun; pentru produsele de vârf, o trecere umană le face și mai bune.
 
 ## Ce NU se poate prin conexiune (spune userului)
-- Slug-urile noi se folosesc în URL-uri după ce platforma e actualizată; descrierile apar pe pagina produsului imediat.
+- Descrierile apar pe pagina produsului imediat; slug-urile noi pot intra în URL-uri cu o mică întârziere — nu promite schimbarea instantanee a adresei paginii.
 - Editarea descrierilor produs-cu-produs din UI se face și din aplicație (Produse & Meniuri) — `set_product_seo` e pentru corecții rapide prin chat.
 - Scrierile cer modulul **„Produse & Meniuri"** pe token; citirile/`audit_website_seo` merg oricum.

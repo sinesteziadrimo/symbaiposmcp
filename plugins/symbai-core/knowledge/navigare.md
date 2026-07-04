@@ -40,7 +40,7 @@ Claritatea = viteză + corectitudine: o întrebare de o secundă bate un link gr
 
 ## Schimbarea unității active (locație / brand) — NU e o pagină
 
-Unitatea activă (perechea **brand + locație**, ex. „Drimoland — Sala Principală") e o **stare a browserului** care filtrează TOT ce vezi (vânzări, stocuri, rapoarte, rezervări, personal) — pe TOATE paginile, nu doar pe /staff. **NU se schimbă prin conexiune (MCP)** și **NU e o rută** — deci nu o căuta cu `gaseste_in_aplicatie`.
+Unitatea activă (perechea **brand + locație**, ex. „Restaurantul Exemplu — Sala Principală") e o **stare a browserului** care filtrează TOT ce vezi (vânzări, stocuri, rapoarte, rezervări, personal) — pe TOATE paginile, nu doar pe /staff. **NU se schimbă prin conexiune (MCP)** și **NU e o rută** — deci nu o căuta cu `gaseste_in_aplicatie`.
 
 Când userul zice „treci pe locația din centru / vezi datele de la cealaltă locație / schimbă pe brandul X / vreau pe pizzeria din Mall":
 

@@ -16,7 +16,7 @@ Onboarding = configurarea de la zero (sau completarea) unei instanțe Symbai pen
 8. **Lista de tool-uri din sesiunea TA e sursa de adevăr.** Instanțele se actualizează în valuri: dacă un tool menționat în aceste fișiere lipsește la tine, instanța clientului nu are încă versiunea aceea — folosește alternativa UI indicată. Dacă ai tool-uri noi nemenționate aici, folosește-le conform descrierii lor.
 9. **Ștergeri nu există prin conexiune** — nu promite că „ștergi tu"; ghidează în aplicație (`gaseste_in_aplicatie`).
 10. **Fricțiune văzută = sugestie trimisă**: dacă un tool lipsă sau o limitare te încetinește vizibil, trimite o sugestie cu `trimite_ticket_symbai` (tip `sugestie`, cu `dedupeKey`) și mergi mai departe.
-11. **Pachetul de cunoștințe se ține singur la zi.** La instalare, configul scrie `"autoUpdate": true`, iar pluginul `symbai-core` (v0.22+) are un hook de auto-reparare care își re-sincronizează sursa de pe GitHub la fiecare pornire — clientul NU rămâne blocat pe ghiduri vechi. Dacă totuși observi că ești pe o versiune veche (lipsesc skill-uri/ghiduri pe care le aștepți), invocă skill-ul `symbai-update` (diagnostichează + repară clona de marketplace). Nu cere clientului pași manuali înainte să încerci asta.
+11. **Pachetul de cunoștințe se ține singur la zi.** Pluginul `symbai-core` se instalează cu actualizarea automată pornită și își re-sincronizează cunoștințele la pornire — clientul NU rămâne blocat pe ghiduri vechi. Dacă totuși observi că ești pe o versiune veche (lipsesc skill-uri/ghiduri pe care le aștepți), invocă skill-ul `symbai-update` (diagnostichează + repară instalarea). Nu cere clientului pași manuali înainte să încerci asta.
 
 ## Fazele, în ordinea dependențelor
 
@@ -51,13 +51,13 @@ Aplicația își adaptează wizard-ul după domeniul de business (restaurant/caf
 
 ## Cum măsori progresul
 
-- **`get_config_status(brandId)`** — procent general + 19 categorii (brand, locații, produse, meniuri, gestiuni, rețete, personal, POS, plăți, imprimante, ecrane bucătărie, fiscal, rezervări...), fiecare cu ce e configurat și ce lipsește. Dă `brandId` explicit. E măsura REALĂ a progresului — folosește-o la început (inventar), după fiecare fază și la final.
-- Atenție la interpretare: măsoară EXISTENȚA datelor (count-uri), nu corectitudinea lor; itemul „Categorii" din Produse & Categorii numără **categoriile de meniu** (`menu_categories` cu brand/global), nu zonele de depozitare; itemul de „prețuri" raportează articole de meniu raportat la numărul de produse (poate depăși 100%); sugestiile `nextSteps` sunt calibrate pe profil de restaurant — ia-le orientativ.
+- **`get_config_status(brandId)`** — procent general + categorii detaliate (brand, locații, produse, meniuri, gestiuni, rețete, personal, POS, plăți, imprimante, ecrane bucătărie, fiscal, rezervări...), fiecare cu ce e configurat și ce lipsește. Dă `brandId` explicit. E măsura REALĂ a progresului — folosește-o la început (inventar), după fiecare fază și la final.
+- Atenție la interpretare: măsoară EXISTENȚA datelor (count-uri), nu corectitudinea lor; itemul „Categorii" din Produse & Categorii numără **categoriile de meniu** (pe brand sau globale), nu zonele de depozitare; itemul de „prețuri" raportează articole de meniu raportat la numărul de produse (poate depăși 100%); sugestiile `nextSteps` sunt calibrate pe profil de restaurant — ia-le orientativ.
 - **Ține un fișier local de progres** (ex. `symbai-onboarding-progres.md` în folderul de lucru al utilizatorului): faza, ce s-a făcut, ce a rămas pe UI la utilizator, deciziile luate (brandId/locationId folosite, maparea fișierelor importate). La o sesiune nouă: citește fișierul + re-rulează `get_config_status` și continui de unde ai rămas — onboarding-ul real durează mai multe sesiuni.
 
 ## Coexistența cu wizard-ul din aplicație
 
-Aplicația are propriul wizard la `/onboarding` (~29 de pași, cu asistent AI per pas). Relația cu munca ta:
+Aplicația are propriul wizard la `/onboarding` (pași ghidați, cu asistent AI per pas). Relația cu munca ta:
 - **Datele scrise prin conexiune apar instant în wizard** — pașii detectează entitățile existente („Ai 3 branduri configurate"), deci pașii devin de facto „făcuți".
 - **Bara de progres a wizard-ului NU se bifează prin conexiune** — utilizatorul apasă singur „Următorul pas" în aplicație dacă vrea wizard-ul „verde". Nu e o problemă: progresul real e `get_config_status`.
 - Pentru părțile UI-only (mai jos), cel mai bun loc de trimis utilizatorul e de regulă chiar **pasul de wizard echivalent** — fiecare fișier de fază are secțiunea „Echivalentul în wizard".

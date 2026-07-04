@@ -95,7 +95,7 @@ Symbai are un **builder de website** integrat: din catalogul de produse + meniul
 
 Le pui prin `add_website_section`/`set_website_page_content` cu `type` + `config`.
 
-**Regula de alegere:** încearcă întâi componentele existente din catalog (`hero-slider`, `feature-cards`, `product-grid`, `static-menu-board`, `cta-banner`, `faq`, `gallery`, `trust-badges`, etc.). Folosește `custom-html` numai când cerința e cu adevărat specifică și nu merită un deploy/componentă nouă de platformă.
+**Regula de alegere:** încearcă întâi componentele existente din catalog (`hero-slider`, `feature-cards`, `product-grid`, `static-menu-board`, `cta-banner`, `faq`, `gallery`, `trust-badges`, etc.). Folosește `custom-html` numai când cerința e cu adevărat specifică și nicio componentă standard (sau combinație de componente standard) nu o poate acoperi.
 
 - **`custom-html`** — componentă complet custom pentru cazuri unde blocurile standard nu exprimă designul sau comportamentul cerut. Se adaugă preferabil cu `upsert_custom_website_component`; primește `html`, `css`, `maxWidth`, culori de secțiune și note. HTML-ul e script-free: nu folosi `<script>`, handler-e inline sau stil inline; pune stilul în `css`, iar pentru interacțiuni folosește acțiuni declarative `data-wb-action`.
 - **`hero-slider`** — banner mare (imagine/gradient, titlu, subtitlu, buton). Suporta si al treilea CTA: `showTertiaryCta:true` + `slides[].tertiaryCtaText` / `slides[].tertiaryCtaUrl`, util la homepage-uri cu 3 actiuni principale. Pe pagini fără imagine degradează elegant într-un header colorat în culoarea brandului.
@@ -145,7 +145,7 @@ Limite de runtime: `<script>`, `<style>`, SVG/math executabil, object/embed/link
 
 ## Bara de încredere (trust bar) a magazinului
 
-**Ce e:** o bandă subțire, vizibilă pe **toate paginile** site-ului, cu „pilonii de încredere" ai magazinului — promisiunile care îl liniștesc pe cumpărător: **„14 zile drept de retur"**, **„Transport gratuit"**, **„Fidelizare clienți"**, **„Rate fără dobândă"** etc. E exact bara pe care o vezi sus pe magazinele mari (tip bebebliss). Face parte din „chrome-ul" global al site-ului (ca meniul de sus și footer-ul), nu e o componentă pusă pe o singură pagină.
+**Ce e:** o bandă subțire, vizibilă pe **toate paginile** site-ului, cu „pilonii de încredere" ai magazinului — promisiunile care îl liniștesc pe cumpărător: **„14 zile drept de retur"**, **„Transport gratuit"**, **„Fidelizare clienți"**, **„Rate fără dobândă"** etc. E exact bara pe care o vezi sus pe magazinele online mari. Face parte din „chrome-ul" global al site-ului (ca meniul de sus și footer-ul), nu e o componentă pusă pe o singură pagină.
 
 **La ce folosește:** comunică din prima, pe orice pagină, avantajele care decid cumpărarea (retur ușor, livrare gratuită, plata în rate). Reduce ezitarea și abandonul — clientul vede garanțiile fără să caute prin pagini separate.
 
@@ -153,11 +153,11 @@ Limite de runtime: `<script>`, `<style>`, SVG/math executabil, object/embed/link
 - `brandId` (obligatoriu).
 - `pillars` — lista pilonilor, în ordine; fiecare are `{icon, text}`. Iconuri disponibile: `truck` (camion/livrare), `gift` (cadou), `rotate-ccw` (retur), `shield` (garanție/protecție), `star` (stea/fidelizare), `credit-card` (card/rate), `award` (premiu/calitate), `check` (bifă), `clock` (ceas/program), `heart` (inimă). Poți pune și piloni **fără icon** (doar text). `pillars: []` (listă goală) **ascunde** bara.
 - `enabled` (true/false) — implicit `true` când pui piloni; pune `false` ca să ascunzi bara fără să-i ștergi pilonii.
-- `position` — `above-nav` (deasupra meniului, ca bebebliss — implicit) sau `below-nav` (sub meniu).
+- `position` — `above-nav` (deasupra meniului — implicit) sau `below-nav` (sub meniu).
 - `backgroundColor`, `textColor` (culori hex, opționale — implicit se iau din temă/brand).
 - `borderBottom` (true/false) — o linie subțire sub bară (implicit `true`).
 
-**Exemplu 1 — ca la magazinele mari (4 piloni, bebebliss-style):**
+**Exemplu 1 — ca la magazinele mari (4 piloni):**
 ```
 configure_storefront_trust_bar(
   brandId,
@@ -220,7 +220,7 @@ configure_storefront_trust_bar(
 - **Confirmă înainte de `apply_website_template` cu `confirmReplace`** — rescrie structura paginilor.
 - **Verifică prin link, nu doar „am rulat tool-ul"** — deschide pagina (deep-link) ca să confirmi vizual.
 
-## Update 2026-06-24 - optiuni vizuale website live
+## Optiuni vizuale avansate (hero, navbar, footer, animatii)
 
 Cand construiesti sau copiezi un site, foloseste intai aceste optiuni native inainte de `custom-html`:
 
@@ -251,7 +251,7 @@ Verificare: dupa `update_website_navigation`, `set_website_footer` sau pagini cu
 - **Diferența website vs portal?** Portalul = app-ul pentru clienții din local (QR la masă: meniu/comenzi/rezervări). Website-ul = site-ul public indexat de Google, cu magazin. Configurări diferite, tool-uri diferite.
 - **Pot importa un magazin existent (alt site)?** Da — vezi `onboarding/02d-import-surse-externe.md` (import asistat din surse externe). După import, aplici rețeta de mai sus (ierarhie + filtre + footer + legale).
 - **Cum fac filtrele ca la magazinele mari?** Activează `showFacets` pe grila de produse ȘI populează brand/material/vârstă/interes pe produse.
-- **Cum fac pagina de produs să arate completă (ca la Bebebliss/eMAG)?** Galerie ≥3 poze + descriere lungă + specificații + preț redus + garanție + FAQ + accesorii/pachet + (opțional) video — rețeta cu bife și tool-uri în `website-builder-pdp.md`.
+- **Cum fac pagina de produs să arate completă (ca la magazinele mari)?** Galerie ≥3 poze + descriere lungă + specificații + preț redus + garanție + FAQ + accesorii/pachet + (opțional) video — rețeta cu bife și tool-uri în `website-builder-pdp.md`.
 - **De ce e goală o categorie când dau click?** Ori e părinte fără ierarhie setată, ori produsele nu sunt legate de ea (`set_products_menu_category`).
 - **Cum pun bara de sus cu „14 zile retur / transport gratuit / rate" (ca pe magazinele mari)?** E **bara de încredere** — `configure_storefront_trust_bar` cu pilonii tăi (icon + text); apare pe toate paginile, deasupra sau sub meniu. Vezi secțiunea „Bara de încredere (trust bar)".
 - **Unde văd comenzile de pe site?** În modulul de magazin — `ecommerce-magazin-online.md` (`/ecommerce/orders`).

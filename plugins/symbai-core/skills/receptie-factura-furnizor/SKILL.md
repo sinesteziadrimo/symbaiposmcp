@@ -21,7 +21,7 @@ Sunt DOUĂ situații. Confundarea lor dublează stocul — nu sări peste.
 ## Principii (nu greși astea)
 - **Nu inventa** produse, conturi sau prețuri. Ce nu se potrivește clar → întreabă userul.
 - **Caută înainte de a crea** (`search_products_db`); **verifică prin citire după** (`get_received_efactura_details`, `get_stock_levels`, `get_journal_entries_summary`).
-- **Contul vine din TIPUL produsului.** Leagă linia/produsul de tipul corect și contul se rezolvă singur (raw_material→301, merchandise→371, consumable→302/603, packaging→381, service→628 etc.). Verificat: nota contabilă se generează corect chiar dacă brandul n-are tipuri de produs configurate (sistemul folosește maparea implicită pe tipul canonic). Tipurile configurate (`create_product_type`) sunt necesare doar pentru CONTURI PERSONALIZATE / override-uri.
+- **Contul vine din TIPUL produsului.** Leagă linia/produsul de tipul corect și contul se rezolvă singur (raw_material→301, merchandise→371, consumable→302/603, packaging→381, service→628 etc.). Nota contabilă se generează corect chiar dacă brandul n-are tipuri de produs configurate (sistemul folosește maparea implicită pe tipul canonic). Tipurile configurate (`create_product_type`) sunt necesare doar pentru CONTURI PERSONALIZATE / override-uri.
 - **Costul e obligatoriu la intrare.** Pe Calea A pune `unitCost` pe fiecare linie, altfel stocul se valorează la 0 și nota contabilă iese 0. Pe Calea B costul vine din factură.
 
 ## Faza 1 — Context
@@ -98,5 +98,3 @@ Factură doar de servicii/utilități (fără marfă pe stoc): nu face NIR. Folo
 
 ## Factură manuală de la zero (prin MCP)
 Pentru o factură pe hârtie/PDF care NU vine prin eFactura/SPV sau OCR, o creezi direct prin conexiune: `create_incoming_invoice({ invoiceNumber, invoiceDate, lines: [{ description, quantity, unit?, unitPrice?, vatRate?, mappedProductId? }], supplierId? SAU supplierName?(+supplierCui?), brandId?, locationId? })` (modul `financiar`). Creează factura ca CIORNĂ și NU mișcă stoc. Apoi mapezi liniile (`map_invoice_line`) și faci recepția cu `create_nir_from_invoice` (Faza 5) — astfel o factură de hârtie devine Calea B, integral prin MCP.
-
-(Notă: ambele operații — factură manuală de la zero ȘI NIR legat de o factură existentă — se pot face acum prin MCP, cu `create_incoming_invoice` și `create_nir_from_invoice`. Vechea limitare „doar din aplicație" nu mai e valabilă.)

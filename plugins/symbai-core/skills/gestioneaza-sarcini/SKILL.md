@@ -19,7 +19,7 @@ Citește întâi `knowledge/tasks-sarcini.md` (model nou: țintă rol+tură+raio
 
 1. Context: `list_brands` + `list_locations` (ai nevoie de brandId/locationId). Rolul-țintă: `list_entities(entityType:"roles", brandId)` pentru roleId.
 2. `create_targeted_task_list` cu: `title`, `targetRoleId` (gol = orice rol), `targetShift` (`any`|morning|afternoon|evening|night), `targetSection` (raion; gol = orice), `locationId`, `recurrence` (none|daily|weekdays|weekly|monthly), `recurrenceDays` (weekly: „mon,thu”; monthly: „15”), `dueTime` („11:00”), `color`.
-   - **⚠ CAPCANĂ confirmată live cu `targetSection`:** vizibilitatea pe raion se uită la raionul de pe `staff_schedule`-ul angajatului — iar raionul pe `staff_schedule` **NU se poate seta prin MCP** (`create_staff_schedule` n-are param de raion; raionul pus prin `create_shift` stă în altă tabelă, ignorată aici). Deci dacă turele au fost create prin MCP, o listă cu `targetSection` **NU ajunge la nimeni** — chiar dacă rolul și raionul par corecte. Soluție: țintește pe **rol + tură** (lasă `targetSection` gol) SAU pune raionul pe tură din aplicație (Planificator → Secțiune Atribuită), apoi re-verifică audience-ul.
+   - **⚠ CAPCANĂ cu `targetSection`:** vizibilitatea pe raion se uită la raionul din programul publicat al angajatului (Planificator Ture) — iar acel raion **NU se poate seta prin MCP** (`create_staff_schedule` n-are param de raion; raionul pus prin `create_shift` contează doar pentru rutarea QR și e ignorat aici). Deci dacă turele au fost create prin MCP, o listă cu `targetSection` **NU ajunge la nimeni** — chiar dacă rolul și raionul par corecte. Soluție: țintește pe **rol + tură** (lasă `targetSection` gol) SAU pune raionul pe tură din aplicație (Planificator → Secțiune Atribuită), apoi re-verifică audience-ul.
 3. Adaugi sarcinile cu `create_targeted_task` per sarcină (suportă dovadă/verificare/oră-limită; în liste recurente devine sarcină-șablon). `bulk_create_tasks` e doar pentru titluri simple, FĂRĂ aceste câmpuri. La cele care cer dovadă pune `requiresProof` (none|photo|note|photo_note|number|signature); la cele critice `requiresVerification:true`; opțional `dueTime` (suprascrie lista), `estimatedMinutes`.
 4. **Verifică audience** (Recipe 2). Apoi confirmă userului ce ai făcut + link la `/staff?tab=tasks`.
 
@@ -38,7 +38,7 @@ Citește întâi `knowledge/tasks-sarcini.md` (model nou: țintă rol+tură+raio
 
 - Salvează o listă bună ca șablon (`isTemplate:true`), apoi `clone_task_list(id, title?, isTemplate?)` ca să refolosești la altă locație/ocazie (sarcinile-șablon se copiază).
 - Nu există preset-uri gata făcute: construiești o listă bună o dată (ex. „Deschidere Bar"), o salvezi ca șablon (`isTemplate`) și o clonezi pentru alte locații/ocazii.
-- Recurența folosește tot sarcini-șablon: instanțele zilei se generează automat pe cloud (nu retroactiv).
+- Recurența folosește tot sarcini-șablon: instanțele zilei se generează automat, în fiecare zi (nu retroactiv).
 
 ## Recipe 5 — Marchează cu dovadă / verificare
 
@@ -57,12 +57,12 @@ Click-paths cu extensia Chrome (după ce userul e logat în aplicația lui):
 - **Șablon**: pe listă → „Salvează ca șablon” / „Pornește din șablon”.
 - **Verifică o sarcină**: pe sarcina bifată cu „de confirmat” → butonul de verificare/sign-off.
 - **Vede ca angajatul**: `/my-tasks` → tabul „Astăzi” (Întârziate→Azi→Următoarele), „Generale”, „Finalizate”.
-- Citire stare oricând prin SQL read-only (`task_lists`, `tasks` — vezi exemplele din knowledge).
+- Citire stare oricând prin accesul SQL read-only (vezi exemplele din knowledge).
 
 ## „De ce nu vede angajatul sarcina?” (diagnostic rapid)
 
 1. E azi în tură/program? (fără tură, ținta pe tură nu-l prinde). 2. Rolul lui = ținta listei? 3. Raionul turei = raionul-țintă? 4. Locația se potrivește? 5. Lista e `active`? 6. Listă recurentă → instanța zilei generată? Confirmă cu audience / `get_my_tasks`, nu din presupunere. Cauza clasică: listă veche cu rol/tură „decorative” (nu setate ca țintă reală).
-**Cauza #1 când turele vin din MCP:** lista are `targetSection` (raion), dar `staff_schedule`-ul angajatului n-are raion (MCP nu-l poate seta) → vizibilitatea pe raion nu-l prinde. **Test rapid:** scoate `targetSection` (`update_task_list(taskListId, targetSection:"")`) și recheamă `get_my_tasks` — dacă acum îl vede, ăsta era. Apoi fie lași ținta pe rol+tură, fie pui raionul pe tură din aplicație.
+**Cauza #1 când turele vin din MCP:** lista are `targetSection` (raion), dar tura angajatului din Planificator n-are raion (MCP nu-l poate seta) → vizibilitatea pe raion nu-l prinde. **Test rapid:** scoate `targetSection` (`update_task_list(taskListId, targetSection:"")`) și recheamă `get_my_tasks` — dacă acum îl vede, ăsta era. Apoi fie lași ținta pe rol+tură, fie pui raionul pe tură din aplicație.
 
 ## Verifică prin CITIRE (nu prin UI)
 

@@ -10,13 +10,13 @@ Angajatorul datorează în plus:
 Pot exista **facilități/scutiri** pe domenii (IT, construcții, agroalimentar) — verifică eligibilitatea și cotele speciale la zi.
 
 Raportare: **D112** (lunar, termen uzual 25) — contribuții + impozit + evidența nominală a asiguraților.
-Contracte de muncă: se raportează în **REGES (Revisal)** la ITM — înregistrarea/modificarea/încetarea sunt acțiuni oficiale (în Symbai: `regesUsername/regesPassword` pe firmă; transmiterea = acțiune deliberată, confirmă).
+Contracte de muncă: se raportează în **REGES (Revisal)** la ITM — înregistrarea/modificarea/încetarea sunt acțiuni oficiale. În Symbai, datele de acces REGES se configurează pe firmă, în Setări; transmiterea este o acțiune deliberată — confirmă explicit înainte.
 
 Conturi: 641 cheltuieli salarii, 421 salarii datorate, 4315 CAS, 4316 CASS, 444 impozit venit, 436/646 CAM.
 
 ## Regimuri de impozitare a firmei
 - **Impozit pe profit**: cotă **16%** pe profitul impozabil (venituri − cheltuieli deductibile ± ajustări fiscale). Declarație **D101** anual + plăți anticipate/trimestriale după caz.
-- **Microîntreprindere**: impozit pe **venituri** (cotă redusă), condiționat de **plafon de venituri + condiții** (nr. salariați, tip activitate, structura veniturilor) — **plafonul a scăzut în ultimii ani și condițiile s-au înăsprit**; verifică pragul + eligibilitatea CURENTE. Firma are `micro_regime` + date de start/stop.
+- **Microîntreprindere**: impozit pe **venituri** (cotă redusă), condiționat de **plafon de venituri + condiții** (nr. salariați, tip activitate, structura veniturilor) — **plafonul a scăzut în ultimii ani și condițiile s-au înăsprit**; verifică pragul + eligibilitatea CURENTE. Regimul micro și perioada lui de aplicare se văd pe datele firmei.
 - **Dividende**: impozit pe dividende reținut la sursă — **verifică cota curentă** (s-a modificat recent). Declarație D205 după caz.
 - **PFA / II** (persoane fizice): de regulă contabilitate în partidă simplă (Registru de încasări și plăți), impozit pe venit + CAS/CASS pe plafoane.
 - **TVA la încasare**: opțional sub anumite plafoane (vezi 02-tva.md).

@@ -36,6 +36,6 @@ Userul vrea să pună etichete pe semipreparatele/produsele lui (vasele din frig
 ## Legături
 - Design etichetă (tool-uri + cod de bare + câmpuri dinamice) → `knowledge/materiale-grafice.md` + skill `materiale-grafice`.
 - Fluxul de etichete (design → print) pe larg → `knowledge/etichete-productie.md`.
-- Imprimante de etichete / Print Agent / configurare → `knowledge/echipamente-kds-imprimante.md`.
+- Imprimante de etichete / configurarea imprimantelor → `knowledge/echipamente-kds-imprimante.md`.
 - Loturi, valabilitate, alergeni pe rețetă → `knowledge/productie-restaurant.md` + skill `productie-flux`.
 - Blocaj → `trimite_ticket_symbai` + ghidează în app.
