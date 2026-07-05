@@ -12,9 +12,24 @@ Citește și:
 - `knowledge/claude-code-mcp-operare.md` pentru regulile generale MCP-first
 - `knowledge/tools-mcp.md` pentru catalogul orientativ al tool-urilor
 
-## Configurare
+## Configurare — calea RECOMANDATĂ (merge pe orice versiune de Codex)
 
-> Pluginul **NU** conține un fișier `.mcp.json` propriu. Conexiunea live se configurează per client, **în afara pluginului** — altfel fiecare client ar fi trimis spre instanța greșită (un URL fixat în plugin), iar auto-update-ul pluginului ar suprascrie orice ajustare. Fiecare instanță are subdomeniul ei: `https://<subdomeniu>.symbai.app/mcp`.
+> Pluginul **NU** conține un fișier `.mcp.json` propriu. Conexiunea live se configurează per client, **în afara pluginului**. Fiecare instanță are subdomeniul ei: `https://<subdomeniu>.symbai.app/mcp`.
+
+Codex se conectează cel mai sigur prin **puntea locală `mcp-remote`** (stdio → HTTPS cu token), configurată în `~/.codex/config.toml` (Windows: `C:\Users\<nume>\.codex\config.toml`; creează fișierul dacă lipsește):
+
+```toml
+[mcp_servers.symbai]
+command = "npx"
+args = ["-y", "mcp-remote@latest", "https://<subdomeniu>.symbai.app/mcp?tools=compact", "--header", "Authorization: Bearer <tokenul-symbai_mcp>"]
+```
+
+- Pe Windows, dacă serverul nu pornește cu `npx` direct: `command = "cmd"` și `args = ["/c", "npx", ...la fel]`.
+- Necesită Node.js (`node --version` trebuie să meargă); dacă lipsește, instalează Node LTS de pe nodejs.org.
+- **Sufixul `?tools=compact` e important pentru Codex**: primești un set restrâns de tool-uri de bază + `cauta_tool` (găsești orice capabilitate după descriere) + `ruleaza_tool` (o execuți). Fără sufix, lista completă are peste 1000 de definiții și încarcă inutil contextul Codex. Ghidurile de folosire a platformei le iei cu tool-ul `ghid_symbai`.
+- Portalul Hub → Acces AI generează la crearea tokenului un **mesaj gata de lipit în Codex** (secțiunea „Folosești Codex sau alt asistent?") care face toată configurarea de mai sus.
+
+## Configurare — alternativă (versiuni Codex cu suport HTTP nativ)
 
 Creează un fișier `.mcp.json` în **folderul tău de lucru** (rădăcina proiectului din care pornești Codex — NU în folderul pluginului), cu subdomeniul TĂU și tokenul citit dintr-o variabilă de mediu (nu scrie tokenul direct în fișier):
 

@@ -24,7 +24,11 @@ Daca tool-urile lipsesc:
 
 ## Autentificare
 
-Tokenul vine din Hub -> Acces AI si are forma `symbai_mcp_*`. Nu il copia in fisiere, in git sau in raspunsuri. Conexiunea se pune intr-un `.mcp.json` din **folderul tau de lucru** (NU in plugin — pluginul nu mai livreaza unul; vezi skill-ul `conecteaza-codex`), cu URL-ul instantei TALE si tokenul citit din variabila de mediu:
+Tokenul vine din Hub -> Acces AI si are forma `symbai_mcp_*`. Nu il copia in git sau in raspunsuri.
+
+**Calea recomandata (orice versiune de Codex)**: puntea locala `mcp-remote` in `~/.codex/config.toml` — reteta completa e in skill-ul `conecteaza-codex`. Foloseste URL-ul cu sufixul `?tools=compact`: primesti setul de baza + `cauta_tool`/`ruleaza_tool` (gasesti si rulezi orice capabilitate la cerere, fara sa cari 1000+ definitii in context) + `ghid_symbai` pentru ghidurile de folosire.
+
+**Alternativa (versiuni cu HTTP nativ)**: un `.mcp.json` in **folderul tau de lucru** (NU in plugin — pluginul nu mai livreaza unul), cu URL-ul instantei TALE si tokenul citit din variabila de mediu:
 
 ```json
 {
