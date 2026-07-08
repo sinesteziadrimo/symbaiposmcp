@@ -8,6 +8,12 @@ Foloseste acest ghid cand proprietarul cere: "copiaza site-ul X", "fa site-ul ca
 
 Nu livra o aproximare doar de homepage. O copiere buna inseamna: URL-uri pastrate, header real, dropdown-uri reale, toate slide-urile importante, pagini-cheie, blog/articole reale daca exista, footer, SEO si verificare vizuala.
 
+## Anti-contaminare + numitor pe sectiuni (citeste inainte de orice mapare)
+
+- **Designul vine DOAR din site-ul pe care il copiezi ACUM.** Site-ul copiat data trecuta (paleta, fonturile, layout-urile lui) NU e referinta — nici din memorie, nici din exemplele catalogului de componente (exemplele arata structura campurilor, nu culori de copiat). Inainte de scrieri vizuale extrage un „design DNA" al sursei (culori COMPUTED din browser pe header/hero/benzi/butoane, font din `<link>` fonts, forme) cu dovada fiecarei valori; orice culoare/font scris in config trebuie sa fie trasabil la acest DNA. Valoare fara dovada = contaminare → n-o scrie.
+- **Numitorul de sectiuni per pagina e OBIECTIV:** `sections` din `analyze_external_website` (intake rapid) sau `sections[]` din `get_cached_page` (sub `copiaza-website`) iti spune cate sectiuni are pagina-sursa, cu heading/volum de text/imagini/CTA/culori de fundal per sectiune. Pagina ta trebuie sa le acopere pe TOATE — „sursa are 11 sectiuni, tu ai 3" e FAIL masurabil, nu opinie. `textChars` mare in sursa vs. un rand la tine = comprimare agresiva, tot FAIL.
+- **Plan pe disc + lucru in bucati:** scrie inventarul (pagini → sectiuni → status todo/built/verified) INAINTE sa construiesti, apoi lucreaza O pagina sau O sectiune pe tura, verificata (read-back + vizual) si bifata cu dovada. Mai lent, dar nimic sarit si nimic superficial; planul arata mereu obiectiv ce a ramas.
+
 Pentru site-uri bogate, nu considera o pagina "copiata" daca ai pus doar hero + 1-2 sectiuni. Daca sursa are zeci de componente, texte lungi, carduri, preturi, video, galerie sau formular, trebuie sa construiesti o pagina lunga care pastreaza inventarul real al componentelor, chiar daca lucrul dureaza mult.
 
 ## Intake obligatoriu

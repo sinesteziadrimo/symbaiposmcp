@@ -9,6 +9,8 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **POS / Sală** — vânzarea la masă: planul de sală, mesele, notele, ospătarii. Inima operațională. → `comenzi-mese-ospatari.md`
 - **Comenzi clienți (QR / online)** — clienții comandă singuri de la masă prin cod QR sau din portalul web. → `comenzi-mese-ospatari.md` + `livrari-comenzi-online.md`
 - **Livrări** — comenzi pentru livrare, dispecerat, curieri, integrări cu platforme (Glovo, Wolt, Bolt, Tazz). → `livrari-comenzi-online.md`
+- **B2B / en-gros (vânzare la firme)** — clienți persoane juridice cu preț de contract, comenzi wholesale, aviz + factură, picking condus de reguli. → `b2b-comenzi-wholesale.md`
+- **Distribuție de fabrică (rute + rampe de încărcare)** — organizarea zilei de distribuție: rute pe mașini, rampe de încărcare cu sloturi (când/cât stă tirul la încărcat), sosirea mașinii cu push către echipă, mașina altei firme. → `livrari-b2b-dispecerat.md`
 - **Meniu** — ce se vinde: articole de meniu cu preț, categorii, poze, meniu fizic, oferte/promoții. → `produse-meniu-retete.md`
 - **Produse & Stocuri (Inventar)** — produsele fizice, gestiunile, stocul pe loturi, recepții (NIR), transferuri, inventariere, consum. → `stocuri-inventar-furnizori.md`
 - **Furnizori & Achiziții** — de la cine cumperi, cataloage, comenzi de aprovizionare, prețuri furnizor. → `stocuri-inventar-furnizori.md`

@@ -25,6 +25,8 @@ ID-uri, nu nume (roleId, employeeId, floorConfigId). Caută înainte de a crea (
 
 ## (b) Creează/editează rol + permisiuni
 
+**Pentru roluri + permisiuni ai un skill dedicat, mai bogat: `configureaza-roluri`** (înțelege întâi ce vede fiecare rol, apoi acționează). Tool-uri de ÎNȚELEGERE (READ, mereu disponibile): `list_permission_catalog` (vocabularul complet de drepturi), `describe_role(roleId|roleName)` (ce permisiuni are un rol + **ce pagini vede** + câți angajați), `preview_role_access(permissions[])` (ce pagini ar da un set de chei, ÎNAINTE de creare), `list_role_presets`, `suggest_role_setup(description)` (schiță de rol dintr-o descriere). Folosește-le ca să nu bifezi orb.
+
 1. Rapid, setul standard: `seed_default_roles(brandId*, businessType*)` (restaurant|bar|cafenea|fast_food|hotel_restaurant|catering…) — creează ~15 roluri predefinite, idempotent.
 2. Rol nou: `create_role(name*, brandId*)`. **⚠ NU trimite `permissions` ca OBIECT la `create_role`** (ex. `{pos:true}`) — se salvează greșit (rolul rămâne fără permisiuni reale) ȘI strică apoi apelurile incrementale `set_role_permissions(addPermissions)` (dau eroare). **Creează rolul gol, apoi pune permisiunile cu `set_role_permissions` (array).**
 3. Permisiuni fin: `set_role_permissions(roleId*, permissions[] | addPermissions[] | removePermissions[])` — toate iau **array de string-uri**. `permissions` ÎNLOCUIEȘTE tot setul (folosește-o întâi pe un rol nou); `add/removePermissions` merg incremental DOAR dacă setul curent e deja array (pe un rol creat greșit cu obiect, „repară-l" întâi cu `permissions`).
