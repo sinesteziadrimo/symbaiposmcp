@@ -81,9 +81,9 @@ Modulul Finanțe acoperă banii afacerii de la sertarul de numerar până la bal
 
 **Scriere (cer modulul de permisiune `financiar` pe token):**
 - `create_expense` — înregistrează o cheltuială (chirie, utilități, reparații) pentru P&L.
-- `create_accounting_account` — cont nou în planul de conturi.
-- `create_product_type` / `update_product_type` — tip de produs cu proprietăți și conturi contabile.
-- `update_product_type_accounts_per_unit` — conturile unui tip de produs doar pentru un brand+locație.
+- `create_accounting_account` / `update_accounting_account` / `delete_accounting_account` — gestionează planul de conturi: adaugi un cont nou, îl modifici (redenumire, tip, cont părinte, cod, activare/dezactivare) sau îl ștergi. Ștergerea e **sigură**: dacă are sub-conturi refuză; dacă e folosit (înregistrări contabile sau mapat pe tipuri de produs) îl **dezactivează** (îl păstrează pentru istoric) în loc să-l șteargă definitiv; doar conturile nefolosite se șterg de tot.
+- `create_product_type` / `update_product_type` — tip de produs cu proprietățile lui (ce se poate face cu el: **VINDE** = `canSell`, **CUMPĂRĂ** de la furnizor = `canPurchase`, **PRODUCE** cu rețetă = `hasRecipe`, are stoc, are preț de recepție etc.) și conturile contabile. Funcționează și pe **tipurile de sistem** predefinite (ex. „Produse reziduale / Deșeuri", „Materii prime") — le poți adăuga/modifica/șterge conturile.
+- `update_product_type_accounts_per_unit` — conturile unui tip de produs doar pentru un brand+locație (override).
 - `apply_accounting_codes` — aplică coduri contabile în masă pe produse.
 - `post_journal_entry` — **notă contabilă liberă** (registru-jurnal GL), partidă-dublă: dai liniile debit/credit pe conturi (`accountId` sau `accountCode` din `list_accounting_accounts`), sistemul validează că nota e **echilibrată** (debit total = credit total), pe conturi active din același plan de conturi, și că perioada nu e închisă. Pentru regularizări, provizioane, amortizare manuală, reclasificări, corecții — orice notă scrisă „de mână". **Implicit salvează CIORNĂ (DRAFT)** pentru revizuire; pune `post:true` ca să o postezi efectiv în registru — ⚠ afectează balanța, deci **doar după ce confirmi cu utilizatorul**. Dacă un cod de cont e ambiguu (global + brand cu același cod), trimite `accountId` explicit. NU înlocuiește documentele operaționale (facturi/bonuri/NIR) care generează note automat.
 

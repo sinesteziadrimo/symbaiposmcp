@@ -34,9 +34,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 1130 tool-uri** — Citire 474 · Speciale 5 · SQL 3 · Scriere per modul 648 (pe 20 module).
+**TOTAL: 1137 tool-uri** — Citire 479 · Speciale 5 · SQL 3 · Scriere per modul 650 (pe 20 module).
 
-## Citire (fără permisiune de modul) — 474 tool-uri
+## Citire (fără permisiune de modul) — 479 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 51
 - `compare_attribution_models` — Compară modelele de atribuire (last_click/first_click/linear/time_decay/position) pe canale: venit + conversii + ROAS per model. (parametri opționali: brandId, days)
@@ -245,7 +245,8 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `verify_batch_audit_chain` — Verifică integritatea lanțului de audit tamper-evident al unui lot (Electronic Batch Record): confirmă că nicio înregistrare de siguranță (override FEFO, QC, HACCP etc.) nu a fost modificată, ștearsă (necesită: batchId)
 - `verify_electronic_batch_record` — Verifică integritatea EBR-ului ELIBERAT: recompilează dosarul, recalculează hash-ul snapshot și îl compară cu hash-ul ancorat în lanț la eliberare + verifică lanțul de audit. (necesită: batchId)
 
-### Personal & ture — 12
+### Personal & ture — 16
+- `describe_role` — Arată TOT despre un rol existent: permisiunile lui (extinse — ce categorii sunt acordate integral vs chei individuale, cu etichete RO), CÂȚI angajați îl au, și — cel mai util — CE PAGINI vede rolul în (parametri opționali: roleId, roleName)
 - `diagnose_staff_benefit_rule` — Explică DE CE o regulă de beneficiu personal nu se aplică (sau se aplică): câți angajați sunt eligibili, câți la lucru acum, câte produse acoperă, ce probleme are configurarea (rol/buget/scope/aplicat (necesită: ruleId)
 - `get_employee_activity` — «Ce a făcut ospătarul X» pe o zi — consolidat într-un singur apel: (1) VÂNZĂRI (bonuri finalizate, venit — DOAR pe comenzi finalizate, ca să reconcilieze cu performanta_ospatari —, bacșiș, bon mediu, (necesită: employeeName)
 - `get_employee_availability` — Verifică disponibilitatea angajaților pe o anumită dată — cine este deja asignat la ture și cine e liber. (necesită: date)
@@ -257,7 +258,10 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_employee_contracts` — Listează contractele de muncă ale angajaților (CIM/PFA/Zilier) cu alocările multi-locație (procent sau sumă fixă) și bonusurile aferente. (parametri opționali: employeeId, active)
 - `list_employees` — Listează angajații activi cu nume, rol (+ brandul rolului), departament, poziție, salariu orar și brand/locație primară + acces multi-brand/multi-locație. (parametri opționali: includeInactive, department, brandId)
 - `list_leave_requests` — Listează cererile de concediu/învoire ale angajaților, cu tip, perioadă, motiv și status (în așteptare/aprobat/respins/anulat). (parametri opționali: employeeId, brandId, status)
+- `list_role_presets` — Listează rolurile PREDEFINITE (șabloane gata făcute) pe care le poți aplica dintr-o dată: Administrator, Manager, Ospătar, Barman, Bucătar Șef, Casier, Contabil, Marketing, Operator Livrări, roluri de
 - `list_staff_benefit_rules` — Listează regulile de beneficiu personal (mâncarea/băutura angajaților: reducere %, sumă fixă, preț special sau buget) cu valoarea, beneficiarul, produsele acoperite și dacă funcția e activă global. (parametri opționali: brandId, locationId)
+- `preview_role_access` — Simulează un set IPOTETIC de permisiuni ȘI arată ce pagini ar vedea + ce categorii ar avea acordate — ÎNAINTE să creezi sau să modifici rolul. (necesită: permissions)
+- `suggest_role_setup` — Pregătește o SCHIȚĂ de rol pornind de la o descriere în cuvinte («cineva care doar ia comenzi la masă și încasează, dar nu poate da reduceri», «responsabil producție care vede randamentul și elibereaz (necesită: description)
 
 ### Rezervări, clienți, loialitate & CRM — 41
 - `check_game_availability` — Verifică disponibilitatea unui joc la o dată/oră/nr jucători. (necesită: gameId, date, time, partySize)
@@ -387,7 +391,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `view_brand_media` — Arată-ți EFECTIV o imagine din Biblioteca Media (sau de la un URL) ca s-o VEZI și să alegi ce atașezi la o postare. (parametri opționali: mediaAssetId, url)
 - `wolt_integration_status` — Diagnostic cap-coada al integrarii Wolt (toate canalele sau unul anume): date de conectare la platforma, conexiune live cu Wolt, status venue (online/offline), daca notificarile de comenzi ajung in Sy (parametri opționali: id)
 
-### Diverse — 143
+### Diverse — 144
 - `analyze_external_website` — Analizeaza read-only un website public si intoarce un source brief pentru a construi/replica rapid site-ul in builder: SEO, logo/favicon, culori, fonturi, navigatie, CTA-uri, imagini/video, sectiuni, (necesită: url)
 - `analyze_food_costs` — Analizează food cost-ul produselor unui brand. (necesită: brandId)
 - `analyze_procurement` — Analizează aprovizionarea unui brand (furnizori, prețuri, lead time-uri). (necesită: brandId)
@@ -494,6 +498,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_material_templates` — Listează ȘABLOANELE gata făcute (≈23): afișe promo, meniul zilei, voucher, story/post/cover social, și multe carduri QR de masă (minimalist, navy, gradient, elegant crem, număr masă mare, recenzie, co (parametri opționali: group)
 - `list_offer_suggestions` — «Sym propune» — propuneri de oferte sigure pentru marjă, calculate din datele REALE ale restaurantului (heatmap pe intervale orare + nota medie + marja pe produse/categorii). (parametri opționali: goal)
 - `list_offers` — Listează ofertele de auto-discount pe bon ale brandului (happy hour, -X%, sumă fixă, 1+1/cadou). (parametri opționali: brandId, activeOnly, locationId)
+- `list_permission_catalog` — Listează VOCABULARUL complet de permisiuni pe categorii (ce «drepturi» există în Symbai și ce înseamnă fiecare), cu etichete în română. (parametri opționali: category)
 - `list_planning_view_templates` — Listează șabloanele de planificare producție disponibile (per vertical alimentar).
 - `list_pnl_kpis` — Listeaza KPI-urile P&L definite (nume, categorie, unitate, tinta, semafor). (parametri opționali: evaluate, perioada, startDate, endDate)
 - `list_pnl_snapshots` — Listeaza P&L-urile salvate (snapshot-uri): nume, perioada, numar de ajustari, daca sunt blocate. (parametri opționali: brandId)
@@ -538,7 +543,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 648 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 650 tool-uri (gated de writeModules pe token)
 
 ### produse_meniu — Produse & Meniuri — 74 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
@@ -770,7 +775,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_employee` — Actualizează un angajat existent (nume, rol, poziție, salariu, date contract, PIN, etc.) (necesită: employeeId)
 - `update_employee_contract` — Actualizează un contract de muncă existent (după contractId): tip, salariu, valabilitate, status activ/inactiv, alocări și bonusuri. (necesită: contractId)
 - `update_leave_request` — Schimbă statusul unei cereri de concediu (după leaveRequestId): approved=aprobă, declined=respinge, cancelled=anulează, pending=repune în așteptare. (necesită: leaveRequestId)
-- `update_role` — Actualizează un rol existent (nume, permisiuni). (necesită: roleId, brandId)
+- `update_role` — Actualizează un rol existent (nume și/sau permisiuni). (necesită: roleId, brandId)
 - `update_shift` — Actualizeaza o tura existenta — schimba orele, locatia, sectiunea sau statusul. (necesită: shiftId)
 - `update_staff_benefit_rule` — Actualizează o regulă de beneficiu personal existentă (după ruleId). (necesită: ruleId)
 - `update_staff_schedule` — Editează o intrare de rotă existentă din Planificatorul de Ture, după scheduleId — fără a o șterge și recrea (recrearea duplică). (necesită: scheduleId)
@@ -867,7 +872,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_social_post` — Editează o postare social media EXISTENTĂ (draft sau programată) după ID — fără a o șterge și recrea (recrearea îi schimbă ID-ul). (necesită: postId)
 - `update_website_promotion` — Actualizează un banner/pop-up promoțional de website (text, link, plasare, activă, fereastră de timp). (necesită: id)
 
-### financiar — Financiar & Contabilitate — 30 tool-uri
+### financiar — Financiar & Contabilitate — 32 tool-uri
 - `add_pnl_manual_day_expense` — Adauga o cheltuiala pe zile care NU e (inca) in acte — tipic pentru weekend: formatie live, DJ, paza suplimentara. (necesită: name, amount, days)
 - `add_pnl_snapshot_adjustment` — Adauga pe un P&L salvat (snapshot) un venit, o cheltuiala sau un angajat SUPLIMENTAR care nu e in sistem (ex. (necesită: snapshotId, tip, label, amount)
 - `apply_accounting_codes` — Aplică coduri contabile în bulk pe produse. (necesită: assignments)
@@ -885,6 +890,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_pnl_category` — Creeaza o categorie P&L intr-o sectiune (revenue, other_income, cogs, labor, opex_direct, opex_occupancy, opex_utilities, opex_marketing, opex_admin, opex_maintenance, opex_insurance, opex_personnel, (necesită: name, section)
 - `create_pnl_snapshot` — Salveaza (ingheata) raportul P&L pe o perioada ca snapshot — util la inchiderea de luna. (parametri opționali: name, notes, perioada, startDate)
 - `create_product_type` — Creează un tip de produs nou cu proprietăți și conturi contabile. (necesită: brandId, code, name)
+- `delete_accounting_account` — Șterge un cont contabil din planul de conturi. (necesită: brandId)
 - `delete_pnl_snapshot` 🔒 — Sterge DEFINITIV un P&L salvat (snapshot) intreg, cu toate ajustarile lui. (necesită: snapshotId)
 - `delete_pnl_snapshot_adjustment` — Sterge o ajustare manuala de pe un P&L salvat (snapshot). (necesită: snapshotId, adjustmentId)
 - `fix_reception_costs` 🔒 — FISCAL — corectează costul unitar al unor loturi de recepție cu preț suspect (ex. (necesită: fixes)
@@ -894,8 +900,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_pnl_thresholds` — Seteaza pragurile semafor (verde/galben/rosu) folosite in raportul P&L si in KPI: food cost, personal, prime cost, OpEx, marja neta. (parametri opționali: foodCostTargetPct, foodCostWarnPct, foodCostCritPct, laborTargetPct)
 - `submit_efactura_anaf` 🔒 🌐 — OPERAȚIUNE EXTERNĂ (sistemul fiscal de stat ANAF SPV) — confirmă cu utilizatorul înainte de a apela. (necesită: invoiceId)
 - `transfer_between_cash_registers` — Transferă numerar dintr-un registru de casă în altul (ex. (necesită: fromRegisterId, toRegisterId, amount)
+- `update_accounting_account` — Modifică un cont contabil existent din planul de conturi: redenumire, schimbare tip, mutare sub alt cont părinte, activare/dezactivare sau schimbare cod. (necesită: brandId)
 - `update_pnl_snapshot_adjustment` — Modifica o ajustare manuala existenta de pe un P&L salvat (snapshot): suma, descrierea, categoria OpEx sau notele. (necesită: snapshotId, adjustmentId)
-- `update_product_type` — Actualizează proprietățile unui tip de produs existent (canSell, hasStock, hasRecipe, etc.) și/sau conturile contabile. (necesită: productTypeId, brandId)
+- `update_product_type` — Actualizează proprietățile unui tip de produs existent (VINDE=canSell, CUMPĂRĂ=canPurchase, PRODUCE=hasRecipe, hasStock, etc.) și/sau conturile contabile. (necesită: productTypeId, brandId)
 - `update_product_type_accounts_per_unit` — Setează/modifică conturile contabile ale unui tip de produs DOAR pentru o anumită unitate (brand+locație). (necesită: productTypeId, brandId, locationId, accounts)
 - `void_cash_book_entry` — Anulează (stornează) o operațiune dintr-un registru de casă, cu motiv obligatoriu — NU șterge, păstrează trasabilitatea legală. (necesită: entryId, reason)
 
@@ -991,7 +998,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `generate_table_qr_codes` — Generează (IDEMPOTENT) coduri QR de MASĂ pentru mesele din planul de sală — câte un QR per masă, care duce clientul la portalul de comandă al mesei. (parametri opționali: locationId)
 - `highlight_portal_section` — Ca spotlight_portal_tab, dar pune accent pe o SECTIUNE anume din modala portalului (deruleaza si o pulseaza in browserul userului). (necesită: brandId, section)
 - `link_brand_location` — Asociază branduri cu locații (many-to-many). (parametri opționali: brandId, brandIds, locationId, locationIds)
-- `list_device_logs` — Listează dump-urile de loguri existente pentru un PC (metadata, FĂRĂ conținut): id, sursă (pa/edge), status (pending/uploading/completed/error), versiune PA, număr de linii/octeți, fereastra acoperită (necesită: deviceId)
+- `list_device_logs` — Listează dump-urile de loguri existente pentru un PC (metadata, FĂRĂ conținut): id, sursă (pa/edge), status (pending/delivered/uploading/complete/empty/error), versiune PA, număr de linii/octeți, fere (necesită: deviceId)
 - `log_temperature_reading` — Înregistrează o CITIRE de temperatură în jurnalul HACCP (frigider, congelator, vitrină, echipament). (necesită: valueCelsius)
 - `manage_event_types` — Gestionează TIPURILE DE EVENIMENT/REZERVARE ale unui brand (Setări → CRM → Tipuri rezervări) — listele din care alegi când creezi un deal/eveniment (ex. (necesită: action)
 - `move_physical_menu_item` — Mută un produs: în interiorul categoriei lui (dă position) SAU în ALTĂ categorie (dă toCategoryId, opțional + position). (necesită: configId, productId)
