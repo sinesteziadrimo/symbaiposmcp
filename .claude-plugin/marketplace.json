@@ -12,7 +12,7 @@
       "name": "symbai-core",
       "source": "./plugins/symbai-core",
       "description": "Asistentul Symbai: ghiduri pas-cu-pas + cunoștințe despre modulele Symbai, aplicațiile native Expo și catalogul MCP live. Lucrează MCP-first cu confirmări sigure și verificare prin citire.",
-      "version": "0.25.0",
+      "version": "0.26.0",
       "author": {
         "name": "Symbai"
       },

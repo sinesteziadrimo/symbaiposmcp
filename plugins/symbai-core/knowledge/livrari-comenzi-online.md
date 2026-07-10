@@ -6,7 +6,8 @@
 Modulul acoperă tot ce pleacă din local către client: comenzile de pe platformele de livrare (Glovo, Wolt, Bolt Food, Tazz), livrarea cu flotă proprie (dispecerat, zone, livratori, vehicule), comenzile magazinului online (expediere cu AWB prin curieri naționali, retururi, antifraudă, marketplace-uri gen eMAG) și abonamentele cu livrări recurente. Include și aplicația dedicată a livratorului (PWA „Symbai Livrator") plus pagina publică de urmărire a comenzii pentru client.
 
 ## Concepte
-- **Canal de livrare** — o conexiune cu o platformă externă (Glovo, Wolt, Bolt Food, Tazz): meniul se sincronizează spre platformă, comenzile vin automat în Symbai. Un canal poate fi Online/Offline și poate fi **pauzat** (cu motiv afișat).
+- **Canal de livrare** — o conexiune cu o platformă externă (Glovo, Wolt, Bolt Food, Tazz): meniul se sincronizează spre platformă, comenzile vin automat în Symbai. Un canal poate fi Online/Offline și poate fi **pauzat** (cu motiv afișat). Glovo se poate conecta direct (Partner API) sau prin puntea **AppSmart** (până la emiterea credențialelor native) — vezi workflow-ul Glovo mai jos.
+- **Canal „local" (comenzi la telefon)** — un canal intern, fără platformă externă: operatorul compune manual comanda (client, telefon, adresă, produse din meniul canalului) direct din Centrul de Comenzi. Comenzile locale trec prin aceleași stări (acceptată → în pregătire → gata → ridicată/livrată), merg la bucătărie ca orice comandă de livrare, dar nu anunță nicio platformă.
 - **Program de disponibilitate** — regula zi+ora care face un produs, o categorie sau un meniu comandabil doar intr-o fereastra (ex. mic dejun Lu-Vi 08:00-11:00). Nu este oferta si nu reduce pretul; decide vizibil/comandabil pe POS, QR/portal si delivery.
 - **Livrator** — angajat marcat nominal „este livrator" în Flotă → tab Livratori. Doar angajații bifați pot primi comenzi de livrare; numărul de livratori se facturează separat (modulul Livrator se taxează per livrator — tariful curent îl vezi în portalul Hub, la Module & Facturare) și se raportează automat în Hub. Bifarea NU ascunde pagini.
 - **Schimb (tură de livrare)** — livrator + vehicul + km la plecare; se închide cu km la final. Un livrator e „activ" în dispecerat doar cu schimb deschis și poziție GPS recentă (15 min).
@@ -25,6 +26,8 @@ Modulul acoperă tot ce pleacă din local către client: comenzile de pe platfor
 ### Platforme de livrare (agregatoare)
 - **Manager Canale** (`/channels`) — centrul integrărilor: 5 tab-uri — Prezentare & KPI (vânzări, timp mediu de preparare, rată comenzi pierdute, comisioane estimate), Control Comenzi, Meniu & Prețuri (sincronizarea meniului spre platforme), Reconciliere (loturi de decontare: plată așteptată vs primită, discrepanțe) și Integrări (conectare Glovo/Wolt/Bolt Food/Tazz cu credențialele platformei). Are ghid de configurare asistat în partea de sus.
 - **Livrări** (`/deliveries`, „Centru Livrări") — monitorizarea live a comenzilor de pe platforme: carduri statistici (comenzi noi, active, în pregătire, gata de ridicare, venituri și comision azi, canale pauzate), tab-uri Comenzi Active / Kanban / Istoric Comenzi / Rapoarte / Platforme. Accepți sau refuzi comenzi (cu motiv), le treci prin pregătire → gata → ridicată → livrată; buton „Acceptă Toate" (cere permisiunea de acțiuni în masă) și sunet de alertă la comenzi noi.
+- **Centru de Comenzi** (`/deliveries/pos`) — cockpit-ul operatorului de livrări, optimizat pentru lucru rapid: carduri sau listă cu toate comenzile de pe canale, selecție multiplă cu acțiuni în masă pe fiecare stare, buton **„Comandă nouă"** (comanda manuală la telefon, pe canalul „local" sau pe orice canal — alegi întâi canalul, ca prețurile să vină din meniul lui), rezervările zilei și un registru fiscal al zilei. Ce butoane apar (rezervări, voce etc.) se configurează din Configurare Afișaj, profilul „Ecran Livrări".
+- **La „Ridicată"/„Livrată" se emite bonul fiscal**: se deschide un dialog de metodă de plată (Wolt/Glovo/Bolt/numerar etc., preselectat pe canalul comenzii) → Symbai creează nota de vânzare și scoate bonul fiscal la casă. Fără alegerea metodei nu iese bon. Plățile pe platformă ies pe cod fiscal „Plată modernă" (categoria corectă legal pentru plățile online, Ordin ANAF 146/2018). Dacă bonul întârzie (casa offline pe moment), sistemul îl recuperează singur în câteva minute — nu marca din nou, verifică istoricul de bonuri.
 
 ### Flotă proprie și dispecerat
 - **Zone Livrare** (`/deliveries/zones`) — definirea zonelor pe hartă, cu taxe, praguri și program; tab-uri Zone / Program / Restricții (restricțiile per produs sunt deocamdată doar anunțate — vin într-o versiune viitoare). Pagina cere întâi alegerea unei locații (zonele sunt per locație).
@@ -57,6 +60,7 @@ Modulul acoperă tot ce pleacă din local către client: comenzile de pe platfor
 ### Glovo Partner API - workflow oficial
 
 Pentru Glovo nu spune doar "pune cheia API". Workflow-ul practic este:
+0. **Glovo are DOUĂ moduri de conectare**: direct (Partner API, cu token-ul propriu al restaurantului) sau prin **AppSmart** — o punte folosită până când Glovo emite credențialele native. La AppSmart, canalul se setează pe transportul AppSmart în `/channels?tab=integrations`, iar **Marketplace Store ID e obligatoriu**; meniul se trimite direct către AppSmart (nu prin link public), iar rezultatul sincronizării vine asincron (statusul apare pe canal după câteva minute). Pentru diagnostic cap-coadă (ce transport e folosit, cheia, conexiunea live, dacă venue-ul e deschis) folosește tool-ul `glovo_integration_status`; echivalentul pentru Wolt este `wolt_integration_status`.
 1. Userul obtine de la Glovo Partner API token, Glovo Store ID si Store Address External ID. Nu cere parola contului Glovo.
 2. In `/channels?tab=integrations`, canalul Glovo afiseaza URL-urile publice pe hostul tenantului: dispatch webhook, cancellation webhook si Menu JSON URL.
 3. Full menu sync construieste meniul din meniurile asignate canalului, il valideaza, apoi trimite catre Glovo `menuUrl` (URL-ul JSON servit de Symbai). Pentru pret/disponibilitate, foloseste update-urile mici/bulk, nu full sync repetat.
@@ -78,18 +82,23 @@ Pentru intrebari sau actiuni pe o comanda de agregator, nu incepe cu SQL si nu f
 3. Apelezi actiunea potrivita, apoi recitesti cu `get_channel_order(id)` si dai linkul `/channels?tab=orders` sau `/channels?tab=integrations`.
 
 Actiuni disponibile:
+- `accept_channel_order(id)` / `reject_channel_order(id,reason)` — accepta sau refuza comanda (motivul refuzului e afisat clientului, unde platforma permite; la Glovo refuzul e limitat de API — vezi capcana de mai jos).
+- `mark_channel_order_ready(id)` / `mark_channel_order_delivered(id)` — treci comanda pe „gata de ridicare" / „livrata"; Symbai anunta si platforma.
 - `delay_channel_order(id,extraMinutes)` — comunica intarzierea catre platforma unde se poate si actualizeaza ETA/timeline in Symbai.
 - `confirm_channel_preorder(id)` — confirma o precomanda la platforma (in special Wolt, unde API-ul are confirm-preorder).
 - `replace_channel_order_items(id,payload|modification,confirm:true)` — substituie produse indisponibile. Cere confirmare si foloseste payload-ul exact cerut de platforma.
 - `refund_channel_order(id,scope,items|newTotal,reason,confirm:true)` — rambursare/ajustare pe platforma. Cere confirmarea sumei inainte; tool-ul este pe modulul `plati_terminal` si respecta plafonul de refund din Hub cand suma se poate estima. Wolt suporta `refund-basket` / `refund-items`; Glovo foloseste `newTotal` prin `change_price`.
 - `mark_channel_deposits_returned(id,confirm:true)` — marcheaza garantiile SGR/depozitele ca returnate la platforma (Wolt).
-- `snooze_delivery_channel(id,minutes,confirm:true)` — pune temporar canalul offline la sursa (restaurant ocupat). Comenzile noi nu mai intra pe acel canal pana expira pauza; comenzile deja primite raman in Symbai.
+- `snooze_delivery_channel(id,minutes,confirm:true)` — pune temporar canalul offline la sursa (restaurant ocupat). Comenzile noi nu mai intra pe acel canal pana expira pauza; comenzile deja primite raman in Symbai. Reactivarea inainte de termen: `resume_delivery_channel(id)`.
+- `sync_channel_menu(id)` / `update_channel_menu_items(id,...)` — retrimite meniul intreg (atentie la plafonul zilnic Glovo) sau doar modificari mici de pret/disponibilitate (preferat).
 
 Backpressure important: cand un canal are limita de comenzi pe ora sau este pus pe snooze/pauza, Symbai nu arunca webhook-urile primite. Doar suspenda auto-accept si, unde API-ul permite, pune venue/store offline la sursa pana expira fereastra.
 
 ### Sincronizare meniu Glovo/Wolt - detalii care schimba raspunsul agentului
 
 Full menu sync construieste meniul din meniurile asignate canalului si imbogateste payload-ul cu optiuni/extras, alergeni, etichete dietetice, restrictii, disponibilitate si setari pe canal. Pentru Wolt se trimit si `product_information.allergens` si `weekly_availability` cand exista date. Pentru Glovo, full sync-ul are limita de siguranta de 5 reusite/zi pe canal; foloseste `force:true` doar cand userul intelege ca retrimiti intreg meniul, altfel prefera update-urile mici de pret/disponibilitate.
+
+**Meniul Zilei pe platforme**: un meniu al zilei (meniu fix cu feluri la alegere — vezi `produse-meniu-retete.md`, secțiunea „Meniul Zilei") poate fi făcut vizibil pe Glovo/Wolt cu **preț propriu per platformă** (ex. 35 lei în sală, 45 pe Glovo). Pe platformă apare cu felurile de ales direct în aplicația clientului, iar comanda vine în Symbai gata compusă: o linie de meniu la preț întreg + felurile alese, care merg la bucătărie pe secțiile lor. Vizibilitatea și prețul per canal se setează din pagina Meniul Zilei, nu din sincronizarea de meniu.
 
 ### Disponibilitate programata: mic dejun, meniu de noapte, weekend
 

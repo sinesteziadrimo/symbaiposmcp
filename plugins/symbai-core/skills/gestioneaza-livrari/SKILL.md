@@ -41,6 +41,8 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 | „ce retururi am / detaliile returului / KPI retururi" | `list_rma_requests` · `get_rma_details(id)` · `get_rma_kpi_summary` | `/ecommerce/returns` |
 | „pot returna comanda asta? / aprobă / respinge / rambursează returul" | `check_rma_eligibility` · `approve_rma` · `reject_rma` · `process_rma_refund(confirm:true)` | `/ecommerce/returns` |
 | „conectează un canal Glovo/Wolt/Bolt/Tazz" | `create_delivery_channel` (modul `setari`) | `/channels?tab=integrations` |
+| „de ce nu merge integrarea Glovo/Wolt / nu vin comenzile / e online?" | `glovo_integration_status` (distinge Glovo direct vs puntea AppSmart) · `wolt_integration_status` — diagnostic cap-coadă read-only | `/channels?tab=integrations` |
+| „acceptă/refuză comanda de platformă / marchez-o gata/livrată" | `accept_channel_order` · `reject_channel_order(reason)` · `mark_channel_order_ready` · `mark_channel_order_delivered` | `/channels?tab=orders` |
 | „ce comenzi am pe Glovo/Wolt / găsește comanda de platformă" | `list_channel_orders(provider,status)` → `get_channel_order(id)` | `/channels?tab=orders` |
 | „întârzie comanda Wolt/Glovo cu X minute" | `delay_channel_order(id,extraMinutes)` → `get_channel_order(id)` | `/channels?tab=orders` |
 | „confirmă precomanda Wolt" | `confirm_channel_preorder(id)` → `get_channel_order(id)` | `/channels?tab=orders` |

@@ -34,11 +34,11 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 1137 tool-uri** — Citire 479 · Speciale 5 · SQL 3 · Scriere per modul 650 (pe 20 module).
+**TOTAL: 1143 tool-uri** — Citire 482 · Speciale 5 · SQL 3 · Scriere per modul 653 (pe 20 module).
 
-## Citire (fără permisiune de modul) — 479 tool-uri
+## Citire (fără permisiune de modul) — 482 tool-uri
 
-### Vânzări, comenzi, casă & financiar — 51
+### Vânzări, comenzi, casă & financiar — 52
 - `compare_attribution_models` — Compară modelele de atribuire (last_click/first_click/linear/time_decay/position) pe canale: venit + conversii + ROAS per model. (parametri opționali: brandId, days)
 - `get_attribution_ltv_by_channel` — Valoarea pe viață (LTV) a clienților grupată după canalul de achiziție, pe o cohortă de N zile: nr. (parametri opționali: brandId, days)
 - `get_attribution_report` — Raport de atribuire marketing pe canale, pe ultimele N zile: conversii, venituri, cheltuieli (din reclame), CPA și ROAS per canal, conform unui model de atribuire ales (last_click implicit). (parametri opționali: brandId, days, model)
@@ -52,6 +52,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_email_conversion_attribution` — Conversii si venit atribuit emailurilor din POS: comenzi + rezervari legate de click-uri email, cu funnel complet pana la converted. (parametri opționali: brandId, campaignId)
 - `get_end_of_day_report` — Rezumat consolidat de sfârșit de zi pentru o dată/locație: total brut, TVA, reduceri, bacșiș, defalcare pe metode de plată, pe ospătar și comenzi anulate. (parametri opționali: date, locationId)
 - `get_fiscal_invoice_details` — Returnează o factură fiscală cu toate liniile/produsele și statusul e-Factura. (necesită: invoiceId)
+- `get_invoice_intake_decision` — Raport de DECIZIE pentru o factură (sau toate cele nefinalizate): e gata de NIR automat (phase=ready, canProceed=true) SAU ce anume trebuie întrebat/rezolvat (phase=needs_decision) — locație ambiguă/n (parametri opționali: invoiceId, limit)
 - `get_journal_entries_summary` — Rezumat al înregistrărilor contabile (journal entries) pe o perioadă: total debit/credit, per sourceType, per cont. (necesită: brandId)
 - `get_kds_order_history` — Istoricul bonurilor trimise către un ecran KDS, cu semnal de livrare per bon (delivered / sent_no_confirm / unrouted / pending). (necesită: screenId)
 - `get_kds_sessions` — Monitorizarea conexiunilor ecranelor KDS într-o fereastră, cu status derivat (live/dropped/closed/stale) și contorizare. (parametri opționali: brandId, locationId, hours, screenId)
@@ -364,7 +365,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_hotel_folios` — Listează notele de cont (folios) ale oaspeților cu total consum, total plăți și sold. (parametri opționali: brandId, locationId, status, limita)
 - `list_hotel_rooms` — Listează camerele hotelului cu statusul curent (clean, occupied, dirty, out_of_service etc.) + sumar pe status. (parametri opționali: brandId, locationId, status)
 
-### Brand, locație, integrări & config — 25
+### Brand, locație, integrări & config — 26
 - `browse_brand_media` — Caută în biblioteca media a brandului (poze, video-uri, materiale grafice). (necesită: brandId)
 - `clone_branding_audit` — POARTA de BRANDING (WOW vizual): verifică dacă migrarea ARATĂ ca site-ul sursă — logo, culoare principală, nume, social. (necesită: jobId, brandId)
 - `explain_feature` — Explică o funcționalitate Symbai utilizatorului, pe nivelul de detaliu ales. (necesită: feature)
@@ -379,6 +380,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_location_context` — Context ambiental REUTILIZABIL pentru o locație: vreme (curent + prognoză), sărbători publice, vacanțe școlare, sezon și perioade (weekend, ajun de sărbătoare). (parametri opționali: locationId, date, days)
 - `get_pnl_config` — Arata cum e CONFIGURAT P&L-ul: categoriile pe sectiuni (Venituri/COGS/Personal/OpEx/Taxe), gruparile de venituri active, KPI-urile definite, template-urile de industrie aplicate si pragurile semafor.
 - `get_portal_config` — Citeste configuratia curenta a portalului client (platformei web). (necesită: brandId)
+- `glovo_integration_status` — Diagnostic cap-coada al integrarii Glovo/AppSmart (toate canalele glovo sau unul anume): transport (glovo direct vs AppSmart), cheia API, conexiune live, inchidere temporara (online/offline la sursa), (parametri opționali: id)
 - `list_accounting_accounts` — Listează planul de conturi (chart of accounts) disponibil. (necesită: brandId)
 - `list_brands` — Listează toate brandurile contului (id, nume, tip business, culori).
 - `list_floor_config_schedules` — Listează programările de plan de sală (ce configurație e activă în fiecare zi a săptămânii) + excepțiile pe dată (override-uri pentru zile speciale: sărbători, evenimente). (parametri opționali: brandId, locationId)
@@ -391,7 +393,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `view_brand_media` — Arată-ți EFECTIV o imagine din Biblioteca Media (sau de la un URL) ca s-o VEZI și să alegi ce atașezi la o postare. (parametri opționali: mediaAssetId, url)
 - `wolt_integration_status` — Diagnostic cap-coada al integrarii Wolt (toate canalele sau unul anume): date de conectare la platforma, conexiune live cu Wolt, status venue (online/offline), daca notificarile de comenzi ajung in Sy (parametri opționali: id)
 
-### Diverse — 144
+### Diverse — 145
 - `analyze_external_website` — Analizeaza read-only un website public si intoarce un source brief pentru a construi/replica rapid site-ul in builder: SEO, logo/favicon, culori, fonturi, navigatie, CTA-uri, imagini/video, sectiuni, (necesită: url)
 - `analyze_food_costs` — Analizează food cost-ul produselor unui brand. (necesită: brandId)
 - `analyze_procurement` — Analizează aprovizionarea unui brand (furnizori, prețuri, lead time-uri). (necesită: brandId)
@@ -402,6 +404,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `capture_weight` — Citește greutatea unui cântar înregistrat. (necesită: scaleDeviceId)
 - `check_contact_frequency_budget` — Câte mesaje de marketing a primit un client în ultima zi/săptămână, pe fiecare canal (email/SMS/WhatsApp/push), și dacă mai POȚI trimite fără să-l obosești (respectă limita + oră de liniște). (necesită: customerId)
 - `check_efactura_status` 🌐 — Verifică la ANAF starea unei facturi trimise în e-Factura (acceptată / respinsă cu erori / în procesare) și actualizează statusul local. (necesită: invoiceId)
+- `check_new_efactura` — Verifică în SPV ANAF ce facturi de intrare sunt DISPONIBILE și care sunt NOI (neimportate încă). (parametri opționali: days)
 - `check_presentation_health` — Verifica SANATATEA unei prezentari FARA s-o modifici (read-only). (necesită: presentationId)
 - `clone_audit_all` — VERDICT COMPLET într-un SINGUR apel: rulează TOATE porțile de audit (parity + fidelity + coverage + arbore categorii + branding) și întoarce un PASS consolidat + sumar per-poartă + remedierile princip (necesită: jobId, brandId)
 - `clone_category_tree_audit` — POARTA de ARBORE: verifică nu doar că o categorie EXISTĂ, ci că IERARHIA s-a păstrat. (necesită: jobId, brandId)
@@ -543,7 +546,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 650 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 653 tool-uri (gated de writeModules pe token)
 
 ### produse_meniu — Produse & Meniuri — 74 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
@@ -1121,7 +1124,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `confirm_channel_preorder` 🌐 — Confirma o precomanda pe platforma (unde providerul suporta confirm-preorder, ex. (necesită: id)
 - `create_courier_account` — Configurează un cont de curier e-commerce (provider + credențiale + serviciu implicit). (necesită: provider, name)
 - `create_delivery_zone` — Creează o zonă de livrare pentru o locație (oraș/județ, taxă, prag livrare gratuită, comandă minimă, oră cutoff, opțional contur geografic cu anti-suprapunere). (necesită: city, county)
-- `create_quick_delivery_order` — Creează rapid o comandă de livrare luată la telefon (client, adresă, total, articole opționale). (necesită: customerName, deliveryAddress)
+- `create_quick_delivery_order` — Creează rapid o comandă pe DISPECERAT pentru o livrare luată la telefon (client, adresă, total) — doar urmărire logistică, NU trimite bonuri la bucătărie/KDS (pentru bon la bucătărie folosește compozi (necesită: customerName, deliveryAddress)
 - `create_vehicle` — Adaugă un vehicul în flotă (număr de înmatriculare, tip, capacitate comenzi). (necesită: licensePlate)
 - `delay_channel_order` 🌐 — Comunica o intarziere pentru o comanda de platforma (Glovo/Wolt) si actualizeaza ETA/timeline in Symbai. (necesită: id)
 - `dispatch_to_external_courier` 🌐 — ATENȚIE — costă bani: trimite efectiv comanda unui curier extern la cerere (Glovo/Uber Direct/Bolt Food), plasând o livrare REALĂ și trecând comanda „în livrare”. (necesită: orderId, provider)
@@ -1178,7 +1181,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `sync_emag_offers` 🔒 🌐 — Împinge prețurile și stocurile produselor către eMAG (creează/actualizează oferte). (parametri opționali: accountId, productIds, pushAll, limita)
 - `sync_emag_orders` 🌐 — Aduce (pull) comenzile noi din eMAG în sistem, creând comenzi interne pentru cele care nu există. (parametri opționali: accountId, pages, itemsPerPage, modifiedAfter)
 
-### inventar — Stocuri & Recepție — 29 tool-uri
+### inventar — Stocuri & Recepție — 32 tool-uri
 - `accept_all_invoice_mappings` — Acceptă în bloc toate liniile unei facturi care sunt deja mapate (au produs + cont) dar încă neacceptate. (necesită: invoiceId)
 - `accept_invoice_line_mapping` — Confirmă (acceptă) maparea unei linii deja legate la un produs + cont, fără s-o re-mapezi. (necesită: invoiceId, lineId)
 - `approve_inventory_adjustment` 🔒 — Aprobă o cerere de ajustare de stoc aflată în 'pending'. (necesită: adjustmentId)
@@ -1186,14 +1189,16 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `assign_product_warehouses` — Asignează produse la una sau mai multe GESTIUNI/MAGAZII (idempotent). (necesită: assignments)
 - `assign_unzoned_products` — Atribuie zone de stocare produselor fără zonă (în masă). (necesită: assignments)
 - `associate_recipe_to_product` 🔒 — Asociază o rețetă existentă unui produs prin CLONARE sub numele produsului (motorul de consum leagă rețeta prin NUME; clonarea păstrează rețeta sursă intactă). (necesită: productId, sourceRecipeId)
+- `auto_map_efactura` — Rulează agentul AI de mapare pe o factură de intrare: leagă automat liniile nemapate la produse + conturi (creează produse noi unde e cazul) și le acceptă pe cele sigure. (necesită: invoiceId)
 - `change_product_type` 🔒 — Schimbă tipul (productType) în masă pentru mai multe produse (ex. (necesită: items)
 - `create_inventory_adjustment` — Creează o CERERE de ajustare de stoc (diferență inventar) în stare 'pending' — NU mișcă încă stocul; trebuie aprobată separat cu approve_inventory_adjustment. (necesită: productId, systemQty, countedQty, reason)
 - `create_inventory_document` 🔒 — Creează un document de stoc generic și, opțional, îl postează automat pe stoc (autoPost=true). (necesită: docType, docNo, docDate, lines)
-- `create_nir_from_invoice` 🔒 — Generează NIR-ul (nota de recepție) LEGAT de o factură de intrare existentă (din list_invoices / list_received_efactura): folosește maparea liniilor pe produse, creează documentul de recepție legat de (necesită: invoiceId)
+- `create_nir_from_invoice` 🔒 — Creează NIR-ul (nota de recepție) dintr-o factură de intrare = INTRAREA PE STOC + notele contabile. (necesită: invoiceId)
 - `delete_empty_storage_zone` — Șterge o zonă de stocare GOALĂ. (necesită: zoneId)
 - `dismiss_merge_suggestion` — Respinge persistent o pereche de sugestie de unificare — nu va mai apărea la scanări/sugestii. (necesită: aId, bId)
 - `fix_recipe_ingredient` 🔒 — Corectează cantitatea (și opțional unitatea) unui ingredient dintr-o rețetă — pentru rețete cu cost teoretic absurd (ex. (necesită: ingredientId, quantity)
 - `generate_daily_consumption` 🔒 — Generează consumul zilnic (depletare FIFO + GL) pentru o dată — scade stocul ingredientelor pentru comenzile finalizate în acea zi. (necesită: date)
+- `import_efactura` — Descarcă din SPV ANAF și IMPORTĂ facturile de intrare (creează incoming_invoices + linii, auto-detectează unitatea, auto-mapează liniile sigure, reconciliază cu comenzile de achiziție). (parametri opționali: anafIds, days)
 - `link_recipe_products` — Leagă automat rețetele care nu sunt încă legate de niciun produs, prin potrivire EXACTĂ pe nume (conservator: doar când există exact 1 produs liber cu acel nume).
 - `map_invoice_line` — Mapează (leagă) o linie de factură furnizor la un produs intern + un cont contabil, opțional cu factor de pachet (reconversie, ex. (necesită: invoiceId, lineId, productId)
 - `merge_finished_products` — Unifică două produse finite/mărfuri duplicate: păstrează keepProductId și absoarbe removeProductId (repointează stoc, loturi, vânzări, meniuri, reguli de mapare). (necesită: keepProductId, removeProductId)
@@ -1201,6 +1206,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `merge_storage_zones` 🔒 — Unifică două zone de stocare: repointează TOATE referințele (produse, loturi, mișcări, parent_id, excluderi contabile) de la zona absorbită la cea păstrată, apoi șterge zona absorbită. (necesită: keepId, removeId)
 - `move_product_to_served_meal` 🔒 — Mută un produs în fluxul «Mese Servite»: schimbă tipul în masa_servita (iese din scanul zero-cost) + creează o intrare în registrul served_meals cu vânzările agregate pe fereastră (costul se stabileșt (necesită: productId)
 - `post_inventory_document` 🔒 — Postează pe stoc un document de inventar aflat în DRAFT (mișcă stocul real, generează loturi/ieșiri ireversibil). (necesită: documentId)
+- `process_new_efactura` — ORCHESTRATOR pentru loop autonom: verifică SPV → importă tot ce e nou → pentru fiecare factură, dacă e 100% sigură (unitate detectată + toate liniile mapate & acceptate cu încredere mare) creează NIR- (parametri opționali: days, autoCreateNir)
 - `rename_storage_zone` — Redenumește o zonă de stocare (numele se curăță de spații multiple/margine). (necesită: zoneId, name)
 - `set_ingredient_purchase_prices` 🔒 — Setează prețul de achiziție (last_purchase_price) pentru ingrediente fără cost — ca P&L-ul să nu rămână pe 0 până la următoarea recepție. (necesită: items)
 - `set_invoice_context` — Setează contextul unei facturi de intrare: tipul facturii (marfuri/materii_prime/servicii/utilitati/ambalaje/imobilizari), brand, locație (unitate), magazia/magaziile de recepție, deductibilitatea TVA (necesită: invoiceId)

@@ -17,6 +17,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - **Tip de produs** — materie primă, marfă, semipreparat, produs finit, consumabil, ambalaj, serviciu etc. (30+ tipuri). Controlează comportamentul (are stoc? are rețetă? se vinde?) și conturile contabile asociate.
 - **Pachet meniu (combo)** — produs cu componente alese din alte produse. Pe bonul fiscal apar produsele componente (nu pachetul ca un singur rând), TVA-ul se calculează pe fiecare produs, iar pe nota de plată se vede grupul „pachet" cu produsele pe linii separate; stocul scade din rețetele produselor conținute.
 - **Masă servită** — tip de produs (`masa_servita`) pentru meniuri de eveniment vândute la preț fix FĂRĂ rețetă cunoscută la vânzare (ex. „Meniu nuntă"); costul real se atașează ulterior prin fișe de consum. Registrul e la /finance/served-meals.
+- **Meniul Zilei** — meniu la preț fix cu FELURI din care clientul alege (ex. „Meniul zilei 35 lei: ciorbă + fel principal + desert"). E un produs vandabil propriu, cu feluri ordonate și opțiuni pe fiecare fel (fiecare opțiune = un produs real cu rețeta lui). Pe notă/bon apare O singură linie cu prețul întreg; felurile alese merg separat la bucătărie și scad stocul. Vezi secțiunea dedicată mai jos.
 - **Food cost** — cost ÷ preț de vânzare; ~30% e bine, ~50% e critic. Produsele cu ingrediente fără preț apar „cost incomplet", nu cu un verde fals.
 - **Alergeni** — cei 14 din Regulamentul UE 1169/2011; produsele finite îi moștenesc automat din ingredientele rețetei (recursiv), se pot adăuga și manual.
 - **Etichetă (tag)** — grupare de produse folosită la rutarea bonurilor pe imprimante/KDS, filtre de meniu și marketing.
@@ -58,6 +59,32 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - **Meniu la Masă QR** (`/t/:codQR`, și `/table-menu/:codQR`) — pagina deschisă când clientul scanează QR-ul mesei; detectează automat dacă telefonul e pe rețeaua restaurantului și folosește serverul local pentru viteză, altfel rămâne pe cloud.
 
 **Conex**: „Sym Menu" (`/ai-menu`) — agent AI conversațional care creează sau editează meniul întreg pentru o unitate; „AI Prețuri" (`/ai-pricing`) — analiza și recomandările de preț.
+
+## Meniul Zilei (meniu fix cu feluri la alegere)
+
+Pagina de administrare: **Meniul Zilei** (folosește `gaseste_in_aplicatie("meniul zilei")` pentru link). Cum funcționează:
+
+**Configurare** (editorul de meniu al zilei):
+- **Unitatea** — meniul e pe brand, opțional restrâns la o locație („Toate locațiile brandului").
+- **Preț în sală + TVA** — prețul fix al meniului. Poți seta **preț diferit pe fiecare canal** (ex. 35 lei în sală, 45 lei pe Glovo/Wolt — acoperă comisionul).
+- **Unde e vizibil** — grilă de canale cu comutator: POS Ospătar/Mobil/Bar/Vânzare rapidă, Kiosk, Platforma Clienți, QR la masă, Website, Glovo, Wolt (Bolt/Tazz au doar preț — vizibilitatea lor se controlează din portalul platformei).
+- **Feluri** — fiecare fel are nume, câte opțiuni se aleg (min/max) și comutatorul **„obligatoriu"**. Un fel neobligatoriu poate fi sărit de client (ex. desertul e opțional). Cel puțin UN fel trebuie să fie obligatoriu — altfel salvarea e respinsă (altfel s-ar putea vinde meniul „gol").
+- **Opțiuni pe fel** — fiecare opțiune e un produs real (cu rețetă!): poți pune **supliment de preț** (ex. +5 lei pentru somon), pondere de profit pentru rapoarte și o poți face temporar indisponibilă (fără s-o ștergi). Opțiunile fără rețetă sunt marcate — completează rețeta ca stocul și food cost-ul să fie corecte.
+- **Program** — zile din săptămână, interval orar, interval de date (ex. doar Lu–Vi 11:00–16:00). În afara programului meniul nu se poate comanda.
+
+**La vânzare (POS/Kiosk)**: ospătarul (sau clientul, la kiosk) apasă pe meniul zilei → se deschide selectorul de feluri → alege câte o opțiune pe fel (+ eventuale suplimente) → pe notă apare o singură linie cu prețul total. Felurile alese merg fiecare la secția lui la bucătărie (grupate „Fel 1 / Fel 2..."), iar stocul scade pe rețetele lor.
+
+**Pe bonul fiscal** apare doar linia de meniu cu prețul întreg (felurile, având preț 0, nu se listează — casele de marcat nu acceptă linii cu preț 0).
+
+**Pe platforme de livrare**: dacă e vizibil pe Glovo/Wolt, meniul apare cu feluri de ales direct în aplicația platformei (la prețul de canal setat); comanda vine în Symbai deja „compusă" cu felurile alese. Pe portal/QR/website meniul se AFIȘEAZĂ ca vitrină, dar compunerea felurilor se face doar în POS sau pe platformele de livrare.
+
+**Raport dedicat**: pagina Meniul Zilei are raport de vânzări agregat — sală + livrare, defalcat pe canale, cu comisioane.
+
+**Capcane**:
+- „Nu pot salva meniul" → verifică să existe cel puțin un fel obligatoriu și ca fiecare fel să aibă opțiuni (iar min ≤ max ≤ numărul de opțiuni).
+- „Meniul nu apare pe POS" → verifică unitatea (brand/locație), comutatorul canalului respectiv și programul (zi/oră).
+- „Nu scade stocul la felul X" → opțiunea aia n-are rețetă legată — completeaz-o la /ai-recipes.
+- Nu există tool-uri MCP dedicate meniului zilei — configurarea se face din pagină; asistentul poate ghida și verifica cu link direct.
 
 ## Fluxuri frecvente
 
@@ -150,8 +177,9 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 
 Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (ștergerile se fac doar din aplicație — la oferte folosește `update_offer active=false`). Autopilot / Win-Back Radar / Surprize din pagina Oferte se folosesc tot din aplicație.
 
+**Rutarea taguri→imprimante/KDS merge acum și prin MCP** (modul `setari`): `list_tag_routing_rules` (vezi ce e configurat) → `set_tag_routing` (leagă tagul de ecrane KDS și/sau imprimantă, per zonă de sală — exact ce face pagina Rutare Taguri) / `create_tag_routing_rule` (regulă de rezervă la nivel de locație) / `delete_tag_routing`. Un tag NOU creat prin MCP tot nu rutează nicăieri până nu-i setezi rutarea (cu tool-urile de mai sus sau din pagină) — preferă tagurile EXISTENTE ale clientului.
+
 **⚠ Ce rămâne DOAR din aplicație (nu prin MCP):**
-- **Regulile de rutare taguri→imprimante/KDS**: doar din Setări → Imprimante. Un tag NOU creat prin MCP nu rutează nicăieri până nu i se creează regula acolo (refolosește tagurile EXISTENTE ale clientului).
 - **Pozele în masă cu potrivire automată**: dacă ai zeci de poze fără să știi exact ce produs e fiecare, pagina Poze Bulk Meniu (`/menu/pricing/bulk-photos`) le potrivește cu AI. Prin MCP pui poza pe un produs anume cu `set_product_image` (când ai URL-ul și produsul).
 - **Ștergerile de entități** (produse, meniuri, oferte) + **Autopilot / Win-Back Radar / Surprize** din pagina Oferte: din aplicație. (Crearea/editarea ofertelor merge prin MCP — vezi `create_offer` / `update_offer` mai sus.)
 
