@@ -38,6 +38,17 @@ Cand exista tool dedicat, foloseste tool-ul dedicat, nu SQL si nu click manual:
 
 SQL read-only este fallback pentru intrebari punctuale fara tool dedicat. Nu folosi SQL ca prima optiune cand exista un tool semantic.
 
+## Ore Si Fus Orar
+
+Aplicatia afiseaza toate orele in fusul orar al locatiei (setarea "Fus orar" din Setari -> General; pentru Romania: Europe/Bucharest, vara UTC+3 / iarna UTC+2). Datele brute primite prin tool-uri sau SQL vin insa de regula in ora universala (UTC, format ISO cu "Z" la final).
+
+Reguli:
+
+- Orice ora pe care o spui utilizatorului = ora locala a locatiei, niciodata UTC brut. Un bon inchis la 20:15 ora locala apare in datele brute ca 17:15 — raportat asa, utilizatorul este indus in eroare.
+- Converteste inainte de a raspunde (vara +3h, iarna +2h pentru Romania) sau cere direct ora locala in SQL: `(coloana AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Bucharest'`.
+- La filtre pe "ziua X": comenzile de dupa miezul noptii (00:00-03:00 ora locala) cad pe ziua UTC anterioara — tine cont cand numeri vanzarile unei zile.
+- Pentru alte tari, foloseste fusul orar al tarii locatiei, nu Romania implicit.
+
 ## Date Sensibile Si Redactare MCP
 
 MCP lucreaza pe date live, dar nu este un seif de parole. Serverul redacteaza intentionat campurile de tip credential sau secret din raspunsuri: parole, tokenuri OAuth/API, chei marketplace, parola SMTP, configuratii de retea/router, PIN/parola/CNP/salarii angajati, tokenuri de semnare contract si tokenuri publice de plata/tracking.

@@ -51,6 +51,7 @@ Fiecare instanta Symbai are subdomeniul ei — foloseste-l pe al tau, nu pe al a
 - SQL este doar fallback read-only cand nu exista tool semantic.
 - Actiunile externe sau cu impact real cer confirmare explicita: bani, email/WhatsApp/push, ANAF, eMAG, refund, GDPR, stergeri, modificari in masa.
 - Dupa write, verifica prin read tool si inchide cu dovada.
+- Ore: aplicatia afiseaza ora locatiei, dar datele brute din tool-uri/SQL sunt UTC. Prezinta utilizatorului DOAR ora locala (Romania: Europe/Bucharest, vara +3h / iarna +2h). Detalii: `claude-code-mcp-operare.md` -> "Ore Si Fus Orar".
 
 ## Browser in Codex
 
