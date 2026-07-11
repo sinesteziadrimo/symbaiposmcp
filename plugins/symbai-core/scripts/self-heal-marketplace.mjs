@@ -1,35 +1,54 @@
 #!/usr/bin/env node
 /**
- * Symbai self-heal pentru marketplace-ul de plugin.
+ * Symbai self-updater pentru plugin (marketplace + instalare).
  *
- * DE CE EXISTĂ: auto-update-ul nativ al marketplace-urilor terțe are moduri tăcute
- * de blocare — clona locală a marketplace-ului (`~/.claude/plugins/marketplaces/symbai`)
- * uneori nu mai face `git fetch`, sau divergează (commit local / force-push în upstream),
- * iar `git pull --ff-only` eșuează în tăcere. Rezultat: clientul rămâne ÎNGHEȚAT pe o
- * versiune veche, deși are `autoUpdate: true`.
+ * DE CE EXISTĂ: auto-update-ul nativ al pluginurilor NU rulează în aplicația
+ * desktop — procesul e pornit cu `DISABLE_AUTOUPDATER=1` (fără
+ * `FORCE_AUTOUPDATE_PLUGINS=1`), deci Claude Code nu împrospătează marketplace-ul
+ * și nu upgradează pluginurile la pornire, indiferent de `autoUpdate: true` din
+ * settings.json. În plus, chiar și pe CLI, clona de marketplace are moduri tăcute
+ * de blocare (nu mai face fetch / divergență). Rezultat istoric: TOȚI clienții
+ * rămâneau ÎNGHEȚAȚI pe versiunea instalată inițial.
  *
- * CE FACE: la pornirea sesiunii aduce clona de marketplace la zi cu upstream-ul.
- *   - fetch origin
- *   - dacă se poate fast-forward → ff (păstrează orice; cazul „nu mai fetcha")
- *   - dacă a divergeat ȘI working tree-ul e CURAT → reset --hard origin/<branch>
- *     (recuperează din divergență; cazul „force-push / commit accidental în clonă")
- *   - dacă working tree-ul e MURDAR → NU atinge nimic (protejează editări locale)
+ * CE FACE (două faze, ambele best-effort):
+ *   FAZA 1 — heal clonă: aduce clona de marketplace la zi cu upstream-ul
+ *     (fetch → ff; pe divergență cu working tree CURAT → reset --hard).
+ *   FAZA 2 — upgrade instalare (partea care lipsea): compară versiunile din
+ *     clonă cu `installed_plugins.json`; dacă upstream e mai nou, copiază
+ *     pluginul din clonă în `cache/<mkt>/<plugin>/<ver>/` și mută pointerul
+ *     din `installed_plugins.json` pe noua versiune. La următoarea pornire
+ *     Claude Code încarcă versiunea nouă. Nu depinde de updater-ul nativ.
  *
- * GARANȚII: nu blochează niciodată pornirea, nu scrie pe stdout decât JSON valid de hook,
- * orice eroare e înghițită (exit 0), are throttle (o dată / 6h) ca să nu lovească rețeaua
- * la fiecare sesiune.
+ * RULARE MANUALĂ (recovery pentru clienți încă înghețați pe versiuni fără hook):
+ *   node "<home>/.claude/plugins/marketplaces/symbai/plugins/symbai-core/scripts/self-heal-marketplace.mjs" --force
+ *   (merge și fără CLAUDE_PLUGIN_ROOT; --force sare peste throttle)
+ *
+ * GARANȚII: nu blochează niciodată pornirea (exit 0 mereu), pe stdout scrie DOAR
+ * JSON valid de hook, nu șterge cache-uri vechi (rollback manual posibil),
+ * păstrează backup `installed_plugins.json.selfupdate-bak` înainte de scriere,
+ * throttle o dată / 6h.
  */
 
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 const THROTTLE_MS = 6 * 60 * 60 * 1000; // o dată la 6 ore
 const MARKETPLACE_NAME = "symbai";
-const UPSTREAM_HINT = "symbaimemory"; // confirmă că e repo-ul corect
+// Repo-ul a fost redenumit symbaimemory → symbaiposmcp; acceptă ambele.
+const UPSTREAM_HINT = /symbaimemory|symbaiposmcp/;
+const FORCE = process.argv.includes("--force");
+
+const log = (m) => {
+  try {
+    process.stderr.write(`[symbai-self-update] ${m}\n`);
+  } catch {
+    /* stderr indisponibil — irelevant */
+  }
+};
 
 function ok(extra = {}) {
-  // Output minimal valid de hook; niciodată nu blochează.
   process.stdout.write(JSON.stringify({ continue: true, ...extra }));
   process.exit(0);
 }
@@ -43,157 +62,259 @@ function git(cwd, args, timeout = 12000) {
   }).trim();
 }
 
-try {
-  const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT;
-  if (!pluginRoot) ok();
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, "utf8"));
+}
 
-  // Urcă din .../plugins/cache/symbai/symbai-core/<ver> până găsim
-  // un folder care conține `marketplaces/<name>/.git`.
-  let marketplaceDir = null;
-  let cur = path.resolve(pluginRoot);
-  for (let i = 0; i < 8 && cur; i++) {
-    const candidate = path.join(cur, "marketplaces", MARKETPLACE_NAME);
-    if (fs.existsSync(path.join(candidate, ".git"))) {
-      marketplaceDir = candidate;
-      break;
-    }
-    const parent = path.dirname(cur);
-    if (parent === cur) break;
-    cur = parent;
+// Compară două versiuni gen "0.26.0" numeric pe primele 3 componente;
+// sufixele de build (+codex..., -beta) sunt ignorate.
+function cmpVer(a, b) {
+  const parse = (v) =>
+    String(v || "0")
+      .split(/[.+-]/)
+      .slice(0, 3)
+      .map((n) => parseInt(n, 10) || 0);
+  const [x, y] = [parse(a), parse(b)];
+  for (let i = 0; i < 3; i++) {
+    if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0);
   }
-  if (!marketplaceDir) ok();
+  return 0;
+}
 
-  // Throttle pe baza unui fișier de stare în CLAUDE_PLUGIN_DATA (sau lângă clona
-  // de marketplace, în folderul părinte). NU scriem în repo — altfel hook-ul își
-  // murdărește singur clona și apoi refuză reparația ca "local changes".
+// Copiere recursivă cu fallback pentru Node fără fs.cpSync (<16.7).
+function copyDir(src, dest) {
+  if (typeof fs.cpSync === "function") {
+    fs.cpSync(src, dest, { recursive: true });
+    return;
+  }
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const s = path.join(src, entry.name);
+    const d = path.join(dest, entry.name);
+    if (entry.isDirectory()) copyDir(s, d);
+    else if (entry.isFile()) fs.copyFileSync(s, d);
+  }
+}
+
+try {
+  // ------------------------------------------------------------------
+  // Descoperă rădăcina `~/.claude/plugins` (conține cache/ + marketplaces/).
+  // Din hook avem CLAUDE_PLUGIN_ROOT = .../plugins/cache/<mkt>/<plugin>/<ver>;
+  // la rulare manuală cădem pe locația standard din home.
+  // ------------------------------------------------------------------
+  let pluginsRoot = null;
+  if (process.env.CLAUDE_PLUGIN_ROOT) {
+    let cur = path.resolve(process.env.CLAUDE_PLUGIN_ROOT);
+    for (let i = 0; i < 8 && cur; i++) {
+      if (fs.existsSync(path.join(cur, "marketplaces", MARKETPLACE_NAME))) {
+        pluginsRoot = cur;
+        break;
+      }
+      const parent = path.dirname(cur);
+      if (parent === cur) break;
+      cur = parent;
+    }
+  }
+  if (!pluginsRoot) {
+    const fallback = path.join(os.homedir(), ".claude", "plugins");
+    if (fs.existsSync(path.join(fallback, "marketplaces", MARKETPLACE_NAME))) {
+      pluginsRoot = fallback;
+    }
+  }
+  if (!pluginsRoot) ok();
+
+  const marketplaceDir = path.join(pluginsRoot, "marketplaces", MARKETPLACE_NAME);
+  const manifestFile = path.join(marketplaceDir, ".claude-plugin", "marketplace.json");
+  if (!fs.existsSync(manifestFile)) ok();
+
+  // Throttle. NU scriem stamp-ul aici — doar la final, după ce am făcut treaba,
+  // ca un eșec parțial (ex. rețea) să nu blocheze retry-ul 6 ore.
   const dataDir = process.env.CLAUDE_PLUGIN_DATA || path.dirname(marketplaceDir);
   const stampFile = path.join(dataDir, `.symbai-self-heal-${MARKETPLACE_NAME}-stamp`);
-  // stamp() scrie marca de timp DOAR la ieșirile „utile" (am confirmat la-zi sau am
-  // reparat). NU o scriem după fetch, ca un eșec parțial să nu blocheze reparația 6h.
+  if (!FORCE) {
+    try {
+      const last = Number(fs.readFileSync(stampFile, "utf8").trim());
+      if (Number.isFinite(last) && Date.now() - last < THROTTLE_MS) ok();
+    } catch {
+      /* niciun stamp încă → continuă */
+    }
+  }
   const stamp = () => {
     try {
       if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
       fs.writeFileSync(stampFile, String(Date.now()));
     } catch {
-      /* irelevant — throttle e best-effort */
+      /* throttle e best-effort */
     }
   };
+
+  // ------------------------------------------------------------------
+  // FAZA 1 — heal clonă (best-effort; fără git sau fără rețea → mergem
+  // mai departe cu conținutul existent al clonei).
+  // ------------------------------------------------------------------
+  let cloneHealed = false;
+  let headSha = "";
   try {
-    const last = Number(fs.readFileSync(stampFile, "utf8").trim());
-    if (Number.isFinite(last) && Date.now() - last < THROTTLE_MS) ok();
-  } catch {
-    /* niciun stamp încă → continuă */
-  }
-
-  // Confirmă că e repo-ul Symbai (nu altă clonă întâmplătoare).
-  let remote = "";
-  try {
-    remote = git(marketplaceDir, ["remote", "get-url", "origin"], 5000);
-  } catch {
-    ok();
-  }
-  if (!remote.includes(UPSTREAM_HINT)) ok();
-
-  // Branch-ul curent (de regulă main). HEAD detached → reatașăm pe main.
-  let branch = "main";
-  let detached = false;
-  try {
-    branch = git(marketplaceDir, ["rev-parse", "--abbrev-ref", "HEAD"], 5000) || "main";
-  } catch {
-    /* fallback main */
-  }
-  if (branch === "HEAD") {
-    branch = "main";
-    detached = true;
-  }
-  // Apărare ieftină: nume de branch suspect → nu atinge nimic.
-  if (!/^[A-Za-z0-9._\/-]+$/.test(branch)) ok();
-
-  // Fetch upstream. NU marcăm stamp pe eșec de rețea — reîncercăm data viitoare.
-  try {
-    git(marketplaceDir, ["fetch", "origin", branch, "--quiet"], 15000);
-  } catch {
-    ok();
-  }
-
-  const upstreamRef = `origin/${branch}`;
-
-  // Suntem deja la zi?
-  let head = "";
-  let upstream = "";
-  try {
-    head = git(marketplaceDir, ["rev-parse", "HEAD"], 5000);
-    upstream = git(marketplaceDir, ["rev-parse", upstreamRef], 5000);
-  } catch {
-    ok();
-  }
-  // Deja la zi ȘI atașat pe branch → nimic de făcut (marcăm throttle).
-  if (head === upstream && !detached) {
-    stamp();
-    ok();
-  }
-
-  const UPDATED_MSG = {
-    hookSpecificOutput: {
-      additionalContext:
-        "Pachetul Symbai (symbai-core) a fost actualizat automat la ultima versiune. Skill-urile și cunoștințele noi sunt disponibile.",
-    },
-  };
-
-  // HEAD detached: reatașează pe branch ȚINTĂ, dar DOAR dacă working tree-ul e curat.
-  if (detached) {
-    let dirtyD = "x";
-    try {
-      dirtyD = git(marketplaceDir, ["status", "--porcelain"], 5000);
-    } catch {
-      ok();
+    if (fs.existsSync(path.join(marketplaceDir, ".git"))) {
+      const remote = git(marketplaceDir, ["remote", "get-url", "origin"], 5000);
+      if (UPSTREAM_HINT.test(remote)) {
+        let branch =
+          git(marketplaceDir, ["rev-parse", "--abbrev-ref", "HEAD"], 5000) || "main";
+        let detached = false;
+        if (branch === "HEAD") {
+          branch = "main";
+          detached = true;
+        }
+        if (/^[A-Za-z0-9._\/-]+$/.test(branch)) {
+          try {
+            git(marketplaceDir, ["fetch", "origin", branch, "--quiet"], 15000);
+          } catch {
+            log("fetch a eșuat (offline?) — folosesc clona așa cum e");
+          }
+          const upstreamRef = `origin/${branch}`;
+          const head = git(marketplaceDir, ["rev-parse", "HEAD"], 5000);
+          let upstream = "";
+          try {
+            upstream = git(marketplaceDir, ["rev-parse", upstreamRef], 5000);
+          } catch {
+            /* ref lipsă → nimic de aliniat */
+          }
+          if (upstream && (head !== upstream || detached)) {
+            const dirty = git(marketplaceDir, ["status", "--porcelain"], 5000);
+            if (!dirty) {
+              try {
+                if (detached) {
+                  git(marketplaceDir, ["checkout", "-B", branch, upstreamRef], 8000);
+                } else {
+                  try {
+                    git(marketplaceDir, ["merge", "--ff-only", upstreamRef], 8000);
+                  } catch {
+                    // divergență (commit local / force-push upstream) → realiniere
+                    git(marketplaceDir, ["reset", "--hard", upstreamRef], 8000);
+                  }
+                }
+                cloneHealed = true;
+                log(`clonă adusă la zi: ${upstream.slice(0, 8)}`);
+              } catch {
+                log("realinierea clonei a eșuat — continui cu HEAD-ul curent");
+              }
+            } else {
+              log("clonă cu modificări locale — nu o ating");
+            }
+          }
+        }
+      }
     }
-    if (dirtyD) ok();
     try {
-      git(marketplaceDir, ["checkout", "-B", branch, upstreamRef], 8000);
-      stamp();
-      ok(UPDATED_MSG);
+      headSha = git(marketplaceDir, ["rev-parse", "HEAD"], 5000);
     } catch {
-      ok();
+      /* fără git — lăsăm sha gol */
+    }
+  } catch {
+    log("faza de heal a clonei a sărit (git indisponibil?)");
+  }
+
+  // ------------------------------------------------------------------
+  // FAZA 2 — upgrade instalare din clonă (nu depinde de updater-ul nativ).
+  // ------------------------------------------------------------------
+  const installedFile = path.join(pluginsRoot, "installed_plugins.json");
+  let installed;
+  try {
+    installed = readJson(installedFile);
+  } catch {
+    ok(); // fără instalări → nimic de upgradat
+  }
+  const manifest = readJson(manifestFile);
+  const byName = new Map(
+    (Array.isArray(manifest.plugins) ? manifest.plugins : []).map((p) => [p.name, p])
+  );
+
+  const upgraded = [];
+  let mutated = false;
+  for (const [key, entries] of Object.entries(installed.plugins || {})) {
+    const m = key.match(/^(.+)@(.+)$/);
+    if (!m || m[2] !== MARKETPLACE_NAME) continue;
+    const name = m[1];
+    const entry = byName.get(name);
+    if (!entry || !entry.source) continue;
+
+    // Sursa reală din clonă + versiunea din plugin.json (sursa de adevăr —
+    // acoperă și cazul istoric marketplace.json rămas în urmă la bump).
+    const srcDir = path.resolve(marketplaceDir, entry.source);
+    if (!srcDir.startsWith(path.resolve(marketplaceDir))) continue; // anti path-traversal
+    const srcPluginJson = path.join(srcDir, ".claude-plugin", "plugin.json");
+    if (!fs.existsSync(srcPluginJson)) continue;
+    let newVer;
+    try {
+      newVer = String(readJson(srcPluginJson).version || "");
+    } catch {
+      continue;
+    }
+    if (!/^\d+\.\d+\.\d+/.test(newVer)) continue;
+
+    for (const inst of Array.isArray(entries) ? entries : []) {
+      if (cmpVer(newVer, inst.version) <= 0) continue;
+
+      const destDir = path.join(pluginsRoot, "cache", MARKETPLACE_NAME, name, newVer);
+      try {
+        if (!fs.existsSync(path.join(destDir, ".claude-plugin", "plugin.json"))) {
+          // Copiere în folder temporar + rename → nu lăsăm cache pe jumătate scris.
+          const tmpDir = `${destDir}.tmp-${process.pid}`;
+          fs.rmSync(tmpDir, { recursive: true, force: true });
+          copyDir(srcDir, tmpDir);
+          fs.rmSync(destDir, { recursive: true, force: true });
+          fs.renameSync(tmpDir, destDir);
+        }
+        const oldVer = inst.version;
+        inst.version = newVer;
+        inst.installPath = destDir;
+        inst.lastUpdated = new Date().toISOString();
+        if (headSha) inst.gitCommitSha = headSha;
+        mutated = true;
+        upgraded.push(`${name} ${oldVer} → ${newVer}`);
+        log(`upgrade ${name}: ${oldVer} → ${newVer}`);
+      } catch (e) {
+        log(`upgrade ${name} eșuat: ${e && e.message}`);
+      }
     }
   }
 
-  // Încearcă fast-forward (cazul tipic: pur și simplu în urmă).
-  try {
-    git(marketplaceDir, ["merge", "--ff-only", upstreamRef], 8000);
-    stamp();
-    ok(UPDATED_MSG);
-  } catch {
-    /* ff a eșuat → probabil divergent; tratează mai jos */
+  if (mutated) {
+    // Backup + scriere atomică (tmp + rename) — nu corupem fișierul la crash.
+    try {
+      fs.copyFileSync(installedFile, `${installedFile}.selfupdate-bak`);
+    } catch {
+      /* backup best-effort */
+    }
+    const tmpFile = `${installedFile}.tmp-${process.pid}`;
+    fs.writeFileSync(tmpFile, JSON.stringify(installed, null, 2));
+    fs.renameSync(tmpFile, installedFile);
   }
 
-  // Divergent. Resetează DOAR dacă working tree-ul e curat (nu distrugem editări locale).
-  let dirty = "x";
-  try {
-    dirty = git(marketplaceDir, ["status", "--porcelain"], 5000);
-  } catch {
-    ok();
-  }
-  // Are modificări locale → nu atinge; marcăm throttle (nu se rezolvă singur,
-  // n-are sens să refacem fetch la fiecare pornire).
-  if (dirty) {
-    stamp();
-    ok();
-  }
+  stamp();
 
-  try {
-    git(marketplaceDir, ["reset", "--hard", upstreamRef], 8000);
-    stamp();
+  if (upgraded.length) {
     ok({
+      systemMessage: `Symbai: ${upgraded.join(", ")} — actualizat în fundal; repornește sesiunea ca să folosești versiunea nouă.`,
       hookSpecificOutput: {
-        additionalContext:
-          "Pachetul Symbai (symbai-core) a fost re-sincronizat cu upstream (clona divergise) și e acum la ultima versiune.",
+        hookEventName: "SessionStart",
+        additionalContext: `Pachetul Symbai a fost actualizat în fundal (${upgraded.join(
+          ", "
+        )}). Versiunea nouă (skill-uri + cunoștințe) se încarcă la următoarea sesiune; sesiunea curentă rulează încă versiunea veche.`,
       },
     });
-  } catch {
-    ok();
   }
+  if (cloneHealed) {
+    ok({
+      hookSpecificOutput: {
+        hookEventName: "SessionStart",
+        additionalContext:
+          "Clona de marketplace Symbai a fost re-sincronizată cu upstream; pluginul instalat era deja la ultima versiune.",
+      },
+    });
+  }
+  ok();
 } catch {
-  // Orice altă eroare neașteptată: tăcut, nu bloca pornirea.
+  // Orice eroare neașteptată: tăcut, nu bloca pornirea.
   ok();
 }

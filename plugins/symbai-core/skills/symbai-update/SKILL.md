@@ -5,45 +5,36 @@ description: Actualizează (sau pornește auto-actualizarea) cunoștințelor și
 
 # Actualizează pachetul Symbai (`symbai-core`)
 
-Pluginul `symbai-core` (skill-urile + folderul `knowledge/`) e descărcat din GitHub (marketplace `symbai`, repo `sinesteziadrimo/symbaimemory`). Claude Code îl ține într-un folder **fixat pe versiune** (`~/.claude/plugins/cache/symbai/symbai-core/<versiune>/`). Singurul mecanism corect de actualizare e **auto-update-ul nativ al marketplace-ului**, controlat de o cheie din `settings.json`.
+Pluginul `symbai-core` (skill-urile + folderul `knowledge/`) e descărcat din GitHub (marketplace `symbai`, repo `sinesteziadrimo/symbaimemory`). Claude Code îl ține într-un folder **fixat pe versiune** (`~/.claude/plugins/cache/symbai/symbai-core/<versiune>/`), iar pointerul versiunii instalate stă în `~/.claude/plugins/installed_plugins.json`.
 
-> ⚠️ Notă pentru asistent: folderul **de cache** (`.../cache/symbai/symbai-core/<ver>`) nu e repo git — un `git pull` în el nu face nimic. Versiunea reală pe care se uită clientul vine din **clona de marketplace** (`.../plugins/marketplaces/symbai/`, care ESTE repo git). Sunt **DOUĂ cauze** pentru „nu se actualizează", verifică-le în ordine: (1) flag-ul `autoUpdate` lipsește (Pasul 1); (2) flag-ul e pus dar **clona de marketplace e blocată** — nu mai face fetch sau a divergeat, deci `git pull --ff-only` al clientului eșuează în tăcere (Pasul 0). La clienții care au flag-ul corect dar tot stau pe versiune veche, cauza e aproape mereu (2).
+> ⚠️ Notă pentru asistent — cum se actualizează REAL pluginul:
+> - **Auto-update-ul nativ al Claude Code NU rulează în aplicația desktop** — procesul e pornit cu `DISABLE_AUTOUPDATER=1` (fără `FORCE_AUTOUPDATE_PLUGINS=1`), deci flag-ul `autoUpdate: true` din settings.json e ignorat acolo. Pe CLI nativul poate rula, dar nu te baza pe el.
+> - **Mecanismul pe care ne bazăm e hook-ul de self-update din plugin** (`SessionStart` → `scripts/self-heal-marketplace.mjs`, v0.27.0+): la pornirea sesiunii aduce clona de marketplace la zi (fetch → ff; pe divergență cu tree curat → reset) și, dacă upstream-ul are versiune mai nouă, **face singur upgrade-ul**: copiază pluginul în `cache/<ver>/` și mută pointerul din `installed_plugins.json`. Versiunea nouă se încarcă la următoarea sesiune. Nu depinde de updater-ul nativ.
+> - Versiunile ≤0.21.x nu au niciun hook; 0.22.x–0.26.x au hook care repară DOAR clona (nu și instalarea). Clienții pe aceste versiuni sunt „înghețați" până la un singur pas manual (Pasul 0) — după el, self-update-ul complet rămâne activ pe veci.
+> - Folderul de cache NU e repo git — `git pull` în el nu face nimic. Clona git e `.../plugins/marketplaces/symbai/`.
 
-> ✅ Versiunile recente ale pluginului au un **hook de self-heal** (`SessionStart` → `scripts/self-heal-marketplace.mjs`) care reface clona de marketplace automat la pornire. Deci un client care a ajuns o dată pe o versiune cu hook-ul **nu se mai blochează niciodată**. Pașii de mai jos rămân pentru: clienți încă blocați pe o versiune VECHE (fără hook), sau diagnostic manual.
+## 0. Recovery — client înghețat pe o versiune veche (o singură dată)
 
-## 0. Diagnostic + reparare clonă de marketplace (cauza #1 când flag-ul e deja corect)
-
-Dacă ai acces la terminal/Bash pe mașina clientului, verifică starea reală a clonei de marketplace ÎNAINTE de orice:
+Rulează în terminal/Bash pe mașina clientului (Windows: în Git Bash sau adaptează path-urile):
 
 ```bash
-MK="$HOME/.claude/plugins/marketplaces/symbai"   # Windows: C:/Users/<nume>/.claude/plugins/marketplaces/symbai
-cd "$MK"
-git fetch origin -q
-git log -1 --format="local:  %h %s"
-git log origin/main -1 --format="remote: %h %s"
-git status -sb            # arată ahead/behind + dacă e murdar
+MK="$HOME/.claude/plugins/marketplaces/symbai"
+git -C "$MK" fetch origin -q
+git -C "$MK" merge --ff-only origin/main   # aduce clona (inclusiv scriptul nou) la zi
+node "$MK/plugins/symbai-core/scripts/self-heal-marketplace.mjs" --force
 ```
 
-- **local == remote** → clona e la zi; problema e că native auto-update n-a re-instalat încă în cache → forțează (Pasul 2) sau repornește.
-- **local în urmă, fast-forward-abil** (working tree curat) → repară:
-  ```bash
-  git merge --ff-only origin/main
-  ```
-- **divergent** (`ahead N` cu commit-uri locale care nu-s pe upstream, sau ff eșuează) și **working tree CURAT** → re-sincronizează forțat:
-  ```bash
-  git reset --hard origin/main
-  ```
-  ⚠️ `reset --hard` doar dacă `git status --porcelain` e GOL. Dacă are modificări locale, NU șterge — întreabă userul (pot fi editări intenționate pe mașina lui).
-- După reparare, **pre-populează cache-ul** ca instalarea să fie sigură (opțional, dacă versiunea din cache lipsește):
-  ```bash
-  V=$(grep -oE '"version"[^"]*"[^"]*"' "$MK/plugins/symbai-core/.claude-plugin/plugin.json" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
-  cp -r "$MK/plugins/symbai-core" "$HOME/.claude/plugins/cache/symbai/symbai-core/$V"
-  ```
-Apoi repornire. (Aceasta e rezolvarea tipică pentru un plugin „înghețat" pe o versiune veche.)
+Scriptul afișează pe stderr ce a făcut (ex. `upgrade symbai-core: 0.21.4 → 0.27.0`). Apoi **repornește** aplicația/sesiunea — versiunea nouă se încarcă la pornire. Din acel moment hook-ul rulează automat la fiecare sesiune și clientul nu mai rămâne în urmă niciodată.
 
-## 1. Asigură auto-update-ul (asta rezolvă „nu se actualizează" definitiv)
+Dacă `merge --ff-only` eșuează (clonă divergentă):
+- `git -C "$MK" status --porcelain` **gol** → e sigur: `git -C "$MK" reset --hard origin/main`, apoi reia scriptul.
+- are modificări locale → NU șterge nimic; întreabă userul (pot fi editări intenționate).
 
-Verifică și, la nevoie, **editează** fișierul `settings.json` din folderul Claude al utilizatorului (Windows: `C:\Users\<nume>\.claude\settings.json`; macOS/Linux: `~/.claude/settings.json`; creează-l dacă lipsește). Trebuie să conțină, **îmbinat** cu restul fișierului (cere voie înainte de a scrie):
+Dacă `node` nu există pe mașină: instalează Node.js LTS sau fă manual echivalentul (copiază `$MK/plugins/symbai-core` în `~/.claude/plugins/cache/symbai/symbai-core/<versiunea din plugin.json>/` și schimbă `version` + `installPath` în `~/.claude/plugins/installed_plugins.json` la intrarea `symbai-core@symbai`; păstrează restul câmpurilor).
+
+## 1. Instalarea corectă (pentru mașini noi)
+
+`settings.json` din folderul Claude al utilizatorului (Windows: `C:\Users\<nume>\.claude\settings.json`; macOS/Linux: `~/.claude/settings.json`) trebuie să conțină, **îmbinat** cu restul fișierului (cere voie înainte de a scrie):
 
 ```json
 {
@@ -57,30 +48,19 @@ Verifică și, la nevoie, **editează** fișierul `settings.json` din folderul C
 }
 ```
 
-- Dacă `extraKnownMarketplaces.symbai` **există dar fără** `"autoUpdate": true` → adaugă DOAR flag-ul (asta e cazul tipic la clienții care s-au blocat pe o versiune veche).
-- Dacă lipsește de tot → adaugă tot blocul.
-- Păstrează restul fișierului neatins.
+`autoUpdate: true` rămâne recomandat (pe CLI ajută; nu strică nicăieri), dar actualizarea garantată vine din hook-ul de self-update al pluginului, nu din acest flag.
 
-Cu `autoUpdate: true`, Claude Code reîmprospătează marketplace-ul ȘI upgradează pluginul la ultima versiune **la fiecare pornire**, fără nicio acțiune. (Marketplace-urile terțe au auto-update OPRIT implicit — de-aceea trebuie pus explicit.) Spune-i utilizatorului să **repornească** aplicația ca să se aplice.
+## 2. Forțează ultima versiune ACUM
 
-## 2. Forțează ultima versiune ACUM (fără să aștepți repornirea)
-
-Dacă utilizatorul are caseta de chat cu `/plugin`:
-
-```
-/plugin marketplace update symbai
-```
-
-(asta trage marketplace-ul la zi și upgradează pluginul instalat). Apoi repornește sesiunea.
-
-Dacă `/plugin` **nu e disponibil** (aplicația desktop) și nici `claude` în terminal — atunci pasul 1 + repornire e tot ce trebuie: la următoarea pornire auto-update-ul aduce ultima versiune. Ca verificare, după repornire confirmă în Customize / Settings → Plugins că `symbai-core` arată versiunea nouă.
+- Oriunde există terminal/Bash: rulează comenzile de la Pasul 0 (merg și când clientul NU e înghețat — scriptul e idempotent; fără `--force` respectă un throttle de 6h).
+- Pe CLI, alternativ: `/plugin marketplace update symbai`, apoi repornește sesiunea.
 
 ## 3. Verificare
 
-După repornire, într-o sesiune nouă: skill-urile și cunoștințele Symbai noi sunt disponibile. (Opțional, dacă userul are `/plugin`: panoul Plugins arată versiunea curentă a `symbai-core`.)
+După repornire, într-o sesiune nouă cere versiunea: `grep '"version"' ~/.claude/plugins/installed_plugins.json` trebuie să arate versiunea nouă la `symbai-core@symbai`, iar skill-urile/cunoștințele noi sunt disponibile. Nu declara „actualizat" doar pentru că scriptul a rulat — confirmă versiunea din fișier.
 
 ## Note
 
 - Toate astea actualizează DOAR cunoștințele + skill-urile (pachetul de pe GitHub). Conexiunea live la datele tale (MCP) e separată și mereu la zi — tool-urile vin direct de pe instanța ta.
 - Versiuni noi dese = normal: Symbai îmbunătățește ghidurile pe măsură ce adaugă funcții.
-- Un plugin **nu** își poate forța singur auto-update-ul nativ (e o setare a clientului). De-aceea instalarea recomandată (vezi README) scrie `autoUpdate: true` din start, iar pluginul livrează hook-ul de self-heal care reface clona de marketplace independent de native auto-update.
+- Diagnostic rapid „de ce nu s-a actualizat": (1) `installed_plugins.json` → versiunea instalată; (2) `git -C "$MK" log -1 --format='%h %s'` vs `git -C "$MK" log origin/main -1 --format='%h %s'` → clona e în urmă?; (3) versiunea instalată < `plugin.json` din clonă → hook-ul n-a rulat (versiune veche fără hook, sau `node` lipsă) → Pasul 0.

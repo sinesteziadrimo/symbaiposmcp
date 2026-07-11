@@ -25,7 +25,7 @@ Pluginul se folosește **împreună cu conexiunea MCP** la instanța ta Symbai (
 
 > ⚠️ `"autoUpdate": true` este **obligatoriu** — fără el rămâi blocat pe versiunea de la instalare și nu mai primești ghidurile noi. Comanda `/plugin marketplace add` **nu** pornește auto-update — de aceea folosim fișierul.
 
-Începând cu `symbai-core` v0.22, pluginul mai pornește la fiecare sesiune și un hook fail-safe de **self-heal**: verifică clona locală de marketplace `symbai`, o aduce la zi prin fast-forward când poate și o re-sincronizează cu upstream dacă a divergat dar nu are modificări locale. Nu cere pași manuali clientului; doar protejează cazul în care auto-update-ul nativ se blochează în tăcere.
+Începând cu `symbai-core` v0.27, pluginul pornește la fiecare sesiune un hook fail-safe de **self-update**: aduce clona locală de marketplace `symbai` la zi (fast-forward; re-sincronizare cu upstream dacă a divergat dar nu are modificări locale) și, dacă a apărut o versiune nouă, **face singur upgrade-ul instalării** — versiunea nouă se încarcă la următoarea pornire. E necesar pentru că auto-update-ul nativ al pluginurilor nu rulează în aplicația desktop (procesul e pornit cu `DISABLE_AUTOUPDATER=1`); hook-ul nu depinde de el și nu cere pași manuali clientului.
 
 Apoi instalează pluginul **o singură dată** (activarea efectivă), pe metoda disponibilă la tine:
 
@@ -43,9 +43,9 @@ Separat, din portalul tău Symbai Hub → **Acces AI**, ia instrucțiunile de co
 
 ## Actualizare
 
-Cu `"autoUpdate": true` în `settings.json` (vezi Instalare) **nu trebuie să faci nimic** — Claude Code reîmprospătează marketplace-ul și upgradează pluginul la fiecare pornire. Dacă mecanismul nativ se împotmolește, hook-ul de self-heal din plugin repară clona de marketplace la următoarea sesiune fără să blocheze pornirea.
+De la `symbai-core` v0.27 **nu trebuie să faci nimic** — hook-ul de self-update din plugin aduce marketplace-ul la zi și upgradează pluginul la fiecare pornire de sesiune (cu un throttle de 6h), independent de auto-update-ul nativ al Claude Code (care în aplicația desktop nici nu rulează). `"autoUpdate": true` din settings rămâne recomandat ca plasă suplimentară pe CLI.
 
-Dacă vrei ultima versiune **imediat**, fără să aștepți următoarea pornire: scrie în chat „actualizează skill-urile Symbai" (skill-ul `symbai-update` te ghidează și îți verifică/pornește auto-update-ul), sau, dacă ai comanda disponibilă, `/plugin marketplace update symbai`.
+Dacă ești blocat pe o versiune veche (≤0.26.x, dinainte de self-update) sau vrei ultima versiune **imediat**: scrie în chat „actualizează skill-urile Symbai" (skill-ul `symbai-update` conține pașii de recovery — un `git merge --ff-only` pe clona de marketplace + rularea scriptului `self-heal-marketplace.mjs --force`), sau, dacă ai comanda disponibilă, `/plugin marketplace update symbai`. După o singură astfel de trecere pe v0.27+, actualizarea rămâne automată pe veci.
 
 ## Cum se livrează conținut nou
 
