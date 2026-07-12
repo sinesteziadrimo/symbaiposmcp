@@ -134,18 +134,23 @@ Daca preturile Glovo par dublate sau cantitatea schimba totalul gresit, verifica
 - `get_portal_config` — configurația portalului de comenzi online (inclusiv livrare/ridicare).
 - `list_channel_orders` — listeaza comenzile de pe agregatori/canale externe (Glovo/Wolt/Bolt/Tazz) si iti da `channelOrderId` pentru actiuni.
 - `get_channel_order` — detaliul unei comenzi de agregator: canal, status, totaluri, iteme, metadata si timeline; foloseste-l ca read-back dupa orice actiune.
+- `list_delivery_channels` — TOATE canalele configurate (Glovo/AppSmart/Wolt/Bolt/Tazz + intern local): provider, activ, online/pauza, sync meniu pornit, mod de re-sync automat, identificatorii de platforma (storeId/venueId) si PREZENTA credentialelor (hasApiKey/hasWebhookSecret/hasWoltOAuth — fara valori), plus ultima sincronizare si ultima eroare. Primul pas la „ce canale am / ce e configurat / de ce nu merge un canal".
+- `get_delivery_channel` — detaliul complet al unui canal (toata configuratia + prezenta credentialelor + setarile per-provider, fara secrete). Read-back dupa `update_delivery_channel`.
+- `get_channel_setup_requirements` — EXACT ce credentiale cere fiecare platforma si DE UNDE le ia clientul: Glovo (apiKey + storeId din Glovo Partners), Wolt (venueId + conectare OAuth din butonul din UI), AppSmart (Marketplace storeId + platforma din Hub), Bolt/Tazz (apiKey + storeId/restaurant_id), local (fara credentiale). Cere-l INAINTE de a crea sau configura un canal ca sa stii precis ce sa ceri userului.
 - `list_availability_schedules` — programele zi+ora pentru produse/categorii/meniuri; primul pas cand userul intreaba „cand e disponibil micul dejun" sau „ce meniu e pe Wolt dimineata".
 
 **SQL (doar-citire, dacă token-ul are toggle-ul SQL):** `list_database_tables` → `describe_database_table` → `execute_sql_query` — pentru întrebări pe care rapoartele dedicate nu le acoperă (ex. livrări eșuate pe motiv).
 
 **Scriere (cere modulul de permisiune `setari` pe token):**
-- `create_delivery_channel` — configurează un canal de livrare (platformă, brand, locație). Pentru Glovo, asta doar creeaza inregistrarea; conectarea reala cere token + Store ID-uri in `/channels?tab=integrations`, apoi trimiterea celor trei URL-uri publice catre Glovo.
+- `create_delivery_channel` — creeaza canalul de livrare (platforma, brand, locatie) + identificatorii pe care ii ai (venueId, storeId, webhookSecret, environment). Fluxul recomandat: `get_channel_setup_requirements(provider)` (ce cere platforma) → `create_delivery_channel` → `update_delivery_channel` (adaugi tokenul apiKey + restul credentialelor) → `sync_channel_menu`. Wolt: creezi canalul cu venueId, dar pasul OAuth se face din UI (butonul din `/channels?tab=integrations`).
 - `configure_portal_general` — pornește/oprește livrarea și ridicarea personală pe portalul de comenzi online (allowDelivery / allowPickup).
 
 **Scriere disponibilitate meniu (cere `produse_meniu`):**
 - `create_availability_schedule` / `update_availability_schedule` — fac produsul/categoria/meniul comandabil doar in anumite zile+ore. Nu le folosi pentru reduceri de pret; pentru happy hour cu discount foloseste `create_offer`.
 
 **Scriere platforme livrare (cere `livrari`, cu exceptia refund-ului):**
+- `update_delivery_channel` — editeaza ORICE credentiala sau setare a unui canal existent: adauga/schimba tokenul (apiKey), apiSecret, webhookSecret, storeId/externalStoreId/venueId, environment; sau config: activ, autoAccept, menuSyncEnabled, `autoResyncMode` (cand se re-sincronizeaza automat structura de meniu: `on_change` la fiecare modificare in meniu / `nightly` o data pe noapte / `manual` doar cand ceri sync — util ca sa nu depasesti plafoanele Glovo 5/zi si Wolt 1/15min), prepTimeMinutes, maxOrdersPerHour, comision, sau `settings` (ex. `settings.glovo.transport=appsmart`). Trimite DOAR campurile de schimbat; un secret gol sau mascat NU sterge secretul existent; valorile secrete nu se afiseaza niciodata inapoi. Foloseste la „adauga tokenul Glovo", „schimba storeId-ul", „pune sync automat doar noaptea", „opreste sync automat la modificari".
+- `sync_channel_menu(id)` / `update_channel_menu_items(id,...)` — retrimite meniul intreg catre platforma (respecta plafoanele) sau doar modificari mici de pret/disponibilitate. `snooze_delivery_channel(id,minutes,confirm)` / `resume_delivery_channel(id)` — opreste temporar / reporneste canalul la sursa.
 - `delay_channel_order`, `confirm_channel_preorder`, `replace_channel_order_items`, `mark_channel_deposits_returned`, `snooze_delivery_channel` — actiuni reale pe Glovo/Wolt si timeline Symbai. Pentru substituire, SGR si snooze cere confirmare explicita.
 - `refund_channel_order` — cere modulul `plati_terminal`, muta valoare/bani pe platforma si cere confirmarea sumei. Pentru Glovo trebuie `newTotal`; pentru Wolt foloseste `scope:"basket"` sau `scope:"items"`.
 

@@ -1,12 +1,26 @@
 # Harness de copiere website — protocol detaliat
 
-Orchestrator „lider + lucrători", condus de o **coadă durabilă pe disc**, NU de contextul agentului. Liderul (sesiunea principală) ține planul + tally-ul mic; extragerea/scrierea pe pagină merg la **sub-agenți** cu context curat care întorc rezumate de 1-2k tokeni.
+Orchestrator „server + lider + verificator", condus de stare durabilă, NU de contextul agentului. Importul mecanic rulează în workerul server-side; liderul păstrează doar planul de design și remediere, iar verificatorul încearcă să infirme completitudinea.
+
+## Seed rapid server-side din Setări
+
+Fluxul canonic pentru un client nou pornește din `Setări → General → Date & Mentenanță → Import website public`:
+
+1. managerul alege brandul/unitatea, introduce URL-ul și parola **Symbai** de import și confirmă dreptul de republicare;
+2. serverul creează un job persistent în `clone_crawl_jobs`, iar paginile intră în `clone_crawl_pages`;
+3. workerul creează un website, meniu, depozit și zonă de import izolate în draft, descarcă imaginile în storage local, importă catalogul/categoriile/blogul și construiește prima mapare în componente Website Builder native;
+4. jobul se oprește obligatoriu în `review_required` pentru design, variante, formulare/video, branding și texte legale;
+5. finalizarea cere confirmări vizuală + legală, rerulează `clone_audit_all` și `audit_shop_health`, apoi face cutover atomic: activează meniul, îl leagă la canalul web, schimbă website-ul implicit, publică textele legale verificate și aplică 301-urile.
+
+Starea canonică a seed-ului este `clone_crawl_jobs.options.websiteImport`. Parola nu intră în job, cache sau loguri; nu este parola site-ului sursă și nu se trimit cookies ori credențiale către sursă. Jobul poate continua când browserul ori laptopul clientului este închis fiindcă rulează pe server. Conținutul public nu elimină obligația de a avea dreptul de republicare.
 
 ## Cadență cu userul (mod IMPLICIT)
 Vezi protocolul generic în `../../../knowledge/lucru-incremental-verificat.md`; aici e instanțierea pentru clonare.
 Implicit, contractul pe tură e: **o sarcină mică → explică în business → execută → verifică prin read-back (+ vizual la pagini) → arată rezultatul → propune URMĂTOAREA sarcină → oprește-te** și aștepți „continuă/da". Cele trei straturi „Nu te opri" (`/loop` în sesiune, agentul programat, hook-ul Stop) sunt **ARMATE DOAR în modul autonom OPT-IN** — implicit stau OPRITE. Coada durabilă de mai jos e tally-ul tău; ea NU autorizează rularea non-stop fără ca userul s-o ceară.
 
-## Starea durabilă: `.symbai-clone/<host>/`
+## Starea durabilă a agentului: `.symbai-clone/<host>/`
+
+Această coadă locală este pentru perfecționarea fidelității după seed și pentru importurile conduse integral de agent. Nu dublează și nu înlocuiește starea jobului server-side.
 
 **`manifest.json`** (inventarul GOLD — scris o dată în Faza 0, NICIODATĂ micșorat de lucrător):
 ```json
@@ -61,7 +75,7 @@ Reguli: `sourceSectionCount` + `sections[]` vin din `get_cached_page(jobId, url)
 
 **`.pending-clone-<sessionId>`** — flag-ul: există cât timp `queue.pending+in_progress > 0` SAU oricare din cele 3 porți (`parity`/`fidelity`/`coverage`) are `lastVerdict != COMPLETE` SAU `design-plan.json` mai are pagini cu `status != "verified"`. Hook-ul Stop îl citește.
 
-> Coada efectivă a paginilor e deja persistentă pe SERVER (`list_clone_crawl_pages`). `progress.json` e oglinda ta locală + poarta hook-urilor. Pentru cataloage uriașe NU descărca toată lista în context — cere loturi prin `offset`/`limit` și ține doar agregatele în `progress.json`.
+> Coada efectivă a paginilor și starea seed-ului sunt persistente pe SERVER (`list_clone_crawl_pages` + `clone_crawl_jobs.options.websiteImport`). `progress.json` este doar oglinda agentului și poarta hook-urilor. Pentru cataloage uriașe NU descărca toată lista în context — cere loturi prin `offset`/`limit` și ține doar agregatele în `progress.json`.
 
 ## Contractul sub-agentului (Task tool)
 Fiecare sub-agent primește o felie DISJUNCTĂ, mărginită explicit. Promptul include:
@@ -93,13 +107,19 @@ Verificatorul e ADVERSARIAL: verdict implicit INCOMPLET; treaba lui e să REFUTE
 - **Fiecare FAIL → un rând de remediere** cu URL/SKU exact + câmpul lipsă. Niciodată „continuă" gol.
 - **Anti-rubber-stamp**: porțile ADAUGĂ eșecuri, nu scot. Ține 5-10 SKU-uri „ancoră" verificate manual care trebuie regăsite mereu.
 
-## „Nu te opri" — trei straturi
-1. **Bucla din sesiune** (`/loop` auto-paced, sau bucla manuală a liderului): la fiecare trezire re-citește `progress.json` + `design-plan.json`; dacă mai există pending, o poartă cu `lastVerdict!=COMPLETE` sau pagini de design neverificate, procesează URMĂTOAREA bucată (un lot de produse SAU o pagină/secțiune din design-plan — una singură, verificată, bifată cu dovadă). Se termină DOAR nelansând următoarea trezire când TOATE porțile trec (parity + fidelity + coverage + design-plan complet `verified`).
-2. **Agent programat durabil** (cross-sesiune — owner-ul a închis laptopul): folosește skill-ul `schedule` / `mcp__scheduled-tasks__create_scheduled_task` ca să relansezi acest skill la fiecare ~30-60 min cât timp `progress.json` arată pending; se auto-șterge când `lastVerdict=COMPLETE`. `/loop` + cache-ul Workflow NU supraviețuiesc ferestrei închise — ASTA e coloana vertebrală reală pentru „ore nesupravegheat".
-3. **Hook Stop** (podeaua dură, opțional — doar dacă userul l-a instalat în mediul lui Claude Code): blochează închiderea cât timp `.pending-clone-<sid>` există. OBLIGATORIU: respectă `stop_hook_active` (dacă e true → permite oprirea, anti-buclă), arată mereu o ACȚIUNE concretă executabilă (următorul rând), și un PLAFON: dacă `turnsSinceProgress` depășește N fără creștere în `done`, trece la advisory (permite oprirea) + raport INCOMPLET. Progres, nu perfecțiune, trebuie să fie mereu atins într-o tură.
+## „Nu te opri" — workerul server-side + trei straturi pentru munca agentului
+
+**Coloana vertebrală mecanică este workerul server-side.** Crawl-ul, cache-ul și seed-ul continuă fără browser și fără laptopul clientului. Nici `/loop`, nici un hook, nici un scheduler local nu pot promite lucru după oprirea calculatorului.
+
+Cele trei straturi de mai jos se armează numai OPT-IN pentru perfecționarea cu agentul:
+
+1. **Bucla din sesiune** (`/loop` auto-paced sau bucla manuală a liderului): la fiecare trezire recitește starea serverului, `progress.json` și `design-plan.json`; procesează o singură bucată verificabilă și nu declară final până nu trec toate porțile.
+2. **Agent programat cross-sesiune:** relansează skill-ul la ~30–60 minute numai dacă schedulerul este găzduit pe server/cloud. Dacă schedulerul rulează pe PC-ul utilizatorului, supraviețuiește închiderii ferestrei, dar NU laptopului oprit. Se auto-dezactivează când nu mai există remediere sau ajunge la plafonul fără progres.
+3. **Hook Stop:** podea locală opțională pentru sesiunea agentului; blochează o oprire prematură cât timp `.pending-clone-<sid>` există. Respectă `stop_hook_active`, cere mereu o acțiune concretă și trece la raport `INCOMPLETE` după plafonul `turnsSinceProgress`; nu simulează persistență server-side.
 
 ## Reluare după compactare / crash
-Toată starea e pe disc → compactarea/crash-ul nu pierde nimic. La ORICE început de iterație/sesiune: (1) re-citește `manifest`+`progress`+`design-plan`; (2) `list_clone_crawl_pages(jobId, status:"pending")` pentru ce a rămas; (3) revendică `in_progress` vechi → `pending`; (4) continuă de la prima bucată nebifată din design-plan. Idempotența (cheie = SKU; dedup Symbai; id-ul Symbai stocat ca dovadă) face orice re-import un no-op verificat. **Anti-contaminare la reluare:** după compactare NU „reconstitui din memorie" culorile — designDna de pe disc e singura sursă.
+
+Workerul recuperează lease-urile expirate din starea server-side; nu muta manual joburile între stări. La reluarea agentului: (1) citește statusul importului; (2) dacă nu este încă `review_required`, lasă workerul să continue; (3) apoi recitește `manifest` + `progress` + `design-plan`; (4) continuă de la prima remediere sau secțiune neverificată. Idempotența folosește cheia sursă/SKU și ID-urile persistate. **Anti-contaminare:** nu reconstitui culori/fonturi din memorie; `designDna` al sursei curente este singura referință.
 
 ## Escape mărginit (anti-buclă-infinită)
 - 429/timeout = TRANZITORIU → backoff (serverul îl face deja); nu socoti spre maxAttempts.

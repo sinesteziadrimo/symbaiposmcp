@@ -14,6 +14,22 @@ Proprietarul vrea site-ul lui (sau unul pe care îl deține/administrează) copi
 2. `../construieste-website/SKILL.md` — EXECUTORUL (cum scrii efectiv în Symbai: produse, categorii, hero, footer, PDP). Acest skill îl ORCHESTREAZĂ.
 3. `../../knowledge/website-copy-intake.md` + `../../knowledge/website-builder-pdp.md` — paritate vizuală + pagina de produs bogată.
 
+## Două benzi: seed rapid din Setări + perfecționare fidelă cu agentul
+
+Există acum două căi complementare, nu două implementări concurente:
+
+1. **Seed rapid self-service (mecanic):** în Symbai, `Setări → General → Date & Mentenanță → Import website public`. Managerul selectează brandul/unitatea, scrie URL-ul și **parola Symbai de import**, apoi confirmă că reprezintă brandul sau are permisiunea de copiere. Serverul face crawl + cache + produse + galerii locale + arbore de categorii + blog draft + pagini builder native, în job persistent. Browserul și laptopul pot fi închise. Aceasta este calea recomandată pentru onboarding rapid.
+2. **Perfecționare fidelă (judecată):** acest skill preia jobul ajuns la `review_required`, rulează/remediază porțile, construiește `design-plan.json`, verifică vizual desktop+mobil, mapează variante/formulare/video și aprobă textele legale. Aici rămân utile bucla, verificatorul adversarial și, doar la cerere explicită, agentul programat.
+
+Seed-ul automat este intenționat oprit înainte de cutover. Nu activează meniul importat, nu schimbă website-ul implicit, nu publică textele legale și nu scrie 301-urile până când:
+- un om confirmă verificarea vizuală și, separat, verificarea legală;
+- `clone_audit_all(...).data.pass === true`;
+- `audit_shop_health(...).data.ok === true`.
+
+**Parola din formular NU este parola site-ului sursă.** Este cheia server-side Symbai (`WEBSITE_IMPORT_PASSWORD`; fallback separat doar în development), comparată constant-time, cu rate-limit. Nu se persistă și nu se trimite sursei. Importul nu acceptă cookies, user/parolă sursă sau conținut din cont/checkout/admin. „Este public” nu înseamnă automat „am dreptul să-l republic”: atestarea de autorizare + auditul actorului sunt obligatorii.
+
+Starea canonică pentru această bandă este `clone_crawl_jobs.options.websiteImport` + `clone_crawl_pages`; nu `.symbai-clone/`. Coada locală `.symbai-clone/` rămâne pentru planul de design și munca agentului după seed.
+
 ## Uneltele de copiere pe server
 Crawl-ul greu rulează pe **server** (owner-ul poate închide laptopul) — tu doar mapezi din cache și verifici. (Descoperire + crawl + 3 porți-produs mai jos; porțile advisory + SEO sunt în Faza 4.)
 - **`discover_site_inventory(url)`** — numitorul ONEST: numără produse/categorii/blog/pagini din surse independente (sitemap-index + feed Shopify/WooCommerce + header X-WP-Total). Întoarce `productDenominator` + `denominatorConfident`. **Rulează ÎNTÂI.**

@@ -16,3 +16,5 @@ De ce noul skill rezolvă ce nu reușea ăsta:
 - **Poartă obiectivă:** `clone_parity_diff` întoarce ID-urile care LIPSESC; „gata" doar la 0 lipsă + `audit_shop_health` curat.
 
 Vezi `../copiaza-website/SKILL.md` și `../copiaza-website/references/harness.md`.
+
+Pentru onboarding rapid fără agent, folosește fluxul self-service din `Setări → General → Date & Mentenanță → Import website public`. Acesta se oprește la `review_required`; `copiaza-website` rămâne obligatoriu pentru fidelitate vizuală, remedierea porților și cutover-ul verificat.
