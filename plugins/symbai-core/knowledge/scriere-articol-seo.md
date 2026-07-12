@@ -17,12 +17,12 @@ Un articol care rankează ȘI e citat de AI în 2026 = intenție potrivită cu S
 ## Structura (anatomie)
 
 1. **Titlu (H1 = `title`)** — cuvântul-cheie principal (forma FĂRĂ diacritice) aproape de început, atractiv, ~50-60 caractere. Un singur H1.
-2. **Intro (primul paragraf)** — pune **răspunsul/promisiunea** în primele ~100 de cuvinte, cu cuvântul-cheie. Hook cu problema reală a cititorului.
-3. **H2/H3 din brief** — fiecare secțiune răspunde la o întrebare reală (din PAA). Răspuns concis sus (~40-60 cuvinte), apoi detaliu. Fără salturi de nivel (H2→H4).
+2. **Intro (primul paragraf) = răspunsul direct, în 40–60 de cuvinte**, cu cuvântul-cheie — blocul pe care Google (featured snippet) și AI-ul îl pot cita ca atare. Abia după el vine contextul/hook-ul cu problema reală a cititorului.
+3. **H2/H3 din brief, formulate ca ÎNTREBĂRI** (cum caută oamenii: „Cât costă…?", „Ce alegi pentru…?") — fiecare secțiune răspunde la o întrebare reală (din PAA). Răspuns concis imediat sub heading (~40-60 cuvinte), apoi detaliu. Fără salturi de nivel (H2→H4).
 4. **Experiență & specific** — detalii pe care doar businessul le știe (cum aleg ingredientele, ce să comanzi cu copii, parcarea de lângă terasă), **foto reale** ale localului/preparatelor cu **alt-text** descriptiv.
-5. **Elemente extractabile** (pentru featured snippet + AI): un **tabel** (preț/program/opțiuni), liste, definiții, **statistici/numere** unde ai date reale.
-6. **FAQ** la final (4-6 întrebări din PAA, răspuns 1-2 fraze) — hrănesc snippets + AI Overviews. (Markup-ul FAQ nu mai dă panou în Google din mai 2026, dar conținutul rămâne valoros.)
-7. **Linkuri** — 2-3 **interne** spre articole/pagini conexe ale brandului (verifică cu `list_blog_posts`), 1+ **extern** spre o sursă autoritară.
+5. **Elemente extractabile** (pentru featured snippet + AI): un **tabel** (preț/program/opțiuni), liste, definiții, plus **2–4 „fraze-citat"** — propoziții de sine stătătoare cu o cifră reală („Un meniu de prânz în centrul Clujului costă în medie 45–60 lei în 2026") — AI-ul citează exact astfel de fraze. Doar din date reale; nu inventa cifre.
+6. **FAQ** la final (4-6 întrebări din PAA, răspuns 1-2 fraze) — hrănesc snippets + AI Overviews. (Panourile FAQ din Google au murit definitiv în 2026 — nu le promite; FAQ-ul se scrie ca TEXT VIZIBIL pentru cititor și pentru AI, nu pentru un panou.)
+7. **Linkuri** — **3–8 interne**, nu doar spre articole conexe (`list_blog_posts`), ci mai ales spre paginile care convertesc: meniul, produsele, rezervări, pagina locației. Articolul aduce traficul; linkurile interne îl duc spre comandă. Plus 1+ **extern** spre o sursă autoritară.
 8. **CTA & concluzie** — rezumat + îndemn clar (rezervare/comandă/citește mai mult).
 
 ## Checklist on-page (înainte de publicare)
@@ -34,7 +34,9 @@ Un articol care rankează ȘI e citat de AI în 2026 = intenție potrivită cu S
 - **Cover image** (1200×630) + imagini cu alt-text; densitate rezonabilă.
 - Linkuri interne ≥2, externe ≥1.
 - Diacritice corecte în text; forma fără diacritice în titlu/meta.
-- Câmpuri SEO setate la `create_blog_post`/`update_blog_post`: `primaryKeyword`, `secondaryKeywords`, `targetIntent`, `metaDescription`, `ogTitle`/`ogImageUrl`, autor (`primaryAuthorId` pentru E-E-A-T).
+- Câmpuri SEO setate la `create_blog_post`/`update_blog_post`: `primaryKeyword`, `secondaryKeywords`, `targetIntent`, `metaDescription`, `ogTitle`/`ogImageUrl`.
+- **Autor REAL cu bio** (`primaryAuthorId`) — o persoană care există (chef, manager, proprietar), cu nume + bio + poză pe pagina de autori (`/blog/authors`), nu „Admin" sau un autor inventat. E-E-A-T = Google vrea să vadă CINE răspunde.
+- Linkuri interne 3–8 (inclusiv meniu/produse/rezervări), externe ≥1; primul paragraf = răspuns direct 40–60 cuvinte; H2-uri ca întrebări; 2–4 fraze-citat cu cifre reale.
 - **Audit:** rulează `seo_audit(postId)` → rezolvă problemele „fail"/„warn" până scorul e bun (≥80). Reaudit după fix.
 
 ## Fluxul complet (cu tool-uri)
@@ -47,7 +49,8 @@ Un articol care rankează ȘI e citat de AI în 2026 = intenție potrivită cu S
 6. `update_blog_post(id, content, metaDescription, secondaryKeywords, ogImageUrl, ...)`.
 7. `seo_audit(postId)` → fix → reaudit.
 8. **Arată userului ciorna și cere feedback** la unghi/titlu înainte de publicare (vezi `condu-chrome.md` — deschide editorul + screenshot). Publici DOAR la confirmare.
-9. La publicare: `update_blog_post(id, status:"published")` (cere `metaDescription`≥70 + `coverImageUrl`). Amplifică pe social/email (skill `programeaza-postare`).
+9. La publicare: `update_blog_post(id, status:"published")` (cere `metaDescription`≥70 + `coverImageUrl`). Platforma anunță automat motoarele compatibile IndexNow (Bing/ChatGPT/Copilot/DuckDuckGo); pe Google indexarea vine din sitemap + crawl, în 1–2 săptămâni — spune-i userului, nu promite instant. Amplifică pe social/email (skill `programeaza-postare`).
+10. **Refresh substanțial la 60–90 de zile**: revino pe articolele publicate cu date noi, secțiuni noi, foto noi + re-audit — Google premiază prospețimea REALĂ, nu schimbarea datei fără conținut nou. Verifică periodic articolele mai vechi (`list_blog_posts`) și propune-i userului refresh-ul.
 
 ## Reguli (cele care contează)
 

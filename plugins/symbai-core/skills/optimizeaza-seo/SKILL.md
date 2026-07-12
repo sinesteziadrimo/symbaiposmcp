@@ -30,7 +30,8 @@ Când userul zice „optimizează-mi site-ul / magazinul", „cât de bine stau 
 
 ## Vizibilitate & „de ce nu apar în Google"
 - `get_seo_overview` (cum stai), `get_search_performance` (ce caută oamenii, pe ce poziție), `list_seo_keywords` + `get_keyword_rankings`.
-- Cauze frecvente „nu apar": indexare lentă (1-2 săpt.), meta/structură slabă (audit), intenție greșită (cuvânt cu Map Pack → ai nevoie de GBP, nu articol), pagină pe `noindex` (`indexable=false`), slug schimbat fără redirect 301.
+- Cauze frecvente „nu apar": indexare lentă (1-2 săpt. la Google — IndexNow acoperă automat Bing/ChatGPT/Copilot la publicare, dar Google NU-l folosește), meta/structură slabă (audit), intenție greșită (cuvânt cu Map Pack → ai nevoie de GBP, nu articol), pagină pe `noindex` (`indexable=false`), slug schimbat fără redirect 301, canonicalizare încă în re-evaluare după o schimbare de slug/migrare (durează — verifică cu URL Inspection înainte să declari regresie).
+- **Click-uri în scădere cu impresii stabile ≠ demotare**: e tiparul AI Overviews — oamenii primesc răspunsul direct în AI (Search Console are acum rapoarte separate de performanță AI). Soluția e conținut mai citabil (răspuns direct sus, cifre, FAQ vizibil), nu „reparat ranking-ul". Nu diagnostica „penalizare" pe volatilitate zvonită, neconfirmată oficial de Google — verifică întâi datele reale ale clientului.
 - Striking-distance: cuvinte la poziția 8-20 → optimizează pagina aferentă (un paragraf direct + 2-3 linkuri interne + titlu pe intenție).
 
 ## Fii recomandat de AI (GEO)
@@ -39,16 +40,18 @@ Când userul zice „optimizează-mi site-ul / magazinul", „cât de bine stau 
 - **Google Business Profile** = cea mai mare pârghie locală (vezi `local-seo-horeca.md`): categorie principală corectă, NAP, program, foto, postări, răspuns la recenzii (`/gbp`, skill `raspunde-recenzii`).
 - **Mențiuni de brand** pe directoare/recenzii/platforme (contează mai mult ca backlink-urile pentru AI).
 - Conținut **citabil**: răspuns sus, tabele, FAQ, statistici (vezi `geo-aeo.md`).
-- ⚠️ NU promite citări AI din `llms.txt` (nu e o pârghie). NU băga `aggregateRating` din recenzii proprii (neeligibil + risc de penalizare).
+- ⚠️ NU promite citări AI din `llms.txt` — Google a confirmat OFICIAL (iunie 2026) că nu-l folosește. NU băga `aggregateRating` din recenzii proprii (neeligibil + risc de penalizare).
 
 ## Conformitate (semnalează la audit)
 - **Consimțământ cookies (Consent Mode v2)**: banner cu Accept/Refuz egale, fără categorii pre-bifate, GA4/Pixel pornesc DOAR după accept — ANSPDCP amendează DEJA neconformitatea. Dacă vezi GA4 pornind înainte de consimțământ, semnalează userului.
-- **Date structurate** corecte (Restaurant/Menu/Article) fără `aggregateRating` din recenzii proprii.
+- **Date structurate** corecte (Restaurant/Menu/Article) fără `aggregateRating` din recenzii proprii. Lipsa marcajului FAQ NU mai e o problemă (panourile FAQ au murit definitiv în 2026). La produse cu reducere, semnalează reducerile FĂRĂ perioadă declarată — Google validează prețul redus doar cu dată de început/sfârșit.
+- **Unicitate** (spam update iunie 2026): descrieri identice pe multe produse / articole-șablon cvasi-identice = risc real de penalizare la scară. `audit_website_seo` le detectează — tratează duplicatele ca prioritate, nu cosmetică.
 - **Diacritice**: țintă fără diacritice în titlu/meta/GBP, diacritice în text, slug ASCII.
 
 ## Raportare (account manager)
 - Lunar: `get_seo_overview` (click-uri, impresii, poziție medie, cuvinte în top3/10/100, evoluție), `get_search_performance` (top câștiguri/pierderi), `get_blog_analytics_overview`, `list_seo_competitors` (share of voice).
 - Pentru local, adaugă semnalele GBP (apeluri, cereri de rute, recenzii) și vizibilitatea AI (rulează prompturile-cheie — vezi `geo-aeo.md`).
+- Search Console are acum **rapoarte separate de performanță AI** (AI Overviews/AI Mode) + „platform properties" pentru profilurile Instagram/TikTok/YouTube — recomandă-i clientului să le urmărească și explică-i tiparul „impresii stabile, click-uri în scădere" = răspunsul ajunge la om prin AI, nu că site-ul a fost demotat.
 - Prezintă pe limba userului: ce a crescut, ce de reparat, următorii 3 pași. Cere-i prioritățile.
 
 ## Reguli

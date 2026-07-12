@@ -28,7 +28,8 @@ Dacă tipul paginii ≠ formatul dominant din SERP, **nu rankezi**, oricât de b
 ### Pagina de PRODUS (PDP)
 - Descriere UNICĂ orientată pe beneficii (NU copiată de la furnizor) — vezi `descrieri-produse-seo.md`.
 - Titlu `[Nume produs] - [atribut/model] | [Brand]`; H1 = numele produsului.
-- Schema Product + Offer (preț, disponibilitate, stare) — pe Symbai se generează automat la SSR.
+- Schema Product + Offer (preț, disponibilitate, stare) — pe Symbai se generează automat la SSR. Din iulie 2026 Google recunoaște oficial și **categoria produsului** în aceste date — ține categoria corect setată pe fiecare produs.
+- **Reducerile cer perioadă declarată**: Google validează prețul redus doar dacă oferta are dată de început/sfârșit; o reducere „permanentă", fără interval, poate fi ignorată în rezultatele de cumpărături. Definește promoțiile cu perioadă, nu tăind prețul pe termen nelimitat.
 - Recenzii pe pagină (stele eligibile DOAR din recenzii reale de produs), FAQ, produse înrudite.
 - **Tool-uri**: `bulk_optimize_product_seo` (descrieri+slug la scară), `set_product_seo` (titlu/meta/slug per produs), `audit_website_seo` (vezi golurile).
 
@@ -51,8 +52,11 @@ Dacă tipul paginii ≠ formatul dominant din SERP, **nu rankezi**, oricât de b
 - Product+Offer pe PDP; CollectionPage+ItemList pe PLP; Organization/LocalBusiness sitewide; BreadcrumbList; Article pe blog. **NU** pune `aggregateRating` din recenzii proprii pe LocalBusiness/Organization (neeligibil + risc penalizare). Stelele de business vin din Google.
 
 ## Mituri de evitat (2026)
-- `llms.txt` **NU** e o pârghie de citare AI (Google a confirmat că nu-l citește). E doar documentație.
+- `llms.txt` **NU** e o pârghie de citare AI — Google a confirmat OFICIAL (iunie 2026) că nu-l folosește. E doar documentație.
 - Schema **NU** crește citările AI (studiile arată ~0 sau ușor negativ); folosește-o pentru rich results, nu pentru AI.
+- **FAQ schema nu mai produce nimic în Google** — panourile FAQ au murit definitiv în 2026, suportul a fost retras complet. Conținutul Q&A rămâne valoros ca text vizibil (pentru cititor + AI), dar nu-l marca „pentru panou".
+- **AMP e mort** — zero investiție.
+- **După o schimbare de slug (cu redirect corect), Google re-evaluează LENT** — canonicalizarea durează; nu declara regresie în prima săptămână, verifică cu URL Inspection.
 - A bloca GPTBot/Google-Extended (boți de ANTRENAMENT) NU te scoate din căutarea AI (aia folosește alți boți). Pe Symbai boții de căutare sunt permiși automat.
 - Conținut AI în masă, cvasi-identic = „scaled content abuse" = risc. AI ca schiță + verificare umană = ok.
 
