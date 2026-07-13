@@ -22,7 +22,7 @@
 ## MENIU & DISPOZITIVE POS
 
 - **Meniu & Dispozitive POS** (`/menu`) — Hub meniu cu 5 tab-uri reale: Prețuri Meniu, Platforme, Configurare Afișaj (POS/Web), Meniu Fizic, Oferte & Promoții.
-  - Tab **Prețuri Meniu** (`/menu?tab=pricing`) — Editor prețuri de vânzare per meniu: listă „Toate produsele”, food cost total, sortare după food cost, adaugă produse/pachete-combo, buton „AI Prețuri” (→/ai-pricing) + „Adaugă poze bulk”.
+  - Tab **Prețuri Meniu** (`/menu?tab=pricing`) — Editor prețuri de vânzare per meniu: listă „Toate produsele”, food cost total, sortare după food cost, adaugă produse/pachete-combo, buton „Prețuri Meniu Nou” (→/ai-pricing) + „Adaugă poze bulk”.
   - Tab **Platforme POS** (`/menu?tab=menus`) — Activezi/configurezi punctele de vânzare (Mod Kiosk, POS Ospătar, POS Mobil App&Web, POS Bar, Platforma Clienți Web) și ce meniu vede fiecare; include Website Builder și Kiosk Builder. _Notă: Din acest tab poți activa Website-ul propriu și comenzile online. Click pe 'Website/Online' → butonul 'Configurează' pentru Website Builder. Website Builder-ul are un asistent AI integrat (WB Assistant) care apare în dreapta jos — ajută cu template-uri, pagini, componente, design, setări._
   - Tab **Configurare Afișaj** (`/menu?tab=display`) — Profile de afișare meniu per canal (POS Ospătar, Kiosk Client, Website/Online, Platforma Clienți Web, Table—Clienți QR): teme, layout carduri, ordine/navigare categorii, imagini.
   - Tab **Meniu Fizic** (`/menu?tab=physical-menu`) — Designer de meniu tipărit/PDF : formate A4/A3, paginare „Recalculează”, copertă + pagini nutriționale/alergeni, export PDF/print, QR dinamic pe copertă.
@@ -258,7 +258,7 @@
 - **Analiză Rețete AI** (`/ai-recipes`) — Atelier rețete: titlu „AI Rețetare”, toate produsele finite + semipreparate (și fără rețetă), cost/unitate + food cost, presets (De rezolvat, Critice, Fără rețetă, Incomplete, Vândute marjă mică, Semipreparate), toggle sursă cost (mediu din stoc / catalog furnizor), „Rezolvă cu Sym”, chat „Sym Chef”, package builder.
 - **AI Doctor Veterinar** (`/ai-dsv`) — Expert AI legislație alimentară — fișe tehnice, HACCP, norme sanitare
 - **AI Achiziții** (`/ai-procurement`) — Asistent AI aprovizionare — analiză cheltuieli, optimizare comenzi
-- **AI Prețuri** (`/ai-pricing`) — Asistent AI pricing — analiză food cost, recomandări prețuri, marje
+- **Prețuri Meniu Nou** (`/ai-pricing`) — Asistent AI pricing — analiză food cost, recomandări prețuri, marje
 - **AI Contabilitate** (`/ai-accounting`) — Asistent AI contabilitate — coduri contabile, e-Factura, export
 - **AI Rapoarte** (`/ai-reports`) — Asistent AI rapoarte — generare rapoarte inteligente cu analiză
 - **AI CFO** (`/ai-cashflow`) — Asistent AI financiar — cash flow, previziuni, strategie financiară

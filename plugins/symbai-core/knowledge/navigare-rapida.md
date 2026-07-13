@@ -33,9 +33,9 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 ## Meniu, produse & rețete
 - **Meniu & Dispozitive POS** `/menu` — Hub meniu cu 5 tab-uri reale: Prețuri Meniu, Platforme, Configurare Afișaj (POS/Web), Meniu Fizic, Oferte & Promoții.
 · NU aici: pentru catalog produse/categorii → /master-data; pentru rețete → /ai-recipes; pentru analiză popularitate-profitabilitate (cadrane) → /ai-pricing
-- **Prețuri Meniu** `/menu?tab=pricing` — Editor prețuri de vânzare per meniu: listă „Toate produsele”, food cost total, sortare după food cost, adaugă produse/pachete-combo, buton „AI Prețuri” (→/ai-pricing) + „Adaugă poze bulk”.
-· NU aici: pentru recomandări de preț + cadrane stars/plowhorses → /ai-pricing (buton „AI Prețuri”); pentru cost din rețetă → /ai-recipes
-- **Menu Engineering (AI Prețuri)** `/ai-pricing` — Analiza popularitate vs profitabilitate: cadrane Vedete/Cai de povară/Puzzle/Câini + recomandări de preț AI.
+- **Prețuri Meniu** `/menu?tab=pricing` — Editor prețuri de vânzare per meniu: listă „Toate produsele”, food cost total, sortare după food cost, adaugă produse/pachete-combo, buton „Prețuri Meniu Nou” (→/ai-pricing) + „Adaugă poze bulk”.
+· NU aici: pentru recomandări de preț + cadrane stars/plowhorses → /ai-pricing (buton „Prețuri Meniu Nou”); pentru cost din rețetă → /ai-recipes
+- **Prețuri Meniu Nou** `/ai-pricing` — Analiza popularitate vs profitabilitate: cadrane Vedete/Cai de povară/Puzzle/Câini + recomandări de preț AI.
 · NU aici: ca să SETEZI efectiv prețurile + food cost → /menu?tab=pricing
 - **Oferte & Promoții** `/menu?tab=promotions` — Motor de oferte care reduc nota; 3 sub-tab-uri: Panou Control, Upsell & Cross-sell, Happy Hour & Dinamic. Tipuri promo: Reducere %, Articol Gratuit, Cumpără X primești Y, Sumă Fixă. Pe canale (POS/Kiosk/Website/QR/Delivery) și zile/ore; buton „Sugestii AI” + „Campanie Nouă”.
 · NU aici: pentru voucher-e/promoții în portalul clienților → /portal-customers?tab=promotions; pentru banner-e vizuale website (NU reduc nota) → website builder

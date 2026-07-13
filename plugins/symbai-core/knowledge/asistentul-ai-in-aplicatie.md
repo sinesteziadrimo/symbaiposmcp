@@ -24,7 +24,7 @@ Symbai are AI integrat peste tot: asistentul global **Sym** (butonul plutitor di
 
 ### Agenți specialiști (chat pe domenii)
 - **AI Menu Creator** (`/ai-menu`) — „Sym Menu": descrii ce meniu vrei sau ceri ajutor cu produsele; lucrezi pe un meniu selectat.
-- **AI Prețuri** (`/ai-pricing`) — „Prețuri & Clasificare Meniu": wizard în 3 pași (despre local → Sym aranjează meniul în 4 grupe → confirmi prețurile), strategii (accesibil/mediu/premium, maximizare profit, aliniere la concurență), indicator „Sănătatea meniului" și un chat „Consultant Prețuri".
+- **Prețuri Meniu Nou** (`/ai-pricing`) — wizard în 3 pași (despre local → Sym aranjează meniul în 4 grupe → confirmi prețurile), strategii (accesibil/mediu/premium, maximizare profit, aliniere la concurență), indicator „Sănătatea meniului" și un chat „Consultant Prețuri".
 - **AI DSV Chef** (`/ai-dsv`) — „Dr. Sym", expert sanitar-veterinar și chef consultant: HACCP, fișe tehnice, etichetare, legislație; are și o zonă de documente filtrabilă pe tip și perioadă.
 - **AI Achiziții** (`/ai-procurement`) — „Sym Procurement": analize de aprovizionare (furnizori, prețuri, lead time); are nevoie de date de achiziții existente ca să fie util.
 - **AI Contabilitate** (`/ai-accounting`) — „Sym Contabilitate": conturi analitice, tipuri de produse, TVA, structură contabilă.
