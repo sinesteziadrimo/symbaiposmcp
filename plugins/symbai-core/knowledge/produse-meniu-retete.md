@@ -23,12 +23,13 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - **Etichetă (tag)** — grupare de produse folosită la rutarea bonurilor pe imprimante/KDS, filtre de meniu și marketing.
 - **Ofertă** — reducere care chiar se aplică pe notă, automat (spre deosebire de banner-ele promoționale de pe website, care sunt doar vizuale).
 - **„86" / indisponibil** — produs marcat temporar indisponibil; verdictul e identic pe POS, website și meniul QR.
+- **Modificatori / opțiuni** — opțiuni de personalizare la comandă pentru un produs (ex. „Gătire", „Extra cașcaval +5", „Fără ceapă", „Tacâmuri"). Se configurează în tabul „Modificatori" de pe fișa produsului și apar pe portal/POS/telefon/Glovo/Wolt. O opțiune poate fi simplă notă sau legată de un produs (scade stoc + TVA propriu). Ghid dedicat: `modificatori-optiuni-produs.md`.
 
 ## Paginile modulului
 
 **Meniu și afișare**
 - **Meniu** (`/menu`) — pagina clasică „Meniu & Dispozitive POS" cu 5 taburi: Prețuri Meniu, Platforme, Configurare Afișaj (POS/Web), Meniu Fizic, Oferte & Promoții. Vechea adresă /menu-engineering redirectează aici.
-- **Produse Meniu** (`/menu/pricing`) — prețurile de vânzare ale articolelor din meniu: adaugi produse/pachete în meniu, editezi prețuri, filtrezi pe tip/tag/sursă de cost. Butoane: „Adaugă poze bulk" și „AI Prețuri" (duce la /ai-pricing — clasificare în 4 cadrane Vedete/Cai de povară/Ghicitori/De reconsiderat + recomandări de preț + „Pregătește meniu nou" = copie de lucru a meniului).
+- **Produse Meniu** (`/menu/pricing`) — prețurile de vânzare ale articolelor din meniu: adaugi produse/pachete în meniu, editezi prețuri, filtrezi pe tip/tag/sursă de cost. Butoane: „Adaugă poze bulk" și „Prețuri Meniu Nou" (duce la /ai-pricing — clasificare în 4 cadrane Vedete/Cai de povară/Ghicitori/De reconsiderat + recomandări de preț + „Pregătește meniu nou" = copie de lucru a meniului).
 - **Poze Bulk Meniu** (`/menu/pricing/bulk-photos`) — urci multe poze deodată (drag & drop), AI sugerează automat produsul potrivit din meniu pentru fiecare poză; tu confirmi sau schimbi.
 - **Platforme** (`/menu/platforms`) — ce meniu se vede pe fiecare canal de vânzare: Mod Kiosk, POS Ospătar, POS Mobil, POS Bar, POS (retail — vânzare rapidă), Comenzi Client și Platforma Clienți Web; per canal alegi meniurile-sursă și poți exclude categorii sau produse. Pentru prețuri diferite pe o platformă de livrare (Glovo/Wolt) creezi un meniu separat cu prețurile acelei platforme; conectarea efectivă a canalelor de livrare se face în modulul Livrări.
 - **Configurare Afișaj** (`/menu/display`) — cum arată meniul pe fiecare din cele 8 profile: POS Ospătar, POS Mobil, POS Bar, POS (retail), Kiosk Client, Website/Online, Platforma Clienți Web și Table — Clienți (meniul QR scanat la masă). Teme, mărimi carduri și navigarea categoriilor: plată, pe 2 niveluri sau drill-down.
@@ -58,7 +59,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - **Meniu Public Portal** (`/portal/menu`) — meniul digital pe platforma clienților, cu căutare, filtre dietetice, alergeni și poze (ce se afișează e controlat din Configurare Afișaj + setările portalului).
 - **Meniu la Masă QR** (`/t/:codQR`, și `/table-menu/:codQR`) — pagina deschisă când clientul scanează QR-ul mesei; detectează automat dacă telefonul e pe rețeaua restaurantului și folosește serverul local pentru viteză, altfel rămâne pe cloud.
 
-**Conex**: „Sym Menu" (`/ai-menu`) — agent AI conversațional care creează sau editează meniul întreg pentru o unitate; „AI Prețuri" (`/ai-pricing`) — analiza și recomandările de preț.
+**Conex**: „Sym Menu" (`/ai-menu`) — agent AI conversațional care creează sau editează meniul întreg pentru o unitate; „Prețuri Meniu Nou" (`/ai-pricing`) — analiza și recomandările de preț.
 
 ## Meniul Zilei (meniu fix cu feluri la alegere)
 
@@ -95,7 +96,7 @@ Pagina de administrare: **Meniul Zilei** (folosește `gaseste_in_aplicatie("meni
 4. Verifici prețul, TVA (mâncare preparată de regulă 11%) și food cost-ul afișat.
 
 **Pui preț diferit pe o platformă de livrare**
-1. Duplici meniul existent (din /master-data sau „Pregătește meniu nou" din AI Prețuri).
+1. Duplici meniul existent (din /master-data sau „Pregătește meniu nou" din Prețuri Meniu Nou).
 2. Modifici prețurile în copia respectivă.
 3. La /menu/platforms atribui meniul potrivit canalului; pentru Glovo/Wolt, sincronizarea efectivă a meniului se face din modulul Livrări.
 

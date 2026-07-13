@@ -11,7 +11,7 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **Livrări** — comenzi pentru livrare, dispecerat, curieri, integrări cu platforme (Glovo, Wolt, Bolt, Tazz). → `livrari-comenzi-online.md`
 - **B2B / en-gros (vânzare la firme)** — clienți persoane juridice cu preț de contract, comenzi wholesale, aviz + factură, picking condus de reguli. → `b2b-comenzi-wholesale.md`
 - **Distribuție de fabrică (rute + rampe de încărcare)** — organizarea zilei de distribuție: rute pe mașini, rampe de încărcare cu sloturi (când/cât stă tirul la încărcat), sosirea mașinii cu push către echipă, mașina altei firme. → `livrari-b2b-dispecerat.md`
-- **Meniu** — ce se vinde: articole de meniu cu preț, categorii, poze, meniu fizic, oferte/promoții. → `produse-meniu-retete.md`
+- **Meniu** — ce se vinde: articole de meniu cu preț, categorii, poze, meniu fizic, oferte/promoții. → `produse-meniu-retete.md`. Opțiuni de personalizare la comandă (extra, gătire, tacâmuri, suprapreț) → `modificatori-optiuni-produs.md`
 - **Produse & Stocuri (Inventar)** — produsele fizice, gestiunile, stocul pe loturi, recepții (NIR), transferuri, inventariere, consum. → `stocuri-inventar-furnizori.md`
 - **Furnizori & Achiziții** — de la cine cumperi, cataloage, comenzi de aprovizionare, prețuri furnizor. → `stocuri-inventar-furnizori.md`
 - **Rețete & Producție** — din ce se face fiecare preparat (consum + cost); producția: simplă (restaurant) sau de fabrică (loturi, planificare, trasabilitate, calitate). → `produse-meniu-retete.md` + `productie-restaurant.md` (restaurant) / `productie-fabrica.md` (fabrică) + `erp-manufacturing-benchmark.md` (preflight ERP/MES: BoM, stoc, flux, capacitate, QC)
