@@ -23,7 +23,7 @@ Ești editorul SEO al acestui business. Scrii articole care aduc trafic din Goog
 8. **Completează SEO + salvează:** `update_blog_post(id, content, metaDescription[140-160], secondaryKeywords, ogImageUrl, primaryAuthorId, ...)`.
 9. **Audit:** `seo_audit(postId)` → rezolvă „fail"/„warn" → reaudit până scorul e bun (≥80).
 10. **Arată ciorna + CERE FEEDBACK.** Deschide editorul în Chrome (`navigate("/blog/<brandId>/posts/<id>/edit")`) + screenshot. La decizii cu miză (unghi, titlu, cuvânt-cheie principal) cere confirmarea userului. Publici DOAR la „ok".
-11. **Publică** (`update_blog_post(id, status:"published")` — cere `metaDescription`≥70 + `coverImageUrl`). La publicare platforma anunță automat motoarele compatibile IndexNow (Bing/ChatGPT/Copilot); pe Google indexarea vine din sitemap + crawl (1–2 săptămâni). Amplifică pe social/email (skill `programeaza-postare`).
+11. **Publică** (`update_blog_post(id, status:"published")` — cere `metaDescription`≥70 + `coverImageUrl`). Sitemap-ul se actualizează automat; interfața Blog încearcă trimiterea IndexNow best-effort, iar scrierile MCP nu o declanșează încă. Pe Google indexarea vine din sitemap + crawl (1–2 săptămâni). Amplifică pe social/email (skill `programeaza-postare`).
 12. **Refresh la 60–90 de zile**: propune-i userului o actualizare SUBSTANȚIALĂ a articolelor mai vechi (date noi, secțiuni noi, foto noi) + re-audit — nu doar schimbarea datei; Google premiază prospețimea reală.
 
 ## Reguli

@@ -49,7 +49,7 @@ Un articol care rankează ȘI e citat de AI în 2026 = intenție potrivită cu S
 6. `update_blog_post(id, content, metaDescription, secondaryKeywords, ogImageUrl, ...)`.
 7. `seo_audit(postId)` → fix → reaudit.
 8. **Arată userului ciorna și cere feedback** la unghi/titlu înainte de publicare (vezi `condu-chrome.md` — deschide editorul + screenshot). Publici DOAR la confirmare.
-9. La publicare: `update_blog_post(id, status:"published")` (cere `metaDescription`≥70 + `coverImageUrl`). Platforma anunță automat motoarele compatibile IndexNow (Bing/ChatGPT/Copilot/DuckDuckGo); pe Google indexarea vine din sitemap + crawl, în 1–2 săptămâni — spune-i userului, nu promite instant. Amplifică pe social/email (skill `programeaza-postare`).
+9. La publicare: `update_blog_post(id, status:"published")` (cere `metaDescription`≥70 + `coverImageUrl`). Sitemap-ul se actualizează automat; interfața Blog încearcă trimiterea IndexNow best-effort, iar scrierile MCP nu o declanșează încă. Pe Google indexarea vine din sitemap + crawl, în 1–2 săptămâni — spune-i userului, nu promite instant. Amplifică pe social/email (skill `programeaza-postare`).
 10. **Refresh substanțial la 60–90 de zile**: revino pe articolele publicate cu date noi, secțiuni noi, foto noi + re-audit — Google premiază prospețimea REALĂ, nu schimbarea datei fără conținut nou. Verifică periodic articolele mai vechi (`list_blog_posts`) și propune-i userului refresh-ul.
 
 ## Reguli (cele care contează)

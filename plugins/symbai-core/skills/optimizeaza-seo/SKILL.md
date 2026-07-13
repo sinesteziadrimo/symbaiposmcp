@@ -20,6 +20,7 @@ Când userul zice „optimizează-mi site-ul / magazinul", „cât de bine stau 
    - Pagini de categorie generice (titlu „Categorie — Magazin", fără text) → `set_category_seo` (titlu + meta + text intro/outro + slug per categorie). Verifică slug-urile categoriilor cu `list_menu_categories` (au câmp `slug`). Vezi `pagini-seo-2026.md` → secțiunea PLP.
    - Entitate/NAP/Google Business slabe → `update_brand`/`update_company` + skill `raspunde-recenzii` + pagina Google Maps.
    - Articole on-page slabe → secțiunea de mai jos (`seo_audit` + `update_blog_post`).
+   - Articole vechi / blog în declin → `list_blog_refresh_candidates` (vechime + trend de click-uri din Search Console) → refresh SUBSTANȚIAL cu `update_blog_post`, apoi re-audit. Prospețimea reală e semnal-cheie și pentru citarea în AI — rulează-l lunar ca igienă.
    - Search Console/GA4 neconectate → ghidează conectarea din SEO → Setări.
 4. **Reauditează** (`audit_website_seo`) după un val de fix-uri și arată progresul scorului. Repetă până e curat.
 
@@ -30,7 +31,7 @@ Când userul zice „optimizează-mi site-ul / magazinul", „cât de bine stau 
 
 ## Vizibilitate & „de ce nu apar în Google"
 - `get_seo_overview` (cum stai), `get_search_performance` (ce caută oamenii, pe ce poziție), `list_seo_keywords` + `get_keyword_rankings`.
-- Cauze frecvente „nu apar": indexare lentă (1-2 săpt. la Google — IndexNow acoperă automat Bing/ChatGPT/Copilot la publicare, dar Google NU-l folosește), meta/structură slabă (audit), intenție greșită (cuvânt cu Map Pack → ai nevoie de GBP, nu articol), pagină pe `noindex` (`indexable=false`), slug schimbat fără redirect 301, canonicalizare încă în re-evaluare după o schimbare de slug/migrare (durează — verifică cu URL Inspection înainte să declari regresie).
+- Cauze frecvente „nu apar": indexare lentă (1-2 săpt. la Google; interfața Blog încearcă IndexNow best-effort, scrierile MCP nu îl declanșează încă, iar Google oricum NU-l folosește), meta/structură slabă (audit), intenție greșită (cuvânt cu Map Pack → ai nevoie de GBP, nu articol), pagină pe `noindex` (`indexable=false`), slug schimbat fără redirect 301, canonicalizare încă în re-evaluare după o schimbare de slug/migrare (durează — verifică cu URL Inspection înainte să declari regresie).
 - **Click-uri în scădere cu impresii stabile ≠ demotare**: e tiparul AI Overviews — oamenii primesc răspunsul direct în AI (Search Console are acum rapoarte separate de performanță AI). Soluția e conținut mai citabil (răspuns direct sus, cifre, FAQ vizibil), nu „reparat ranking-ul". Nu diagnostica „penalizare" pe volatilitate zvonită, neconfirmată oficial de Google — verifică întâi datele reale ale clientului.
 - Striking-distance: cuvinte la poziția 8-20 → optimizează pagina aferentă (un paragraf direct + 2-3 linkuri interne + titlu pe intenție).
 

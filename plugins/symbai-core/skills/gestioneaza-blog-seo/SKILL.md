@@ -28,6 +28,7 @@ Userul (proprietar/manager) vrea conținut pe website-ul lui: articole de blog c
 | „modifică / corectează / rescrie articolul Y" | `update_blog_post` | orice câmp (titlu, conținut, meta, categorie, featured, status) |
 | „publică toate ciornele / arhivează-le / marchează recomandate" | `bulk_update_blog_posts` | `action`: publish / archive / feature / unfeature, `ids[]` (max 100) |
 | „cum merge blogul / cât trafic am / vizitatori" | `get_blog_analytics_overview` | `days` (default 28); afișări, vizitatori unici, sesiuni, timp pe pagină, bounce |
+| „ce articole să actualizez / blogul scade / refresh editorial" | `list_blog_refresh_candidates` | vechime + trend click-uri Search Console; rulează-l LUNAR ca igienă |
 | „verifică SEO la articol / ce să îmbunătățesc" | `seo_audit` | scor 0-100 + fix-uri concrete (skill `optimizeaza-seo`) |
 | „ce cuvinte să țintesc / ce trafic e pe cuvinte / pe ce apar în Google" | `seo_keyword_research`, `get_search_performance`, `get_seo_overview` | (skill `cercetare-seo`) |
 | „cine-s concurenții / research piață-oraș / idei de articole" | `list_seo_competitors`, `suggest_seo_competitors`, `seo_web_research` | (skill `cercetare-seo`) |
@@ -73,8 +74,8 @@ Restul SEO + operațiile editoriale grele se fac **doar din aplicație** — ghi
 
 ## Reguli (cele care contează)
 - **Munca prin MCP, Chrome doar ca să arăți** (screenshot = livrabilul). Nu reproduce prin click ceva ce un tool face dintr-un apel. După scriere, confirmă re-citind (`get_blog_post`/`list_*`), nu „pare bine pe ecran" (`condu-chrome.md`, regula f).
-- **Ciornă întâi, publici la confirmare.** Publicarea cere `metaDescription`≥70 + `coverImageUrl` — dacă lipsesc, lasă pe draft și spune-i userului ce mai trebuie. Nu publica fără să-i arăți textul. La publicare platforma anunță automat motoarele compatibile (Bing/ChatGPT/Copilot prin IndexNow); pe Google indexarea vine din sitemap + crawl (1–2 săptămâni — nu promite instant).
-- **Articolele vechi se împrospătează**: la 60–90 de zile propune un refresh SUBSTANȚIAL (date/secțiuni/foto noi + re-audit), nu doar schimbarea datei — Google premiază prospețimea reală.
+- **Ciornă întâi, publici la confirmare.** Publicarea cere `metaDescription`≥70 + `coverImageUrl` — dacă lipsesc, lasă pe draft și spune-i userului ce mai trebuie. Nu publica fără să-i arăți textul. Publicarea/editarea din interfața Blog încearcă trimiterea IndexNow best-effort; scrierile MCP nu o declanșează încă. Pe Google indexarea vine din sitemap + crawl (1–2 săptămâni — nu promite instant).
+- **Articolele vechi se împrospătează**: rulează `list_blog_refresh_candidates` (lunar sau când userul întreabă „de ce scade blogul") — îți dă direct articolele neactualizate de 90+ zile sau cu trafic în declin. Refresh SUBSTANȚIAL (date/secțiuni/foto noi + re-audit), nu doar schimbarea datei — Google și motoarele AI premiază prospețimea reală; data modificării + sitemap-ul se actualizează automat la salvare. Interfața Blog încearcă trimiterea IndexNow best-effort, iar scrierile MCP nu o declanșează încă.
 - **Slug-ul nu se schimbă după publicare fără redirect 301** (altfel 404 + pierzi poziția în Google). Dacă userul vrea alt slug pe un articol publicat, fă întâi redirect-ul în `/blog/redirects` (UI) — explică-i de ce.
 - **Oferta poate vinde sub cost** → rulează MEREU `preview_offer_margin` întâi; respectă refuzul Margin Guardrail (creezi cu `confirmLoss:true` doar la confirmarea explicită a userului).
 - **Nu inventa** poze de copertă, autori, testimoniale, cifre de trafic sau prețuri. Ce lipsește → întrebi userul.
