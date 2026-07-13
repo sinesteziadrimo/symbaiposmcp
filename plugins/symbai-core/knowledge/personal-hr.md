@@ -4,7 +4,7 @@
 
 ## Pe scurt
 
-Modulul Personal acoperă tot ce ține de echipă: fișele angajaților, rolurile și permisiunile de acces, planificarea turelor, pontajul (intrare/ieșire cu PIN), contractele și salarizarea cu bonusuri, cererile de concediu, sarcinile zilnice, grupurile de chat ale personalului și beneficiile de mâncare/băutură pentru angajați. Centrul modulului e pagina /staff; angajații obișnuiți au paginile lor „personale" (/my-tasks, /my-groups, /my-leave-requests).
+Modulul Personal acoperă tot ce ține de echipă: fișele angajaților, rolurile și permisiunile de acces, planificarea turelor, pontajul (intrare/ieșire cu PIN din web sau self-service din aplicația mobilă Symbai Staff), contractele și salarizarea cu bonusuri, cererile de concediu, sarcinile zilnice, grupurile de chat ale personalului și beneficiile de mâncare/băutură pentru angajați. Centrul modulului e pagina /staff; angajații obișnuiți au paginile lor „personale" (/my-tasks, /my-groups, /my-leave-requests).
 
 ## Concepte
 
@@ -12,6 +12,7 @@ Modulul Personal acoperă tot ce ține de echipă: fișele angajaților, roluril
 - **Rol** — set de permisiuni care controlează ce pagini și acțiuni vede angajatul. Există un set bogat de roluri predefinite (Admin/Proprietar, Manager, Ospătar, Barman, Bucătar, Contabil etc.) plus roluri custom, construite pe permisiuni granulare grupate pe module.
 - **PIN** — cod de 4 cifre pentru autentificare rapidă pe POS și pontare. Câmpul PIN apare pe fișa angajatului doar dacă rolul lui are permisiunea de logare cu PIN.
 - **Tură programată vs pontaj** — tura e planul (cine ar trebui să lucreze, când și pe ce raion); pontajul e realitatea (intrare/ieșire efectivă cu PIN, pauze urmărite). Turele se creează ca ciornă și devin vizibile angajaților după publicare.
+- **Pontaj self-service (mobil)** — pe lângă pontajul cu PIN din web, angajatul se poate ponta singur din aplicația **Symbai Staff**, ecranul Pontaj: intrare/ieșire cu GPS (opțional selfie), pauze cu motiv. Telefoanele folosite la pontare se înregistrează per angajat, cu politică de avertizare sau blocare la telefon necunoscut. Managerul vede tot, cu comparație planificat-vs-real, în `/staff` → tab „Pontaje (prezență)".
 - **Contract** — 4 tipuri: Contract de muncă (CIM), Colaborare SRL/PFA, Zilier (cu tarif pe zi) și Fără contract (practicant/asociat). Un angajat poate avea simultan mai multe contracte (ex. CIM + SRL).
 - **Bonus** — 4 tipuri pe contract: lunar fix, % din vânzări, per zi lucrată, ad-hoc o singură dată. Bonusul % din vânzări se calculează din vânzările nete ale perioadei, opțional raportat doar la un brand de referință.
 - **Cerere de concediu** — tipuri: concediu de odihnă, medical, zile personale, fără plată, eveniment special; statusuri: în așteptare / aprobat / respins (o cerere retrasă de angajat e marcată separat ca anulată).
@@ -22,15 +23,17 @@ Modulul Personal acoperă tot ce ține de echipă: fișele angajaților, roluril
 
 ## Paginile modulului
 
-**Personal (/staff)** — pagina centrală de HR, „Personal & Control Acces", cu 8 taburi:
+**Personal (/staff)** — pagina centrală de HR, „Personal & Control Acces", cu 10 taburi:
 - **Planificator Ture** — calendar săptămânal drag-and-drop: creezi/muți ture, undo, copiere săptămână, șabloane de tură și ștergere în masă, rânduri custom (rezervă/off/training), culori per angajat. Tot aici, sub planificator, e panoul **Cereri Concediu** unde managerul aprobă sau respinge cererile.
 - **Foaie Pontaj** — pontajele efective (intrare/ieșire, pauze, total ore) cu flux de aprobare; orele suplimentare peste 8h se calculează automat. Pontarea propriu-zisă se face cu PIN de 4 cifre (intrare / pauză / ieșire).
+- **Pontaje (prezență)** — vederea managerului peste pontajul self-service din aplicația Symbai Staff: intrări/ieșiri cu GPS (opțional selfie), pauze cu motiv, telefoanele înregistrate per angajat (cu politica de avertizare/blocare) și comparația planificat-vs-real.
 - **Sarcini & Liste** — aici managerul construiește listele de sarcini: țintă pe rol+tură+raion (vizibile automat celor în tură), atribuire pe nume sau liste libere, recurență, oră-limită, dovadă la bifare, verificare; cu panou live „Cine va vedea asta și când”, șabloane și dashboard per listă (De făcut / În lucru / Gata / Întârziate). Detalii: `knowledge/tasks-sarcini.md`.
 - **Listă Personal** — directorul angajaților: căutare, filtru pe rol, statistici (total, activi, roluri, estimare salarizare lunară), adăugare/editare/ștergere angajat, salarii lunare per angajat (buton dedicat pe fiecare rând).
 - **Roluri & Permisiuni** — creezi roluri și bifezi permisiuni granulare; poți acorda „toate dintr-o categorie" cu un singur comutator.
 - **Grupuri Mesaje** — administrarea grupurilor de chat ale personalului.
 - **Program Salon** — programarea configurațiilor de sală pe zile (când e activă terasa etc.) și a raioanelor.
 - **Contracte & Salarii** — contractele fiecărui angajat (CIM/SRL-PFA/Zilier/Fără contract), alocări procentuale sau fixe pe brand/locație și bonusuri. Salariile lunare se editează lună cu lună din Listă Personal (butonul dedicat de pe rândul angajatului), iar statul de plată se importă din Excel în pagina de import contabil (/accounting-import).
+- **Beneficii Personal** — comutator global de activare + 3 sub-taburi: **Reguli** (cine primește, la ce produse, ce valoare), **Buget per angajat** (buget individual care înlocuiește bugetul standard al regulii) și **Istoric** (registrul consumului, cu link spre raportul /reports/staff-benefits). Fiecare regulă salvată are panoul „Stare regulă" care îți spune exact de ce nu se poate aplica acum. Vechiul link /settings/staff-benefits doar redirecționează aici. → ghidul complet (discovery cu owner-ul, configurare pas-cu-pas și **de ce NU se folosește discount/„din partea casei" pentru consumul angajaților, ci acest canal**) e în `beneficiu-personal.md`.
 
 Pagini „personale" (pentru orice angajat logat):
 - **Sarcinile Mele (/my-tasks)** — feed-ul angajatului, grupat Întârziate → Azi → Următoarele, cu bifare directă (și formular de dovadă unde se cere: foto/notă/număr/semnătură); fiecare sarcină arată DE CE o vede („Atribuit ție" / „Rolul tău · tura de azi" / „Liber"). Taburi: Astăzi, Generale (sarcini libere pe care le poate prelua oricine), Finalizate (numără și cele atribuite, și cele generale făcute de el) și — doar cu permisiune — Toate / Liste (unde managerul construiește). Detalii: `knowledge/tasks-sarcini.md`.
@@ -38,7 +41,6 @@ Pagini „personale" (pentru orice angajat logat):
 - **Cererile Mele (/my-leave-requests)** — angajatul își vede cererile de concediu, trimite cereri noi (tip, interval, motiv) și poate anula o cerere cât timp e încă în așteptare; vede nota managerului la aprobare/respingere.
 
 Setări și pagini conexe:
-- **Beneficii Personal (/settings/staff-benefits)** — comutator global de activare + 3 taburi: **Reguli** (cine primește, la ce produse, ce valoare), **Buget per angajat** (buget individual care înlocuiește bugetul standard al regulii) și **Istoric** (registrul consumului, cu link spre raportul /reports/staff-benefits). Fiecare regulă salvată are panoul „Stare regulă" care îți spune exact de ce nu se poate aplica acum. → ghidul complet (discovery cu owner-ul, configurare pas-cu-pas și **de ce NU se folosește discount/„din partea casei" pentru consumul angajaților, ci acest canal**) e în `beneficiu-personal.md`.
 - **AI Angajați (/ai-angajati)** — asistentul AI de HR: răspunde la întrebări despre echipă, ture, contracte și Codul muncii (ex. calcul ore suplimentare) și poate adăuga/actualiza/importa angajați prin conversație.
 
 ## Fluxuri frecvente
@@ -57,7 +59,7 @@ Setări și pagini conexe:
 2. Tu o aprobi/respingi din /staff → Planificator Ture → panoul „Cereri Concediu" (sau din centrul de aprobare al managerului).
 
 **Configurezi mâncarea personalului (beneficii)**
-1. /settings/staff-benefits → activezi comutatorul global.
+1. /staff → tab „Beneficii Personal" → activezi comutatorul global.
 2. Creezi o regulă: cine primește (toți / după rol / angajați specifici), la ce produse (toate / pe etichete / pe tipuri / produse specifice), ce valoare (gratuit 100%, reducere %, sumă fixă per produs sau per comandă, preț fix, sau gratuit din buget zilnic/săptămânal/lunar).
 3. Setezi separat aplicatorii: „fiecare pentru el" și/sau roluri/persoane care pot aplica la oricine. Opțional bifezi „doar când angajatul e la lucru" (pontat sau în tură).
 4. Beneficiul se aplică din meniul mesei la POS; consumul apare în Istoric și în raportul dedicat.
@@ -174,7 +176,7 @@ Cele mai folosite chei, pe grup:
 - **client_orders** (QR/Online): `client_orders_view`, `client_orders_manage`, `call_waiter_respond`, `bill_request_respond`, `qr_menu_manage`.
 - **payments** (Plăți & Casierie): `process_payment`, `apply_discount_fixed`, `apply_discount_custom`, `complimentary_items`, `void_item`, `void_order`, `process_refund`, `pos_return`, `pos_house`, `pos_discount`, `open_close_shift`, `cash_drops`, `tips_view`, `tips_manage`.
 - **kitchen** (Bucătărie & Producție): `kds_view`, `kds_bump`, `kds_priority`, `kds_recall`, `expeditor_access`, `production_view`, `production_manage`, `mise_en_place_view`, `log_waste`, `view_recipes`, `allergen_view`, `allergen_manage`.
-- **staff** (Personal & Ture): `staff_view`, `staff_manage`, `schedule_view`, `schedule_manage`, `shift_handover`, `shift_notes`, `roles_manage`, `crm_access`, `settings_access`, `pin_login`.
+- **staff** (Personal & Ture): `staff_view`, `staff_manage`, `schedule_view`, `schedule_manage`, `shift_handover`, `shift_notes`, `roles_manage`, `crm_access`, `settings_access`, `pin_login`, `attendance_view`, `attendance_manage` (pontaje/prezență self-service).
 - **tasks** (Sarcini): `tasks_view`, `tasks_manage`, `tasks_view_all`.
 - **reservations**: `reservations_view`, `reservations_manage`, `waitlist_manage`, `handle_complaints`, `events_view`, `events_manage`, `group_reservations`.
 - **inventory**: `inventory_view`, `inventory_count`, `stock_receive`, `stock_transfer`, `manage_suppliers`, `po_create`, `po_approve`, `master_data`, `automations_manage`.
@@ -190,7 +192,7 @@ Roluri standard predefinite (prin `seed_default_roles`): Admin/Proprietar, Manag
 ## Întrebări frecvente și capcane
 
 - **De ce nu văd câmpul PIN pe fișa angajatului?** Rolul selectat nu are permisiunea de logare cu PIN. Schimbă rolul sau adaugă permisiunea la rol și câmpul apare.
-- **De ce „nu merge" beneficiul de masă la POS?** Verifică în ordine: (1) comutatorul global din /settings/staff-benefits e pornit; (2) cel care aplică e în lista de **aplicatori** ai regulii (e separată de lista de beneficiari); (3) dacă regula are „doar când e la lucru", angajatul trebuie să fie pontat sau în tură; (4) bugetul nu e epuizat. Deschide regula și uită-te la panoul „Stare regulă" — îți spune exact cauza.
+- **De ce „nu merge" beneficiul de masă la POS?** Verifică în ordine: (1) comutatorul global din /staff → tab „Beneficii Personal" e pornit; (2) cel care aplică e în lista de **aplicatori** ai regulii (e separată de lista de beneficiari); (3) dacă regula are „doar când e la lucru", angajatul trebuie să fie pontat sau în tură; (4) bugetul nu e epuizat. Deschide regula și uită-te la panoul „Stare regulă" — îți spune exact cauza.
 - **De ce arată raportul unei ture alte cifre decât mă așteptam?** La predarea turei, încasările ei sunt înghețate într-un instantaneu — raportul istoric al turei afișează exact cifrele de la predare, chiar dacă o plată e confirmată mai târziu.
 - **De ce nu mai pot modifica o tură?** Tura a fost închisă (predată) — turele închise devin imutabile, iar încasările lor rămân cele înghețate la predare.
 - **Unde aprob cererile de concediu? Nu le găsesc la /my-leave-requests.** /my-leave-requests e pagina personală a angajatului (doar cererile lui). Aprobarea se face din /staff → Planificator Ture, panoul „Cereri Concediu".

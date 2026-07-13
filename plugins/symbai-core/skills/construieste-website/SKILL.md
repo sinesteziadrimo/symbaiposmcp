@@ -97,6 +97,11 @@ Cand userul cere un site "ca X" sau vrea un homepage/landing mai premium, verifi
 
 Explica userului rezultatul in limbaj vizual ("am reprodus hero-ul cu panou diagonal si titlu bicolor", "am pus footer cu metode de plata si ANPC"), apoi arata link/screenshot cand browserul e disponibil.
 
+## Update 2026-07 — teme premium extinse + tipografie nouă
+
+- **Șabloane premium extinse**: `apply_website_template` are acum look-uri „wow" pentru site-uri de prezentare (fine-dining & co.) — hero cinematic (kicker, text caligrafic, overlay scrim, animații la intrare, indicator de scroll), benzi de statistici, meniu editorial pe categorii, secțiune de echipă cu overlay, galerie colaj, CTA „scenă" cu glow. Pornește de la ele când userul vrea „un site premium", apoi personalizezi.
+- **Tipografie nouă (mai multe fonturi/stiluri la alegere)**: `set_website_theme(fontFamily, headingFont)` acceptă un set extins de familii — pe lângă clasicele Playfair Display/Montserrat/Poppins au intrat stiluri editoriale/display moderne (ex. Fraunces, Sora, Space Grotesk, Manrope, DM Sans, Bricolage Grotesque, Unbounded, Caveat, Marcellus, Italiana). Alege perechea titlu/text potrivită brandului; site-ul public încarcă doar fonturile folosite de temă, deci rămâne rapid.
+
 ## Cheat table — ce cere userul → ce faci
 
 | Userul cere | Tool MCP (acțiune) |

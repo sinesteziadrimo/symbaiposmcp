@@ -1,6 +1,6 @@
 ---
 name: cantare-catch-weight
-description: Configurează cântare și produse vândute/valorizate la GREUTATE variabilă (catch-weight) prin conexiune (MCP) — carne, brânză, pește, patiserie la kg. Înregistrezi cântarul fizic legat de PC-ul cu Print Agent, marchezi produsele ca „la kg" (preț pe kg, greutate pe etichetă), citești greutatea live când Print Agent este conectat sau ultima stare raportată ca fallback, și — dacă modelul de cântar nu e încă suportat — CERI integrarea lui echipei Symbai printr-un ticket. Folosește la „conectează cântarul de la recepție/bucătărie", „produsul X se vinde la kg", „pune greutatea pe etichetă/bon", „vreau catch-weight / greutate variabilă", „ce cântare suportați", „cântarul meu Y nu e suportat, cereți integrarea", „cât arată cântarul".
+description: Configurează cântare și produse vândute/valorizate la GREUTATE variabilă (catch-weight) prin conexiune (MCP) — carne, brânză, pește, patiserie la kg. Înregistrezi cântarul fizic legat de PC-ul cu Print Agent, marchezi produsele ca „la kg" (preț pe kg, greutate pe etichetă), citești greutatea live când Print Agent este conectat sau ultima stare raportată ca fallback, și — dacă modelul de cântar nu e încă suportat — CERI integrarea lui echipei Symbai printr-un ticket. Acoperă și cântărirea la pregătirea comenzilor B2B (picking cu greutate reală, manifest de încărcare, aviz/factură blocate pe necântărit) și cântarul telefonului din Symbai Staff (manual / prin PC / Bluetooth). Folosește la „conectează cântarul de la recepție/bucătărie", „produsul X se vinde la kg", „pune greutatea pe etichetă/bon", „vreau catch-weight / greutate variabilă", „ce cântare suportați", „cântarul meu Y nu e suportat, cereți integrarea", „cât arată cântarul", „nu pot emite avizul/factura — cere cântărire", „cântar la picking / pregătirea comenzilor", „cântar Bluetooth pe telefon".
 ---
 
 # Cântare & catch-weight (greutate variabilă) — prin conexiune, nu prin click
@@ -34,6 +34,13 @@ Userul (proprietar/manager de fabrică sau magazin alimentar) vinde sau valorize
 - **Greutatea pe etichetă (cod de bare GS1).** Catch-weight pune greutatea reală în codul de bare al etichetei de produs (formatul GS1 cu greutate + lot + termen de valabilitate), ca să fie scanabilă la casă/recepție. Designul etichetei se face în „Materiale grafice" (skill-ul `materiale-grafice` / `etichete-productie`); aici tu doar marchezi produsul ca la-kg și pui prețul pe kg.
 - **Citește greutatea.** „Cât arată cântarul?" → `capture_weight(scaleDeviceId:…)`. Încearcă citire LIVE prin Print Agent compatibil; dacă agentul este offline/vechi sau cântarul nu răspunde, întoarce ultima stare raportată. Citirile live sunt puse la coadă pe același PC cu Print Agent, deci nu porni tu mai multe citiri paralele pentru același operator; spune-i că sistemul le procesează pe rând.
 
+## Catch-weight în comenzile B2B (en-gros) și pe telefon
+
+- **Cântarul la picking B2B.** La pregătirea comenzilor en-gros (fabrici care vând carne/brânză la kg), produsele cântăribile se cântăresc LA PICKING: în pagina de pregătire (web) sau pe telefon, în Symbai Staff → „Pregătire comenzi (picking)" — butonul „Citește cântarul" ia greutatea live de la cântarul depozitului, iar greutatea din eticheta GS1 scanată se pre-completează singură. **Manifestul de încărcare** al cursei arată apoi greutățile reale per linie și per oprire. Prețul pe kg poate fi CONTRACTUAL per client (în catalogul B2B al clientului; bate prețul general al produsului).
+- **Întâi cântărești, apoi facturezi.** Avizul și factura pe produse cântăribile REFUZĂ cantitățile necântărite: o linie „la kg" fără greutate cântărită la picking (sau fără preț/kg) blochează generarea documentului, cu mesaj clar — valorizarea pe bucăți ar fi greșită. Coada de pregătire arată „N de cântărit" pe fiecare comandă, ca depozitarul să știe ce mai are.
+- **Etichete GS1 pe containere.** Etichetele containerelor de producție poartă codul de bare GS1 cu greutate + lot + termen de valabilitate — scanabile la picking, la încărcare și la recepția clientului. Regula „cântărire obligatorie la produsele la kg" (cu toleranță) face parte din regulile de manipulare a containerelor, pe preseturi: Control maxim / Echilibrat / Rapid.
+- **Cântarul telefonului (Symbai Staff).** Pe telefon, sursa de citire se alege per aparat din „Setări cântar": **manual** (tastezi gramele — merge cu orice cântar), **prin PC** (cântarul serial/USB/rețea legat de PC-ul cu Print Agent) sau **Bluetooth direct pe telefon** (fără PC; cântare cu profilul standard „Weight Scale" sau care transmit ASCII — le scanezi și le împerechezi din aceeași pagină). Folosit la cântăririle din telefon, de ex. inventarierea cu scăderea automată a recipientului.
+
 ## Cere integrarea unui cântar NOU (când modelul nu e suportat)
 
 Dacă userul are un cântar cu protocol propriu pe care driverele actuale nu-l acoperă, **nu-l lăsa blocat** — deschide-i o cerere la echipa Symbai:
@@ -54,5 +61,6 @@ Dacă userul are un cântar cu protocol propriu pe care driverele actuale nu-l a
 - Concepte catch-weight (greutate variabilă, conectare cântar, flux, model nou) → `knowledge/cantare-catch-weight.md`.
 - Etichete de producție cu greutate + cod de bare → skill-ul `etichete-productie` + `knowledge/etichete-productie.md`; design etichetă → skill-ul `materiale-grafice`.
 - Producție pe loturi (de unde vine greutatea la ieșirea din producție) → skill-ul `productie-flux`.
+- Comenzi B2B la kg (preț contractual/kg, picking, aviz/factură) → `knowledge/b2b-comenzi-wholesale.md`; skill-ul `gestioneaza-comenzi-b2b`.
 - Doctrina Chrome (deep-link, screenshot = livrabil) → `knowledge/condu-chrome.md`.
 - Blocaj sau cântar nesuportat → `request_scale_integration` (aici) sau, pentru altă lipsă, `trimite_ticket_symbai`.

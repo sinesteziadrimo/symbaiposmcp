@@ -185,8 +185,8 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: pentru fluxul de numerar detaliat (plăți programate/recurente) → /finance?tab=cashflow; pentru registrul legal de numerar → /finance/cash-book
 
 ## Personal & sarcini
-- **Personal** `/staff` — Pagina centrală HR „Personal & Control Acces": 8 tab-uri (Planificator Ture, Foaie Pontaj, Sarcini & Liste, Listă Personal, Roluri & Permisiuni, Grupuri Mesaje, Program Salon, Contracte & Salarii) + buton Adaugă Angajat + selector unitate.
-· NU aici: pentru sarcinile mele ca angajat → /my-tasks; pentru beneficii masă personal → /settings/staff-benefits; pentru AI HR → /ai-angajati
+- **Personal** `/staff` — Pagina centrală HR „Personal & Control Acces": 10 tab-uri (Planificator Ture, Foaie Pontaj, Pontaje (prezență), Sarcini & Liste, Listă Personal, Roluri & Permisiuni, Grupuri Mesaje, Program Salon, Contracte & Salarii, Beneficii Personal) + buton Adaugă Angajat + selector unitate.
+· NU aici: pentru sarcinile mele ca angajat → /my-tasks; pentru beneficii masă personal → /staff, tab „Beneficii Personal" (vechiul /settings/staff-benefits redirecționează); pentru AI HR → /ai-angajati
 - **Planificator Ture** `/staff?tab=scheduler` — Calendar săptămânal drag-and-drop pentru ture: adaugi/muți/editezi ture, undo, copiere săptămâna anterioară, șabloane de tură, rânduri custom, culori per angajat, buton „Salvează și Publică Program". Sub el panoul „Cereri Concediu" (aprobă/respinge).
 · NU aici: pentru pontajul efectiv (intrare/ieșire) → /staff?tab=timesheets; pentru ce aranjament de sală e activ pe zi → /staff?tab=floor-schedule; pentru turele de fabrică (producție) → /production
 - **Foaie Pontaj** `/staff?tab=timesheets` — Tabel cu pontaje efective: intrare/ieșire, pauze, total ore, ore suplimentare, cu căutare, filtru brand/perioadă, aprobare și export/print. Realitatea lucrată, nu planul.

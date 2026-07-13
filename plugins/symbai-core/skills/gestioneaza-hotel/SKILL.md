@@ -47,7 +47,7 @@ Comutarea unității (brand+locație) e o stare a browserului — dacă hotelul 
 
 ## Ce rămâne CLICK (n-are tool — navighează + arată, ghidează userul)
 Multe operațiuni de recepție trăiesc doar în UI; pentru ele du userul la pagina potrivită și, dacă vrea, ghidează-l pas cu pas (sau apeși tu butonul prin Chrome doar dacă chiar n-are alt drum — vezi `condu-chrome.md` regula d):
-- **Check-out + încasare + emitere factură** din folio — `/hotel/folios` (deschizi folio-ul, verifici cheltuielile, încasezi, scoți factura). Tu poți deschide folio-ul ca CITIRE (`list_hotel_folios`), dar închiderea/încasarea = în pagină.
+- **Check-out + încasare + emitere factură** din folio — `/hotel/folios` (deschizi folio-ul, verifici cheltuielile, încasezi, scoți factura). Tu poți deschide folio-ul ca CITIRE (`list_hotel_folios`), dar închiderea/încasarea = în pagină. De știut: **plata parțială lasă folio-ul deschis** (rămâne soldul); nota tipărită **înainte de plată** e marcată **PROFORMA** (nu e document fiscal); cu opțiunea **„cere achitarea la check-out"** activă, check-out-ul nu se face cu folio neachitat.
 - **Tarife & restricții (Rate Manager), reguli de yield, prețuri competitori** — `/hotel/rates`.
 - **Conectare/sincronizare OTA (Booking/Expedia), paritate, mapări camere** — `/hotel/channels`. „Cameră vândută de două ori" = aici se verifică jurnalul de sincronizare.
 - **Housekeeping** (marchezi camere curate/în lucru, aloci sarcini) — `/hotel/housekeeping`.
@@ -56,6 +56,7 @@ Multe operațiuni de recepție trăiesc doar în UI; pentru ele du userul la pag
 
 ## Reguli (cele care contează)
 - **Confirmă suma înainte de `hotel_charge_to_room`** — adaugă bani pe nota oaspetelui. Tool-ul **refuză** dacă depășește limita de credit pe cameră (house limit) → atunci e nevoie de aprobare de manager, fă operațiunea din aplicație. Charge-to-room **NU încasează** bani — doar crește soldul folio, de plată la check-out.
+- **Modelul de venit pentru consumul pe cameră**: **„outlet"** (implicit) — consumul din restaurant rămâne venit al restaurantului, cu bonul lui; nota de cameră îl afișează doar informativ. **„folio"** — venitul se consolidează pe camera de hotel, fără bon la restaurant. Când userul întreabă „al cui e venitul de la room service / de ce nu iese bon la restaurant", verifică întâi ce model e ales.
 - **Check-in cere camera curată** — doar camere `clean`/`inspected` primesc check-in; `dirty`/`occupied`/`maintenance`/`out_of_service` sunt refuzate. Dacă rezervarea n-are cameră asignată, dă `roomId` (vezi `list_hotel_rooms`).
 - **`get_hotel_availability`: `to` = ziua de PLECARE, exclusivă** (3 nopți 10→13 = `from:2026-06-10, to:2026-06-13`). `roomTypeId` se ia din `get_hotel_availability` (listează tipurile) sau `list_hotel_rooms`.
 - **Anularea = `update_hotel_reservation(status:"cancelled")`** — ștergerea de entități întregi NU e disponibilă prin conexiune; pentru ștergeri reale recomandă userului din aplicație.

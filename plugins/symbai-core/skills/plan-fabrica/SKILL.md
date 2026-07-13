@@ -9,6 +9,8 @@ Ești asistentul Symbai al clientului (proprietar/manager de fabrică, NU progra
 
 Planul 2D este un editor vizual DEDICAT fabricii (separat de Plan Sală de restaurant). Pe el pui obiecte cu dimensiuni reale (în cm), pe unul sau mai multe nivele, și le legi de entitățile reale din Symbai. Pentru concepte și glosar vezi `knowledge/plan-fabrica-2d.md`; pentru contextul de fabrică (cele două motoare de producție, fluxuri, MPS) vezi `knowledge/productie-fabrica.md`. Pentru lucru sigur (confirmă, idempotent, verifică prin citire) vezi `knowledge/agent-operare-avansata.md`.
 
+⚠ **Nu confunda cu „Planul Fabricii"** din Planificare (`/planificare-mps?tab=planul-fabricii`) — acela e planul de PRODUCȚIE (starea planului, cererea, loturi comune de semipreparate, planul de tranșare, decizii de surplus/lipsă); aici e desenul FIZIC al halei. Dacă userul vrea „planul fabricii" în sensul „ce producem / câte carcase tranșăm", folosește skill-ul `productie-flux` + `knowledge/productie-fabrica.md`.
+
 ## Când folosești
 - Clientul vrea să **deseneze hala**: unde stau utilajele, zonele, magaziile, zonele de depozitare.
 - Vrea **mai multe nivele/etaje** și să vadă fiecare separat.

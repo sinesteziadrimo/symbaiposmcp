@@ -57,13 +57,15 @@
   - Tab **Rapoarte Gestiune** (`/analytics?tab=gestiune`) — Tab Rapoarte Gestiune — NIR, avize, fișe de magazie, rapoarte stoc
 ## PERSONAL (STAFF)
 
-- **Personal** (`/staff`) — Pagina centrală HR „Personal & Control Acces': 8 tab-uri (Planificator Ture, Foaie Pontaj, Sarcini & Liste, Listă Personal, Roluri & Permisiuni, Grupuri Mesaje, Program Salon, Contracte & Salarii) + buton Adaugă Angajat + selector unitate.
+- **Personal** (`/staff`) — Pagina centrală HR „Personal & Control Acces': 10 tab-uri (Planificator Ture, Foaie Pontaj, Pontaje (prezență), Sarcini & Liste, Listă Personal, Roluri & Permisiuni, Grupuri Mesaje, Program Salon, Contracte & Salarii, Beneficii Personal) + buton Adaugă Angajat + selector unitate.
   - Tab **Planificator Ture** (`/staff?tab=scheduler`) — Calendar săptămânal drag-and-drop pentru ture: adaugi/muți/editezi ture, undo, copiere săptămâna anterioară, șabloane de tură, rânduri custom, culori per angajat, buton „Salvează și Publică Program'. Sub el panoul „Cereri Concediu' (aprobă/respinge).
   - Tab **Foaie Pontaj** (`/staff?tab=timesheets`) — Tab Foaie Pontaj — ore lucrate, prezență, absențe, overtime
+  - Tab **Pontaje (prezență)** — pontajul self-service din aplicația Symbai Staff, pentru manageri: intrări/ieșiri cu GPS (opțional selfie), pauze cu motiv, telefoanele înregistrate per angajat, comparație planificat-vs-real
   - Tab **Sarcini & Liste** (`/staff?tab=tasks`) — Aici MANAGERUL construiește listele de sarcini: țintă pe rol+tură+raion, recurență, oră-limită, tip dovadă, verificare; panou live „Cine va vedea asta și când (azi)', șabloane și dashboard per listă (De făcut etc.).
   - Tab **Listă Personal** (`/staff?tab=list`) — Tab Listă Personal — toți angajații, date personale, contract, PIN POS
   - Tab **Roluri & Permisiuni** (`/staff?tab=roles`) — Tab Roluri & Permisiuni — creare roluri, atribuire permisiuni, acces module
   - Tab **Program Salon** (`/staff?tab=floor-schedule`) — Pe fiecare zi a săptămânii (per locație/brand) alegi ce aranjament de sală e activ + excepții pe dată + preset QR per raion (ce câmpuri cere clientul la scanare, confirmare ospătar). Decide rutarea comenzilor QR și raioanele din modalul de tură.
+  - Tab **Beneficii Personal** — Regulile de mâncare/băutură pentru angajați — cine primește, la ce produse, ce valoare (gratuit, reducere procent, sumă fixă, preț special sau buget zilnic/săptămânal/lunar), aplicatori separați de beneficiari și buget per angajat. Vechiul link `/settings/staff-benefits` doar redirecționează aici.
 ## INVENTAR & STOC
 
 - **Tablou de Bord Stoc** (`/inventory`) — Tablou de bord stoc (fără tab-uri): carduri KPI (valoare stoc, stoc redus, de plătit furnizori), alerte și ultimele mișcări. Stocul live, inventarierea și zonele sunt la Verificări Stoc; mișcările și ieșirile la Operațiuni Gestiune.
@@ -447,7 +449,6 @@
 - **Raport Beneficii Personal** (`/reports/staff-benefits`) — Ce au consumat angajații pe beneficii (mâncare/băutură personal) — grupat pe angajat, regulă, produs sau zi, cu export CSV
 - **Reparații Date** (`/settings/repair`) — Titlu „Reparații”. 11 unelte 1-click cu scanare/preview înainte de aplicare: reconciliere comenzi, curăță produse fantomă (cloud+edge), Sync 100% cloud↔edge, unifică categorii meniu, leagă rețete↔produse (alergeni), corectează unități neconvertibile, conturi non-stocabile, GL umflat penalități, rutare bucătărie/bar, curăță rețete orfane, reconciliază rețete↔produse (product_id).
 - **Setări P&L** (`/settings/pnl-categories`) — Titlu „Setări P&L”, 4 tab-uri: „Template-uri industrie” (seturi întregi de categorii+KPI cu 1 click), „Categorii P&L” (secțiuni Venituri/COGS/Personal/OPEX + asignare tipuri), „Grupări venituri”, „Setări” (definiții + praguri KPI).
-- **Beneficii Personal (setări)** (`/settings/staff-benefits`) — Regulile de mâncare/băutură pentru angajați — cine primește, la ce produse, ce valoare (gratuit, reducere procent, sumă fixă, preț special sau buget zilnic/săptămânal/lunar), aplicatori separați de beneficiari și buget per angajat
 - **Marketing & Engagement (setări)** (`/settings/marketing`) — URL-urile publice de review (Google, TripAdvisor, Facebook) și configurarea WiFi-ului de marketing prin serverul local
 - **Contexte QR dinamice** (`/settings/qr-contexts`) — Contexte pentru codurile QR (Terasă, Piscină, Cameră hotel, Eveniment privat) — cheie URL, nume, imagine, culoare, masă implicită, cu preset-uri de pornire rapidă
 - **Câmpuri Personalizate** (`/settings/custom-fields`) — Câmpuri suplimentare pe deals, contacte, proiecte etc. — cheie tehnică, etichetă, tip (inclusiv listă cu opțiuni), obligatoriu sau nu

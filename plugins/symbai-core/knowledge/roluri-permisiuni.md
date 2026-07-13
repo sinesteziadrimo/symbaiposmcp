@@ -58,5 +58,6 @@ Regula de aur: **pregătește rolul cu tool-urile de înțelegere (vezi ce înse
 - **`all` e tot; `all:<categorie>` e tot grupul.** Preferă `all:<categorie>` pentru o funcție completă pe o zonă, în loc să enumeri zeci de chei.
 - **Pagina de configurare cere drept de „management".** Un rol cu doar `_view` vede datele, dar nu paginile de setări ale zonei — corect și intenționat.
 - **PIN-ul are nevoie de `pin_login`.** Câmpul de PIN pe fișa angajatului apare doar dacă rolul lui are `pin_login`. Dacă vrei ca angajatul să se logheze cu PIN pe POS, pune-i `pin_login` pe rol.
+- **Pontajele (prezența) au chei dedicate:** `attendance_view` — vede tabul „Pontaje (prezență)" din `/staff` (pontajul self-service din aplicația Symbai Staff) și `attendance_manage` — administrează pontajele (corecții, politici). Fără ele, tabul nu apare în meniu.
 - **„Locul la CRM" nu se dă din rol.** Accesul nominal la CRM (crm seat) se setează pe fișa angajatului, nu pe rol.
 - **Verifică prin citire, nu prin UI.** După orice scriere, `describe_role` confirmă rezultatul real (aplicația poate afișa din cache o clipă).

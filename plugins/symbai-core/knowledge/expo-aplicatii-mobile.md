@@ -8,7 +8,7 @@
 |---|---|---|
 | **Symbai POS** | ospătari, bar, recepție | operarea meselor de pe telefon: plan de sală, comenzi, plăți la masă, notificări de bucătărie |
 | **Symbai Portal** | clienții localului | meniu, comenzi, cont de client, activități/atracții din portal |
-| **Symbai Staff** | angajați: livratori, agenți de teren, vânzări/CRM, sarcini, producție/fabrică | aplicația echipei: livrări, sarcini, recepție marfă, operare de fabrică cu scanare QR |
+| **Symbai Staff** | angajați: livratori, agenți de teren, vânzări/CRM, sarcini, producție/fabrică, manageri | aplicația echipei: livrări, sarcini, recepție marfă, operare de fabrică cu scanare QR, pontaj self-service, HACCP, inventariere, cockpit de manager cu marketing |
 
 În conversații și în orice text pentru utilizator folosește numele de produs: **Symbai POS**, **Symbai Portal**, **Symbai Staff** (sau „Aplicația Staff").
 
@@ -26,6 +26,10 @@ Când utilizatorul întreabă de ecranul de mese de pe telefon, de „Acțiuni m
 - **Plata la masă**: dialogul de bacșiș apare imediat ce ospătarul apasă plata; trimiterea produselor rămase și verificarea sumei rulează în fundal. Dacă apasă „Continuă" spre metoda de plată înainte ca pregătirea să fie gata, aplicația așteaptă singură.
 - **Plăți cu cardul (aplicație de plată pe același dispozitiv)**: dacă aplicația de plată a băncii/procesatorului întoarce „anulat" sau „eșuat", Symbai POS revine imediat la alegerea metodei de plată — nota rămâne de plată și se poate reîncerca fără blocaj. Doar la rezultat incert plata rămâne în verificare până confirmă serverul.
 - **Notificări pentru personal**: notificarea de „preparat gata" de la bucătărie poate fi silențioasă (fără sunet), după setările ecranului de bucătărie. Dacă utilizatorul spune că sună deși a setat silențios, problema ține de notificările de personal/bucătărie, nu de campaniile de marketing push.
+- **Temă Zi/Noapte per angajat**: din ecranul Operațiuni → Afișaje → Temă, fiecare angajat își alege Auto / Zi / Noapte — setarea e personală, nu globală (barul pe întuneric poate sta pe Noapte, terasa pe Zi).
+- **Mod Performanță**: tot din Operațiuni → Afișaje — pentru telefoane mai slabe, reduce animațiile și efectele ca aplicația să rămână fluidă.
+- **Limba aplicației**: selector de limbă direct pe ecranul de login — 24 de limbi în Symbai POS și Symbai Staff, 32 în Symbai Portal; util pentru angajații străini.
+- **Închidere de zi de pe telefon**: închiderea zilei de casă, numărarea fizică a banilor și rapoartele X/Z se fac și din Symbai POS, ecranul „Închidere zi" — nu mai e nevoie de PC.
 
 Pentru date și modificări reale de plan de sală folosește tool-urile dedicate (`get_floor_config`, `set_floor_table_geometry`, `arrange_tables_grid`, `move_tables_to_section`, `set_zone_routing` etc.) — aplicația mobilă doar reflectă ce vede ospătarul.
 
@@ -66,6 +70,10 @@ Ce apare în aplicație depinde de profilul rezolvat din rol + funcțiile activa
 - **Fabrică**: rolurile cu producție văd tabul **Fabrică** cu subtaburi **Azi**, **Scan**, **QC**, **Etichete**, **Rețete**. Din lista de operații se pot porni/finaliza operații și marca QC OK/blocat; scanarea unui cod QR arată containerul/lotul și poate porni următoarea operație sau printa eticheta containerului scanat.
 - **Etichete de producție**: tabul **Etichete** alege o imprimantă activă și printează eticheta pentru ultimul container scanat sau pentru containerele din operațiile zilei. Nu promite funcții (ex. creare container nou) pe care nu le vezi în aplicație.
 - **Scanare QR**: operatorul folosește tabul **Scan** din Symbai Staff sau scannerul web. Pentru detalii bogate și verificare, asistentul folosește `exec_scan_container` / `exec_get_container_info`.
+- **Pontaj self-service**: ecranul **Pontaj** — intrare/ieșire cu GPS (opțional selfie), pauze cu motiv; managerul vede prezența în `/staff` → tab „Pontaje (prezență)". Detalii în `personal-hr.md`.
+- **HACCP pe mobil**: temperaturile (frigidere/congelatoare) și sarcinile HACCP (curățenie, verificări) se pot loga direct din aplicație — nu mai e nevoie de PC în bucătărie.
+- **Inventariere**: numărarea fizică de stoc (inventarierea) se poate face din Symbai Staff, direct din depozit, cu telefonul.
+- **Cockpit Manager + Marketing**: managerii au un cockpit dedicat în aplicație, iar tabul **Marketing** permite postarea pe rețelele sociale direct de pe telefon.
 
 Explică simplu: prin conexiune poți citi/scrie datele de producție și sarcini, dar acțiunile fizice de teren (camera, printarea etichetei, operația la utilaj) se fac în **Symbai Staff** sau în scannerul web, nu din chat.
 

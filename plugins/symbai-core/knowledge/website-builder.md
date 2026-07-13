@@ -20,7 +20,7 @@ Symbai are un **builder de website** integrat: din catalogul de produse + meniul
 - **Hero** (banner mare cu imagine + titlu + buton), **footer** bogat (contact, social, coloane de linkuri, copyright/CUI), **pagini legale** (Despre, Contact, Termeni, Confidențialitate, Livrare, Retur, FAQ — indexate de Google, conforme ANPC), **bară de anunțuri**, **logo**.
 - **Promoții pe site** — bannere / pop-up-uri (header-strip, footer-strip, side-modal).
 - **Navigare** — meniul de sus, cu categoriile reale ca dropdown.
-- **Theming** — culoarea brandului, fonturi, mod dark si reveal-on-scroll global (`scrollReveal`).
+- **Theming** — culoarea brandului, fonturi, mod dark si reveal-on-scroll global (`scrollReveal`). **Tipografie extinsă (iulie 2026)**: setul de fonturi la alegere pentru `fontFamily`/`headingFont` a crescut cu familii moderne editoriale/display (ex. Fraunces, Sora, Space Grotesk, Manrope, DM Sans, Unbounded, Caveat, Marcellus, Italiana) pe lângă clasicele Playfair/Montserrat/Poppins; site-ul public încarcă DOAR familiile folosite de temă (rapid la LCP/SEO).
 - **Blog public** — pagina `/blog` cu componenta `blog-listing` si articole reale din modulul Blog. La migrare de site vechi, articolele se importa ca entitati Blog (`create_blog_post` / `bulk_create_blog_posts`), nu ca simple carduri statice pe pagina.
 
 ## Concepte
@@ -40,7 +40,7 @@ Symbai are un **builder de website** integrat: din catalogul de produse + meniul
 **Creare & structură de bază**
 - `analyze_external_website` — analizează read-only un URL public și întoarce `sourceBrief` pentru replicare rapidă: SEO, logo/favicon, culori/fonturi, nav, CTA-uri, imagini/video, secțiuni, JSON-LD și indicii de framework. Pentru copiere fidelă folosește `crawlPages:true, maxPages:12` și, dacă știi pagini critice, `pageUrls:["/meniu","/blog","/galerie",...]`; primești `crawl.pages`, `crawl.urlMap` și `crawl.canonicalSlugs`. Rulează-l primul când userul spune „copiază site-ul X" / „fă-mi site ca Y".
 - `create_website` — creează site-ul (params: `brandId`, `kind` shop/site, `name`, `makeDefault`). Leagă automat meniul → canalul web.
-- `apply_website_template` — populează structura (pagini, navigare, footer cu categorii reale) și preia **culoarea brandului**. `confirmReplace: true` ca să suprascrie.
+- `apply_website_template` — populează structura (pagini, navigare, footer cu categorii reale) și preia **culoarea brandului**. `confirmReplace: true` ca să suprascrie. Șabloanele premium au fost extinse (iulie 2026) cu look-uri „wow" pentru restaurante — hero cinematic (kicker, text caligrafic, overlay, animații la intrare), benzi de statistici, meniu editorial, echipă cu overlay, galerie colaj, CTA-uri „scenă" cu glow — folosește-le ca punct de plecare pentru site-uri de prezentare premium.
 - `list_websites` — ce site-uri are brandul.
 
 **Pagini & componente**

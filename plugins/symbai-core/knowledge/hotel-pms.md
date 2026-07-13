@@ -9,7 +9,8 @@ Modulul Hotel (PMS) gestionează proprietățile cu camere: recepție (check-in/
 ## Concepte
 
 - **Sejur (stay)** — șederea unui oaspete: cameră, perioadă, tarif, status (rezervat → cazat → plecat).
-- **Folio** — contul de cheltuieli al oaspetelui pe durata sejurului (cazare + extra: restaurant, minibar, spa). Se achită la check-out și poate genera factură.
+- **Folio** — contul de cheltuieli al oaspetelui pe durata sejurului (cazare + extra: restaurant, minibar, spa). Se achită la check-out și poate genera factură. O **plată parțială** pe nota de cont lasă folio-ul deschis (rămâne soldul de achitat); nota tipărită **înainte de plată** e marcată **PROFORMA** (nu e document fiscal). Există și opțiunea **„cere achitarea la check-out"** — check-out-ul nu se face cu folio neachitat.
+- **Modelul de venit pentru consumul pe cameră** — cum se contabilizează consumul din restaurant trecut pe cameră: **„outlet"** (implicit) — consumul rămâne venit al restaurantului, cu bonul lui, iar nota de cameră îl afișează doar informativ; **„folio"** — venitul se consolidează pe camera de hotel, fără bon la restaurant (totul se încasează la hotel). Alege modelul împreună cu contabilul — schimbă cine „vede" venitul în rapoarte.
 - **Rate Manager** — calendarul de tarife: planuri tarifare, restricții (sosire/plecare, durată minimă), reguli de yield (prețuri care urcă la cerere mare), recomandări, prețuri competitori.
 - **Channel Manager** — conexiunile cu OTA-urile: mapezi camerele/tarifele tale la cele de pe Booking/Expedia; disponibilitatea și prețul se sincronizează ca să nu vinzi de două ori aceeași cameră (paritate tarifară).
 - **Housekeeping** — statusul camerelor (curată/murdară/în curățenie/mentenanță) și sarcinile aferente.
@@ -47,6 +48,9 @@ Modulul Hotel (PMS) gestionează proprietățile cu camere: recepție (check-in/
 
 - **De ce o cameră apare ocupată pe Booking dar liberă la mine?** Întârziere/eroare de sincronizare OTA — verifică /hotel/channels (jurnal sincronizare + alerte paritate).
 - **Cum scot factura unui oaspete?** Din folio la check-out (cazare + extra consumate). Facturarea fiscală urmează regulile din ghidul de finanțe.
+- **Am încasat o parte din nota de cont — de ce nu s-a închis folio-ul?** Normal: plata parțială lasă folio-ul deschis, cu soldul rămas; se închide doar la achitarea integrală.
+- **De ce scrie PROFORMA pe nota tipărită?** Ai tipărit-o înainte de plată — e doar informativă, nu document fiscal. Bonul/factura ies la încasare.
+- **Consumul de la restaurant trecut pe cameră — al cui e venitul?** Depinde de modelul ales: pe „outlet" (implicit) rămâne venit al restaurantului (nota de cameră doar îl afișează); pe „folio" se consolidează pe hotel, fără bon la restaurant.
 - **Loialitatea hotelului e aceeași cu cea de la restaurant?** Nu — hotelul are program separat (pe nopți), în /hotel/crm.
 - **Pot bloca un grup de camere?** Da — /hotel/groups (allotment) cu timeline.
 - **Unde văd recenziile de pe Booking/TripAdvisor?** /hotel/reviews (vezi și ghidul „Recenzii & reputație").

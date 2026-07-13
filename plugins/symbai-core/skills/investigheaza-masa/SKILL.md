@@ -27,6 +27,8 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 
 ### 3. „Ce trebuie să aprob?" → `list_operation_requests`
 `list_operation_requests(status: "pending")` — vezi toate cererile în așteptare cu tot ce-ți trebuie ca să decizi: tip, ospătar, masă, produse, valoare, motiv. Filtre utile: `type` (return/house/discount/customer/...), `employeeName` (toate cererile unui ospătar), `dateFrom`/`dateTo`. Întoarce și un rezumat (câte pe fiecare tip, top aprobatori). Nu include `shadow_order_conflict` nici în listă, nici în total; pentru acelea mergi la pasul 3b.
+- **Retururi split pe secții**: un retur cu produse din mai multe secții (bucătărie/bar) apare ca o cerere „părinte" cu sub-cereri per secție. Decizia se ia pe fiecare sub-cerere, nu pe părinte — vezi excepția de la pasul 4.
+- **Deblocare masă** (`unlock_table`): când unitatea are activ blocajul mesei după scoaterea notei, cererile de deblocare ale ospătarilor apar în același centru de aprobări și se aprobă/resping la fel ca celelalte.
 
 ### 3b. „Am conflict de sincronizare / shadow / Viva" → `list_shadow_order_conflicts`
 `list_shadow_order_conflicts(status: "active")` — citește conflictele tehnice de sincronizare (între cloud și serverul local) din Control Operațional. Sunt separate de cererile normale de aprobare și NU se aprobă cu `respond_operation_request`.
@@ -37,6 +39,7 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 `respond_operation_request(requestId: 123, action: "approve", approvedBy: "Nume Manager", note: "…")` — aprobă sau respinge direct. Produce efectele complete (statusul produselor se actualizează, ospătarul primește notificare, se emit bonuri de retur la bucătărie, totul intră în jurnal).
 - **Confirmă MEREU cu utilizatorul înainte** de a aproba/respinge (e o acțiune reală).
 - **Excepție transferuri**: cererile de transfer între ospătari se pot doar RESPINGE de aici — aprobarea se face de ospătarul destinatar din aplicație (altfel produsele/masa nu s-ar muta efectiv).
+- **Excepție retururi split**: cererea „părinte" a unui retur împărțit pe secții NU se aprobă direct — primești o eroare care cere aprobarea sub-cererilor pe secții. Aprobă/respinge fiecare sub-cerere în parte (protecție contra dublei creditări).
 - Necesită ca pe conexiune (token) să fie activat dreptul de scriere pe „Comenzi POS" (din portal Hub → Acces AI). Dacă lipsește, tool-ul îți spune.
 
 ### 5. „De ce s-a anulat nota X / ce s-a întâmplat cu comanda" → `get_order_timeline`

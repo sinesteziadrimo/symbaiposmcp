@@ -7,7 +7,7 @@ description: Procesează facturile de la furnizori și intrările de marfă (Int
 
 Scopul: marfa de la furnizor să intre pe stoc ȘI în contabilitate, corect. Citește la nevoie `knowledge/agent-operare-avansata.md` (confirm-first, verificare, dovezi), `knowledge/intrari-marfa-receptie.md` (fluxul complet, fiecare câmp) și `knowledge/finante-facturare-contabilitate.md` (conturi & note contabile). Secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md` rămâne valabilă (interfața se actualizează la refresh; verifică prin CITIRE, nu reapela scrierea).
 
-**Regula de aur:** stocul se mișcă DOAR la postarea NIR-ului (document de inventar POSTED). Nimic nu intră pe stoc mai devreme — nici „recepție din poză", nici factura nemapată.
+**Regula de aur:** stocul se mișcă DOAR la postarea NIR-ului (document de inventar POSTED). Factura nemapată nu intră pe stoc. Recepția din poză depinde de modul firmei: pe modurile **ciornă** / **verificare** nu intră singură (se confirmă manual); pe modul **direct pe stoc**, când totul e curat, NIR-ul se creează și se postează automat — deci regula rămâne valabilă: tot un NIR mișcă stocul.
 
 ## Pasul 0 — alege calea corectă (citește asta întâi)
 
@@ -17,6 +17,8 @@ Sunt DOUĂ situații. Confundarea lor dublează stocul — nu sări peste.
 - **CALEA B — factura/eFactura EXISTĂ deja în sistem** (importată din SPV, din poză OCR, sau împinsă din contabilitate — apare în `list_received_efactura`): **mapezi liniile** prin MCP, apoi creezi **NIR-ul legat de factură** (vezi Calea B). ⚠ NU folosi `create_inventory_document` pe Calea B — el creează o recepție SEPARATĂ, NElegată de factură, deci marfa intră de două ori și factura rămâne „fără NIR".
 
 Întreabă-te: „Există această factură în `list_received_efactura`?" Da → Calea B. Nu → Calea A.
+
+**Procedura firmei e configurabilă** (Setări → Stocuri → „Recepție din poză"; citește-o cu `get_reception_policy`, schimb-o cu `configure_reception_policy`): modul (ciornă / verificare imediată / direct pe stoc), magazia implicită de recepție și cine poate corecta mapările / adăuga produse noi. Consult-o ÎNAINTE să explici de ce a intrat (sau nu) marfa pe stoc. Există și un **loop automat de eFactură**: verifică-dacă-e-ceva-nou → importă din SPV → mapează automat liniile (pe regulile învățate) → decizie (ce e curat trece, ce e neclar rămâne la om) → procesează, cu **NIR automat opțional** — facturile pot curge singure până la stoc, tu intervii doar la excepții.
 
 ## Principii (nu greși astea)
 - **Nu inventa** produse, conturi sau prețuri. Ce nu se potrivește clar → întreabă userul.
@@ -89,7 +91,7 @@ Factură doar de servicii/utilități (fără marfă pe stoc): nu face NIR. Folo
 
 ## Capcane (spune-le userului când apar)
 - **Stoc dublat** = ai folosit `create_inventory_document` pentru o marfă care avea deja factură în sistem (trebuia Calea B). Verifică în `list_pending_nirs` / Recepții (NIR).
-- **„De ce nu intră pe stoc după poză?"** Recepția din poză = doar ciornă. Mapare → Aprobă → NIR cu magazie.
+- **„De ce nu intră pe stoc după poză?"** Depinde de modul firmei (citește-l cu `get_reception_policy`): pe **doar ciornă** → mapare → Aprobă → NIR cu magazie; pe **verificare imediată** → intră după confirmarea din ecranul de verificare; pe **direct pe stoc** → intră automat când totul e curat (furnizor recunoscut, produse identificate, total verificat), altfel cade la verificare cu motive scrise.
 - **Stoc/notă pe valoare 0** = ai uitat `unitCost` pe Calea A (sau costul lipsește din factură).
 - **Serviciu pe cont de marfă (371)** = tip produs greșit. Leagă-l de un produs de tip `service` (cont 628 automat) sau schimbă tipul cu `update_product`.
 - **„Permisiune insuficientă"** la `map_invoice_line` / `create_inventory_document` / `set_invoice_context` → tokenul n-are modulul `inventar` („Stocuri & Recepție"). Portal Hub → Acces AI.

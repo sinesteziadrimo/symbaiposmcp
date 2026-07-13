@@ -28,6 +28,8 @@ Asistentul conectat la instanța ta poate acum **crea, modifica, configura și �
 ## De reținut (ca să meargă lin)
 
 - **Cine poate încasa un eveniment** o setezi din pachetul de pe rezervare (rol: ospătar / manager / agent de vânzări) + metodele de plată permise. **Încasarea efectivă la casă + bonul fiscal** se fac tot de la casa de marcat, de un angajat real — nu prin asistent (e o acțiune de POS, nu de configurare a meniului).
+- **Oferta cu linii plătite nu se poate șterge.** Dacă pe oferta atașată unei rezervări s-a încasat deja ceva (are linii plătite), ea nu mai poate fi scoasă — banii încasați trebuie să rămână legați de ceva. Corectezi prin ajustări/storno, nu prin ștergere.
+- **Un pachet folosit de oferte nu se șterge, se dezactivează.** Dacă pachetul (șablonul) a fost deja oferit pe rezervări, la „ștergere" el e doar **dezactivat**: nu mai apare la oferte noi, dar rămâne în istoric — ofertele existente nu se strică.
 - **După o scriere, interfața nu se schimbă instant** (aplicația ține date în cache). Dacă asistentul a zis „gata”, e salvat — dă un refresh sau cere-i o listare ca să confirmi; nu repeta comanda (se creează duplicate).
 - **Produsele opțiunilor trebuie să existe deja** în meniul brandului. Dacă vrei o opțiune cu un produs nou, cere întâi crearea produsului.
 - **Modificările pentru livrare (Glovo/Wolt)** se re-sincronizează automat; pot dura până apar pe platforme.

@@ -19,7 +19,7 @@
 ## Cele 4 surse din care intră o factură
 
 - **eFactura / ANAF** — descărcată din SPV (butonul „Importă eFactura").
-- **Recepție din poză (OCR)** — faci poză la factură/aviz; AI-ul citește liniile și creează o **ciornă** (vezi mai jos — NU intră pe stoc singură).
+- **Recepție din poză (OCR)** — faci poză la factură/aviz; AI-ul citește liniile. Ce urmează depinde de **modul ales de firmă** (vezi secțiunea dedicată): doar ciornă, verificare imediată sau direct pe stoc (când furnizorul e recunoscut și totul se verifică, NIR-ul se creează singur).
 - **Push din contabilitate** — contabilul împinge factura din Symbai Accounting.
 - **Manual** — butonul „Document Nou", tastezi tot.
 
@@ -136,7 +136,7 @@ Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește *
 ## Întrebări frecvente
 
 - **De ce nu pot crea NIR-ul?** O linie e nemapată sau neacceptată, sau e mapată pe un produs șters din catalog. Verifică în Revizuire Mapări AI / `get_received_efactura_details`.
-- **Am făcut recepție din poză — de ce nu a scăzut/crescut stocul?** Recepția din poză creează doar o ciornă. Stocul intră abia după mapare → Aprobă → Creează NIR cu magazie.
+- **Am făcut recepție din poză — de ce nu a crescut stocul?** Depinde de modul ales de firmă (Setări → Stocuri → „Recepție din poză"): pe modul **doar ciornă** stocul intră abia după mapare → Aprobă → Creează NIR cu magazie; pe **verificare imediată** intră după ce confirmi produsele în ecranul de verificare; pe **direct pe stoc** intră automat când totul e curat (furnizor recunoscut, produse identificate, total verificat matematic) — orice nelămurire cade la verificare, cu motive scrise.
 - **A venit eFactura, dar am deja ciorna din poză — se dublează?** Dacă ciorna e neaprobată și sumele se potrivesc, eFactura o înlocuiește automat. Dacă nu, leagă-le manual în Reconciliere.
 - **De ce serviciul a ajuns pe cont de marfă (371)?** Tipul produsului e greșit (marcat ca marfă/stocabil). Schimbă tipul sau contul pe linie. Prin MCP, `map_invoice_line` cu produs de tip serviciu rezolvă automat contul de cheltuială corect.
 - **Preț recepție = preț de vânzare?** Câmpul „Preț recepție" actualizează prețul de raft al produsului, dar stocul se valorează la **cost**, nu la prețul de vânzare cu adaos (378/4428 nu se postează încă). E informativ.

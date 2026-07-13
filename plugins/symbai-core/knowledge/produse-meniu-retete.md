@@ -84,7 +84,7 @@ Pagina de administrare: **Meniul Zilei** (folosește `gaseste_in_aplicatie("meni
 - „Nu pot salva meniul" → verifică să existe cel puțin un fel obligatoriu și ca fiecare fel să aibă opțiuni (iar min ≤ max ≤ numărul de opțiuni).
 - „Meniul nu apare pe POS" → verifică unitatea (brand/locație), comutatorul canalului respectiv și programul (zi/oră).
 - „Nu scade stocul la felul X" → opțiunea aia n-are rețetă legată — completeaz-o la /ai-recipes.
-- Nu există tool-uri MCP dedicate meniului zilei — configurarea se face din pagină; asistentul poate ghida și verifica cu link direct.
+- Există tool-uri MCP dedicate meniului zilei și meniurilor de eveniment — asistentul poate lista, crea, actualiza și configura felurile direct din conversație, plus atașa pachetele pe rezervări. Vezi `meniuri-evenimente-si-meniul-zilei.md` pentru ce poți cere; pagina rămâne utilă pentru lucrul vizual.
 
 ## Fluxuri frecvente
 

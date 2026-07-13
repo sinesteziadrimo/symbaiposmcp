@@ -19,11 +19,11 @@ Fiecare apel e înregistrat în jurnalul de activitate (auditabil de proprietar)
 - **Pattern scriere → verificare**: confirmarea finală o dai pe baza unui tool de citire, nu a interfeței. O scriere repetată „ca să se prindă" creează duplicate.
 - **Date lipsă = întrebări, nu invenții**: la importuri nu inventa prețuri/gramaje/alergeni; cere sursa userului.
 
-## ⚠ Confirmare obligatorie (`confirm: true`) — 73 tool-uri 🔒
+## ⚠ Confirmare obligatorie (`confirm: true`) — 74 tool-uri 🔒
 
 Tool-urile marcate 🔒 cheltuie bani, trimit în masă, sunt externe sau ireversibile. La PRIMUL apel fără `confirm: true` întorc un mesaj de confirmare cu detaliile (sumă/nr. destinatari) și NU execută nimic. Fluxul corect: arăți utilizatorului ce se va întâmpla → ceri OK → reapelezi cu `confirm: true`. NU trimite `confirm: true` din prima fără acordul explicit al utilizatorului.
 
-Tool-uri cu confirm: `activate_email_flow`, `anonymize_guest`, `apply_quarterly_marketing_plan`, `approve_inventory_adjustment`, `associate_recipe_to_product`, `boost_post`, `bulk_delete_products`, `bulk_restore_product_86`, `bulk_set_product_86`, `bulk_set_product_allergens`, `cancel_awb`, `change_product_type`, `commit_recipe_mapping_session`, `create_calls_ad`, `create_event_ad`, `create_inventory_document`, `create_messages_ad`, `create_nir_from_invoice`, `create_page_likes_ad`, `create_traffic_ad`, `delete_menu_category`, `delete_pnl_snapshot`, `delete_tag`, `delete_tag_routing`, `delete_tag_routing_rule`, `dispatch_review_invitations_for_order`, `enroll_customers_in_email_sequence`, `fix_reception_costs`, `fix_recipe_ingredient`, `forget_customer_gdpr`, `gbp_create_post`, `gbp_reply_review`, `generate_daily_consumption`, `gp_refund_transaction`, `import_retetar`, `mark_channel_deposits_returned`, `merge_finished_products_bulk`, `merge_storage_zones`, `move_product_to_served_meal`, `post_inventory_document`, `process_rma_refund`, `publish_social_post`, `push_notify_customers`, `push_notify_staff`, `receive_purchase_order`, `refund_channel_order`, `reject_channel_order`, `replace_channel_order_items`, `reply_to_conversation`, `reprocess_daily_consumption`, `restore_products`, `resume_ad_campaign`, `run_crm_playbook`, `run_marketing_automation`, `run_smart_followups`, `schedule_email_campaign`, `score_sales_deals`, `send_email_campaign`, `send_email_campaign_predictive`, `send_magic_login_link`, `send_push_campaign`, `send_whatsapp_media`, `send_whatsapp_message`, `set_campaign_budget`, `set_channel_delivery_provider`, `set_ingredient_purchase_prices`, `set_product_manual_cost`, `snooze_delivery_channel`, `submit_efactura_anaf`, `sync_emag_offers`, `sync_retail_reviews`, `update_ecommerce_order_status`, `update_lot_status`.
+Tool-uri cu confirm: `activate_email_flow`, `anonymize_guest`, `apply_quarterly_marketing_plan`, `approve_inventory_adjustment`, `associate_recipe_to_product`, `boost_post`, `bulk_delete_products`, `bulk_restore_product_86`, `bulk_set_product_86`, `bulk_set_product_allergens`, `cancel_awb`, `change_product_type`, `commit_recipe_mapping_session`, `create_calls_ad`, `create_event_ad`, `create_inventory_document`, `create_messages_ad`, `create_nir_from_invoice`, `create_page_likes_ad`, `create_traffic_ad`, `delete_menu_category`, `delete_pnl_snapshot`, `delete_tag`, `delete_tag_routing`, `delete_tag_routing_rule`, `dispatch_review_invitations_for_order`, `enroll_customers_in_email_sequence`, `execute_sql_write`, `fix_reception_costs`, `fix_recipe_ingredient`, `forget_customer_gdpr`, `gbp_create_post`, `gbp_reply_review`, `generate_daily_consumption`, `gp_refund_transaction`, `import_retetar`, `mark_channel_deposits_returned`, `merge_finished_products_bulk`, `merge_storage_zones`, `move_product_to_served_meal`, `post_inventory_document`, `process_rma_refund`, `publish_social_post`, `push_notify_customers`, `push_notify_staff`, `receive_purchase_order`, `refund_channel_order`, `reject_channel_order`, `replace_channel_order_items`, `reply_to_conversation`, `reprocess_daily_consumption`, `restore_products`, `resume_ad_campaign`, `run_crm_playbook`, `run_marketing_automation`, `run_smart_followups`, `schedule_email_campaign`, `score_sales_deals`, `send_email_campaign`, `send_email_campaign_predictive`, `send_magic_login_link`, `send_push_campaign`, `send_whatsapp_media`, `send_whatsapp_message`, `set_campaign_budget`, `set_channel_delivery_provider`, `set_ingredient_purchase_prices`, `set_product_manual_cost`, `snooze_delivery_channel`, `submit_efactura_anaf`, `sync_emag_offers`, `sync_retail_reviews`, `update_ecommerce_order_status`, `update_lot_status`.
 
 ## ⚠ Plafoane (limite) per token — opționale, setate din Hub
 
@@ -34,9 +34,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 1143 tool-uri** — Citire 482 · Speciale 5 · SQL 3 · Scriere per modul 653 (pe 20 module).
+**TOTAL: 1164 tool-uri** — Citire 489 · Speciale 5 · SQL 3 · Scriere per modul 666 (pe 20 module).
 
-## Citire (fără permisiune de modul) — 482 tool-uri
+## Citire (fără permisiune de modul) — 489 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 52
 - `compare_attribution_models` — Compară modelele de atribuire (last_click/first_click/linear/time_decay/position) pe canale: venit + conversii + ROAS per model. (parametri opționali: brandId, days)
@@ -92,7 +92,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `top_produse` — Cele mai vândute produse pe o perioadă — cantitate vândută, încasări, în câte bonuri a apărut și ponderea în venituri. (parametri opționali: perioada, startDate, endDate, brandId)
 - `vanzari_in_timp` — Distribuția vânzărilor în timp pe o perioadă, pentru a vedea tiparul și orele/zilele de vârf. (parametri opționali: perioada, startDate, endDate, brandId)
 
-### Produse, meniu, rețete & stoc — 96
+### Produse, meniu, rețete & stoc — 101
 - `analyze_recipes` — Analizează rețetele unui brand (completitudine, costuri, ingrediente lipsă). (necesită: brandId)
 - `detect_production_bottlenecks` — Detectează blocajele (bottlenecks) în producție: stații supraîncărcate, utilizare vs capacitate, pe orizont temporal. (parametri opționali: daysAhead)
 - `discover_site_inventory` — Descoperă scopul ADEVĂRAT al unui site înainte de copiere: numără produse/categorii/blog/pagini din surse independente ale site-ului (sitemap, feed de platformă Shopify/WooCommerce), nu din ce vede ag (necesită: url)
@@ -107,7 +107,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_batch_stages` — Obține progresul etapelor unui lot de producție: fiecare etapă cu status, cine a completat, evenimente asociate. (necesită: batchId)
 - `get_channel_wolt_menu` — Preia assortmentul de meniu publicat curent pe Wolt pentru un canal (diagnostic — verifica ce vede clientul in storefront). (necesită: id)
 - `get_daily_consumption_status` — Verifică dacă s-a generat consumul zilnic pentru o dată (și sumarul: nr. (necesită: date)
+- `get_daily_menu` — Întoarce configurația COMPLETĂ a unui meniu al zilei: felurile, opțiunile pe fel (produs, preț delta, contribuție), prețul de bază, TVA și prețurile/vizibilitatea pe canale. (necesită: dailyMenuId)
 - `get_daily_production_summary` — Obține sumar producție pe o zi specifică: loturi finalizate, cantități, QC, waste, angajați activi. (parametri opționali: date)
+- `get_event_menu` — Întoarce configurația COMPLETĂ a unui pachet de meniu pentru evenimente: felurile, opțiunile pe fel, tier-urile de open bar, prețul de bază și clasele de invitați. (necesită: eventMenuId)
 - `get_free_shipping_suggestions` — Sugestii pentru a atinge pragul de livrare gratuită la un furnizor: cât mai lipsește și ce produse ar merita adăugate ca să treci de prag. (necesită: supplierId)
 - `get_game_slots` — Obține toate sloturile disponibile pentru un joc la o dată specifică. (necesită: gameId, date)
 - `get_lot_details` — Detaliile unui lot anume (cantitate rămasă, cost, status QC, document sursă, expirare). (necesită: lotId)
@@ -142,7 +144,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_stock_levels` — Afișează stocul curent per produs din toate gestiunile. (parametri opționali: productType, warehouseId, onlyLowStock, productName)
 - `get_supplier_last_prices` — Ultimele prețuri de achiziție pentru produsele unui furnizor: preț catalog vs ultimul preț facturat/recepționat, plus tendința (crescut/scăzut). (necesită: supplierId)
 - `get_warehouse_products_summary` — Returnează un sumar al produselor dintr-o gestiune: câte produse, pe ce categorii, tipuri de produse. (necesită: warehouseId)
+- `list_daily_menus` — Listează meniurile zilei ale brandului (nume, preț de bază, TVA, locație, activ/inactiv) cu felurile și opțiunile lor. (parametri opționali: brandId, locationId, includeInactive)
 - `list_deleted_products` — Listează produsele șterse SOFT (din catalog, dar recuperabile) — cu id, nume, tip, data ștergerii. (parametri opționali: nameContains, limit)
+- `list_event_menus` — Listează pachetele de meniu pentru evenimente ale brandului (nuntă, botez, revelion etc.) cu numele, prețul de bază, tier-ul și dacă sunt active. (parametri opționali: brandId, locationId, includeInactive)
 - `list_finished_product_merge_suggestions` — Sugestii deterministe (fără AI) de unificare a produselor finite/mărfurilor duplicate din catalog (nume identic / diferă doar prin marker mp-sp / foarte similar). (parametri opționali: scope, minScore, limit)
 - `list_hashtag_groups` — Listează grupurile de hashtag-uri salvate ale brandului (seturi reutilizabile pentru postări — favorite și cele mai folosite întâi). (parametri opționali: brandId)
 - `list_hotel_reservations` — Listează rezervările de cazare ale hotelului (cele mai recente întâi). (parametri opționali: brandId, locationId, status, limita)
@@ -170,6 +174,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_recipe_ingredients` — Listează toate ingredientele unei rețete cu detalii produs (nume, cantitate, unitate, tip, dacă e ținut pe stoc). (necesită: recipeId)
 - `list_recipe_mapping_sessions` — Listează ultimele sesiuni de «Leagă Rețetarul» (id, fișier, status, statistici, dată) — cele mai noi primele. (parametri opționali: limit)
 - `list_recipes` — Listează rețetele (semi-preparate, preparate finite) din sistem. (parametri opționali: productType, query, limit)
+- `list_reservation_event_menu_selections` — Listează ofertele de meniu de eveniment atașate unei rezervări (ce pachet, câți invitați, statusul ofertei și totalul calculat). (necesită: reservationId)
 - `list_stock_count_sessions` — Listeaza sesiunile de inventariere fizica (stocktake): status, gestiuni, progres, cate linii au fost numarate, cate diferente exista si cate intrari individuale de numarare au fost adaugate. (parametri opționali: status, warehouseId, dateFrom, dateTo)
 - `list_storage_zones_full` — Listează toate zonele de depozitare (sub-zone din magazii). (parametri opționali: parentId)
 - `list_tag_routing_rules` — Listează toate regulile de rutare tag -> ecran KDS / imprimantă: rutări per zonă de sală (cele vizibile în pagina Rutare Taguri și folosite efectiv la trimiterea comenzilor), reguli de rezervă la nive (parametri opționali: locationId, brandId)
@@ -307,12 +312,13 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `trace_recall_to_customers` — Recall UN-PAS-ÎNAINTE (Reg. (necesită: lotId)
 - `what_if_marketing_budget` — Simulează mutarea bugetului între canale: dat baselineSplit și newSplit ({ canal: lei }), prezice venitul, conversiile și ROAS-ul fiecărui scenariu pe baza LTV+ROAS real. (necesită: baselineSplit, newSplit)
 
-### Livrări, ecommerce & marketplace — 26
+### Livrări, ecommerce & marketplace — 28
 - `check_rma_eligibility` — Verifică dacă o comandă e eligibilă pentru retur: fereastra politicii, statusul comenzii, retururi deschise existente, articolele eligibile. (necesită: orderId)
 - `get_b2b_dispatch_readiness` — Checklist «ești gata de distribuție» pentru dispeceratul B2B: rampă de plecare setată, vehicule active cu capacitate, șoferi alocați, clienți + adrese geocodate, produse la kg cu preț/kg, cântar conec (parametri opționali: locationId)
 - `get_blog_analytics_overview` — Privire de ansamblu asupra traficului pe blog pe ultimele N zile: afișări de pagină, vizitatori unici, sesiuni, timp mediu pe pagină, bounce rate. (parametri opționali: brandId, days)
 - `get_blog_post` — Detaliile unui articol de blog după id: titlu, slug, status, categorie, tag-uri, meta description, conținut (trunchiat), vizualizări. (necesită: id)
 - `get_channel_delivery_provider` — Citeste furnizorul de livrare curent al venue-ului pe Wolt: WOLT (curier Wolt) sau SELF_DELIVERY (flota proprie a restaurantului). (necesită: id)
+- `get_delivery_channel` — Detaliul complet al unui canal de livrare: toata configuratia, prezenta credentialelor (fara valori), setarile per-provider (fara secrete) si telemetria (ultima sincronizare/comanda/eroare). (necesită: id)
 - `get_delivery_pnl` — P&L pe LIVRARI (segment): include marfa din consum, costuri automate de platforma si cheltuielile alese de proprietar. (parametri opționali: perioada, startDate, endDate, configId)
 - `get_dispatch_analytics` — KPI de livrare pe N zile: total/livrate/eșuate, livrări externe, timp mediu de livrare, depășiri SLA, alerte pe tip, top livratori. (parametri opționali: brandId, locationId, days)
 - `get_ecommerce_settings` — Returnează setările magazinului online (configurare store: monedă, checkout, livrare, taxe etc.). (parametri opționali: brandId)
@@ -327,6 +333,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_blog_posts` — Listează articolele de blog ale brandului (cele mai recente întâi). (parametri opționali: brandId, status, category, tag)
 - `list_courier_accounts` — Listează conturile de curier e-commerce configurate (Sameday/FAN/Cargus/DPD/GLS/KLG), cu secretele ascunse. (parametri opționali: brandId)
 - `list_delivery_alerts` — Alertele de livrare (SLA depășit, livrator blocat etc.), nerezolvate implicit. (parametri opționali: brandId, locationId, includeResolved)
+- `list_delivery_channels` — Listeaza TOATE canalele de livrare configurate (Glovo/AppSmart/Wolt/Bolt/Tazz + canale interne local/telefon): provider, nume, activ, online/pauza, sync meniu pornit, mod re-sync automat, timp de preg (parametri opționali: brandId, locationId, provider)
 - `list_delivery_pnl_segments` — Listeaza segmentele de P&L pe livrari configurate (nume, id, brand, cati angajati + reguli de cheltuieli).
 - `list_discount_codes` — Listează codurile de reducere din magazinul online: cod, tip (procent/sumă fixă/transport gratuit), valoare, minim comandă, limită utilizări, câte au fost folosite, perioada de valabilitate și dacă e (parametri opționali: brandId)
 - `list_drivers` — Angajații activi marcați ca livratori. (parametri opționali: brandId, locationId)
@@ -411,7 +418,6 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `clone_coverage_audit` — POARTA de ACOPERIRE pentru TOT ce NU e produs: compară pe dimensiuni (categorii, blog, pagini legale) paginile sursă din crawl cu entitățile importate în brand și întoarce, per dimensiune, acoperirea (necesită: jobId, brandId)
 - `clone_fidelity_audit` — POARTA de CALITATE (adâncime, nu doar număr): ia un eșantion de produse din cache-ul crawl-ului și le compară CÂMP-CU-CÂMP cu cele importate în brand (nume, poze, descriere, preț, categorie). (necesită: jobId, brandId)
 - `clone_parity_diff` — POARTA de completitudine: compară SETUL de produse din sursă (chei SKU/handle/slug, din inventarul independent) cu produsele importate în brand și întoarce ID-urile care LIPSESC — nu un procent fakeab (necesită: jobId, brandId)
-- `clone_redirect_map` — CONTINUITATE SEO la migrare: mapează fiecare URL VECHI (produs/categorie) din site-ul sursă la URL-ul nou Symbai și (apply:true) scrie redirecturi 301 în redirecturile site-ului (aplicate pe ORICE adr (necesită: jobId, brandId)
 - `compare_pnl_periods` — Compara P&L pe mai multe perioade si explica DE CE s-a schimbat profitul (profit bridge: cat a adus venitul, cat au mancat COGS/personal/OpEx). (parametri opționali: mod, periods, brandId, locationId)
 - `compare_pnl_snapshots` — Compara DOUA P&L-uri salvate (snapshot-uri) linie cu linie — venituri, COGS, profit brut, personal, OpEx, profit net + marje — cu diferenta in RON si procent. (necesită: idA, idB)
 - `gbp_maps_overview` — Rezumat al performanței pe Google Maps pe o perioadă: afișări pe Maps, apeluri, cereri de rută, click-uri website, comenzi — plus rating și nr. (parametri opționali: brandId, days)
@@ -428,6 +434,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `get_board_health` — Verifică fezabilitatea unui plan board pentru o locație: depășiri de capacitate pe slot, cerere neacoperită (DIFF), constrângeri de cuplare (baxaj). (necesită: locationId)
 - `get_cached_page` — Conținutul cache-uit + datele structurate extrase pentru O pagină (nume, SKU, preț, preț vechi, poze, descriere, breadcrumb, FAQ din JSON-LD). (necesită: jobId, url)
 - `get_channel_pnl` — P&L de DISTRIBUȚIE pe CANAL (grup de clienti) pentru fabrici: compara marja reala full-cost intre canale — ex. (parametri opționali: perioada, startDate, endDate, brandId)
+- `get_channel_setup_requirements` — Explica EXACT ce credentiale cere fiecare platforma de livrare si DE UNDE le ia clientul, plus pasii de conectare. (parametri opționali: provider)
 - `get_clone_crawl_status` — Starea unui crawl de copiere: câte pagini descoperite/cache/eșuate, procent, denominator de încredere, dead-letter. (necesită: jobId)
 - `get_cold_chain_release_readiness` — Audit read-only pentru eliberarea loturilor refrigerate/seafood: verifică dovezi de temperatură, CCP/QC, incidente HACCP, quality holds și loturi de output înainte ca stocul să fie promis. (parametri opționali: batchId, lotId, maxChilledTempC, evidenceWindowHours)
 - `get_content_brief` — Întoarce content brief-ul salvat al unui articol (outline H2/H3 + competitori SERP + cuvinte LSI + FAQ + word count țintă). (necesită: postId)
@@ -546,9 +553,9 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
 
-## Scriere per modul — 653 tool-uri (gated de writeModules pe token)
+## Scriere per modul — 666 tool-uri (gated de writeModules pe token)
 
-### produse_meniu — Produse & Meniuri — 74 tool-uri
+### produse_meniu — Produse & Meniuri — 82 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
 - `answer_bulk_import_question` — Răspunde la O întrebare de clarificare dintr-o sesiune de import (echivalentul unui click pe opțiune în pagina de import, dar prin conexiune). (necesită: sessionId, questionId, optionId)
 - `apply_menu_prices` — Actualizează prețurile meniu items în bulk. (necesită: menuId, prices)
@@ -579,6 +586,8 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_allergen` — Creează un alergen în nomenclatorul brandului (ex: Gluten, Lactate, Ouă). (necesită: name, brandId)
 - `create_availability_schedule` — Creeaza un program de DISPONIBILITATE: face un produs/categorie/meniu VIZIBIL si COMANDABIL doar in anumite zile + ore, pe anumite canale. (necesită: name)
 - `create_bulk_import_session_from_file` — Încarcă un FIȘIER (Excel/CSV) cu produse, meniu sau rețetar DIRECT prin conexiune — fără pagina de import din browser. (necesită: fileName, fileContentBase64)
+- `create_daily_menu` — Creează un meniu al zilei nou (produsul vandabil, tile-ul de POS și programul de disponibilitate se atașează automat). (necesită: name, basePrice)
+- `create_event_menu` — Creează un pachet de meniu pentru evenimente nou (produsul vandabil și tile-ul de POS se atașează automat). (necesită: name, basePrice)
 - `create_menu` — Creează un meniu nou (principal, bar, livrare, kiosk). (necesită: name, brandId)
 - `create_menu_category` — Creează o categorie de meniu (ex. (necesită: name, brandId)
 - `create_product` — Creează un produs nou. (necesită: name, brandId)
@@ -588,6 +597,8 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_vat_rate` — Creează o cotă TVA nouă (globală, valabilă pentru toate brandurile). (necesită: name, rate)
 - `create_warehouse` — Creează o gestiune/magazie nouă. (necesită: name, locationId)
 - `define_product_custom_fields` — Creează / actualizează câmpuri CUSTOM de produs pentru un brand (Setări → Câmpuri produs). (necesită: brandId, fields)
+- `delete_daily_menu` — Șterge un meniu al zilei: dezactivează tile-ul de POS, produsul vandabil (păstrat pentru istoricul de vânzări) și programul, apoi elimină felurile și opțiunile. (necesită: dailyMenuId)
+- `delete_event_menu` — Șterge un pachet de meniu pentru evenimente. (necesită: eventMenuId)
 - `delete_menu_category` 🔒 — Șterge o categorie de meniu. (necesită: categoryId)
 - `delete_redirect` — Șterge un redirect după sourcePath (URL-ul vechi). (necesită: sourcePath)
 - `delete_tag` 🔒 — Șterge complet un tag și TOATE dependentele lui: asignări, reguli de rutare (inclusiv cele globale, care nu se văd în pagina de rutare), rute către imprimante și setări per dispozitiv. (necesită: tagId)
@@ -602,6 +613,8 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `restore_product_86` — Reactivează un produs marcat anterior indisponibil («86») — îl face din nou disponibil, șterge motivul/ora-limită, oglindește disponibilitatea în articolele de meniu legate și se vede instant în POS, (necesită: productId)
 - `restore_products` 🔒 — Restaurează (anulează ștergerea SOFT) MAI MULTE produse șterse, după filtru sau productIds. (parametri opționali: productIds, tagName, hasTag, notHasTag)
 - `set_category_seo` — Setează SEO-ul unei PAGINI DE CATEGORIE din magazinul online: titlu + meta description custom, slug, text intro (deasupra grilei de produse) și outro (jos), noindex. (necesită: menuCategoryId)
+- `set_daily_menu_config` — Înlocuiește TOATE felurile și opțiunile unui meniu al zilei (ex. (necesită: dailyMenuId, courses)
+- `set_event_menu_config` — Înlocuiește TOATE felurile și opțiunile unui pachet de eveniment (ex. (necesită: eventMenuId, courses)
 - `set_initial_stock` — Setează stocul inițial al unui produs (cantitatea curentă în inventar) (necesită: productId, quantity)
 - `set_menu_category_ids` — Setează care categorii RĂDĂCINĂ apar într-un meniu — înlocuiește COMPLET lista. (necesită: menuId, categoryIds)
 - `set_product_86` — Marchează un produs ca INDISPONIBIL («86» — termen din bucătărie pentru 'nu mai avem'). (necesită: productId)
@@ -615,6 +628,8 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_product_seo` — Setează manual descrierea, slug-ul și/sau meta SEO (titlu/descriere/indexare) ale unui produs. (necesită: menuItemId)
 - `set_products_menu_category` — Setează categoria de meniu pe mai multe PRODUSE deodată. (necesită: productIds)
 - `update_availability_schedule` — Modifica un program de disponibilitate existent (vezi list_availability_schedules pentru id). (necesită: id)
+- `update_daily_menu` — Modifică antetul unui meniu al zilei existent — trimite DOAR câmpurile de schimbat (nume, preț de bază, TVA, locație, prețuri/vizibilitate pe canale, activ). (necesită: dailyMenuId)
+- `update_event_menu` — Modifică antetul unui pachet de meniu pentru evenimente — trimite DOAR câmpurile de schimbat (nume, preț de bază, tier, emoji, culoare, minim invitați, avans, locație, activ). (necesită: eventMenuId)
 - `update_menu` — Actualizează un meniu existent (nume, status, meniu implicit). (necesită: menuId, brandId)
 - `update_menu_category` — Actualizează o categorie de meniu existentă: redenumire (name), re-parentare (parentId — numărul părintelui din același brand, sau null pentru rădăcină), sortOrder, color. (necesită: categoryId)
 - `update_menu_category_fields` — Modifică o categorie de meniu existentă — field-setter generic: trimite DOAR câmpurile de schimbat (name, color, icon, parentId, sortOrder, brandId, imageUrl). (necesită: categoryId)
@@ -787,10 +802,11 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_time_entry` — Actualizează o pontare existentă (după timeEntryId) — tipic pentru a închide un pontaj deschis (trimite clockOut) sau a corecta ore/pauză. (necesită: timeEntryId)
 - `upsert_employee_monthly_salary` — Înregistrează (creează sau actualizează) salariul lunar al unui angajat pentru un an+lună dat: brut, net și bonusuri. (necesită: employeeId, year, month)
 
-### rezervari_clienti — Rezervări & Clienți — 28 tool-uri
+### rezervari_clienti — Rezervări & Clienți — 31 tool-uri
 - `add_customer_group_member` — Adaugă un client ca membru într-o grupare, cu sold wallet/credite/puncte și tier inițial. (necesită: groupId, portalUserId, firstName, lastName)
 - `anonymize_guest` 🔒 — GDPR dreptul la ștergere (Articol 17) pentru un OASPETE hotel: anonimizează PII (nume/email/telefon/adresă), PĂSTREAZĂ agregatele fiscale. (necesită: guestProfileId)
 - `apply_milestone_template` — Aplică un ȘABLON de program (milestone template) pe o rezervare, INTELIGENT: potrivește item-urile de tip joc cu sloturile reale disponibile în acea zi și pregătește produsele pre-comandate. (necesită: reservationId, templateId)
+- `attach_event_menu_to_reservation` — Atașează (ofertă) un pachet de meniu de eveniment la o rezervare: validează alegerile, calculează prețul, îngheață un snapshot (price-lock) și generează liniile de venit ale evenimentului. (necesită: reservationId, eventMenuId, guestCounts)
 - `award_customer_loyalty_points` — Acordă sau corectează puncte de fidelitate unui client POS. (necesită: customerId, points)
 - `award_loyalty_points` — Acordă sau ajustează manual puncte de fidelitate unui oaspete. (necesită: guestProfileId, points)
 - `bulk_update_reservations` — Modifică ÎN MASĂ mai multe rezervări care îndeplinesc un filtru — un singur apel în loc de zeci de editări manuale. (necesită: filter, set)
@@ -802,6 +818,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `create_loyalty_tier` — Adaugă un nivel (tier) în programul de fidelitate hotel: nume, prag de puncte/nopți, multiplicator de câștig și beneficii. (necesită: name)
 - `create_reservation` — Creează o rezervare de masă. (necesită: brandId, customerName, guestCount, date, time)
 - `create_waitlist_entry` — Adaugă un client pe lista de așteptare (walk-in fără rezervare) (necesită: guestName, partySize)
+- `delete_event_menu_selection` — Scoate o ofertă de meniu de eveniment de pe o rezervare și șterge liniile de venit generate de ea (liniile adăugate manual rămân). (necesită: selectionId)
 - `evaluate_loyalty_drop_alerts` — Evaluează alertele de scădere a fidelizării (oaspeți inactivi, tier-uri în scădere) pentru toate locațiile cu alerte activate și SALVEAZĂ alertele găsite → necesită drept de scriere pe Rezervări & Cli
 - `expire_loyalty_points` — Rulează manual job-ul de expirare a punctelor de fidelitate ajunse la termen (global).
 - `forget_customer_gdpr` 🔒 — GDPR dreptul la ștergere (Articol 17) pentru un CLIENT retail: anonimizează PII, curăță jurnalul de comunicări și revocă tot marketingul. (necesită: customerId)
@@ -814,6 +831,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `set_reservation_milestones` — Gestionează MILESTONE-urile (jaloanele pe oră) ale fișei de eveniment: sosire, welcome drink, masă, tort, cadouri, plecare etc. (necesită: action)
 - `set_reservation_products` — Setează PRODUSELE PRE-COMANDATE pe fișa unui eveniment (BEO) într-un singur apel — inima unui BEO, în loc de ~30 de clicuri. (necesită: reservationId)
 - `update_customer` — Editează un client existent (după ID). (necesită: customerId)
+- `update_event_menu_selection` — Editează o ofertă de meniu de eveniment atașată pe o rezervare: statusul, notele, numărul garantat de invitați, degustarea și POLITICA DE ÎNCASARE (cine încasează + metodele permise). (necesită: selectionId)
 - `update_reservation` — Actualizează o rezervare existentă (status, data, ora, nr persoane, note, etc.) (necesită: reservationId)
 - `update_waitlist_entry` — Actualizează o intrare din lista de așteptare (status, timp estimat, etc.) (necesită: entryId)
 
@@ -880,7 +898,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `add_pnl_snapshot_adjustment` — Adauga pe un P&L salvat (snapshot) un venit, o cheltuiala sau un angajat SUPLIMENTAR care nu e in sistem (ex. (necesită: snapshotId, tip, label, amount)
 - `apply_accounting_codes` — Aplică coduri contabile în bulk pe produse. (necesită: assignments)
 - `apply_pnl_industry_template` — Aplica un TEMPLATE DE INDUSTRIE pe P&L (un click -> set complet de KPI-uri + grupari de venituri optimizate pe tipul de business). (necesită: profile)
-- `close_cash_book_day` — ATENȚIE: operațiune legală cu efect definitiv. (necesită: registerId, businessDate)
+- `close_cash_book_day` — ATENȚIE: operațiune legală cu efect definitiv. (necesită: registerId, businessDate, countedAmount)
 - `configure_pnl_day_allocation` — Seteaza CUM se imparte o cheltuiala pe zilele saptamanii (pentru P&L pe zile). (necesită: method)
 - `configure_pnl_display` — Seteaza ce se AFISEAZA in raportul P&L (/reports/pnl): vizibilitatea cardului 'Cost REAL al bunurilor' (Food Cost REAL — toata marfa iesita raportata la banii efectiv incasati, dupa reduceri/oferte/di (parametri opționali: trueFoodCostVisibility, cogsByTagEnabled, salesByTagEnabled)
 - `configure_pnl_revenue_grouping` — Activeaza/dezactiveaza sau adauga o grupare de venituri (sub-sectiune pliabila la Venituri in P&L). (necesită: sourceField)
@@ -963,7 +981,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `configure_portal_menu_config` — Configureaza setarile meniului din portal: filtre dietetice, afisare gramaj, alergeni, descrieri, nutritie, header-uri categorii, imagine hero. (necesită: brandId)
 - `configure_portal_qr` — Configureaza self-service-ul QR de la masa (Nivel Configurare QR): nivelul (brand/zona/raion), modul de plata online de la masa si presetul activ de date cerute la scanare. (necesită: brandId)
 - `configure_portal_texts` — Configureaza textele afisate pe portal: titlu bun venit, subtitlu, buton explorare, text inregistrare. (necesită: brandId)
-- `configure_pos_settings` — Configurează setările de funcționare ale POS-ului pentru un brand (ex: aprobare manager, discounturi permise, tipărire bon). (necesită: brandId)
+- `configure_pos_settings` — Configurează numai setările pos_settings consumate efectiv: scanner, propagare 86, impozit bacșiș și automatizări fiscale. (necesită: settings)
 - `configure_reception_policy` — Setează procedura firmei pentru RECEPȚIA PRIN POZE. (parametri opționali: mode, defaultReceptionWarehouseId, allowMappingEdits, allowNewProducts)
 - `configure_reservation_deposit` — Configurează cerințele de depozit/avans pentru rezervări (necesită: brandId)
 - `configure_reservation_operating_hours` — Configurează programul de operare al rezervărilor pe fiecare zi a săptămânii (necesită: brandId)
@@ -1112,7 +1130,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `sync_sales_pipeline_template` — Sincronizează (reconciliază) etapele pipeline-ului principal de vânzări al unui brand cu un set de etape-șablon, IDEMPOTENT și fără pierderi de date. (necesită: stages)
 - `update_pipeline_stage` — Modifică o etapă existentă de pipeline (redenumire, culoare, ordine, probabilitate, marcaj câștigat/pierdut). (necesită: stageId)
 
-### livrari — Livrări & Flotă — 41 tool-uri
+### livrari — Livrări & Flotă — 42 tool-uri
 - `accept_channel_order` — Accepta o comanda noua de pe agregatoare (Wolt/Glovo/Bolt/Tazz): confirma la platforma cu timpul de pregatire estimat din KDS (precomenzile Wolt se confirma cu confirm-preorder) si tipareste bonul la (necesită: id)
 - `acknowledge_delivery_alert` — Confirmă (acknowledge) o alertă de livrare. (necesită: id)
 - `apply_b2b_route_plan` — APLICĂ planul de rute pentru o zi (după preview cu plan_b2b_delivery_routes): șterge cursele planificate NEblocate din ziua respectivă (comenzile revin în plan) și creează cursele noi cu opririle în o (necesită: runDate)
@@ -1151,13 +1169,15 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `sync_channel_menu` — Trimite meniul complet catre platforma (Wolt/Glovo) pentru un canal. (necesită: id)
 - `track_awb` 🌐 — ATENȚIE — apel extern: interoghează starea live a unui AWB la curier și actualizează statusul expedierii (și comanda dacă e livrată). (necesită: id)
 - `unassign_orders` — Retrage alocarea unor comenzi de la livrator și le readuce la „gata de livrare”. (necesită: orderIds)
-- `update_channel_menu_items` — Actualizare PARTIALA de meniu pe platforma (fara re-sync complet): pret, pret redus, disponibilitate (enabled/in_stock), stoc si optiuni pentru produse selectate. (necesită: id)
+- `update_channel_menu_items` — Actualizare PARTIALA de meniu pe platforma (fara re-sync complet): pret, disponibilitate, stoc si optiuni. (necesită: id)
+- `update_delivery_channel` — Editeaza un canal de livrare existent — ORICE credentiala SAU camp de configurare: adauga/schimba token (apiKey/apiSecret), webhookSecret, storeId/externalStoreId/venueId, environment; sau config: num (necesită: id)
 - `update_delivery_zone` — Modifică o zonă de livrare existentă (taxe, praguri, ore, contur, activare). (necesită: id)
 - `update_vehicle` — Modifică un vehicul din flotă (număr, tip, status, capacitate, șofer alocat). (necesită: id)
 
-### ecommerce — Magazin Online — 20 tool-uri
+### ecommerce — Magazin Online — 21 tool-uri
 - `add_website_section` — Adaugă (sau actualizează prin sectionId) o secțiune pe o pagină a website-ului magazinului — homepage implicit — FĂRĂ a înlocui restul paginii (spre deosebire de set_website_page_content). (necesită: brandId, type, config)
 - `apply_website_template` — Reconstruiește structura unui website EXISTENT dintr-un template, cu date REALE (categorii reale în meniu/footer, contact din firmă, pagini cablate la produse/meniu). (necesită: brandId)
+- `clone_redirect_map` — CONTINUITATE SEO la migrare: mapează URL-urile VECHI de produs, categorie, blog și pagini publice la URL-urile noi Symbai și (apply:true) scrie întregul lot atomic în redirecturile site-ului. (necesită: jobId, brandId)
 - `create_discount_code` — Creează un cod de reducere pentru magazinul online (ex: VARA10 = 10% reducere). (necesită: code, type)
 - `create_shipping_zone` — Creează o zonă de livrare cu tarifele ei pentru MAGAZINUL ONLINE — exact tarifele pe care le vede clientul la checkout pe site. (necesită: name)
 - `create_website` — Creează un website nou pentru un brand (config builder din /ecommerce/websites), cu structură REALĂ din prima: meniul (navbar) și footer-ul se construiesc din categoriile reale ale brandului (link-uri (necesită: brandId)

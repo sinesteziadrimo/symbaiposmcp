@@ -53,5 +53,6 @@ Citește întâi `knowledge/agent-operare-avansata.md` (standardul de execuție 
 - **`all` = tot; `all:<categorie>` = tot grupul.** Preferă `all:<categorie>` pentru o funcție completă pe o zonă.
 - **Pagina de configurare cere drept de „management"** — un rol doar-`_view` nu o vede (intenționat).
 - **PIN-ul cere `pin_login`** pe rol ca să apară câmpul de PIN pe fișa angajatului.
+- **Pontajele (prezența) au chei dedicate:** `attendance_view` (vede tabul „Pontaje (prezență)" din `/staff` și pontajele echipei) și `attendance_manage` (le administrează). Fără ele, tabul nu apare.
 - **„Locul la CRM" nu se dă din rol** — se setează pe fișa angajatului.
 - **Verifică prin citire, nu din UI.**

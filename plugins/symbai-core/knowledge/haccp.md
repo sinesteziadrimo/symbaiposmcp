@@ -4,7 +4,7 @@
 
 ## Pagina și taburile
 
-Totul stă pe pagina **`/haccp`** („HACCP & Siguranță Alimentară"), cu un **Scor de Conformitate** în antet (combină % sarcini de curățenie făcute, % citiri de temperatură conforme și incidentele deschise). Taburile sunt adresabile prin `?tab=` — du-te direct la cel potrivit:
+Totul stă pe pagina **`/haccp`** („HACCP & Siguranță Alimentară"), cu un **Scor de Conformitate** în antet (combină % sarcini de curățenie făcute, % citiri de temperatură conforme și incidentele deschise). Temperaturile și sarcinile HACCP se pot loga și **din aplicația mobilă Symbai Staff** — bucătarul nu are nevoie de PC (vezi `expo-aplicatii-mobile.md`). Taburile sunt adresabile prin `?tab=` — du-te direct la cel potrivit:
 
 | Tab (`?tab=`) | Ce e | Tool-uri MCP |
 |---|---|---|
