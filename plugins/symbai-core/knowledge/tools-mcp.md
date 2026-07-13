@@ -6,6 +6,7 @@ Modelul de permisiuni al tokenului:
 - **Citire = mereu disponibilă** — listări, căutări, rapoarte, analiză.
 - **Scriere = per modul** — fiecare tool de scriere cere modulul lui bifat pe token (portal Hub → Acces AI); altfel: „permisiune insuficientă".
 - **SQL doar-citire = comutator separat** pe token (SELECT cu protecții).
+- **SQL DML direct = capabilitate admin separată** — `execute_sql_write` apare doar pe tokenuri temporare Hub-admin cu `sqlWrite`; nu face parte din modulele obișnuite de scriere.
 - **Secretele nu se expun prin MCP** — payload-urile `data` redactează credentiale/tokenuri/hash-uri: SMTP, portal furnizor, marketplace, OAuth/API delivery, router/UniFi, PIN/parole/CNP/salarii angajați, tokenuri contract/plată/tracking. Dacă userul cere un secret, verifică statusul și du-l la pagina de regenerare/reconectare; nu încerca SQL.
 - **Plafoane (limite) = opționale, per token** — vezi mai jos.
 
@@ -34,9 +35,9 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 1164 tool-uri** — Citire 489 · Speciale 5 · SQL 3 · Scriere per modul 666 (pe 20 module).
+**TOTAL: 1165 tool-uri** — Citire 490 · Speciale 5 · SQL citire 3 · SQL scriere admin 1 · Scriere per modul 666 (pe 20 module).
 
-## Citire (fără permisiune de modul) — 489 tool-uri
+## Citire (fără permisiune de modul) — 490 tool-uri
 
 ### Vânzări, comenzi, casă & financiar — 52
 - `compare_attribution_models` — Compară modelele de atribuire (last_click/first_click/linear/time_decay/position) pe canale: venit + conversii + ROAS per model. (parametri opționali: brandId, days)
@@ -312,7 +313,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `trace_recall_to_customers` — Recall UN-PAS-ÎNAINTE (Reg. (necesită: lotId)
 - `what_if_marketing_budget` — Simulează mutarea bugetului între canale: dat baselineSplit și newSplit ({ canal: lei }), prezice venitul, conversiile și ROAS-ul fiecărui scenariu pe baza LTV+ROAS real. (necesită: baselineSplit, newSplit)
 
-### Livrări, ecommerce & marketplace — 28
+### Livrări, ecommerce & marketplace — 29
 - `check_rma_eligibility` — Verifică dacă o comandă e eligibilă pentru retur: fereastra politicii, statusul comenzii, retururi deschise existente, articolele eligibile. (necesită: orderId)
 - `get_b2b_dispatch_readiness` — Checklist «ești gata de distribuție» pentru dispeceratul B2B: rampă de plecare setată, vehicule active cu capacitate, șoferi alocați, clienți + adrese geocodate, produse la kg cu preț/kg, cântar conec (parametri opționali: locationId)
 - `get_blog_analytics_overview` — Privire de ansamblu asupra traficului pe blog pe ultimele N zile: afișări de pagină, vizitatori unici, sesiuni, timp mediu pe pagină, bounce rate. (parametri opționali: brandId, days)
@@ -331,6 +332,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_awb_shipments` — Listează expedierile AWB e-commerce (curier, număr AWB, status, COD), filtrabil pe comandă/brand/curier/status. (parametri opționali: orderId, brandId, provider, status)
 - `list_blog_categories` — Listează categoriile de blog existente pentru brand. (parametri opționali: brandId)
 - `list_blog_posts` — Listează articolele de blog ale brandului (cele mai recente întâi). (parametri opționali: brandId, status, category, tag)
+- `list_blog_refresh_candidates` — Articolele de blog care au nevoie de REÎMPROSPĂTARE — prospețimea e unul din cele mai puternice semnale și pentru Google și pentru citarea în AI (paginile citate de ChatGPT au aproape toate update-uri (parametri opționali: brandId, staleDays, limit)
 - `list_courier_accounts` — Listează conturile de curier e-commerce configurate (Sameday/FAN/Cargus/DPD/GLS/KLG), cu secretele ascunse. (parametri opționali: brandId)
 - `list_delivery_alerts` — Alertele de livrare (SLA depășit, livrator blocat etc.), nerezolvate implicit. (parametri opționali: brandId, locationId, includeResolved)
 - `list_delivery_channels` — Listeaza TOATE canalele de livrare configurate (Glovo/AppSmart/Wolt/Bolt/Tazz + canale interne local/telefon): provider, nume, activ, online/pauza, sync meniu pornit, mod re-sync automat, timp de preg (parametri opționali: brandId, locationId, provider)
@@ -514,7 +516,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_pnl_snapshots` — Listeaza P&L-urile salvate (snapshot-uri): nume, perioada, numar de ajustari, daca sunt blocate. (parametri opționali: brandId)
 - `list_pos_devices` — Listează PC-urile/terminalele POS — serverul local al locației + stațiile client, cu locație, IP, casa fiscală implicită, ecranul KDS legat și starea Print Agent. (parametri opționali: locationId, brandId)
 - `list_presentation_library_items` — Listează SLIM (doar id + etichetă) elementele dintr-o colecție a bibliotecii unei prezentări, fără payload-ul mare. (necesită: presentationId, kind)
-- `list_presentation_templates` — Listează ȘABLOANELE de prezentare de vânzare disponibile pentru clonare (Symbai HoReCa 2026 = gold standard, plus verticale: sală evenimente, catering, cursuri online, servicii, produse, exemplu simpl
+- `list_presentation_templates` — Listează exact cele 3 ȘABLOANE verificate de prezentare de vânzare: fondator la prima deschidere, restaurant care schimbă sistemul și operator cu experiență care deschide o locație nouă.
 - `list_presentations` — Listează prezentările de vânzare salvate pe un brand (id, titlu, vertical, versiune flux, nr. (parametri opționali: brandId)
 - `list_printers` — Listează toate imprimantele configurate per locație. (parametri opționali: locationId, brandId)
 - `list_procurement_recommendations` — Recomandări de aprovizionare (reorder): ce produse au nevoie de comandă și de la ce furnizor (preț efectiv + lead-time). (parametri opționali: productId, limit)
@@ -549,9 +551,13 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 
 ## SQL (toggle sqlRead pe token) — 3 tool-uri
 
-- `list_database_tables` — PAS 1 din workflow eficient de citire BD. (parametri opționali: filter)
 - `describe_database_table` — PAS 2 din workflow eficient de citire BD — OBLIGATORIU înainte de SELECT * pe tabel necunoscut. (necesită: tableName)
 - `execute_sql_query` — PAS 3 (final) din workflow eficient de citire BD. (necesită: query, explanation)
+- `list_database_tables` — PAS 1 din workflow eficient de citire BD. (parametri opționali: filter)
+
+## SQL DML direct (capabilitate sqlWrite pe token temporar Hub-admin) — 1 tool
+
+- `execute_sql_write` 🔒 — Execută o singură instrucțiune SQL INSERT/UPDATE/DELETE în instanța curentă. (necesită: sql, reason)
 
 ## Scriere per modul — 666 tool-uri (gated de writeModules pe token)
 
