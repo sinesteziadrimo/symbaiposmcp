@@ -8,7 +8,9 @@
 
 Caracteristica-cheie: pagina e **„template-aware"** — vocabularul și taburile se adaptează după tipul de business ales (stilul CRM). Tabul „Pipeline" se redenumește automat: restaurant/cafenea/hotel → **Pipeline Rezervări**; sală/catering → **Pipeline Evenimente**; **parc de distracții → Pipeline Petreceri**; servicii → **Pipeline Vânzări**. Termenul „deal" devine în UI „rezervare/eveniment/petrecere/comandă" după vertical.
 
-⚠ **NU există tool MCP dedicat pentru deal/pipeline** (creare/avansare deal, etape, reguli de capacitate, prezentări) — astea sunt **UI-only** pe `/sales-crm` și `/settings/sales-crm`. MCP-ul acoperă funnel-ul, playbook-urile, NBA, task-urile CRM, clienții/grupurile, loialitatea, rezervările și jocurile (vezi „Tool-uri MCP").
+**Deal-urile și pipeline-ul se conduc COMPLET prin conexiune (MCP)** — creezi lead-ul, îl muți pe etape, îi notezi activitățile, îl marchezi câștigat/pierdut, configurezi etapele. Fluxul canonic: `create_customer` → `create_deal` → `log_deal_activity` → `advance_deal` → `get_deal` / `get_crm_funnel`. Vezi lista completă la „Tool-uri MCP" mai jos.
+
+Rămân **UI-only** doar: regulile de capacitate și câmpurile custom de formular pe tipurile de rezervare (Setări → Sales CRM). Pentru prezentări există tool-uri separate — vezi `prezentare-vanzare-mcp.md`.
 
 ⚠ **Loc CRM nominal**: paginile de vânzări se văd DOAR de angajații nominalizați ca „User CRM" (locuri facturabile, în Setări → Sales CRM → Useri CRM). Regula se aplică inclusiv adminilor — fără nominalizare, nici adminul nu vede `/sales-crm`. „De ce nu văd CRM-ul?" = lipsă nominalizare, nu bug.
 
@@ -82,7 +84,22 @@ Buton „**Wizard configurare rapidă**" (la prima deschidere: 3 pași cu ~20 ș
 - `update_game_config` / `update_game_schedule` / `update_game_pricing` / `set_game_date_override` — configurarea jocurilor/atracțiilor.
 - `configure_reservation_*` / `seed_reservation_settings` — sistemul de rezervări.
 
-> Pentru deal/pipeline/etape/capacity rules/prezentări **nu există tool MCP** — UI-only. Permisiunea exactă a fiecărui tool e în `tools-mcp.md`. „Permisiune insuficientă" → modulul nu e pe token → portal Hub → Acces AI.
+**Scriere — modul «CRM & Automatizări Marketing» (`marketing_crm`) — deal-uri & pipeline:**
+- `create_deal` — lead/oportunitate nouă (brand, titlu, client, valoare, etapă, tip eveniment, dată).
+- `advance_deal` — mută deal-ul pe altă etapă SAU îl marchează won/lost. Declanșează automat ACELEAȘI automatizări ca interfața: task-urile configurate pe etapă, `deal.stage_changed`, iar la avans plătit / contract semnat pornește follow-up-urile de marketing. Trimite doar câmpurile de schimbat.
+- `log_deal_activity` / `mark_deal_activity_done` — notezi apel/email/vizită și le închizi.
+- `create_pipeline_stage` / `update_pipeline_stage` / `sync_sales_pipeline_template` — etapele Kanban.
+- `score_sales_deals` — recalculează Lead Score 0-100. `run_smart_followups` — follow-up-uri automate.
+- `set_crm_settings` — stilul CRM (vocabularul paginii).
+
+**Citire (fără permisiune de scriere):** `list_deals`, `get_deal`, `get_crm_funnel`, `get_sales_analytics`, `get_crm_settings`, `get_event_fiche`.
+
+> Permisiunea exactă a fiecărui tool e în `tools-mcp.md`. „Permisiune insuficientă" → modulul `marketing_crm` nu e pe token → portal Hub → Acces AI.
+
+⚠ **„Ofertă" înseamnă TREI lucruri diferite — nu le confunda:**
+> 1. **Ofertă comercială pe un deal** (ce trimiți clientului) — se pregătește pe fișa deal-ului.
+> 2. **Deviz / cotație** (pagina „Oferte & devize") — document cu linii și total.
+> 3. **`create_offer` = promoție/discount pe bonul de restaurant** (happy hour, 1+1). **NU** e ofertă comercială. Dacă userul cere „fă o ofertă pentru clientul X", `create_offer` e tool-ul GREȘIT — ar scrie o reducere în meniu.
 
 ## Întrebări frecvente
 
@@ -91,7 +108,7 @@ Buton „**Wizard configurare rapidă**" (la prima deschidere: 3 pași cu ~20 ș
 - **Cum fac ca o petrecere de parc să includă jocuri?** → Tipul de rezervare trebuie să aibă capabilitatea „**Jocuri/Atracții**" activată + lista de jocuri permise. Atunci pe fișă poți adăuga sesiuni de joc, cu meniu + sală + personal + contract, P&L consolidat.
 - **Vocabularul nu se potrivește (zice „rezervări" dar eu am petreceri)** → Schimbă stilul CRM în `/settings/sales-crm` → General (alege Parc de Distracții) — taburile și termenii se rescriu.
 - **Cardul nu avansează / Won nu se marchează** → Verifică etapele (`?tab=pipelines`): trebuie să existe etape marcate Won/Lost; trage cardul în coloana potrivită sau folosește „Avansează la etapa următoare".
-- **Pot crea/avansa un deal prin Claude (MCP)?** → Nu — deal/pipeline e UI-only. Prin MCP poți face rezervări, jocuri, clienți, loialitate, și poți citi funnel/NBA/task-uri.
+- **Pot crea/avansa un deal prin Claude (MCP)?** → **Da, complet.** `create_deal` → `log_deal_activity` → `advance_deal` (mută pe etapă sau marchează won/lost, cu aceleași automatizări ca interfața). Plus rezervări, jocuri, clienți, loialitate, funnel/NBA/task-uri. UI-only rămân doar regulile de capacitate și câmpurile custom de formular.
 
 ## Pentru acces SQL
 
