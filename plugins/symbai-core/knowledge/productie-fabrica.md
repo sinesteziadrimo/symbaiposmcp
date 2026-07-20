@@ -303,6 +303,16 @@ Două sisteme paralele: **Quality Holds** (blochezi un LOT) și **QC Inspections
 - **Utilizare echipamente**: `get_equipment_utilization` (`zoneId`) — loturi în lucru per echipament, status, capacitate.
 - Pagina: `/production/equipment-zones`.
 
+## Conectarea mașinilor industriale (MULTIVAC, OPC UA, contoare)
+Mașinile moderne de ambalat/procesat (ex. MULTIVAC din generația X-line — RX 4.0, TX, SLX, liniile cu MULTIVAC Line Control) se pot lega DIRECT la Symbai: platforma citește starea (în funcțiune/oprită), contoarele de bucăți bune/rebut, viteza, consumul de material/folie/energie și cauza opririlor — fără input de la operator.
+- **Pagina**: Setări → **Echipamente & mașini** (`/settings?tab=machines`). Butonul «Conectează un echipament»: alegi utilajul + modelul mașinii (preset), iar semnalele standard se mapează automat. Tot acolo: starea fiecărei mașini, «Noduri & mapări» (completezi identificatorii exacți din documentul mașinii) și tabelul curselor de mașină.
+- **Prin conexiune (MCP)**: `list_machine_presets` (ce mașini/standarde sunt suportate + ce semnale aduc), `configure_machine_bridge` (creează/actualizează conectarea — pentru OPC UA dai `endpointUrl` de forma `opc.tcp://IP-mașină:4840`; pentru mașini vechi presetul «Retrofit impulsuri» dă o adresă webhook cu cheie), `list_machine_bridges` (ce mașini sunt conectate + ultima telemetrie), `list_machine_runs` (ce a numărat mașina pe fiecare operație).
+- **Ce trebuie cerut la MULTIVAC** (o singură dată, la comisionare): activarea opțiunii «OPC UA interface» pe mașină (din fabrică pe X-line sau retrofit prin service) + documentul cu lista de noduri pentru versiunea de soft a mașinii. Cloudul MULTIVAC (Smart Services / myMULTIVAC / Pack Pilot) nu are API public — datele se iau local, de la mașină.
+- **Cum ajung datele**: conectorul rulează pe serverul local din fabrică (edge) și funcționează și offline — datele se rețin local și urcă la revenirea internetului, cu ora reală a mașinii.
+- **Curse de mașină**: la fiecare Start de operație din tableta de stație, echipamentul mapat pornește automat o «cursă»; la Finalizare, producția mașinii = diferența de contoare (bune/rebut/total + consum folie/energie/cicluri), pusă lângă ce a declarat operatorul — vezi diferențele om vs mașină per lot.
+- **Opriri automate cu cauză**: când mașina se oprește, în Randament utilaje apare automat o oprire clasificată — «Blocaj ambalare/aval plin» (nu are unde împinge), «Lipsă materie primă» (nu vine produs) sau «Defect utilaj» (alarmă cu cod); opririle sub 30 de secunde se numără ca micro-opriri. OEE-ul se mișcă singur, fără ca operatorul să noteze nimic.
+- **Limite de sanitate**: fiecare semnal mapat poate avea min/max — valorile imposibile (senzor defect) se păstrează pentru verificare dar nu strică cifrele.
+
 ## B2B — comenzi, picking, livrare
 Comenzile B2B (clienți business: depozite, magazine, alte restaurante) alimentează planificarea (loturi planificate din MPS).
 - **Flux status comandă**: draft → confirmed → in_production → picking → packed → dispatched → delivered.
