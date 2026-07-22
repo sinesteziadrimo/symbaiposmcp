@@ -75,7 +75,7 @@ Construiește tabelul complet ÎNAINTE de orice scriere și arată-l userului: n
 - `list_untagged_products` — niciun produs nou fără tag de rutare.
 - `analyze_recipes(brandId)` — rețete incomplete / ingrediente lipsă.
 - `analyze_food_costs` sau `generate_report(food_cost)` — un cost absurd (150%+) = aproape sigur unitate greșită în rețetă.
-- `get_recipe_details` pe 2-3 rețete noi — productId legat corect (`list_recipes` NU arată productId).
+- `list_recipes` + `get_recipe_details` pe 2-3 rețete noi — confirmă că `productId` este exact produsul creat. În fabrică, folosește `includeUnlinked:true` când investighezi rețete orfane; dacă o rețetă apare pe alt produs duplicat cu același nume, nu o recrea și nu o muta implicit — verifică ambele ID-uri și repară explicit legătura.
 - UI-ul se actualizează abia după refresh — succes la tool = salvat; nu repeta scrierea.
 
 ## Faza 6 — Ce rămâne din aplicație (puțin)

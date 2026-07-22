@@ -39,6 +39,26 @@ Symbai are **două căi independente** de a consuma materii prime și a produce 
 - Tool-uri: `exec_start_operation` → `exec_declare_consumption` → `exec_declare_output` → `exec_complete_operation` (cu predare automată dacă e configurat).
 - Înainte de `exec_start_operation`, după ce lotul există, validezi `get_batch_material_readiness` (`batchId`, opțional `operationId`) ca să confirmi că materialele sunt nu doar în stoc, ci și legate corect de lotul/operația curentă.
 
+### Contractul produs → rețetă/BOM → flux → operații
+
+În fabrică, cele patru niveluri au roluri diferite și trebuie legate explicit:
+
+1. **Produsul** este identitatea rezultatului care intră în stoc: semipreparat sau produs finit.
+2. **Rețeta/BOM-ul** produsului spune **ce** și **cât** se consumă pentru randamentul declarat. O rețetă activă trebuie legată prin ID de produsul ei; numele identic nu este suficient.
+3. **Fluxul tehnologic** spune **unde și în ce ordine** se face produsul. Versiunea de flux trebuie să aibă o rețetă sursă activă legată de același produs.
+4. **Operațiile** spun **la ce pas intră fizic fiecare material** și ce iese din pas.
+
+Regula consumului este strictă: fiecare ingredient din rețetă se alocă la operația unde intră fizic. Poate fi împărțit între mai multe operații doar dacă intră fizic în mai multe tranșe, iar totalul pe operații trebuie să rămână egal cu rețeta. Materialele luate din stoc se marchează `from_stock`. Semipreparatul/WIP predat de o operație anterioară se marchează `from_previous_op`; acesta este transfer intern și **nu se adaugă încă o dată** la consumul ingredientelor din rețetă. Ultima operație trebuie să declare produsul fluxului ca ieșire principală (`isPrimary=true`) cu o cantitate pozitivă.
+
+**Procedura MCP recomandată pentru creare sau reparare:**
+
+1. Citește produsul și rețetele (`list_recipes` cu `brandId`; în fabrică poți include și rețetele nelegate) și verifică `productId` prin `get_recipe_details`.
+2. Creează fluxul cu `build_complete_flow` și trimite `productId` + `sourceRecipeId`; pune ingredientele în `materials` la operațiile corecte și WIP-ul intermediar cu `from_previous_op`.
+3. Dacă rețeta este orfană, `sourceRecipeId` o poate lega atomic de produs. Dacă este legată de alt produs duplicat cu exact același nume, folosește `relinkRecipeFromSameNameProduct:true` **numai după ce ai verificat ambele ID-uri**. Repararea este disponibilă doar în context de fabrică și nu este o regulă pentru restaurante.
+4. Rulează `validate_flow_consistency`. Validarea trebuie să confirme legătura produs–rețetă–flux, cantitățile ingredientelor și ieșirea principală; dacă ceva lipsește, nu activa fluxul.
+
+**Simptom diagnostic important:** dacă „Vezi unde e folosit” arată ingredientele, dar Fișa produsului → „Rețetă & Stoc” este goală, nu recrea rețeta. De obicei rețeta este legată de un alt ID de produs cu același nume. Verifică ID-urile, repară legătura explicit, apoi selectează aceeași rețetă ca sursă a fluxului.
+
 **Diferența cheie de trasabilitate**: motorul shop-floor scrie automat **genealogia** (legături lot intrare→lot ieșire) și creează containere cu QR. Motorul simplu mișcă corect stocul + genealogie de bază, dar nu construiește graful la fel de bogat. Pentru recall industrial complet (cu containere QR + predări între stații), folosește fluxul shop-floor.
 
 ## Lot de producție — ciclu de viață
@@ -228,14 +248,14 @@ Nivelul pharma/IFS/BRC de trasabilitate: compilezi dosarul complet al unui lot, 
 Fluxul = lanțul de operații prin care trece un produs, cu cerințe, dependențe, predări, QC per operație. Are **versiuni** (draft → active → archived).
 
 - **Citește**: `list_flow_versions` (`productId`, `status` draft/active/archived/all, `limit`); `get_flow_version_detail` (`flowVersionId`) — flux complet (operații, dependențe, materiale, ieșiri, QC); `get_flow_graph` (`flowVersionId` sau `productId`/`productName`) — aceeași diagramă ca graf coordinate-free: noduri, muchii, lane-uri, fără x/y.
-- **Creează flux**: `create_flow_version` (opțional `productId`, `productName`, `name`, `versionNumber`, `status`, `notes`, `sourceRecipeId`, `aiInstructions`). Sau dintr-un singur apel complet: `build_complete_flow` (`operations` = listă) — creează flux + operații + materiale + ieșiri + QC + dependențe.
+- **Creează flux**: `create_flow_version` cu produsul și `sourceRecipeId` (plus `name`, `versionNumber`, `status`, `notes`, `aiInstructions`). Pentru o rețetă legacy legată de un produs duplicat omonim există `relinkRecipeFromSameNameProduct:true`, dar numai în fabrică și numai după verificarea ID-urilor. Dintr-un singur apel complet, `build_complete_flow` creează atomic flux + operații + materiale + ieșiri + QC + dependențe și respinge o repartizare care nu respectă rețeta.
   - Pentru `build_complete_flow`, nu lăsa materialele/output-urile „generice": la materiale setează `requirementType` (`raw`, `semi_finished`, `packaging`, `consumable`, `from_flow`) și `sourceStrategy`; la ambalaje folosește `requirementType: "packaging"`.
   - Când output-ul unei operații devine intrarea alteia, folosește indexuri 0-based în același payload: `outputs[].targetOperationIndex` și `materials[].sourceOperationIndex`. Nu inventa `operationId` înainte ca flow-ul să fie creat.
   - La output-uri setează mereu `outputUnit` (nu doar `unit`) și `outputType` (`main_product`, `co_product`, `by_product`, `waste`), altfel verificarea fluxului și execuția shop-floor pot pierde unitatea sau tipul rezultatului.
 - **Gestionează versiuni**: `update_flow_version`, `activate_flow_version`, `archive_flow_version`, `clone_flow_version` (`flowVersionId`, `newName`, `newVersionNumber`).
 - **Operații** (tab General): `add_flow_operation` (`flowVersionId`, `name`, `operationOrder` + multe câmpuri: durate min/standard/max, setup, cleanup, container recomandat, condiție depozitare, `producesLot`, `skipIfStockAvailable`, `overlapAllowed`, `expectedYieldPercent`, instrucțiuni, `zoneId`, `equipmentId`, staff min/max/recomandat); `update_flow_operation` (`operationId`); `reorder_flow_operations` (`flowVersionId`, `ordering`); `auto_chain_operations` (`flowVersionId`) — leagă automat operațiile secvențial (Finish-Start).
 - **Dependențe**: `add_operation_dependency` (`flowVersionId`, `fromOperationId`, `toOperationId`, tip FS/SS/FF/SF); `remove_operation_dependency` (`dependencyId`). Runtime-ul impune la pornire doar FS și SS: FS blochează pornirea operației până când predecesorul e finalizat; SS blochează pornirea până când predecesorul a pornit (pentru operații paralele/overlap). FF/SF sunt păstrate ca metadata de proiectare/diagramă și nu trebuie promise ca blocaje runtime. Pentru operații simultane, folosește SS cu `lagMinMinutes:0`, nu lăsa o ordine presupusă să pară dependență reală.
-- **Materiale per operație**: `add_operation_material` (`operationId`, `quantity` + `productId`/`productName`, `unit`, sursă from_stock/from_previous_op/batch_ingredient); `remove_operation_material` (`materialId`).
+- **Materiale per operație**: `add_operation_material` (`operationId`, `quantity` + `productId`/`productName`, `unit`, `sourceStrategy`: `from_stock`, `from_previous_op`, `either` sau `produce`); `remove_operation_material` (`materialId`).
 - **Ieșiri per operație**: `add_operation_output` (`operationId`, `outputQty` + `productId`, `outputUnit`, tip main_product/co_product/by_product/waste, condiție depozitare); `remove_operation_output` (`outputId`).
 - **QC per operație**: `add_operation_qc` (`operationId`, `controlType` numeric/boolean/text/vizual, `controlName`, valoare țintă, toleranțe, punct de control, procedură eșec); `add_qc_failure_procedure` (`qualityRequirementId`, `name`, `dispositionType` rework/retur/scrap/carantină); `remove_operation_qc` (`qcId`).
 - **Configurare comportament operație** (cele 5 taburi): `configure_operation_start` (verificare materiale, scan container, roluri permise, checklist pre-start), `configure_operation_execution` (mod consum, QC obligatoriu, declarare ieșiri, temperatură, foto, pași), `configure_operation_completion` (metodă completare, scan/etichetă/cântar, auto-consum, cantitate min/max, randament, checklist), `configure_operation_handover` (acțiune post-completare, destinație, scan, semnătură supervizor, notificări).
@@ -438,7 +458,7 @@ Workflow agent (MCP-first — EXISTĂ acum tool-uri dedicate de plan, nu mai e n
 | „Cum stă fabrica acum / dashboard" | `get_factory_dashboard`. |
 | „Care e randamentul / unde am gâtuiri" | `get_yield_trends` / `detect_production_bottlenecks` (`daysAhead`). |
 | „Sumarul zilei de azi" | `get_daily_production_summary` (`date`). |
-| „Construiește fluxul tehnologic pentru produsul nou" | `get_flow_graph` dacă există flux, apoi `/ai-flow-builder` sau `build_complete_flow` / `create_flow_version` + `add_flow_operation`. Editează semantica, nu coordonate; după modificări rulează `auto_arrange_diagram` și `validate_flow_consistency`. |
+| „Construiește fluxul tehnologic pentru produsul nou" | Citește produsul + rețeta și verifică aceeași legătură `productId`; apoi `get_flow_graph` dacă există flux și folosește `build_complete_flow(productId, sourceRecipeId, operations)` sau `create_flow_version` + operații. Alocă fiecare ingredient al rețetei la operația unde intră fizic, fără dublare; WIP-ul dintre operații este `from_previous_op`, iar produsul final este ieșirea principală a ultimei operații. După modificări: `auto_arrange_diagram` → `validate_flow_consistency`. |
 | „Pregătește livrarea către retail / cere ASN, SSCC, GLN" | `get_retail_distribution_readiness(orderId|deliveryDate)` → completezi GLN/GTIN/shelf-life/GS1 prefix ce lipsește → `generate_b2b_retail_shipment_plan(orderId)` salvează plan intern SSCC/ASN. Nu promite trimitere EDI externă. |
 | „Adaugă un senzor de temperatură la frigider" | `create_haccp_sensor` (`name`, `sensorType`=fridge). |
 | „Printează etichetele lotului" | `print_production_labels` (`batchId`, `printerId`). |
@@ -456,6 +476,7 @@ Workflow agent (MCP-first — EXISTĂ acum tool-uri dedicate de plan, nu mai e n
 - **De ce nu pot finaliza lotul cu `exec_complete_batch`?** → În modul fabrică, dacă lotul are flux tehnologic atașat, finalizarea simplă e blocată — finalizează prin operații shop-floor (`exec_complete_operation`).
 - **De ce `exec_complete_operation` îmi întoarce `qualityGate:true`?** → Operația cere dovadă QC/HACCP/CCP înainte să miște stocul. Citește `violations`, înregistrează dovada lipsă cu `record_operation_qc_inspection` sau deschide/actualizează decizia QA/CAPA pentru neconformitate; nu ocoli gate-ul prin retry.
 - **De ce e diferit `exec_complete_operation` de `exec_declare_consumption`?** → `exec_complete_operation` poate face auto-consum (backflush) + scrie genealogia + creează containere automat; `exec_declare_consumption` e declarare manuală a consumului în timpul operației.
+- **„Unde e folosit” arată rețeta, dar fișa produsului sau Consum din flux este gol.** → Rețeta poate fi legată de alt ID de produs cu același nume. Nu o duplica și nu distribui consumuri după presupuneri: verifică `productId`, repară legătura explicit, selectează rețeta sursă pe flux și validează repartizarea ingredientelor.
 - **Costul producției apare în rapoarte?** → Da — costul real al producției intră în COGS din P&L.
 - **De ce lotul "ready"/"paused"/"quality_check" apare in dashboard/plan desi nu e in lucru?** → Pentru fabrica, activ inseamna orice lot neterminal. Doar `completed` si `cancelled` sunt terminale; statusurile de etapa raman in plan, capacitate si vizualizari pana la finalizare/anulare.
 - **Vreau să știu de ce un lot a costat mai mult decât trebuia.** → Folosește `get_production_cost_variance(batchId)`: pozitiv = nefavorabil, negativ = favorabil; separă abaterea de preț de abaterea de cantitate/randament. Dacă lipsesc consumurile sau randamentul real, cifrele sunt parțiale.
