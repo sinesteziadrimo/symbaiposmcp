@@ -56,7 +56,7 @@ Module (fiecare cu: concepte, pagini, fluxuri pas-cu-pas, tool-uri utile, între
 - `livrari-comenzi-online.md` — Glovo/Wolt/Bolt/Tazz, flotă proprie & dispecerat, aplicația livratorului, magazin online (AWB, retururi). Catalogul magazinului (variante/colecții/feed-uri/coduri/eMAG): `ecommerce-magazin-online.md`.
 - `marketing-social.md` — postări social, email, ads, GBP, blog/SEO, website & portal public, coduri QR. Conversații 1-la-1: `comunicare-whatsapp.md`; recenzii: `recenzii.md`.
 - `integrari-meta.md` — conceptele conectării Meta (pagină vs profil, Instagram Business, Business Manager, cont reclame, permisiuni, tokenuri expirate).
-- `echipamente-kds-imprimante.md` — ecrane KDS, imprimante & Print Agent, casă de marcat fiscală, server local (edge), rutare bonuri.
+- `echipamente-kds-imprimante.md` — PC-uri, ecrane KDS și Workstation Tablet, installer unic (Print Agent + Edge + Mesh Control), casă fiscală și rutare bonuri.
 - `cantare-catch-weight.md` — cantare legate de PC-ul cu Print Agent si produse vandute/valorizate la greutate variabila (catch-weight); skill dedicat: `cantare-catch-weight`.
 - `setari-administrare.md` — setări firmă/branduri/locații, TVA & metode de plată, RBAC, module & facturare Hub, integrări, reparații date.
 - `asistentul-ai-in-aplicatie.md` — Sym (butonul plutitor), agenții specialiști, memorii AI, importuri, loguri AI.

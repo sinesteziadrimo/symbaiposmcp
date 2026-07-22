@@ -26,9 +26,9 @@ Utilizatorul e om de business, nu tehnic. Numele de tool-uri și termenii intern
 
 ## Permisiuni necesare pe token
 
-- **`setari`** — pentru `create_printer` și `create_kds_screen`. Fără el, tool-urile de scriere întorc „permisiune insuficientă" → trimite utilizatorul în portalul Hub → Acces AI să bifeze modulul „Setări & Configurare" pe token.
+- **`setari`** — pentru `create_pos_device`, `update_pos_device`, `create_printer` și `create_kds_screen`. Fără el, tool-urile de scriere întorc „permisiune insuficientă" → trimite utilizatorul în portalul Hub → Acces AI să bifeze modulul „Setări & Configurare" pe token.
 - **`produse_meniu`** — doar dacă mai trebuie completate etichete pe produse (`create_tag`, `assign_tag`, `bulk_assign_tag`) — în mod normal s-a făcut în faza Etichete.
-- **SQL read-only** (toggle separat) — opțional, dar foarte util aici: e singura cale prin MCP de a vedea PC-urile înregistrate și regulile de rutare (găsești tabelele potrivite cu `list_database_tables`/`describe_database_table`).
+- **SQL read-only** (toggle separat) — opțional pentru reguli de rutare și investigații avansate. PC-urile se văd direct cu `list_pos_devices`; nu mai folosi SQL doar ca să afli dispozitivele.
 
 ## Ce afli singur ÎNAINTE să întrebi — și ce întrebi utilizatorul
 
@@ -36,9 +36,9 @@ Utilizatorul e om de business, nu tehnic. Numele de tool-uri și termenii intern
 1. `list_locations` — id-urile locațiilor; o singură locație activă = nu mai întrebi „pentru care local".
 2. `list_brands` — brandId pentru parametrii obligatorii.
 3. `list_printers` (cu `locationId` și `brandId`) — ce imprimante/case există DEJA și starea lor live. `status` = live (`online`/`offline`/`unassigned`/`mobile_local`), `statusConfigurat` = valoarea salvată în configurare. Critic: `create_printer` NU verifică duplicate (vezi Capcane).
-4. `list_entities` cu `entityType: "kds_screens"` — ecranele existente (nu există un `list_kds_screens` dedicat).
-5. `list_tags` + `list_tag_summary` — există etichete pe produse? Fără etichete, rutarea n-are pe ce să se sprijine → întoarce-te la faza Etichete întâi.
-6. Cu SQL activ: interoghează tabela de PC-uri (nume, care e Server, starea programului de imprimare) și tabela de reguli de rutare (ce e deja legat) — găsește-le întâi cu `list_database_tables`/`describe_database_table`.
+4. `list_pos_devices({ locationId, brandId })` — PC-urile deja înregistrate, care e Server, starea Print Agent și ce KDS/Workstation deschide fiecare.
+5. `list_entities` cu `entityType: "kds_screens"` — ecranele KDS existente; pentru Workstation folosește `list_device_workstation_screens({ brandId, locationId })`.
+6. `list_tags` + `list_tag_summary` — există etichete pe produse? Fără etichete, rutarea n-are pe ce să se sprijine → întoarce-te la faza Etichete întâi.
 
 **Întrebi DOAR (formulări sugerate):**
 1. „Câte calculatoare folosești în locație (bar, recepție, bucătărie)? Care dintre ele e cel mai stabil — pornit non-stop? Acela va fi PC-ul Server."
@@ -50,10 +50,13 @@ Nu cere date opționale (model casă, mod de afișare — au default-uri bune). 
 
 ## Pașii de execuție — tool-urile MCP exacte
 
-Ordinea dependențelor: **PC-uri (UI) → casă fiscală (UI) → imprimante de rețea (MCP) → ecrane (MCP) → rutare (UI) → verificare (MCP)**.
+Ordinea dependențelor: **PC-uri (MCP sau UI) → instalare fizică (UI/on-site) → casă fiscală (UI) → imprimante/ecrane (MCP) → rutare → verificare (MCP)**.
 
-### Pas 1 — PC-urile și serverul local: DOAR din aplicație
-Nu există tool-uri pentru a înregistra PC-uri, a descărca pachetul de instalare sau a desemna PC-ul Server. Vezi secțiunea „Ce se face DOAR din aplicație".
+### Pas 1 — PC-urile și serverul local
+
+Poți lista și înregistra PC-urile prin MCP: `list_pos_devices` → `create_pos_device`. Pentru un PC care trebuie să deschidă Workstation Tablet: `list_device_workstation_screens({brandId, locationId})` → `create_pos_device({name, brandId, locationId, workstationScreenId, workstationAutostart})`. Pentru un PC existent folosește `update_pos_device`; verifică apoi cu `list_pos_devices`.
+
+Descărcarea și rularea installerului rămân on-site, pe PC-ul fizic. Installerul unic conține Print Agent, Edge și Mesh Control și creează automat scurtătura Workstation/KDS asociată. Desemnarea altui PC ca Server se face din aplicație.
 
 ### Pas 2 — Casa de marcat fiscală: recomandă aplicația
 `create_printer` acceptă `type: "fiscal"` și salvează nume/tip/IP/brand/locație, dar NU poate seta la care PC e cablul casei și nici marca (Datecs/Daisy), deci casa creată prin MCP rămâne o **cocă nefuncțională** până e completată din aplicație. Nu o crea prin MCP — ghidează utilizatorul să o adauge din wizard-ul aplicației (pasul 8) sau din Setări → Imprimante, unde dialogul îl întreabă exact: cum o numim, ce marcă e, la care PC e cablul.
@@ -88,7 +91,7 @@ Tool-ul e **idempotent pe nume** (dacă există deja un ecran cu acel nume, îl 
 
 Pentru fiecare, dă link cu `gaseste_in_aplicatie(intrebare)` și verifică prin citire după ce utilizatorul zice că a terminat:
 
-1. **Înregistrarea PC-urilor + instalarea pe ele** — `gaseste_in_aplicatie("instalare PC server local")`. Fluxul pe care i-l explici: în wizard (pasul 7) adaugă fiecare PC cu nume + locație → descarcă ZIP-ul unic al PC-ului → pe PC-ul fizic dezarhivează și rulează „Instalare Symbai.bat" **ca administrator** (2-3 minute) → cardul PC-ului devine „Online" → pe PC-ul cel mai stabil apasă „Setează ca Server" (primul PC adăugat într-o locație devine automat Server — butonul e necesar doar ca să muți rolul pe alt PC). Notă: butonul de adăugare PC a fost SCOS din Setări — adăugarea se face doar din wizard-ul de onboarding. Verificarea ta: doar cu SQL pe tabela de PC-uri — uită-te la starea agentului de imprimare, NU la statusul generic al dispozitivului (acela e „online" din oficiu și NU dovedește instalarea) — sau întrebi utilizatorul dacă scrie „Online" pe card.
+1. **Instalarea fizică pe PC-uri** — dacă PC-ul nu a fost creat prin MCP, îl poți adăuga și din Setări → PC & Server sau din wizard. Alege opțional KDS/Workstation, descarcă ZIP-ul unic al PC-ului, apoi pe PC-ul fizic dezarhivează și rulează „Instalare Symbai.bat" **ca administrator** (2-3 minute). Pachetul instalează Print Agent + Edge + Mesh Control și creează scurtăturile asociate. Cardul trebuie să devină „Online"; verifică prin `list_pos_devices`, folosind starea Print Agent, nu statusul generic al dispozitivului.
 2. **Casa de marcat fiscală** — `gaseste_in_aplicatie("adaugă casă de marcat")`. După: `list_printers` → trebuie să apară cu `type: "fiscal"`.
 3. **Rutarea etichetă → imprimantă/ecran** — `gaseste_in_aplicatie("rutare taguri imprimante")`. În wizard, tab-ul „Cum ajung comenzile" are butonul „Leagă automat" (potrivire pe nume). Verificarea ta: cu SQL pe tabela de reguli de rutare (fiecare etichetă să aibă o imprimantă și/sau ecrane setate); fără SQL, cere utilizatorului să confirme că nicio etichetă nu mai arată „Nelegat încă".
 4. **Deschiderea efectivă a ecranului de bucătărie** — pe tableta/monitorul din bucătărie se deschide aplicația în browser și se alege ecranul; `gaseste_in_aplicatie("ecran bucătărie display comenzi")`.
@@ -96,7 +99,7 @@ Pentru fiecare, dă link cu `gaseste_in_aplicatie(intrebare)` și verifică prin
 
 ## Echivalentul în wizard-ul din aplicație
 
-- **Pasul 7 — „Instalare PC"** (`/onboarding/step/7`): adaugă PC-urile, descarcă ZIP-urile, desemnează Server-ul. Tot ce e aici e UI-only pentru tine.
+- **Pasul 7 — „Instalare PC"** (`/onboarding/step/7`): adaugă PC-urile, alege opțional KDS/Workstation, descarcă ZIP-urile și desemnează Server-ul. Crearea/asocierea se poate face și prin MCP; descărcarea și instalarea sunt pe PC-ul fizic.
 - **Pasul 8 — „Imprimante și ecrane"** (`/onboarding/step/8`): 4 tab-uri — Case de marcat / Imprimante bonuri / Ecrane bucătărie (flux ghidat: central vs pe secții) / Cum ajung comenzile (rutarea + „Leagă automat").
 
 Imprimantele și ecranele create de tine prin MCP **apar în wizard** (pașii citesc aceleași date), deci utilizatorul le vede acolo și poate continua cu rutarea. Dar progresul wizard-ului (bifele de pași) NU se actualizează prin conexiunea MCP — dacă utilizatorul ține evidența în wizard, îi spui să apese el „Următorul pas".
@@ -106,8 +109,8 @@ Imprimantele și ecranele create de tine prin MCP **apar în wizard** (pașii ci
 1. `list_printers({ locationId, brandId })` — apar: casa fiscală (`type: "fiscal"`) + câte o imprimantă per secție, fiecare cu IP și brandul corect. Zero duplicate. Pentru imprimante funcționale, `status` trebuie să fie `online`; `offline`/`unassigned` înseamnă PC/Print Agent/legare incompletă, chiar dacă `statusConfigurat` arată „online".
 2. `list_entities({ entityType: "kds_screens" })` — ecranele planificate există, fiecare cu `locationId` setat.
 3. `list_tag_summary` — etichetele de secție există și au produse asignate.
-4. Cu SQL: în tabela de reguli de rutare, fiecare etichetă folosită pe produse are o destinație (imprimantă și/sau ecran); în tabela de PC-uri, există exact un PC Server activ per locație.
-5. Confirmări de la utilizator (n-ai tool pentru ele): PC-urile arată „Online"; „Testează" arată conectat la fiecare imprimantă (iar „Test" din Setări → Imprimante a scos hârtie); un bon de probă apare pe ecranul de bucătărie.
+4. `list_pos_devices` — există exact un PC Server activ per locație; PC-urile instalate au Print Agent online și Workstation/KDS-ul dorit asociat. Pentru regulile de rutare fără tool dedicat poți folosi SQL read-only.
+5. Confirmări fizice de la utilizator: PC-urile arată „Online"; „Testează" arată conectat la fiecare imprimantă; un bon de probă apare pe ecranul de bucătărie; scurtătura Workstation deschide ecranul corect.
 
 ## Capcane
 
