@@ -52,7 +52,7 @@ Regula consumului este strictă: fiecare ingredient din rețetă se alocă la op
 
 **Procedura MCP recomandată pentru creare sau reparare:**
 
-1. Citește produsul și rețetele (`list_recipes` cu `brandId`; în fabrică poți include și rețetele nelegate) și verifică `productId` prin `get_recipe_details`.
+1. Citește produsul și rețetele. În fabrică apelează `list_recipes` cu `warehouseId` al gestiunii fabricii și, la diagnostic, `includeUnlinked:true`; serverul validează gestiunea și limitează lista la produsele/rețetele acelei fabrici. Poți adăuga `brandId`, `query` și `productType`. Verifică apoi `productId` prin `get_recipe_details`. În restaurant, `warehouseId` poate fi omis, iar `query`/`productType` păstrează listarea simplă existentă.
 2. Creează fluxul cu `build_complete_flow` și trimite `productId` + `sourceRecipeId`; pune ingredientele în `materials` la operațiile corecte și WIP-ul intermediar cu `from_previous_op`.
 3. Dacă rețeta este orfană, `sourceRecipeId` o poate lega atomic de produs. Dacă este legată de alt produs duplicat cu exact același nume, folosește `relinkRecipeFromSameNameProduct:true` **numai după ce ai verificat ambele ID-uri**. Repararea este disponibilă doar în context de fabrică și nu este o regulă pentru restaurante.
 4. Rulează `validate_flow_consistency`. Validarea trebuie să confirme legătura produs–rețetă–flux, cantitățile ingredientelor și ieșirea principală; dacă ceva lipsește, nu activa fluxul.

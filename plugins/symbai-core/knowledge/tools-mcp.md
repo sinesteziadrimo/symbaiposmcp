@@ -174,7 +174,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_recipe_ingredient_aliases` — Listează aliasurile de ingredient învățate (nume normalizat de ingredient → produs) care fac potrivirea instantanee la importurile viitoare de rețetar. (parametri opționali: search, limit)
 - `list_recipe_ingredients` — Listează toate ingredientele unei rețete cu detalii produs (nume, cantitate, unitate, tip, dacă e ținut pe stoc). (necesită: recipeId)
 - `list_recipe_mapping_sessions` — Listează ultimele sesiuni de «Leagă Rețetarul» (id, fișier, status, statistici, dată) — cele mai noi primele. (parametri opționali: limit)
-- `list_recipes` — Listează rețetele (semi-preparate, preparate finite) din sistem. (parametri opționali: productType, query, limit)
+- `list_recipes` — Listează rețetele de producție. (parametri opționali: status, brandId, includeUnlinked, warehouseId)
 - `list_reservation_event_menu_selections` — Listează ofertele de meniu de eveniment atașate unei rezervări (ce pachet, câți invitați, statusul ofertei și totalul calculat). (necesită: reservationId)
 - `list_stock_count_sessions` — Listeaza sesiunile de inventariere fizica (stocktake): status, gestiuni, progres, cate linii au fost numarate, cate diferente exista si cate intrari individuale de numarare au fost adaugate. (parametri opționali: status, warehouseId, dateFrom, dateTo)
 - `list_storage_zones_full` — Listează toate zonele de depozitare (sub-zone din magazii). (parametri opționali: parentId)
