@@ -16,6 +16,9 @@ Prin conexiunea MCP poți construi, testa și administra aceste reguli **convers
 4. **`test_automation_rule`** — SIMULARE pe un context de probă (nimic nu se execută real): afli dacă regula s-ar declanșa și de ce ar fi sărită. Poți suprascrie contextul (ex. `{scrapPercent: 12}`).
 5. **`list_automation_rules` / `get_automation_rule` / `list_automation_executions`** — ce reguli există (cu rezumat per regulă), detaliile uneia + ultimele execuții, jurnalul general.
 6. **`update_automation_rule` / `delete_automation_rule`** — ajustare (inclusiv activare/dezactivare nedistructivă cu `active:false`) și ștergere (cere `confirm:true`).
+7. **`request_automation_capability`** — plasa de siguranță FĂRĂ LIMITE: cererea care nu se poate construi azi pleacă automat ca tichet către echipa Symbai (vezi secțiunea dedicată mai jos).
+
+> Pentru fluxul de lucru complet pas-cu-pas există și skill-ul **`creeaza-automatizare`** — se declanșează singur pe cereri de tip „vreau o automatizare / fă să mă anunțe când…".
 
 ### Și mai rapid: rețetele gata făcute
 
@@ -49,6 +52,71 @@ Plus toate declanșatoarele clasice de clienți/comenzi/QR/social/hotel — cata
 - **Clienți**: email, notificare, reduceri, puncte — tot motorul clasic de marketing.
 
 În mesaje folosești variabile din context: `{{productName}}`, `{{lotNumber}}`, `{{equipmentName}}`, `{{scrapPercent}}`, `{{yieldPercent}}`, `{{temperature}}` etc. — lista per declanșator e în catalog.
+
+## Compoziții COMPLEXE — playbook (de aici vine puterea reală)
+
+Motorul e mai expresiv decât pare: o regulă = declanșator + listă ORDONATĂ de efecte, fiecare efect cu propriile condiții, întârziere și prioritate. Cinci tipare acoperă aproape orice cerere complexă:
+
+### 1. Efecte condiționate (o regulă, reacții pe niveluri)
+
+Fiecare efect acceptă `conditions` (listă de `{field, operator, value}`) + `conditionLogic` (AND/OR). Operatorii: `equals, not_equals, contains, greater_than, less_than, greater_equal, less_equal, in, not_in, is_true, is_false, exists, not_exists`. Câmpurile = variabilele contextului declanșatorului (cele din catalog).
+
+*Exemplu — rebut: notificare mereu, CAPA doar peste 10%, oprire linie doar peste 20%:*
+```
+create_automation_rule(
+  name: "Rebut pe niveluri — ambalare",
+  triggerType: "production_high_scrap_rate",
+  triggerConfig: { scrapThresholdPercent: 5, operationName: "Ambalare" },
+  effects: [
+    { type: "notify_shift_supervisor", config: { message: "Rebut {{scrapPercent}}% la {{operationName}}" } },
+    { type: "create_capa_action", config: { title: "CAPA rebut {{scrapPercent}}%", dueDays: 7 },
+      conditions: [{ field: "scrapPercent", operator: "greater_than", value: 10 }] },
+    { type: "pause_production_line", config: { reason: "Rebut {{scrapPercent}}% — Jidoka" },
+      conditions: [{ field: "scrapPercent", operator: "greater_than", value: 20 }] }
+  ])
+```
+
+### 2. Follow-up întârziat (`delayMinutes` / `delayDays` pe efect)
+
+Efectul întârziat se PROGRAMEAZĂ (apare în «efecte programate», rulează singur la scadență). *Exemplu — incident HACCP: alertă acum, task de verificare a doua zi:*
+```
+effects: [
+  { type: "notify_production_manager", config: { message: "🌡️ {{equipmentName}}: {{temperature}}°C" } },
+  { type: "create_work_order", config: { title: "Verificare post-incident {{equipmentName}}", priority: "high" }, delayDays: 1 }
+]
+```
+
+### 3. Scară de escaladare (mai multe reguli, praguri crescătoare)
+
+Pentru „dacă nu se rezolvă, urcă": reguli SEPARATE pe același declanșator, cu praguri și cooldown-uri diferite. La declanșatoarele periodice, cooldown-ul = cât de des RE-alertează per entitate cât timp condiția persistă.
+
+*Exemplu — utilaj oprit:*
+- Regula 1 «nivel 1»: `equipment_downtime_exceeded` cu `minDelayMinutes: 30`, cooldown 0 (o dată/24h) → notify_shift_supervisor.
+- Regula 2 «nivel 2»: `minDelayMinutes: 60`, cooldown 60 (re-alertă ORARĂ) → send_andon_alert + notify_production_manager.
+- Regula 3 «nivel 3»: `minDelayMinutes: 120`, cooldown 240 → trigger_predictive_maintenance_workflow.
+
+### 4. Lanț de reguli (`chain_automation`)
+
+Efectul `chain_automation` (config: `{ruleId}`) evaluează ALTĂ regulă cu același context (max 5 în lanț, auto-referința e refuzată). Folosește-l pentru un „trunchi" comun (ex. orice problemă de calitate → regulă-hub care notifică QA) apelat din mai multe reguli specializate.
+
+### 5. Țintire fină (scoping)
+
+- `brandId` pe regulă → doar acel brand; fără = global.
+- În triggerConfig: `productId`/`warehouseId` (loturi, stoc), `equipmentId` (utilaje), `recipeId` (producție), `area` (igienizare), `severity` (incidente).
+- La sweeps, cooldown = pauza PER ENTITATE: lot A și lot B alertează independent.
+
+### Combinarea tiparelor
+
+Cererea „când expiră ceva în congelator, blochează, anunță-mă, iar dacă în 24h nu s-a rezolvat, escaladează la administrator" = 1 regulă (`lot_expired_in_stock` + `warehouseId` congelator + block + notify) + al doilea efect `notify_role(["admin"])` cu `delayDays: 1`. Aproape orice cerere se descompune în: eveniment → filtre → acțiuni imediate → acțiuni condiționate → acțiuni întârziate → (opțional) reguli-surori de escaladare.
+
+## FĂRĂ LIMITE — ce nu se poate azi se escaladează cu tichet
+
+Când cererea NU se acoperă nici cu tiparele de mai sus (declanșator sau efect inexistent):
+
+1. **Niciodată «nu se poate»** către client și niciodată o regulă care doar mimează cererea.
+2. Cheamă **`request_automation_capability`** (`request` = cererea în cuvintele clientului, `missingTrigger`/`missingEffect` = ce lipsește exact, `details` = praguri/produse/flux, `contactEmail` opțional). Tool-ul trimite un tichet structurat direct echipei Symbai (cu deduplicare — retrimiterea aceleiași cereri nu deschide alt tichet).
+3. **Răspunde clientului cu mesajul întors de tool**: *„Am trimis cererea către echipa Symbai (referința X). Se rezolvă rapid — automatizarea va apărea în contul tău fără să mai faci nimic, iar când e activă o configurez imediat."*
+4. **Construiește imediat partea POSIBILĂ** a cererii (măcar notificarea pe evenimentul cel mai apropiat) — clientul pleacă azi cu ceva funcțional.
 
 ## De știut (ca să nu te miri)
 
