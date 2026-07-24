@@ -18,13 +18,13 @@ Regula de aur: **pregătește rolul cu tool-urile de înțelegere (vezi ce înse
 
 ## Tool-urile — grupate pe „înțelege" și „acționează"
 
-### A) Înțelege (READ — mereu disponibile, nu cer niciun modul pe token)
+### A) Înțelege (READ — cer citire pe modulul `personal` în grant)
 
 - **`list_permission_catalog`** — vocabularul complet: toate categoriile + cheile + ce înseamnă fiecare, în română. Opțional `category` ca să vezi doar un grup (ex. `category: "payments"`). **Începe mereu de aici** ca să știi ce chei poți pune. Explică și `all` / `all:<categorie>`.
-- **`describe_role`** — tot despre un rol EXISTENT: ce permisiuni are (extinse: ce categorii integrale vs chei individuale), câți angajați îl folosesc și — cel mai util — **ce pagini vede**. Răspunde la „ce vede casierul", „ce poate rolul Bucătar", „de ce nu vede rolul X pagina Y". Dă `roleId` sau `roleName`.
-- **`preview_role_access`** — dai un set IPOTETIC de chei și vezi **ce pagini ar rezulta** + ce categorii ar fi acordate, **înainte** de a crea/modifica. Semnalează cheile necunoscute (care ar fi ignorate). Perfect pentru a proiecta un rol pas cu pas.
-- **`list_role_presets`** — rolurile predefinite (șabloane) cu descriere + câte permisiuni au + ce categorii acoperă. Punct de plecare bun.
-- **`suggest_role_setup`** — pornind de la o **descriere în cuvinte** („cineva care doar ia comenzi și încasează, dar nu poate da reduceri"), îți propune un set de permisiuni, presetul apropiat și o previzualizare a paginilor. E o **schiță** deterministă, nu o decizie finală — o rafinezi cu `preview_role_access`.
+- **`describe_role`** — tot despre un rol EXISTENT: permisiuni, angajați, **paginile web** și prezentarea recomandată în **Symbai Staff** (profil, primul tab, ordinea zonelor).
+- **`preview_role_access`** — dai un set IPOTETIC de chei și, opțional, `roleName`; vezi paginile și experiența Staff **înainte** de creare/modificare. Semnalează cheile necunoscute.
+- **`list_role_presets`** — rolurile predefinite cu drepturile și prezentarea Staff recomandată. Punct de plecare bun.
+- **`suggest_role_setup`** — din atribuții și, opțional, numele rolului, propune permisiuni, preset, pagini și experiența Staff. Este o schiță transparentă, nu o decizie finală.
 
 ### B) Acționează (WRITE — cer modulul `personal` pe token)
 
@@ -40,9 +40,10 @@ Regula de aur: **pregătește rolul cu tool-urile de înțelegere (vezi ce înse
 1. **Context**: `list_brands` + `list_locations` (ai nevoie de `brandId`). Rolurile existente: `list_entities(entityType:"roles", brandId)`.
 2. **Vezi vocabularul**: `list_permission_catalog` (sau filtrat pe categoria care te interesează).
 3. **Pornește de la ceva**: dacă e o meserie clasică → `list_role_presets` sau `suggest_role_setup(description)`. Dacă e ceva specific → alege cheile din catalog.
-4. **Previzualizează**: `preview_role_access(permissions)` → verifică ce pagini ies și că nu ai chei necunoscute. Ajustează până arată exact ce vrei.
+4. **Previzualizează**: `preview_role_access(permissions, roleName)` → verifică paginile, cheile necunoscute și activitatea principală din Staff.
 5. **Creează / modifică**: `create_role` (rol nou) sau `set_role_permissions` (ajustezi unul existent).
-6. **Verifică prin citire**: `describe_role(roleId)` → confirmă permisiunile + numărul de pagini + câți angajați. NU te baza pe UI.
+6. **Verifică prin citire**: `describe_role(roleId)` → confirmă permisiunile, paginile, angajații și recomandarea Staff.
+7. **Configurează prezentarea**: `get_staff_app_config` → preia `configHash` → preview cu `configure_staff_app_role(applyRecommendedLayout:true, expectedConfigHash:configHash, confirm:false)` sau `configure_staff_app_roles(expectedConfigHash:configHash, confirm:false)` → arată propunerea și cere confirmarea explicită a utilizatorului → numai după acord retrimite exact aceeași propunere și același `expectedConfigHash`, cu `confirm:true` + `expectedPreviewHash:proposedConfigHash` → readback.
 
 ## Rețete rapide (exemple)
 
@@ -58,6 +59,7 @@ Regula de aur: **pregătește rolul cu tool-urile de înțelegere (vezi ce înse
 - **`all` e tot; `all:<categorie>` e tot grupul.** Preferă `all:<categorie>` pentru o funcție completă pe o zonă, în loc să enumeri zeci de chei.
 - **Pagina de configurare cere drept de „management".** Un rol cu doar `_view` vede datele, dar nu paginile de setări ale zonei — corect și intenționat.
 - **PIN-ul are nevoie de `pin_login`.** Câmpul de PIN pe fișa angajatului apare doar dacă rolul lui are `pin_login`. Dacă vrei ca angajatul să se logheze cu PIN pe POS, pune-i `pin_login` pe rol.
+- **PIN de login ≠ PIN la fiecare operație.** Pe telefonul personal, Symbai Staff nu cere PIN per operație dacă rolul autorizează acțiunea. PIN-ul operațional rămâne la Workstation Tablet, dispozitiv partajat.
 - **Pontajele (prezența) au chei dedicate:** `attendance_view` — vede tabul „Pontaje (prezență)" din `/staff` (pontajul self-service din aplicația Symbai Staff) și `attendance_manage` — administrează pontajele (corecții, politici). Fără ele, tabul nu apare în meniu.
 - **„Locul la CRM" nu se dă din rol.** Accesul nominal la CRM (crm seat) se setează pe fișa angajatului, nu pe rol.
 - **Verifică prin citire, nu prin UI.** După orice scriere, `describe_role` confirmă rezultatul real (aplicația poate afișa din cache o clipă).

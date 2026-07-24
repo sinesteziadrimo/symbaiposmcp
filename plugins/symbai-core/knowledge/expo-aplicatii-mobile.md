@@ -40,25 +40,21 @@ Aceeași pagină are DOUĂ configurări diferite — nu le confunda:
 | Card / dialog | Pentru cine | Cum lucrezi |
 |---|---|---|
 | `Configurare Platformă Clienți` | clienții publici: portal, QR, meniu, comenzi, jocuri | skill `configureaza-portal`; tool-uri `get_portal_config`, `configure_portal_*`, `configure_portal_qr`, `spotlight_portal_tab` |
-| `În Aplicație Staff` | angajați: livratori, agenți teren, CRM, sarcini, recepție, marfă, fabrică | din aplicație (dialogul de pe pagină); nu există tool de conexiune dedicat pentru acest dialog |
+| `În Aplicație Staff` | angajați: livratori, agenți teren, CRM, sarcini, recepție, marfă, fabrică | dialogul paginii sau tool-urile dedicate `get_staff_app_config`, `configure_staff_app_role`, `configure_staff_app_roles`, `configure_staff_app_defaults` |
 
 ### Dialogul „În Aplicație Staff"
 
-Configurează **previzualizarea** și profilul implicit pentru Symbai Staff: presetul implicit, densitatea afișării (ghidată sau compactă), sumarul explicativ pentru manager și ce funcții apar pe fiecare preset.
+Configurează prezentarea Symbai Staff per rol real: profilul de lucru, funcțiile vizibile, primul tab și ordinea taburilor autorizate. Tot aici se setează profilul implicit de preview, densitatea (ghidată sau compactă) și sumarul explicativ pentru manager.
 
-**Important — nu confunda cu permisiunile reale:** comutatoarele din acest dialog NU dau acces angajatului. Accesul real vine din rolurile din Personal (`/staff?tab=roles`) — permisiuni precum CRM, condus/livrări, vizualizare și actualizare statusuri de livrare, sarcini, recepție marfă, ecran bucătărie, rezervări, rapoarte de vânzări.
+Configurația este întotdeauna legată de unitatea exactă **brand + locație**. Depozitul/gestiunea nu identifică fabrica. Dacă există o singură unitate activă accesibilă se selectează automat; dacă sunt mai multe se folosește selecția curentă sau prima pereche canonică. Salvările vizuale și MCP folosesc același control de versiune, ca o modificare concurentă să nu fie suprascrisă.
 
-Preseturi disponibile:
+**Important — nu confunda cu permisiunile reale:** setările din acest dialog NU dau acces angajatului. Accesul real vine din rolurile din Personal (`/staff?tab=roles`). Configurarea Staff ordonează și simplifică numai funcțiile deja permise; orice tab neautorizat este eliminat automat.
 
-| Preset | Ce arată |
-|---|---|
-| 1. Angajat simplu | sarcini proprii, fără CRM/stoc |
-| 2. Operare marfă / bucătărie | sarcini, preluare marfă, bucătărie/producție |
-| 3. Recepție + marfă | recepție, rezervări, mesaje, preluare marfă |
-| 4. Livrator simplu | livrări, statusuri, rapoarte; CRM ascuns |
-| 5. Livrator cu vânzări | livrări + CRM + mesaje + apeluri + rapoarte |
-| 6. Vânzări / CRM în locație | CRM locație, apeluri, mesaje, rapoarte |
-| 7. Vânzări / CRM cu vizite | CRM teren, traseu zilnic, check-in și vizite |
+Unitatea Staff este perechea **brand + locație**. Nu este nevoie de `warehouseId`. Dacă nu se trimite unitatea, sistemul alege singura pereche activă accesibilă sau, dintre mai multe, prima pereche activă accesibilă în ordine deterministă. După o schimbare de tenant, selecția salvată a brandului nu se reutilizează pe alt server.
+
+Flux MCP sigur: `get_staff_app_config` → preia `configHash` → aceeași modificare cu `expectedConfigHash:configHash, confirm:false` pentru preview → arată propunerea și cere acordul explicit al utilizatorului → retrimite aceeași propunere și același `expectedConfigHash`, cu `confirm:true, expectedPreviewHash:proposedConfigHash` → `get_staff_app_config` pentru readback. La conflict recitește înainte să salvezi. Pentru un rol poți cere `applyRecommendedLayout:true`; pentru toate rolurile unității folosește `configure_staff_app_roles`.
+
+Nu memora un tabel fix de preseturi. Catalogul live este `availableProfiles` din `get_staff_app_config` și include familii pentru sarcini generale; stoc/depozit/bucătărie/recepție; livrare și expediție B2B; planificare, execuție, HACCP, QC, conducere și mentenanță de fabrică; HR, financiar și vânzări. Folosește profilul exact recomandat pentru rol, de exemplu `warehouse_logistics`, `kitchen_staff` sau `factory_operator`, nu un profil mixt ales după o denumire aproximativă.
 
 Previzualizarea de livrator din dialog e clickabilă — explic-o ca pe o simulare realistă: `Traseu`, `Sună`, `Problemă`, `Pornesc cursa`, `Am ajuns`, `Poză`, `Încasez`, `Marchez livrată`. Pentru „Livrator simplu", aplicația e centrată pe livrări: primul tab e `Livrări`, iar CRM-ul nu apare.
 
@@ -66,16 +62,28 @@ Previzualizarea de livrator din dialog e clickabilă — explic-o ca pe o simula
 
 Ce apare în aplicație depinde de profilul rezolvat din rol + funcțiile activate:
 
-- **Sarcini**: sarcinile reale se gestionează prin tool-uri sau din POS web (vezi skill-ul `gestioneaza-sarcini`) și se verifică prin `get_my_tasks`. Nu promite un ecran separat de sarcini în aplicație dacă nu îl vezi în versiunea curentă.
+- **Sarcini**: Symbai Staff are ecran/tab propriu `tasks` („Azi/Sarcini”) pentru sarcinile angajatului, cu prioritate, termen și dovada cerută. Sarcinile se gestionează prin tool-uri sau din POS web (vezi skill-ul `gestioneaza-sarcini`) și se verifică prin `get_my_tasks`.
 - **Fabrică**: rolurile cu producție văd tabul **Fabrică** cu subtaburi **Azi**, **Scan**, **QC**, **Etichete**, **Rețete**. Din lista de operații se pot porni/finaliza operații și marca QC OK/blocat; scanarea unui cod QR arată containerul/lotul și poate porni următoarea operație sau printa eticheta containerului scanat.
 - **Etichete de producție**: tabul **Etichete** alege o imprimantă activă și printează eticheta pentru ultimul container scanat sau pentru containerele din operațiile zilei. Nu promite funcții (ex. creare container nou) pe care nu le vezi în aplicație.
 - **Scanare QR**: operatorul folosește tabul **Scan** din Symbai Staff sau scannerul web. Pentru detalii bogate și verificare, asistentul folosește `exec_scan_container` / `exec_get_container_info`.
 - **Pontaj self-service**: ecranul **Pontaj** — intrare/ieșire cu GPS (opțional selfie), pauze cu motiv; managerul vede prezența în `/staff` → tab „Pontaje (prezență)". Detalii în `personal-hr.md`.
+- **PIN la operații**: pe telefonul personal, Symbai Staff NU cere PIN la fiecare pornire/finalizare dacă rolul și unitatea autorizează operația. PIN-ul de autorizare per operație rămâne pentru **Workstation Tablet**, stația partajată. La prima asociere a telefonului sau după resetare, angajatul confirmă o singură dată cu parola; apoi telefonul de încredere lucrează fără PIN operațional.
 - **HACCP pe mobil**: temperaturile (frigidere/congelatoare) și sarcinile HACCP (curățenie, verificări) se pot loga direct din aplicație — nu mai e nevoie de PC în bucătărie.
 - **Inventariere**: numărarea fizică de stoc (inventarierea) se poate face din Symbai Staff, direct din depozit, cu telefonul.
 - **Cockpit Manager + Marketing**: managerii au un cockpit dedicat în aplicație, iar tabul **Marketing** permite postarea pe rețelele sociale direct de pe telefon.
 
 Explică simplu: prin conexiune poți citi/scrie datele de producție și sarcini, dar acțiunile fizice de teren (camera, printarea etichetei, operația la utilaj) se fac în **Symbai Staff** sau în scannerul web, nu din chat.
+
+## Configurare universală rol + aplicație
+
+Pentru orice business, proiectează separat cele două straturi:
+
+1. **Autoritatea:** `suggest_role_setup` / `preview_role_access(permissions, roleName?)` → creare sau ajustare rol → `describe_role`. Aceste tool-uri arată și recomandarea Staff, nu numai paginile web.
+2. **Prezentarea:** `get_staff_app_config` → verifică `setupSummary` și recomandarea fiecărui rol.
+3. **Aplicarea:** preia `configHash` din `get_staff_app_config`, apoi cere preview pentru un singur rol cu `configure_staff_app_role(applyRecommendedLayout:true, expectedConfigHash:configHash, confirm:false)`, sau pentru toate rolurile cu `configure_staff_app_roles(expectedConfigHash:configHash, confirm:false)`.
+4. **Confirmarea:** arată utilizatorului preview-ul și cere confirmare explicită; numai după acord retrimite exact aceeași propunere și același `expectedConfigHash`, cu `confirm:true` + `expectedPreviewHash:proposedConfigHash`, apoi recitește.
+
+Nu adăuga permisiuni doar pentru a muta un tab mai sus și nu ascunde prin prezentare o atribuție principală. Dacă recomandarea spune că rolul nu are spațiu de lucru util, repară mai întâi permisiunile.
 
 ## Notificări push
 

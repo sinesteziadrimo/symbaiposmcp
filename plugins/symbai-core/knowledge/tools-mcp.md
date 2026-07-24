@@ -3,8 +3,8 @@
 > Catalogul tool-urilor disponibile prin conexiunea MCP `symbai` (token `symbai_mcp_*` din portalul Hub → Acces AI). Lista live o vezi la conectare; fișierul ajută la orientare. **Generat determinist din registry — NU edita manual; regenerează cu `_gen_tools_catalog.ts`.**
 
 Modelul de permisiuni al tokenului:
-- **Citire = mereu disponibilă** — listări, căutări, rapoarte, analiză.
-- **Scriere = per modul** — fiecare tool de scriere cere modulul lui bifat pe token (portal Hub → Acces AI); altfel: „permisiune insuficientă".
+- **Citire = liberă sau per modul, conform registry-ului** — citirile din secțiunea „fără permisiune de modul" sunt mereu disponibile; citirile listate într-un modul cer grantul de citire al acelui modul.
+- **Scriere = per modul** — fiecare tool de scriere cere modulul lui bifat pentru scriere pe token (portal Hub → Acces AI); altfel: „permisiune insuficientă".
 - **SQL doar-citire = comutator separat** pe token (SELECT cu protecții).
 - **SQL DML direct = capabilitate admin separată** — `execute_sql_write` apare doar pe tokenuri temporare Hub-admin cu `sqlWrite`; nu face parte din modulele obișnuite de scriere.
 - **Secretele nu se expun prin MCP** — payload-urile `data` redactează credentiale/tokenuri/hash-uri: SMTP, portal furnizor, marketplace, OAuth/API delivery, router/UniFi, PIN/parole/CNP/salarii angajați, tokenuri contract/plată/tracking. Dacă userul cere un secret, verifică statusul și du-l la pagina de regenerare/reconectare; nu încerca SQL.
@@ -20,11 +20,11 @@ Fiecare apel e înregistrat în jurnalul de activitate (auditabil de proprietar)
 - **Pattern scriere → verificare**: confirmarea finală o dai pe baza unui tool de citire, nu a interfeței. O scriere repetată „ca să se prindă" creează duplicate.
 - **Date lipsă = întrebări, nu invenții**: la importuri nu inventa prețuri/gramaje/alergeni; cere sursa userului.
 
-## ⚠ Confirmare obligatorie (`confirm: true`) — 75 tool-uri 🔒
+## ⚠ Confirmare obligatorie (`confirm: true`) — 78 tool-uri 🔒
 
 Tool-urile marcate 🔒 cheltuie bani, trimit în masă, sunt externe sau ireversibile. La PRIMUL apel fără `confirm: true` întorc un mesaj de confirmare cu detaliile (sumă/nr. destinatari) și NU execută nimic. Fluxul corect: arăți utilizatorului ce se va întâmpla → ceri OK → reapelezi cu `confirm: true`. NU trimite `confirm: true` din prima fără acordul explicit al utilizatorului.
 
-Tool-uri cu confirm: `activate_email_flow`, `anonymize_guest`, `apply_quarterly_marketing_plan`, `approve_inventory_adjustment`, `associate_recipe_to_product`, `boost_post`, `bulk_delete_products`, `bulk_restore_product_86`, `bulk_set_product_86`, `bulk_set_product_allergens`, `cancel_awb`, `change_product_type`, `commit_recipe_mapping_session`, `create_calls_ad`, `create_event_ad`, `create_inventory_document`, `create_messages_ad`, `create_nir_from_invoice`, `create_page_likes_ad`, `create_traffic_ad`, `delete_menu_category`, `delete_pnl_snapshot`, `delete_tag`, `delete_tag_routing`, `delete_tag_routing_rule`, `dispatch_review_invitations_for_order`, `enroll_customers_in_email_sequence`, `execute_sql_write`, `fix_reception_costs`, `fix_recipe_ingredient`, `forget_customer_gdpr`, `gbp_create_post`, `gbp_reply_review`, `generate_daily_consumption`, `gp_refund_transaction`, `home_assistant_delete_schedule`, `import_retetar`, `mark_channel_deposits_returned`, `merge_finished_products_bulk`, `merge_storage_zones`, `move_product_to_served_meal`, `post_inventory_document`, `process_rma_refund`, `publish_social_post`, `push_notify_customers`, `push_notify_staff`, `receive_purchase_order`, `refund_channel_order`, `reject_channel_order`, `replace_channel_order_items`, `reply_to_conversation`, `reprocess_daily_consumption`, `restore_products`, `resume_ad_campaign`, `run_crm_playbook`, `run_marketing_automation`, `run_smart_followups`, `schedule_email_campaign`, `score_sales_deals`, `send_email_campaign`, `send_email_campaign_predictive`, `send_magic_login_link`, `send_push_campaign`, `send_whatsapp_media`, `send_whatsapp_message`, `set_campaign_budget`, `set_channel_delivery_provider`, `set_ingredient_purchase_prices`, `set_product_manual_cost`, `snooze_delivery_channel`, `submit_efactura_anaf`, `sync_emag_offers`, `sync_retail_reviews`, `update_ecommerce_order_status`, `update_lot_status`.
+Tool-uri cu confirm: `activate_email_flow`, `anonymize_guest`, `apply_quarterly_marketing_plan`, `approve_inventory_adjustment`, `associate_recipe_to_product`, `boost_post`, `bulk_delete_products`, `bulk_restore_product_86`, `bulk_set_product_86`, `bulk_set_product_allergens`, `cancel_awb`, `change_product_type`, `commit_recipe_mapping_session`, `configure_staff_app_defaults`, `configure_staff_app_role`, `configure_staff_app_roles`, `create_calls_ad`, `create_event_ad`, `create_inventory_document`, `create_messages_ad`, `create_nir_from_invoice`, `create_page_likes_ad`, `create_traffic_ad`, `delete_menu_category`, `delete_pnl_snapshot`, `delete_tag`, `delete_tag_routing`, `delete_tag_routing_rule`, `dispatch_review_invitations_for_order`, `enroll_customers_in_email_sequence`, `execute_sql_write`, `fix_reception_costs`, `fix_recipe_ingredient`, `forget_customer_gdpr`, `gbp_create_post`, `gbp_reply_review`, `generate_daily_consumption`, `gp_refund_transaction`, `home_assistant_delete_schedule`, `import_retetar`, `mark_channel_deposits_returned`, `merge_finished_products_bulk`, `merge_storage_zones`, `move_product_to_served_meal`, `post_inventory_document`, `process_rma_refund`, `publish_social_post`, `push_notify_customers`, `push_notify_staff`, `receive_purchase_order`, `refund_channel_order`, `reject_channel_order`, `replace_channel_order_items`, `reply_to_conversation`, `reprocess_daily_consumption`, `restore_products`, `resume_ad_campaign`, `run_crm_playbook`, `run_marketing_automation`, `run_smart_followups`, `schedule_email_campaign`, `score_sales_deals`, `send_email_campaign`, `send_email_campaign_predictive`, `send_magic_login_link`, `send_push_campaign`, `send_whatsapp_media`, `send_whatsapp_message`, `set_campaign_budget`, `set_channel_delivery_provider`, `set_ingredient_purchase_prices`, `set_product_manual_cost`, `snooze_delivery_channel`, `submit_efactura_anaf`, `sync_emag_offers`, `sync_retail_reviews`, `update_ecommerce_order_status`, `update_lot_status`.
 
 ## ⚠ Plafoane (limite) per token — opționale, setate din Hub
 
@@ -35,7 +35,7 @@ Proprietarul poate seta din portalul Hub → Acces AI plafoane pe token. Gol = f
 
 Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate mări/elimina plafonul din Hub → Acces AI (editează tokenul), sau folosește o valoare mai mică. Plafoanele se aplică PE LÂNGĂ permisiunea de modul — sunt o a doua plasă de siguranță.
 
-**TOTAL: 1257 tool-uri** — Citire 529 · Speciale 5 · SQL citire 3 · SQL scriere admin 1 · Scriere per modul 719 (pe 20 module).
+**TOTAL: 1261 tool-uri** — Fără permisiune de modul: citire 529 + speciale 5 · SQL citire 3 · SQL scriere admin 1 · Cu permisiune de modul 723 (pe 21 module; include citiri și scrieri).
 
 ## Citire (fără permisiune de modul) — 529 tool-uri
 
@@ -266,7 +266,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `verify_electronic_batch_record` — Verifică integritatea EBR-ului ELIBERAT: recompilează dosarul, recalculează hash-ul snapshot și îl compară cu hash-ul ancorat în lanț la eliberare + verifică lanțul de audit. (necesită: batchId)
 
 ### Personal & ture — 16
-- `describe_role` — Arată TOT despre un rol existent: permisiunile lui (extinse — ce categorii sunt acordate integral vs chei individuale, cu etichete RO), CÂȚI angajați îl au, și — cel mai util — CE PAGINI vede rolul în (parametri opționali: roleId, roleName)
+- `describe_role` — Arată un rol existent: permisiuni, categorii, număr de angajați, pagini web și recomandarea de profil/prim tab/ordine pentru Symbai Staff. (parametri opționali: roleId, roleName)
 - `diagnose_staff_benefit_rule` — Explică DE CE o regulă de beneficiu personal nu se aplică (sau se aplică): câți angajați sunt eligibili, câți la lucru acum, câte produse acoperă, ce probleme are configurarea (rol/buget/scope/aplicat (necesită: ruleId)
 - `get_employee_activity` — «Ce a făcut ospătarul X» pe o zi — consolidat într-un singur apel: (1) VÂNZĂRI (bonuri finalizate, venit — DOAR pe comenzi finalizate, ca să reconcilieze cu performanta_ospatari —, bacșiș, bon mediu, (necesită: employeeName)
 - `get_employee_availability` — Verifică disponibilitatea angajaților pe o anumită dată — cine este deja asignat la ture și cine e liber. (necesită: date)
@@ -278,10 +278,10 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `list_employee_contracts` — Listează contractele de muncă ale angajaților (CIM/PFA/Zilier) cu alocările multi-locație (procent sau sumă fixă) și bonusurile aferente. (parametri opționali: employeeId, active)
 - `list_employees` — Listează angajații activi cu nume, rol (+ brandul rolului), departament, poziție, salariu orar și brand/locație primară + acces multi-brand/multi-locație. (parametri opționali: includeInactive, department, brandId)
 - `list_leave_requests` — Listează cererile de concediu/învoire ale angajaților, cu tip, perioadă, motiv și status (în așteptare/aprobat/respins/anulat). (parametri opționali: employeeId, brandId, status)
-- `list_role_presets` — Listează rolurile PREDEFINITE (șabloane gata făcute) pe care le poți aplica dintr-o dată: Administrator, Manager, Ospătar, Barman, Bucătar Șef, Casier, Contabil, Marketing, Operator Livrări, roluri de
+- `list_role_presets` — Listează rolurile predefinite, amprenta lor de permisiuni și prezentarea Symbai Staff recomandată.
 - `list_staff_benefit_rules` — Listează regulile de beneficiu personal (mâncarea/băutura angajaților: reducere %, sumă fixă, preț special sau buget) cu valoarea, beneficiarul, produsele acoperite și dacă funcția e activă global. (parametri opționali: brandId, locationId)
-- `preview_role_access` — Simulează un set IPOTETIC de permisiuni ȘI arată ce pagini ar vedea + ce categorii ar avea acordate — ÎNAINTE să creezi sau să modifici rolul. (necesită: permissions)
-- `suggest_role_setup` — Pregătește o SCHIȚĂ de rol pornind de la o descriere în cuvinte («cineva care doar ia comenzi la masă și încasează, dar nu poate da reduceri», «responsabil producție care vede randamentul și elibereaz (necesită: description)
+- `preview_role_access` — Simulează `permissions` și arată categoriile, paginile web și experiența Staff înainte de creare/modificare; `roleName` opțional îmbunătățește recomandarea de profil. (necesită: permissions; opțional: roleName)
+- `suggest_role_setup` — Pregătește o schiță cu permisiuni minime, preseturi apropiate, pagini și prezentarea Staff. `businessType` influențează doar ordinea presetelor apropiate, nu acordă drepturi. (necesită: description; opțional: roleName, businessType)
 
 ### Rezervări, clienți, loialitate & CRM — 41
 - `check_game_availability` — Verifică disponibilitatea unui joc la o dată/oră/nr jucători. (necesită: gameId, date, time, partySize)
@@ -598,7 +598,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 
 - `execute_sql_write` 🔒 — Execută o singură instrucțiune SQL INSERT/UPDATE/DELETE în instanța curentă. (necesită: sql, reason)
 
-## Scriere per modul — 719 tool-uri (gated de writeModules pe token)
+## Tool-uri per modul — 723 tool-uri (gated de readModules sau writeModules, după operație)
 
 ### produse_meniu — Produse & Meniuri — 86 tool-uri
 - `add_menu_item` — Adaugă un produs într-un meniu cu preț de vânzare. (necesită: menuId, productId, price)
@@ -1159,6 +1159,12 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `update_scanner_device` — Actualizează un scaner existent (nume, mod de conectare, PC/port, activ/inactiv, notițe). (necesită: scannerDeviceId)
 - `update_voice_agent_config` — Creează/actualizează Recepționerul telefonic: pornit/oprit, nume afișat, numărul de telefon (Twilio), salut, informații despre local, numărul de transfer către om, fereastra de răspuns, plafoane. (parametri opționali: brandId, locationId, enabled, displayName)
 - `upsert_brand_memory` — Creează sau actualizează o memorie de brand (cunoștințele agenților: program special, regulile casei, oferte, poveste). (parametri opționali: id, brandId, title, content)
+
+### staff_app_config — Aspect Aplicație Staff — 4 tool-uri
+- `get_staff_app_config` — Citește unitatea exactă brand + locație, configurația, rolurile active, catalogul live `availableProfiles` + `availableFeatures`, profilul/taburile efective, auditul și recomandarea de prezentare pentru fiecare rol.
+- `configure_staff_app_role` 🔒 — Configurează prezentarea unui rol fără să-i schimbe permisiunile. Pentru varianta sigură și rapidă folosește `applyRecommendedLayout:true`; scrierea se face preview → confirmare cu hash.
+- `configure_staff_app_roles` 🔒 — Optimizează atomic prezentarea pentru rolurile selectate sau pentru toate rolurile active. O selecție explicită invalidă refuză tot lotul; în modul „toate", rolurile sărite sunt raportate cu `permissions` sau `presentation_conflict`.
+- `configure_staff_app_defaults` 🔒 — Configurează densitatea, hinturile managerului și profilul implicit de preview al unității, tot cu preview + confirmare.
 
 ### reclame — Reclame (Meta / Google / TikTok) — 9 tool-uri
 - `boost_post` 🔒 — Promovează (boost) o postare existentă pe Facebook/Instagram — creează ȘI publică reclama, fără wizard. (necesită: postId, dailyBudgetRon)

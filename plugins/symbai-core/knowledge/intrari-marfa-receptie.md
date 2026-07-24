@@ -71,6 +71,21 @@ Ce se întâmplă DUPĂ poză depinde de **modul ales de firmă** (Setări → S
 
 **Reconcilierea cu eFactura oficială:** când vine eFactura de la ANAF pentru aceeași factură fizică (același furnizor + număr), sistemul evită dublarea: dacă ciorna din poză e neaprobată și sumele se potrivesc, eFactura o înlocuiește automat; dacă poza era deja aprobată/recepționată, eFactura oficială se atașează (nu se mai pierde) și un gard împiedică al doilea NIR pe aceeași factură. Sumele diferite → avertisment + legare manuală în tabul **Reconciliere**.
 
+## Recepția pe LOTURI (fabrici) — același produs în mai multe loturi
+
+La fabrici și depozite, același produs vine adesea în **mai multe loturi**, cu **termene de valabilitate diferite** — ex. 400 kg de gem = 230 kg din lotul 85 (expiră 05.05.2027) + 90 kg din lotul 86 + 80 kg din lotul 87. Informația asta nu e pe factură, ci pe **declarația de conformitate** (sau certificatul de calitate) care însoțește marfa.
+
+**Se activează din Setări → Stocuri → „Recepție pe loturi"** (implicit oprită — dacă n-o pornești, nimic nu se schimbă față de acum). Cu ea pornită:
+
+- **Pozezi factura ȘI declarația de conformitate** (butonul de captură are o zonă separată „Declarație de conformitate (opțional)"). Sistemul citește din declarație, pentru fiecare produs, **toate loturile** cu cantitatea, originea și termenul de valabilitate al fiecăruia, și le pune automat pe liniile facturii.
+- **Poți împărți și corecta manual** loturile în ecranul de verificare: adaugi un lot, schimbi cantitatea sau termenul, ștergi unul. Un lot poate fi lăsat fără cantitate = „restul liniei". Dacă cantitățile loturilor nu se adună la cantitatea liniei, sistemul te avertizează și nu te lasă să creezi NIR-ul până corectezi.
+- **Dacă declarația vine mai târziu** (ai pozat întâi factura), o atașezi ulterior pe documentul deschis — butonul „Declarație conformitate" — și loturile se completează atunci.
+- **La crearea NIR-ului**, fiecare lot devine un **lot de stoc separat**, cu termenul lui de valabilitate. Așa merge corect **FEFO** (iese primul cel care expiră primul) și **retragerea (recall)** — poți urmări exact în ce a ajuns fiecare lot al furnizorului.
+
+Facturile care listează același lot pe două rânduri (paleți diferiți, ex. „Lot 28122026 – 50 kg" + „Lot 28122026 – 250 kg", aceeași dată) se unesc singure într-un lot de 300 kg. Dacă recepția are deja NIR și corectezi loturile, le aplici pe stoc apăsând **„Modificare NIR"**.
+
+**Asistentul poate împărți loturile prin conexiune** — îi spui, ex.: „împarte linia de gem în trei loturi: 85 cu 230 kg exp. 5 mai 2027, 86 cu 90 kg, 87 cu 80 kg" — și le pune el (`set_reception_lot_allocations`). Verifică întâi dacă „Recepția pe loturi" e pornită (`get_reception_policy`); dacă nu, o pornește cu `configure_reception_policy`.
+
 ## Îți configurezi singur procedura (asistentul îți explică ȘI face)
 
 Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește **propria procedură** din Setări → Stocuri → „Recepție din poză", sau cerându-i asistentului. Reguli disponibile (se aplică angajaților obișnuiți — ospătari, gestionari; **responsabilii cu drepturi financiare, ex. contabil/manager, pot oricum orice**):

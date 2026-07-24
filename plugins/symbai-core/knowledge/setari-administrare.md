@@ -4,7 +4,7 @@
 
 ## Pe scurt
 
-Modulul acoperă tot ce ține de configurarea și administrarea afacerii în Symbai: pagina Setări (firmă, branduri, locații, TVA, metode de plată, imprimante, server local), utilizatori cu roluri și permisiuni, abonamentul și modulele facturate prin Symbai Hub, integrările externe (Viva, ANAF, contabilitate, delivery), jurnalul de activitate (cine a făcut ce) și onboarding-ul ghidat în 29 de pași. Tot aici intră portalul Hub al clientului — contul, abonamentul și accesul AI extern prin token.
+Modulul acoperă tot ce ține de configurarea și administrarea afacerii în Symbai: pagina Setări (firmă, branduri, locații, TVA, metode de plată, imprimante, server local), utilizatori cu roluri și permisiuni, abonamentul și modulele facturate prin Symbai Hub, integrările externe (Viva, ANAF, contabilitate, delivery), jurnalul de activitate (cine a făcut ce) și onboarding-ul ghidat în 29 de pași. Tot aici intră portalul Hub al clientului — contul, abonamentul și accesul AI extern acordat nominal.
 
 ## Concepte
 
@@ -14,7 +14,7 @@ Modulul acoperă tot ce ține de configurarea și administrarea afacerii în Sym
 - **Versiunea pentru clienți noi** — un cont nou pornește automat pe ultima versiune publică a platformei. Versiunea curentă a instanței tale o vezi în Setări → Tehnic → Symbai Hub.
 - **Domenii de activitate** — profilul afacerii (restaurant, cafenea/bar, hotel, sală evenimente, fabrică, magazin etc.) decide ce module și pagini apar în meniu. La client nou, domeniile pot fi alese direct în Hub la înregistrare; POS le folosește ca fallback și le precompletează în Setări → General până când clientul salvează local. Hub-ul poate bloca schimbarea domeniului.
 - **Pagini ascunse per client** — administratorul platformei (Hub) poate ascunde complet anumite pagini sau bloca anumite setări (ex. configurația Viva, domeniul de activitate) pentru un client.
-- **Token Acces AI (MCP)** — token de forma `symbai_mcp_*` generat din portalul Hub, secțiunea „Acces AI (Claude Code)"; permite unui asistent AI extern să citească datele POS și, opțional, să scrie pe module alese. Tokenul se afișează o singură dată la creare.
+- **Acces AI (MCP)** — proprietarul îl acordă din Hub, secțiunea „Acces AI (ChatGPT/Codex & Claude Code)", alegând separat modulele de citire, modulele de scriere, SQL read-only, profilul, plafoanele și durata. Pentru accesul propriu al proprietarului se poate emite un token `symbai_mcp_*`, afișat o singură dată. Pentru un angajat, proprietarul trebuie să aleagă persoana și locația POS exacte: angajatul nu primește și nu copiază tokenul, ci se autentifică prin OAuth cu propriul email și propria parolă; fără grantul activ al proprietarului pentru acea pereche locație–angajat, loginul POS nu poate emite acces.
 - **Secrete prin MCP** — conexiunea AI citește date operaționale, nu parole în clar. Tool-urile nu expun credențiale (parole de email, chei de integrări, tokenuri de portal etc.); pentru probleme de conectare verifici statusul și trimiți utilizatorul la pagina de reconfigurare/regenerare.
 - **Jurnal de activitate (audit)** — acțiunile importante (anulări, aprobări, discounturi, modificări de prețuri/setări, plăți) se înregistrează automat cu cine/ce/când și diferențele vechi→nou.
 - **Seat CRM** — accesul la paginile Sales CRM e nominal, per utilizator: angajatul trebuie nominalizat manual în Setări Sales CRM, tab „Useri CRM". Regula se aplică și adminului; un seat se taxează separat prin Hub.
@@ -56,22 +56,13 @@ Pașii din meniu se **renumerotează automat** după profilul afacerii (la un re
 4. **Conectezi ANAF e-Factura** — întâi completezi CUI-ul și datele firmei (CUI vine din Hub), apoi Setări → Integrări & API → „ANAF e-Factura & e-Transport" → Conectare ANAF cu certificatul/USB token-ul; alegi mediul (Test/Producție) și activezi verificarea automată a statusului facturilor.
 5. **Configurezi plățile cu cardul Viva** — Setări → Integrări & API → „Viva Wallet": alegi modul ISV (recomandat; comisionul și credențialele pot fi setate de adminul Hub) sau Merchant direct (Merchant ID + cheie), opțional Tap on Phone pentru plata pe telefonul ospătarului.
 6. **Activezi/dezactivezi un modul plătit** — Setări → Module & Facturare: comuți modulul și trimiți cererea către Symbai Hub; costul lunar și calculul prorat se văd pe loc, dar sursa adevărului rămâne Hub-ul.
-7. **Dai acces AI extern (Claude) la datele tale** — intri în portalul Hub (hub.symbai.app), secțiunea „Acces AI (Claude Code)", generezi un token cu permisiunile dorite (citire mereu, scriere pe module alese, opțional SQL doar-citire); copiezi tokenul imediat — se afișează o singură dată. Revocarea din portal oprește accesul aproape imediat.
+7. **Dai acces AI extern (ChatGPT/Codex sau Claude Code)** — în Hub → „Acces AI" alegi persoana, locația POS, durata și permisiunile de citire/scriere. Pentru tine, Hub-ul poate afișa tokenul o singură dată. Pentru un angajat, Hub-ul creează un grant legat de locația și `employeeId`-ul exacte și trimite un link fără token; angajatul configurează conexiunea, apoi se loghează prin OAuth cu propriul cont POS. Drepturile efective sunt intersecția dintre grantul proprietarului, consimțământul OAuth, rolul POS live și brandurile/locațiile live alocate — pentru citiri și scrieri. SQL ad-hoc se dezactivează fail-closed când angajatul are o arie brand/locație restrânsă, fiindcă un SELECT liber nu poate fi rescris sigur pe rânduri. Revocarea din Hub sau dezactivarea angajatului oprește accesul.
 8. **Afli cine a modificat ceva** — Loguri Activitate (/audit-logs): cauți după angajat/masă/produs, filtrezi pe categorie și perioadă, deschizi intrarea pentru detalii și diferențele vechi→nou. Prin AI, același jurnal se citește cu tool-ul `jurnal_activitate`.
 9. **Repari date stricate** — Setări → Reparații: alegi unealta potrivită, apeși „Scanează"/„Previzualizează", verifici lista găsită (poți exclude rânduri), apoi aplici. Toate uneltele sunt sigure și pot fi rulate oricând.
 
 ## Tool-uri MCP utile
 
-**Citire (fără permisiune de modul):**
-- `list_brands`, `list_locations` — inventarul brandurilor și locațiilor; de rulat primele în orice sesiune. Sunt sigure pentru context: arată date operaționale, niciodată parole sau chei de integrare.
-- `list_vat_rates` — cotele TVA configurate.
-- `list_printers` — imprimantele per locație.
-- `list_entities` — listează rapid orice tip de entitate, inclusiv roluri și angajați.
-- `get_config_status` — ce e configurat și ce lipsește, pe categorii.
-- `lookup_company_cui` — caută firma la ANAF după CUI și salvează automat datele în setări.
-- `jurnal_activitate` — jurnalul de audit: cine a făcut ce și când, cu filtre pe categorie/angajat/masă/perioadă.
-- `explain_feature` — explică o funcționalitate Symbai.
-- `gaseste_in_aplicatie` — găsește pagina potrivită + link direct.
+**Citire:** `list_brands`, `list_locations`, `explain_feature`, `gaseste_in_aplicatie`, `ghid_symbai` și diagnosticul conexiunii rămân context minim. Restul tool-urilor de citire cer modulul relevant din grant: de exemplu `list_vat_rates` cere Produse & Meniu, `list_printers` și `get_config_status` cer Setări, `get_staff_overview` cere Personal, iar rapoartele de vânzări cer Comenzi POS. Pentru un angajat cu arie restrânsă, un reader precum `get_location_context` este disponibil numai după ce are o mapare verificată care aplică acea arie; altfel rămâne blocat implicit. `list_entities` și rapoartele generice cross-module apar numai unui grant cu toate modulele de citire și cu scope sigur.
 
 **Scriere (cer modul de permisiune pe token):**
 - modul `setari`: `create_brand` / `update_brand`, `create_location` / `update_location`, `link_brand_location` / `unlink_brand_location`, `update_company` (date fiscale manuale), `create_payment_method`, `create_printer`, `create_kds_screen`, `configure_pos_settings`, `create_notification_rule`.
@@ -90,7 +81,8 @@ Pașii din meniu se **renumerotează automat** după profilul afacerii (la un re
 - **Cont nou, dar lipsesc funcții sau tool-uri recente.** Nu încerca să repari prin pași de onboarding. Verifică întâi versiunea din Setări → Tehnic → Symbai Hub — conturile noi ar trebui să pornească pe ultima versiune publică. Dacă versiunea afișată e vizibil veche, trimite un ticket de suport (echipa Symbai o aduce la zi).
 - **De ce un angajat (chiar admin) nu vede Sales CRM?** Paginile CRM cer un „seat" nominal — nominalizezi persoana în Setări Sales CRM → tab „Useri CRM". Regula se aplică inclusiv adminului, pentru că seat-urile se taxează separat.
 - **De ce nu văd selectorul de brand/locație?** La o singură locație activă, selectorul global e ascuns automat.
-- **Am pierdut tokenul de Acces AI.** Tokenul se afișează o singură dată la creare; dacă l-ai pierdut, revoci tokenul vechi din portalul Hub și generezi unul nou.
+- **Am pierdut tokenul de Acces AI.** Dacă este accesul propriu al proprietarului, tokenul se afișează o singură dată: revoci conexiunea veche și creezi una nouă. Un angajat nu trebuie să primească sau să recupereze vreun token; proprietarul îi trimite un grant nou, iar el reface autentificarea OAuth cu propriul cont POS.
+- **Poate un angajat să-și creeze singur acces doar fiindcă are cont POS?** Nu. Contul POS dovedește identitatea, nu acordă autorizația. Hub-ul emite tokenul numai dacă există un grant activ creat de proprietar pentru locația POS și `employeeId`-ul exacte; grantul se consumă o singură dată la schimbul OAuth reușit.
 - **E periculos să rulez Reparațiile?** Nu — uneltele sunt gândite să fie sigure și repetabile, totul are previzualizare înainte de aplicare, iar la curățarea „produselor fantomă" plățile Viva confirmate pe cloud sunt protejate.
 - **De ce pașii de onboarding au alte numere la mine?** Pașii vizibili depind de profilul afacerii (domeniile de activitate) și se renumerotează automat; pașii pot fi și săriți.
 

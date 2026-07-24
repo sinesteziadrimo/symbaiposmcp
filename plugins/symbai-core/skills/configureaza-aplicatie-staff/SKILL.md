@@ -23,31 +23,30 @@ Nu confunda:
 
 ## Ce configurează dialogul
 
-Dialogul **„În Aplicație Staff"** configurează o previzualizare și preferințe de afișare pentru aplicația angajaților:
-- **profilul afișat implicit** în preview;
-- **densitatea** — mod ghidat (cu explicații) sau compact;
-- **hinturile pentru manager** — dacă preview-ul arată explicații;
-- **ajustări mici de funcții** per profil (ce module apar).
+Dialogul **„În Aplicație Staff"** configurează prezentarea reală a aplicației angajaților, separat pentru fiecare rol:
+- **profilul de lucru** al rolului (livrator, depozit, producție, HACCP, QC, manager etc.);
+- **funcțiile de prezentare** per rol;
+- **primul tab** deschis după login;
+- **ordinea taburilor** autorizate;
+- **densitatea**, hinturile pentru manager și profilul implicit din preview.
 
-Important: toggle-urile din „Ajustări mici" **nu schimbă permisiunile rolului**. Pentru acces real modifici rolurile în **Personal → Roluri** (`/staff?tab=roles`). Dialogul doar arată și ajustează modul în care se simplifică aplicația pentru profilul ales.
+Important: această configurare **nu schimbă permisiunile rolului**. Permisiunile din **Personal → Roluri** (`/staff?tab=roles`) rămân limita de siguranță: un tab sau o funcție neautorizată este eliminată chiar dacă a fost cerută în prezentare. Configurarea decide ce apare prima dată și cum este organizată munca deja permisă.
 
-## Profiluri rapide
+## Catalogul profilurilor
 
-| Preset | Când îl alegi | Funcții principale | Permisiuni recomandate pe rolul real |
-|---|---|---|---|
-| 1. Angajat simplu | curățenie, ajutor, personal fără vânzări/stoc | Task-uri proprii | vede sarcinile proprii |
-| 2. Operare marfă / bucătărie | recepție marfă, bucătărie, pregătiri, operator fabrică | Task-uri, Preluare marfă, Bucătărie/producție, Fabrică, containere QR | sarcini + recepție marfă + ecran bucătărie + permisiunile de producție ale rolului |
-| 3. Recepție + marfă | front-desk, rezervări, preluare marfă | Task-uri, Recepție, Mesaje, Preluare marfă | sarcini + vedere rezervări + recepție marfă |
-| 4. Livrator simplu | șofer/livrator care nu vede CRM | Livrări, Rapoarte | livrări (vedere + actualizare status) + condus flotă |
-| 5. Livrator cu vânzări | livrator care poate crea lead/follow-up | Livrări, Vânzare pe livrare, CRM, Mesaje, Rapoarte, Apeluri | livrări + acces CRM + rapoarte de vânzări |
-| 6. Vânzări / CRM în locație | agent în locație / call-center | CRM, Task-uri, Mesaje, Rapoarte, Apeluri | acces CRM + sarcini + rapoarte de vânzări |
-| 7. Vânzări / CRM cu vizite | agent de teren cu traseu și check-in | CRM, Vizite clienți, Task-uri, Mesaje, Rapoarte, Apeluri | acces CRM + sarcini + rapoarte de vânzări |
+Nu porni de la un tabel vechi sau de la un număr fix de preseturi. `get_staff_app_config.availableProfiles` este catalogul live și sursa de adevăr pentru versiunea instalată. Familiile curente sunt:
 
-Funcțiile care se pot porni/opri per profil: Sarcini, Preluare marfă, Bucătărie/producție, Recepție, Livrări, Vânzare pe livrare, CRM, Vizite clienți, Mesaje, Rapoarte, Apeluri.
+- lucru general: `tasks_basic`;
+- stoc și ospitalitate: `stock_kitchen`, `warehouse_logistics`, `kitchen_staff`, `reception_stock`;
+- livrare și expediție: `driver_basic`, `driver_sales`, `b2b_dispatcher`, `b2b_picker`, `b2b_loader`;
+- fabrică: `factory_planner`, `factory_operator`, `factory_haccp`, `factory_qc`, `factory_quality_manager`, `factory_shift_lead`, `factory_production_manager`, `factory_executive`, `factory_maintenance`, `factory_engineer`;
+- administrativ și comercial: `staff_hr`, `accounting_finance`, `sales_location`, `sales_field`.
+
+Funcțiile configurabile curente acoperă: sarcini, recepție marfă, manipulare depozit, bucătărie/KDS, recepție hotel, reaprovizionare camere, livrări, vânzare pe livrare, dispecerat/picking/încărcare B2B, CRM, vizite teren, execuție și planificare fabrică, QC, etichete, mentenanță, HACCP, HR, financiar, mesaje, rapoarte și apeluri. Folosește cheile și descrierile din `availableFeatures`, returnate live; permisiunile rolului elimină automat orice funcție neautorizată.
 
 ## Ce vede efectiv angajatul în aplicație
 
-- **Sarcini**: profilul poate avea funcția Sarcini pornită, dar aplicația nu are un ecran separat de sarcini către care să trimiți scurtături directe. Pentru sarcini reale folosește skill-ul `gestioneaza-sarcini` și verificarea prin `get_my_tasks`.
+- **Sarcini**: aplicația are ecran/tab propriu pentru sarcinile angajatului (`tasks` / „Azi/Sarcini”), cu prioritate, termen și dovada cerută. Pentru creare, atribuire și verificare folosește skill-ul `gestioneaza-sarcini`, apoi confirmă prin `get_my_tasks`.
 - **Fabrică**: tabul **Fabrică** are subtaburi **Azi**, **Scan**, **QC**, **Etichete**, **Rețete**. Din lista de operații operatorul poate porni/finaliza operații și marca QC OK/blocat; scanarea QR returnează container/lot/șarjă și poate porni următoarea operație sau printa eticheta containerului scanat.
 - **Etichete producție**: operatorul alege o imprimantă activă și printează eticheta pentru ultimul container scanat sau pentru containerele vizibile din operațiile zilei. Nu promite crearea unui container nou dacă nu vezi butonul în aplicație.
 - **Container / QR**: nu trimite userul la linkuri directe de container. Pentru detalii/verificare, tu folosești `exec_scan_container` / `exec_get_container_info`; pentru acțiunea fizică operatorul scanează în tabul **Scan** din aplicație sau în scannerul web.
@@ -61,13 +60,15 @@ Funcțiile care se pot porni/opri per profil: Sarcini, Preluare marfă, Bucătă
 
 Important: acestea sunt acțiuni fizice în aplicația mobilă. Prin MCP poți crea/citi sarcini, producție, loturi, QC și predări, dar nu simulezi camera sau imprimanta din chat; trimite operatorul în Symbai Staff și verifică apoi prin citire.
 
+**Regula PIN:** Symbai Staff este aplicația personală a angajatului. Dacă rolul și unitatea autorizează operația, nu cere PIN din nou la pornire/finalizare. PIN-ul per operație aparține stației partajate **Workstation Tablet**. Prima asociere a telefonului sau reasocierea după reset cere parola o singură dată; apoi telefonul de încredere lucrează fără PIN operațional.
+
 ## Preview-ul de telefon
 
 Preview-ul e gândit ca un telefon real, în brandul Symbai. Butoanele sunt clickabile pentru simulare și îl ajută pe user să înțeleagă ce vede angajatul.
 
 Pentru profilul **Livrator simplu**:
 - primul tab este **Livrări**;
-- nu apare tabul **Mai mult**;
+- apar **Sarcini** când rolul are `tasks_view`, plus **Pontaj** și **Mai mult**;
 - CRM-ul este ascuns;
 - vede tura activă, GPS live, numărul de comenzi active, ruta și cash-ul;
 - vede următoarea oprire, coada de livrări și statusul comenzii;
@@ -92,19 +93,28 @@ Dacă userul vede în aplicație un logo sau un nume vechi, cel mai probabil are
 
 ## Workflow
 
-1. Află ce rol/profil vrea userul: livrator simplu, livrator cu vânzări, agent de teren, recepție, bucătărie/marfă sau angajat simplu.
-2. Dacă cere permisiuni reale, deschide/folosește **Personal → Roluri** (`/staff?tab=roles`) și nu confunda cu preview-ul.
-3. Navighează la **/menu/platforms** și deschide cardul **„În Aplicație Staff"**.
-4. Selectează presetul sau un **rol real** din dropdown.
-5. Ajustează **Mod compact**, **Hinturi manager** și funcțiile doar dacă userul cere sau profilul recomandat are nevoie.
-6. Click pe taburile din telefonul de preview și, pentru livrator, rulează simularea: traseu → apel → status → poză/încasare → livrată.
-7. Salvează cu **Salvează Aplicație Staff**.
-8. Redeschide dialogul și verifică: profilul implicit, badge-urile de funcții, taburile și denumirile.
-9. Dacă userul vrea dovadă vizuală, fă screenshot la dialog și la preview-ul de telefon. Pentru fluxurile reale (cameră, scanare QR, printare etichetă), testarea se face pe un telefon cu aplicația Symbai Staff instalată — preview-ul web e doar simulare.
+1. Identifică unitatea ca pereche **brand + locație**. Nu cere `warehouseId`: depozitul nu definește unitatea Staff.
+2. Dacă nu este indicată unitatea, lasă selecția automată: singura unitate accesibilă sau, când sunt mai multe, prima pereche activă accesibilă în ordine deterministă.
+3. Citește configurația live și rolurile reale cu `get_staff_app_config`.
+4. Pentru fiecare rol verifică ocupația principală, `effectiveHome`, `effectiveTabs`, `audit`, `recommendation` și eventualele override-uri ignorate de RBAC. `setupSummary` spune direct ce roluri cer permisiuni și ce roluri cer doar reorganizare.
+5. Dacă trebuie schimbate drepturile reale, folosește **Personal → Roluri** (`/staff?tab=roles`). Dacă trebuie doar organizată aplicația, păstrează permisiunile și configurează prezentarea Staff.
+6. Pentru un rol obișnuit, preferă `configure_staff_app_role(roleId, applyRecommendedLayout:true, expectedConfigHash, confirm:false)`. Folosește `profileId/homeTab/tabOrder` manual numai când userul cere o organizare diferită și justificată.
+7. Arată utilizatorului propunerea din preview și cere-i confirmarea explicită. Numai după acordul lui retrimite exact aceeași schimbare cu `confirm:true` și `expectedPreviewHash=proposedConfigHash`.
+8. Recitește cu `get_staff_app_config` și confirmă hash-ul nou, primul tab, ordinea și lipsa ecranelor neautorizate.
+9. Pentru mai multe roluri folosește `configure_staff_app_roles`. Cu `roleIds`, orice rol inexistent, inactiv, din alt brand sau imposibil de prezentat oprește întreaga operație. Fără `roleIds`, tool-ul analizează toate rolurile active ale unității, aplică atomic rolurile valide și raportează separat rolurile sărite: `reason:"permissions"` se repară în Personal, iar `reason:"presentation_conflict"` în override-urile platformei.
+10. Pentru setările generale folosește analog `configure_staff_app_defaults`, tot în doi pași (preview, apoi confirmare).
+11. Dacă lucrezi vizual, deschide **/menu/platforms** → **„În Aplicație Staff"**, verifică telefonul de preview și salvează. Pentru cameră, QR și imprimare, verificarea finală se face pe un telefon cu Symbai Staff.
 
 ## Ce se poate prin MCP
 
-Dialogul „În Aplicație Staff" nu are tool dedicat de configurare prin conexiune — configurarea se face din pagină (tu poți conduce browserul prin extensia Chrome sau ghidezi userul pas cu pas). Pentru roluri reale și permisiuni folosește tool-urile de Personal dacă sunt disponibile pe conexiunea clientului; altfel ghidezi userul în `/staff?tab=roles`.
+Există patru tool-uri dedicate:
+
+- `get_staff_app_config(brandId?, locationId?)` — citește configurația, hash-ul optimist, `setupSummary`, rolurile, `availableProfiles`, `availableFeatures`, taburile autorizate, auditul și recomandarea fiecărui rol. Dacă unitatea lipsește, o selectează automat din aria actorului.
+- `configure_staff_app_role(roleId, expectedConfigHash, ..., confirm)` — modifică numai prezentarea unui rol. `applyRecommendedLayout:true` deduce profilul, primul tab și ordinea din meserie + permisiuni; alternativ poți trimite manual `profileId`, `featureOverrides`, `homeTab`, `tabOrder` sau `resetRole`.
+- `configure_staff_app_roles(roleIds?, expectedConfigHash, confirm)` — pregătește și aplică atomic prezentarea recomandată. Pentru o selecție explicită refuză tot lotul dacă un rol nu este valid; fără selecție aplică rolurile valide și raportează rolurile sărite. Nu schimbă permisiuni.
+- `configure_staff_app_defaults(expectedConfigHash, ..., confirm)` — modifică `density`, `showManagerHints` și `defaultPreviewProfile` pentru unitate.
+
+Scrierile cer `expectedConfigHash` din ultima citire. Cu `confirm:false` întorc `proposedConfigHash` fără salvare; confirmarea cere atât `confirm:true`, cât și `expectedPreviewHash=proposedConfigHash`, pentru exact aceeași unitate și propunere. Dacă oricare hash s-a schimbat, recitește și reaplică patch-ul. Pentru roluri reale și permisiuni folosește separat tool-urile de Personal.
 
 Pentru orice acțiune reală de livrare (asignare șofer, status comandă, incident, flotă) folosește skill-ul `gestioneaza-livrari` și tool-urile de livrări. Dialogul **„În Aplicație Staff"** este preview/configurare de afișare, nu dispecerat operațional.
 
@@ -113,9 +123,11 @@ Pentru sarcini reale folosește skill-ul `gestioneaza-sarcini`. Pentru fabrici f
 ## Răspunsuri scurte utile
 
 - „Ce vede livratorul?" → deschide „În Aplicație Staff", preset **Livrator simplu**, arată telefonul: Livrări, rută, sună, status, poză, încasare, marcare livrată.
-- „Vreau livrator fără CRM" → preset **Livrator simplu**; verifică să fie active doar Livrări/Rapoarte și să nu apară Pipeline/Acțiuni/Mai mult.
+- „Vreau livrator fără CRM" → profil `driver_basic`; verifică Livrări primul, Sarcini când are `tasks_view`, Pontaj și Mai mult, fără Pipeline sau Acțiuni comerciale.
 - „Vreau livrator care poate vinde" → preset **Livrator cu vânzări**; are livrări + pipeline + mesaje + apeluri.
-- „Ce vede operatorul de fabrică?" → preset **Operare marfă / bucătărie** sau rol real cu producție; arată tabul Fabrică: Azi, Scan, QC, Etichete, Rețete.
+- „Ce vede operatorul de fabrică?" → profilul live `factory_operator`; arată spațiul Fabrică: operațiile zilei, Scan, QC, Etichete și Rețete.
+- „Ce vede magazionerul?" → `stock_kitchen` pentru recepție/stoc de bază sau `warehouse_logistics` pentru recepție, amplasare, mutări, picking, încărcare și predare.
+- „Ce vede bucătarul?" → `kitchen_staff`, cu sarcinile și comenzile KDS autorizate, fără ecrane de fabrică/depozit doar pentru că numele rolului conține „bucătar".
 - „Vreau să printez eticheta unui container de pe telefon" → în Symbai Staff: Fabrică → Scan (scanează containerul) → Etichete → „Printează ultimul container scanat"; verifică apoi prin `exec_get_container_info`.
 - „De ce nu vede agentul X CRM-ul?" → verifică rolul real în Personal și permisiunea de acces CRM; preview-ul nu acordă permisiuni.
 - „De ce arată alt logo?" → versiune veche de aplicație sau cache — recomandă actualizarea aplicației; dacă persistă, trimite ticket.

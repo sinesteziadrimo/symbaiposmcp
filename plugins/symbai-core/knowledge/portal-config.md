@@ -8,7 +8,7 @@
 
 Configurarea se face în pagina **/menu/platforms** (alias `/portal-config`), care deschide un **dialog cu 5 tab-uri** (General, Texte, Funcționalități, Aspect, QR). Dialogul e fragil de operat prin mouse — de aceea preferi **tool-urile MCP**, care citesc config-ul și scriu doar ce ceri, fără click prin tab-uri. Și ca userul să VADĂ în browserul lui ce schimbi, ai `spotlight_portal_tab` (deschide modala + comută tab/secțiune live).
 
-Pe aceeași pagină există și cardul **„In Aplicatie Staff"**. Acela NU configurează portalul clienților; configurează preview-ul aplicației **Symbai Staff** pentru livratori/agenți/angajați. Pentru el folosește `expo-aplicatii-mobile.md` + skill-ul `configureaza-aplicatie-staff`. Nu folosi `configure_portal_*` pentru Aplicație Staff.
+Pe aceeași pagină există și cardul **„În Aplicație Staff"**. Acela NU configurează portalul clienților; configurează prezentarea reală per rol și preview-ul aplicației **Symbai Staff** pentru livratori/agenți/angajați. Pentru el folosește `expo-aplicatii-mobile.md` + skill-ul `configureaza-aplicatie-staff`. Nu folosi `configure_portal_*` pentru Aplicație Staff.
 
 ## Discovery — întreabă inteligent înainte să configurezi
 
@@ -105,7 +105,7 @@ Important de înțeles ca să-i explici userului — comanda QR NU ajunge la cin
 
 ## Pagini
 - **Configurare Portal** (`/menu/platforms`, alias `/portal-config`) — cardul „Configurare Platformă Clienți" deschide dialogul cu 5 tab-uri (General / Texte / Funcționalități / Aspect / QR). Are selector de unitate (sus) dacă brandul are mai multe locații. ⚠ Tab-urile dialogului NU sunt adresabile prin `?tab=` în URL (e o modală în pagină) — DAR le poți deschide/comuta live cu `spotlight_portal_tab` ca userul să vadă. În rest, modificările le faci prin MCP.
-- **Aplicație Staff** (`/menu/platforms`) — cardul „In Aplicatie Staff" deschide dialogul de preview pentru Symbai Staff: profiluri livrator/agent teren/CRM/task-uri, branding Symbai, telefon interactiv. Nu e portal public și nu are tool MCP dedicat în catalogul curent. Vezi `expo-aplicatii-mobile.md` + skill `configureaza-aplicatie-staff`.
+- **Aplicație Staff** (`/menu/platforms`) — cardul „In Aplicatie Staff" configurează prezentarea Symbai Staff per rol. Nu e portal public; folosește `get_staff_app_config`, `configure_staff_app_role`, `configure_staff_app_roles` și `configure_staff_app_defaults`. Vezi `expo-aplicatii-mobile.md` + skill `configureaza-aplicatie-staff`.
 - **Jocuri** (`/portal-games`) — atracții/jocuri (liste, programe, prețuri, excepții). → `jocuri-activitati.md`.
 - **Atracții** (`/portal-attractions`) — vizualizarea publică a atracțiilor.
 - **Misiuni & Recompense** (`/portal-missions`) — gamificarea; din MCP doar pornești modulul (`gamification: true`), configurarea fină e în pagină.

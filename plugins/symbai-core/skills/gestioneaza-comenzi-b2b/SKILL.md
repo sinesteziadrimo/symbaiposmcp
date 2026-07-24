@@ -65,13 +65,14 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 - **Ștergerea de comenzi/clienți întregi NU merge prin conexiune** — anulează (`update_b2b_order(status:"cancelled")`) sau ghidează userul să șteargă din aplicație. Dacă era facturată, storno din `/finance`.
 - **Limbaj de business, nu jargon** („pregătește comanda", „poate fi livrată la termen", „ce-mi trebuie ca s-o produc") — nu `legalEntityId`/`depotId`/`provisionalShift`.
 
-## Permisiuni (modul pe token)
-- **Citirile** (`list_b2b_orders`, `list_b2b_clients`, `list_b2b_client_depots`, `get_b2b_order_items`, `get_b2b_order_documents`, `get_b2b_picking_plan`, `get_retail_distribution_readiness`, **`plan_b2b_order`** — preview, nu scrie nimic) **nu cer permisiune de modul** — merg mereu (tokenul are citire completă pe toată instanța clientului). Deci poți mereu să ARĂȚI și să planifici în preview.
+## Permisiuni (grantul Acces AI)
+- **Citirile comerciale** (`list_b2b_orders`, `list_b2b_clients`, `list_b2b_client_depots`, `get_b2b_order_items`, `get_b2b_order_documents`, `get_b2b_picking_plan`) cer citire pe modulul **Furnizori** (`furnizori`). Fără el, tool-urile nu apar și nu pot fi apelate.
+- **Citirile de planificare industrială** (`plan_b2b_order`, `get_retail_distribution_readiness`) cer citire pe modulul **Producție** (`productie`).
 - **Scrierile pe comandă/client** (`create_b2b_order`, `update_b2b_order`, `create_b2b_client`, `update_b2b_client`, depots, `create_b2b_client_product`, `confirm_b2b_picking`, `generate_b2b_aviz`, `accept_b2b_aviz`, `generate_b2b_invoice`, `generate_b2b_retail_shipment_plan`, **`recompute_b2b_order_status`**) cer modulul **`Furnizori`** (`furnizori`) pe token.
-- **`apply_b2b_order_plan`** cere modulul **`Producție`** (`productie`) — creează loturi de producție. Deci preview-ul (plan) merge cu read, dar EXECUȚIA cere modulul Producție pe token.
+- **`apply_b2b_order_plan`** cere scriere pe modulul **`Producție`** (`productie`) — creează loturi de producție. Preview-ul și execuția sunt ambele în Producție, dar folosesc granturi diferite: citire, respectiv scriere.
 - **`set_b2b_picking_rules`** cere modulul **`Setări & Configurare`** (`setari`).
 - Pentru o factură fără comandă sau pe mai multe bonuri: `create_fiscal_invoice` cere modulul **`Financiar`** (`financiar`); `submit_efactura_anaf` e extern (confirm-first).
-- „Permisiune insuficientă" pe un tool → portal Hub → **Acces AI** → bifează modulul respectiv pe token.
+- „Permisiune insuficientă" pe un tool → portal Hub → **Acces AI** → acordă modulul la citire și/sau scriere. Pentru angajat, rolul POS poate restrânge suplimentar scrierea.
 
 ## Legături
 - Concepte complete + clienți/catalog/reguli + fluxuri + capcane + FAQ → `knowledge/b2b-comenzi-wholesale.md`.
