@@ -9,17 +9,19 @@ Citește întâi `knowledge/agent-operare-avansata.md` (standardul de execuție 
 
 **Ideea cheie:** în Symbai, ce vede și ce poate face un angajat depinde de **rolul** lui, iar accesul la pagini se **derivă** din permisiuni. Deci nu ghici — folosește tool-urile care îți arată direct ce înseamnă fiecare drept și ce pagini rezultă.
 
+Pentru **ordinea și aspectul Symbai Staff**, permisiunile sunt doar limita de autoritate. După ce rolul este corect, folosește skill-ul `configureaza-aplicatie-staff` și tool-urile `get_staff_app_config` / `configure_staff_app_role` pentru profil, primul tab și ordinea zonelor. Nu adăuga permisiuni doar ca să muți o activitate mai sus în aplicație.
+
 ## Regula de aur
 
 **Înțelege → previzualizează → acționează → verifică prin citire.** Nu bifa chei orbește și nu confirma din UI. Cheile greșite sunt ignorate tăcut, deci pornește mereu din catalogul live și confirmă cu preview.
 
-## Tool-uri de ÎNȚELEGERE (READ — mereu disponibile, nu cer niciun modul)
+## Tool-uri de ÎNȚELEGERE (READ — cer citire pe modulul `personal`)
 
 - `list_permission_catalog(category?)` — vocabularul complet de permisiuni pe categorii, în română. **Începe de aici.** Explică și `all` (administrator) și `all:<categorie>` (tot grupul).
-- `describe_role(roleId | roleName)` — ce permisiuni are un rol REAL + câți angajați + **ce pagini vede**. Pentru „ce vede X" / „de ce nu vede X pagina Y".
-- `preview_role_access(permissions[])` — un set IPOTETIC de chei → ce pagini ar vedea + ce categorii ar avea, ÎNAINTE de creare. Semnalează cheile necunoscute.
-- `list_role_presets()` — rolurile predefinite (șabloane) cu amprenta lor.
-- `suggest_role_setup(description, businessType?)` — dintr-o descriere în cuvinte, o SCHIȚĂ de rol (permisiuni + preset apropiat + previzualizare). Rafineaz-o cu `preview_role_access`.
+- `describe_role(roleId | roleName)` — ce permisiuni are un rol REAL + câți angajați + **ce pagini vede** + profilul/primul tab recomandat în Symbai Staff.
+- `preview_role_access(permissions[], roleName?)` — un set IPOTETIC de chei → pagini web și experiența Staff, ÎNAINTE de creare. Trimite `roleName` când îl știi.
+- `list_role_presets()` — rolurile predefinite cu amprenta de permisiuni și prezentarea Staff recomandată.
+- `suggest_role_setup(description, roleName?, businessType?)` — o SCHIȚĂ completă: permisiuni, preset, pagini și experiența Staff. Rafineaz-o cu `preview_role_access`.
 
 ## Tool-uri de ACȚIUNE (WRITE — cer modulul `personal` pe token)
 
@@ -35,9 +37,10 @@ Citește întâi `knowledge/agent-operare-avansata.md` (standardul de execuție 
 1. **Context:** `list_brands` + `list_locations` (ai nevoie de `brandId`); rolurile existente `list_entities(entityType:"roles", brandId)`.
 2. **Vezi vocabularul:** `list_permission_catalog` (filtrat pe categorie dacă știi zona).
 3. **Pornește de la ceva:** meserie clasică → `suggest_role_setup(description)` sau `list_role_presets`; ceva specific → alege cheile din catalog.
-4. **Previzualizează:** `preview_role_access(permissions)` → verifică paginile + zero chei necunoscute; ajustează.
+4. **Previzualizează:** `preview_role_access(permissions, roleName)` → verifică paginile, zero chei necunoscute și faptul că activitatea principală Staff este corectă; ajustează.
 5. **Creează/modifică:** `create_role` (nou) sau `set_role_permissions` (ajustezi unul existent).
-6. **Verifică prin citire:** `describe_role(roleId)` → confirmă permisiuni + pagini + angajați.
+6. **Verifică prin citire:** `describe_role(roleId)` → confirmă permisiuni + pagini + angajați + recomandarea Staff.
+7. **Configurează aplicația:** `get_staff_app_config` → preia `configHash` → preview cu `configure_staff_app_role(applyRecommendedLayout:true, expectedConfigHash:configHash, confirm:false)` sau `configure_staff_app_roles(expectedConfigHash:configHash, confirm:false)` → arată propunerea și cere confirmarea explicită a utilizatorului → numai după acord retrimite exact aceeași propunere și același `expectedConfigHash`, cu `confirm:true` + `expectedPreviewHash:proposedConfigHash` → readback.
 
 ## Exemple
 
@@ -53,6 +56,7 @@ Citește întâi `knowledge/agent-operare-avansata.md` (standardul de execuție 
 - **`all` = tot; `all:<categorie>` = tot grupul.** Preferă `all:<categorie>` pentru o funcție completă pe o zonă.
 - **Pagina de configurare cere drept de „management"** — un rol doar-`_view` nu o vede (intenționat).
 - **PIN-ul cere `pin_login`** pe rol ca să apară câmpul de PIN pe fișa angajatului.
+- **Nu transforma PIN-ul de login în PIN operațional pe telefon.** În Symbai Staff personal, permisiunea rolului autorizează operația; PIN-ul per operație rămâne numai pe Workstation Tablet partajat.
 - **Pontajele (prezența) au chei dedicate:** `attendance_view` (vede tabul „Pontaje (prezență)" din `/staff` și pontajele echipei) și `attendance_manage` (le administrează). Fără ele, tabul nu apare.
 - **„Locul la CRM" nu se dă din rol** — se setează pe fișa angajatului.
 - **Verifică prin citire, nu din UI.**

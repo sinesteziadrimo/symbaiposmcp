@@ -18,37 +18,32 @@ Cand pluginul este instalat si serverul MCP este conectat, Codex expune tool-uri
 Daca tool-urile lipsesc:
 - verifica instalarea pluginului;
 - verifica daca threadul a fost pornit dupa instalare;
-- verifica prezenta variabilei `SYMBAI_MCP_TOKEN` fara sa afisezi valoarea;
-- verifica URL-ul din `.mcp.json`-ul din folderul tau de lucru (subdomeniul tau, nu al altui client);
+- pentru angajat, verifica daca ownerul i-a trimis un grant nominal si daca autentificarea OAuth a fost finalizata;
+- pentru owner cu token direct, verifica prezenta variabilei `SYMBAI_MCP_TOKEN` fara sa afisezi valoarea;
+- verifica URL-ul din configuratie (subdomeniul tau, nu al altui client);
 - porneste un thread nou dupa orice schimbare de plugin sau mediu.
 
 ## Autentificare
 
-Tokenul vine din Hub -> Acces AI si are forma `symbai_mcp_*`. Nu il copia in git sau in raspunsuri.
+Pentru un **angajat POS**, ownerul creeaza mai intai grantul nominal in Hub -> Acces AI, pentru angajatul si locatia POS exacte. Configuratia HTTP nativa nu contine token; Codex porneste OAuth prin `Authenticate` (sau `codex mcp login symbai`), iar angajatul se logheaza singur cu email + parola (nu PIN). Un cont POS fara grant de owner pentru acea locatie nu poate emite acces. Pentru **owner/conexiune tehnica**, tokenul direct vine din Hub si are forma `symbai_mcp_*`; nu il copia in git sau in raspunsuri.
 
-**Calea recomandata (orice versiune de Codex)**: puntea locala `mcp-remote` in `~/.codex/config.toml` — reteta completa e in skill-ul `conecteaza-codex`. Foloseste URL-ul cu sufixul `?tools=compact`: primesti setul de baza + `cauta_tool`/`ruleaza_tool` (gasesti si rulezi orice capabilitate la cerere, fara sa cari 1000+ definitii in context) + `ghid_symbai` pentru ghidurile de folosire.
+**Calea recomandata (Codex actual)**: transportul Streamable HTTP nativ in `~/.codex/config.toml` — reteta completa e in skill-ul `conecteaza-codex`. Foloseste URL-ul cu sufixul `?tools=compact`: primesti setul de baza + `cauta_tool`/`ruleaza_tool` (gasesti si rulezi orice capabilitate la cerere, fara sa cari 1000+ definitii in context) + `ghid_symbai` pentru ghidurile de folosire. Pentru angajat setezi `auth = "oauth"`; nu instalezi Node.js si nu folosesti `mcp-remote`.
 
-**Alternativa (versiuni cu HTTP nativ)**: un `.mcp.json` in **folderul tau de lucru** (NU in plugin — pluginul nu mai livreaza unul), cu URL-ul instantei TALE si tokenul citit din variabila de mediu:
+**Owner cu token direct**: aceeasi conexiune nativa, cu tokenul citit din variabila de mediu:
 
-```json
-{
-  "mcpServers": {
-    "symbai": {
-      "type": "http",
-      "url": "https://<subdomeniu>.symbai.app/mcp",
-      "bearer_token_env_var": "SYMBAI_MCP_TOKEN"
-    }
-  }
-}
+```toml
+[mcp_servers.symbai]
+url = "https://<subdomeniu>.symbai.app/mcp?tools=compact"
+bearer_token_env_var = "SYMBAI_MCP_TOKEN"
 ```
 
 Fiecare instanta Symbai are subdomeniul ei — foloseste-l pe al tau, nu pe al altui client.
 
 ## Lucru sigur
 
-- Read tools merg de obicei fara permisiuni speciale.
-- Write tools cer module bifate pe token.
-- SQL este doar fallback read-only cand nu exista tool semantic.
+- Read tools apar numai pentru modulele de citire acordate, cu exceptia contextului minim al conexiunii.
+- La angajat, accesul efectiv este intersectia dintre grantul ownerului, consimtamantul OAuth, rolul POS live si brandurile/locatiile live alocate; asta plafoneaza citirile, scrierile si SQL-ul.
+- SQL este doar fallback read-only cand nu exista tool semantic; pentru un angajat cu arie live de brand/locatie restransa, SQL ad-hoc este dezactivat fail-closed.
 - Actiunile externe sau cu impact real cer confirmare explicita: bani, email/WhatsApp/push, ANAF, eMAG, refund, GDPR, stergeri, modificari in masa.
 - Dupa write, verifica prin read tool si inchide cu dovada.
 - Ore: aplicatia afiseaza ora locatiei, dar datele brute din tool-uri/SQL sunt UTC. Prezinta utilizatorului DOAR ora locala (Romania: Europe/Bucharest, vara +3h / iarna +2h). Detalii: `claude-code-mcp-operare.md` -> "Ore Si Fus Orar".
