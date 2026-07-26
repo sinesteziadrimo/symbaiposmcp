@@ -48,7 +48,7 @@ O prezentare are multe piese interconectate prin id-uri (durere↔soluție↔tip
 
 ## Tool-uri MCP (construcție rapidă prin conexiune)
 
-**Toolbox principal** — citirile merg mereu; scrierile cer modulul **Setări & Configurare** pe token:
+**Toolbox principal** — citirile cer `readModule`; scrierile cer `writeModules` + citirea aferentă pentru modulul **Setări & Configurare** pe token:
 
 - **`list_presentation_templates`** — șabloanele de pornit (cheie + titlu + vertical + descriere): `symbai_horeca_2026` (gold standard, cel mai complet), `sala_evenimente`, `catering`, `cursuri_online`, `servicii`, `produse`, `exemplu_simplu`.
 - **`list_presentations(brandId)`** — prezentările salvate pe un brand (id, titlu, versiune flux, nr. slide-uri/intro/oferte).
@@ -57,7 +57,7 @@ O prezentare are multe piese interconectate prin id-uri (durere↔soluție↔tip
 - **`patch_presentation(brandId, presentationId, patch:{...})`** — modifică top-level (merge superficial): `title, introTitle, introDescription, vertical, theme, offers, flowV2, flowVersion, introFields, slides, typologies, slideRules, autoDeriveRules, libraryOverride, stages, maxPainSlides, maxCalculationSlides, debugMode`. Fiecare cheie ÎNLOCUIEȘTE valoarea (ex. `theme` = obiectul temă întreg). Payload mic — preferat pentru modificări.
 - **`save_presentation(brandId, presentation)`** — UPSERT config COMPLET (construire programatică de la zero / înlocuire integrală). Pentru modificări parțiale preferă `patch_presentation`.
 
-**Tool-uri GRANULARE de bibliotecă** (pentru dureri/soluții/discovery/dovezi/obiecții/calcule — biblioteca e prea mare ca s-o citești/re-trimiți integral; secțiunile foarte mari se trunchiază în răspuns): `list_presentation_library_items` / `get_presentation_library_item` / `patch_presentation_library_item` / `add_presentation_library_item` / `remove_presentation_library_item`, cu `kind` ∈ `pain`/`feature`/`question`/`proof`/`objection`/`calculation`. Fac read-modify-write pe UN element, server-side. AICI legi durerea de soluție, pui painTriggers pe o întrebare, adaugi un followUpSlide pe o opțiune. (Citirile = mereu; scrierile = modulul „Setări & Configurare".)
+**Tool-uri GRANULARE de bibliotecă** (pentru dureri/soluții/discovery/dovezi/obiecții/calcule — biblioteca e prea mare ca s-o citești/re-trimiți integral; secțiunile foarte mari se trunchiază în răspuns): `list_presentation_library_items` / `get_presentation_library_item` / `patch_presentation_library_item` / `add_presentation_library_item` / `remove_presentation_library_item`, cu `kind` ∈ `pain`/`feature`/`question`/`proof`/`objection`/`calculation`. Fac read-modify-write pe UN element, server-side. AICI legi durerea de soluție, pui painTriggers pe o întrebare, adaugi un followUpSlide pe o opțiune. (Citirile cer `readModule`; scrierile cer `writeModules` + `readModule` pentru modulul „Setări & Configurare".)
 
 **Quick actions MCP utile:**
 - `set_pain_badge(presentationId, painId, badgeLabel?, showBadge?)` — schimbă textul badge-ului de pe slide-ul unei dureri (ex. „RISC ASCUNS", nu doar „Problema ta") sau îl ascunde. Începe cu `list_presentation_library_items(kind:"pain")`.

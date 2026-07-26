@@ -39,7 +39,7 @@ Pagini conexe (au ghiduri proprii): **/loyalty** (puncte, niveluri, RFM — „L
 
 ## Tool-uri MCP utile
 
-- **Citire** (fără permisiune de modul): `list_crm_playbooks`, `list_playbook_runs`, `get_crm_funnel`, `list_nba_suggestions`, `list_crm_tasks`, `list_marketing_automations`, `get_marketing_automation_logs`, `get_customer_timeline`, `get_customer_email_segments`, `get_email_campaign_analytics`, `get_attribution_report`, `jurnal_activitate` (audit log global, read-only).
+- **Citire** (read-only; cere grantul `readModule` al domeniului pe token): `list_crm_playbooks`, `list_playbook_runs`, `get_crm_funnel`, `list_nba_suggestions`, `list_crm_tasks`, `list_marketing_automations`, `get_marketing_automation_logs`, `get_customer_timeline`, `get_customer_email_segments`, `get_email_campaign_analytics`, `get_attribution_report`, `jurnal_activitate` (audit log global, read-only).
 - **Scriere (modulul «Setări & Configurare» pe token)**: `run_crm_playbook` (rulează un playbook pe un client, cere `confirm: true`), `seed_crm_playbooks` (instalează playbook-urile implicite ale brandului), `create_notification_rule` (regulă declanșator → efect).
 - **Scriere (modulul «Marketing & Social Media» pe token)**: `run_marketing_automation` (cere `confirm: true` la trimiteri în masă), `create_marketing_automation`, `update_marketing_automation`.
 - Permisiunea exactă a fiecărui tool e în catalogul din `tools-mcp.md`. Dacă un tool întoarce „permisiune insuficientă", modulul nu e bifat pe token → portal Hub → Acces AI → editezi tokenul.

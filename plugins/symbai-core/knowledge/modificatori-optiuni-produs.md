@@ -33,6 +33,7 @@ Sunt DIFERIȚI de „Meniul Zilei" (meniu la preț fix cu feluri) și de variant
 
 - **Portal QR / magazin online** — clientul apasă produsul → alege opțiunile → prețul se actualizează → comandă.
 - **POS de la casă și aplicația ospătarilor (telefon)** — la marcarea produsului se deschide selectorul de opțiuni; ospătarul alege, prețul se ajustează, iar la bucătărie/KDS și pe bon apar și opțiunile alese.
+- **Grupurile obligatorii cer confirmare explicită** — chiar dacă o alegere este preselectată, POS-ul deschide selectorul înainte de adăugare. Serverul cloud și serverul local validează din nou catalogul curent, recalculează supraprețul și salvează alegerile pe linia comenzii; un client vechi nu poate ocoli cerința trimițând produsul fără opțiuni.
 - **Glovo / Wolt** — grupurile de modificatori se trimit ca „atribute"/„opțiuni" la sincronizarea meniului. Clientul le alege pe aplicația platformei, iar comanda intră cu opțiunile alese. (Se re-sincronizează automat când modifici modificatorii unui produs.)
 - **Bon fiscal** — supraprețul e inclus în prețul liniei, cu TVA-ul produsului. Excepția: opțiunea legată de un produs cu ALT TVA apare pe linie separată cu cota corectă.
 - **Stoc** — opțiunile-notă nu ating stocul; opțiunile legate de un produs scad stocul rețetei acelui produs, ca orice vânzare.
@@ -54,6 +55,7 @@ Tipic: „adaugă la «Burger clasic» un grup «Extra» cu cașcaval +5, bacon 
 - **„Opțiunea nu scade stocul"** → e o opțiune-notă (text). Dacă vrei consum, leag-o de un produs din inventar (butonul „Leagă produs") care are rețetă.
 - **„Nu apar modificatorii pe Glovo/Wolt"** → verifică să fi sincronizat meniul pe canal după ce i-ai configurat (există plafoane de sincronizare pe zi la Glovo — vezi ghidul de platforme de livrare).
 - **„Grupul obligatoriu nu lasă comanda"** → e normal: clientul TREBUIE să aleagă. Dacă nu vrei asta, fă grupul opțional.
+- **„Produsul s-a vândut, dar nu are opțiunea obligatorie pe linie"** → verifică dacă linia are `productId` chiar când `menuItemId` lipsește. Vânzările POS/server local pot fi salvate legitim doar cu produsul; validarea trebuie să recupereze articolul de meniu activ după `productId + brandId`, apoi să persiste `selectedOptions`. Dacă această urmă lipsește, nu considera problema doar de afișare: afectează prețul, KDS-ul, stocul opțiunilor legate și auditul comenzii.
 - **„Vreau aceleași extra-uri pe 20 de produse"** → configurează-le o dată, salvează-le ca șablon și aplică-l pe toate cu un singur pas.
 - **Diferența față de Meniul Zilei** → Meniul Zilei e un produs-meniu cu feluri la preț fix; modificatorii personalizează un produs normal deja ales. Pentru meniuri fixe cu feluri vezi ghidul Meniuri de evenimente și Meniul Zilei.
 - **Diferența față de variante (magazin online)** → variantele au stoc și preț propriu per combinație (mărime/culoare); modificatorii adaugă opțiuni peste un produs, cu suprapreț.

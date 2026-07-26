@@ -156,7 +156,7 @@ Important de înțeles ca să-i explici userului — comanda QR NU ajunge la cin
 
 ## Tool-uri MCP utile
 
-- **Citire (fără permisiune de modul):** `get_portal_config`, `get_config_status`, `list_portal_games`, `get_game_details`, `check_game_availability`, `get_game_slots`, `list_qr_field_presets`, `list_floor_zones`. Plus `gaseste_in_aplicatie` (link direct) și `jurnal_activitate`.
+- **Citire (read-only; cere grantul `readModule` al domeniului pe token):** `get_portal_config`, `get_config_status`, `list_portal_games`, `get_game_details`, `check_game_availability`, `get_game_slots`, `list_qr_field_presets`, `list_floor_zones`. Plus `gaseste_in_aplicatie` (link direct) și `jurnal_activitate`.
 - **Scriere — modul «Setări & Configurare» (`setari`):** `configure_portal_general`, `configure_portal_appearance`, `configure_portal_texts`, `configure_portal_features`, `configure_portal_display`, `configure_portal_menu_config`, `configure_portal_qr`, `spotlight_portal_tab`, `highlight_portal_section`, plus QR per raion: `set_qr_field_preset_fields`, și jocuri: `update_game_config`, `update_game_schedule`, `update_game_pricing`, `set_game_date_override`.
 - **Scriere — modul «Rezervări & Clienți» (`rezervari_clienti`):** `create_game_reservation`.
 - „Permisiune insuficientă" → modulul nu e bifat pe token → portal Hub → Acces AI. Catalogul complet: `tools-mcp.md`.

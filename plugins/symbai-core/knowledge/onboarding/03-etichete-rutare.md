@@ -11,7 +11,7 @@ Cu utilizatorul vorbește simplu: „etichetă", „ecran de bucătărie" (nu �
 ## Permisiuni necesare pe token
 
 - **`produse_meniu`** — pentru `create_tag`, `update_tag`, `assign_tag`, `bulk_assign_tag`, `bulk_remove_tag`, `auto_tag_from_menu_categories`.
-- Citirile (`list_tags`, `list_tag_summary`, `list_untagged_products`, `list_menu_categories`, `search_products_db`, `search_products_for_tagging`...) sunt disponibile mereu, fără modul.
+- Citirile (`list_tags`, `list_tag_summary`, `list_untagged_products`, `list_menu_categories`, `search_products_db`, `search_products_for_tagging`...) sunt read-only, dar cer grantul `readModule: produse_meniu` pe token.
 
 Fără modulul activat, scrierile întorc „permisiune insuficientă" — trimite utilizatorul în portalul Hub → Acces AI să bifeze „Produse & Meniuri" pe token, apoi reia.
 

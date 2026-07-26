@@ -4,24 +4,44 @@
 
 ## Pe scurt
 
-Modulul acoperă tot drumul mărfii: intrarea (facturi de la furnizori → recepție/NIR), depozitarea (gestiuni, zone, loturi cu expirare), ieșirea (consum automat din vânzări, fișe de ieșire manuale, transferuri) și aprovizionarea (furnizori, cataloage, comenzi, recomandări de preț). Stocul se ține pe loturi, descărcarea e FIFO/FEFO, iar costul mărfii vândute se calculează din loturile reale consumate.
+Modulul acoperă tot drumul mărfii: intrarea (facturi de la furnizori → recepție/NIR), depozitarea (gestiuni, zone, loturi cu expirare), ieșirea (consum automat din vânzări, fișe de ieșire manuale, transferuri) și aprovizionarea (furnizori, cataloage, comenzi, recomandări de preț). Stocul se ține pe loturi. Descărcarea merge întotdeauna după **termenul de valabilitate**: iese primul lotul care expiră cel mai devreme, iar la termene egale (sau fără termen) iese primul cel intrat primul. Costul mărfii vândute se ia din loturile chiar consumate, la prețurile lor reale de intrare.
+
+## Ghiduri detaliate
+
+Acest fișier e harta modulului. Pentru subiectele mari există fișiere dedicate — mergi direct acolo:
+
+- **`consum-zilnic-cost-marfa.md`** — când și cum scade stocul din vânzări, de unde vine costul mărfii vândute, recalcularea consumului și playbook-ul de diagnostic pentru „nu mi-a scăzut stocul" / „food cost aiurea".
+- **`gestiuni-magazii-zone.md`** — ce e o gestiune, ce e o zonă, unde stă de fapt cantitatea, transferuri, deschiderea și închiderea unei gestiuni.
+- **`mapare-si-reconversie-facturi.md`** — cum devine o linie de factură de furnizor stoc corect: potrivirea la produs, contul, factorul de pachet și ce învață sistemul.
+- **`reconciliere-dubluri-facturi.md`** — cum eviți marfa intrată de două ori și facturile pierdute.
+
+Pentru diagnostic pas cu pas există și skill-ul `verifica-consumul`.
 
 ## Concepte
 
 - **Gestiune (magazie)** — depozitul logic în care stau produsele (ex. Bucătărie, Bar, Magazie centrală). Fiecare gestiune poate avea **zone de depozitare** (frigider, raft, congelator, cămară).
-- **Magazie de consum** — gestiunea din care se descarcă consumul; poate fi diferită per unitate (brand + locație) pentru același produs.
+- **Magazie de consum** — gestiunea din care se descarcă ingredientul la vânzare. Se alege **pentru fiecare ingredient în parte**, în funcție de locația unde s-a vândut, în ordinea:
+  1. regula manuală pusă pe produs pentru acea unitate (brand + locație) — **bate tot**;
+  2. o gestiune a produsului aflată chiar în locația vânzării;
+  3. gestiunea „de casă" a produsului (de pe fișa lui);
+  4. gestiunea de bucătărie a locației (recunoscută după numele scris **fără diacritice**, ex. „Bucatarie"), altfel prima gestiune a locației.
+  Dacă vrei certitudine, nu te baza pe pasul 4: setează explicit gestiunea produsului (`assign_product_warehouses`) sau gestiunea de casă (`update_product`). Detalii în `gestiuni-magazii-zone.md`.
 - **NIR (recepția)** — documentul prin care marfa intră oficial în stoc. În pagina Intrări se creează doar legat de o factură sursă și doar după ce toate liniile facturii sunt mapate; la postare intră marfa în stoc și se generează automat notele contabile. (Pentru documente introduse pe loc există și recepția manuală — pe factură sau pe aviz — din Operațiuni Stoc.)
 - **Mapare** — legarea unei linii de factură de un produs intern + un cont contabil. AI-ul propune, operatorul confirmă, iar sistemul învață: următoarea factură de la același furnizor se mapează automat.
 - **Aviz de însoțire** — document de primire pentru marfa sosită înaintea facturii oficiale. Recepția pe aviz intră marfa în stoc la postare, iar avizul rămâne „neînchis" în Avize & Draft până îl legi de e-Factura corespunzătoare, în tabul Reconciliere.
-- **Lot / FIFO / FEFO** — stocul se ține pe loturi cu dată de expirare; descărcarea ia întâi lotul cel mai vechi / care expiră primul, iar costul vânzării (COGS) vine din loturile reale consumate.
+- **Lot / FEFO** — stocul se ține pe loturi cu dată de expirare. La orice ieșire (vânzare, producție, ieșire manuală) sistemul alege lotul cu **termenul cel mai apropiat**; dacă mai multe loturi expiră la fel sau n-au termen, iese cel intrat primul. Costul vânzării (COGS) vine din loturile reale consumate.
+  ⚠ **„Metoda de evaluare" din Setări → Stocuri (FIFO / LIFO / medie) NU schimbă din ce lot iese marfa** — ea influențează doar costul estimativ afișat înainte de a exista consum real. Ordinea fizică de descărcare rămâne mereu „expiră primul".
 - **Cost standard provizoriu** — cost estimativ pe produs folosit ca fallback în food cost când încă nu există loturi/recepții reale. Nu creează stoc, nu schimbă CMP și nu ține loc de NIR; prima recepție reală îl umbrește.
-- **Consum zilnic** — generat automat din vânzări: produs vândut → rețetă → ingredientele scad din stoc; produsele fără rețetă (marfă) se descarcă direct ca atare.
+- **Consum zilnic** — scăderea automată a materiei prime din vânzări: produs vândut → rețetă → ingredientele scad din stoc; produsele fără rețetă (marfă) se descarcă direct ca atare. **Nu se întâmplă în secunda vânzării**: o dată pe zi, automat, sistemul ia bonurile **închise** din zilele încheiate și scade ingredientele. **Ziua curentă se procesează abia a doua zi.** Dacă o zi a fost sărită (server oprit, zi blocată), sistemul o recuperează singur în următoarele câteva zile. **Excepție: comenzile de livrare (Glovo/Wolt/Bolt/Tazz) scad stocul imediat ce comanda e livrată.**
+  Ce vezi pe ecran ca „stoc live" în timpul zilei = stocul de pe documente **minus** consumul estimat al zilei curente, calculat din bonurile deja trimise la bucătărie. Tot detaliul e în `consum-zilnic-cost-marfa.md`.
+- **Scădere automată din stoc (Auto Deplete)** — comutatorul general din Setări → Stocuri. Dacă e oprit, **nu se generează și nu se recalculează niciun consum**, oricâte vânzări ai avea, și nu primești eroare. E prima verificare la „nu-mi scade stocul deloc, la niciun produs".
+- **Lună închisă contabil** — după închiderea unei luni, consumul acelei perioade nu se mai poate genera și nici recalcula. Trebuie redeschisă din Finanțe, apoi reînchisă.
 - **Reprocesare consum** — recalculează consumul și costurile pe o perioadă (ex. după ce ai corectat rețete); rulează ca job pe fundal, cu progres vizibil, și există și reprocesare pe un singur produs.
 - **Fișă de ieșire** — document de ieșire manuală din stoc: consum, protocol, pierdere/casare, furt, minus de inventar, retur; tipurile sunt configurabile, fiecare cu marcaj dacă afectează sau nu P&L-ul.
 - **Inventar (sesiune de numărare)** — numeri fizic stocul (inclusiv de pe telefon), iar sistemul produce raportul de diferențe (plus/minus de inventar) care, după aprobare, ajustează stocul.
 - **Comandă furnizor** — comanda de aprovizionare trimisă unui furnizor, cu ciclu complet: ciornă → trimisă → acceptată/respinsă (eventual cu modificări și contra-propuneri) → în pregătire → în livrare → livrată → recepție → finalizată.
 - **Catalog furnizor** — lista de produse a unui furnizor cu prețuri, coduri și cantități minime; produsele de catalog se mapează la produsele tale interne pentru aprovizionare automată.
-- **Conversie de pachet** — ex. „bax" = 24 bucăți; se învață din facturi și se reaplică automat la recepțiile următoare.
+- **Conversie de pachet** — ex. „bax" = 24 bucăți; se învață din facturi și se reaplică automat la recepțiile următoare. Detaliile (când sistemul refuză și îți cere factorul, cum corectezi un factor învățat greșit) sunt în `mapare-si-reconversie-facturi.md`.
 
 ## Paginile modulului
 
@@ -121,10 +141,19 @@ Verifici întâi structura cu `list_warehouses_full` și `list_storage_zones_ful
 
 ## Tool-uri MCP utile
 
-**Citire (fără permisiune de modul):**
+**Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `list_warehouses_full` / `list_storage_zones_full` — gestiunile și zonele de depozitare.
 - `get_warehouse_products_summary` — câte produse și pe ce categorii are o gestiune; apartenența include gestiunea-casă a produsului, linkurile product-warehouse și stocul real deja existent.
 - `get_stock_levels` — stocul curent per produs; cu `warehouseId` întoarce doar produsele prezente/configurate în acea gestiune, nu tot catalogul cu 0.
+- `list_lots` — loturile unui produs/gestiuni, în **ordinea reală de descărcare** (expiră primul). Se pagineaza (`offset`, `hasMore`) și se poate filtra pe `expiresBefore`, `status`, `onlyAvailable`, cu `orderBy` schimbat când vrei altă ordine.
+- `get_daily_consumption_status` — dacă s-a generat consumul pentru o zi. Cu `dateFrom` + `dateTo` verifică un interval întreg și îți întoarce în `missingDates[]` exact zilele fără consum generat.
+- `get_reprocess_job_status` — progresul unei recalculări pornite pe perioadă, plus avertismentele de la final.
+- `scan_zero_cost_sold` — produse vândute cu cost 0 (rețetă fără preț, lot intrat cu cost 0).
+- `scan_suspect_recipe_costs` / `scan_suspect_reception_costs` — rețete și recepții cu costuri improbabile; punctul de plecare la „food cost aiurea".
+- `scan_recipe_unit_mismatches` — ingredientele cu unitate netraductibilă în unitatea produsului (cauza clasică de „stoc absurd"); remediul automat e `fix_recipe_unit_mismatches` 🔒 (modul `inventar`).
+- `get_product_reception_history` — la ce prețuri a intrat efectiv un produs, recepție cu recepție.
+- `list_unreceived_goods` — marfă vândută/consumată pentru care nu există recepție înregistrată.
+- `scan_unzoned_products` / `scan_storage_zone_issues` — produse vândute fără zonă de depozitare (ajung la „Necategorizat" în rapoarte) și neregulile din zone (nume duplicate, zone goale).
 - `get_semipreparate_stock` — stocul de semipreparate pe loturi, cu valabilitate.
 - `get_material_requirements` — necesar MRP multi-nivel pentru producție, read-only; folosește-l înainte de a genera ciorne PO din lipsuri.
 - `list_stock_count_sessions` — inventarele recente, status, gestiuni, progres, diferente si cate intrari de numarare are fiecare sesiune.
@@ -140,6 +169,10 @@ Verifici întâi structura cu `list_warehouses_full` și `list_storage_zones_ful
 - Modul `produse_meniu`/`inventar`: `create_product`, `update_product`, `bulk_update_products` (inclusiv preț de achiziție, furnizor, TVA), `set_standard_costs` (cost provizoriu fără stoc), `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`, `set_initial_stock` (stocul inițial al unui produs; dă `warehouseId` când produsul are/poate avea stoc în mai multe gestiuni).
 - Modul `furnizori`: `create_supplier`, `update_supplier`, `create_supplier_product` (produs în catalogul furnizorului), `import_supplier_catalog_from_file` (catalog Excel/CSV în loturi), `create_supplier_product_mapping` (mapare produs catalog ↔ produs intern).
 - Modul `productie`: `create_purchase_orders_from_requirements` creează ciorne PO din necesarul MRP după preview (`commit:false`) și confirmare (`commit:true`).
+- Modul `inventar` — gestiuni și zone: `assign_product_warehouses` (leagă produse de una sau mai multe gestiuni; cu `mode:'replace'` cere `confirm:true` când ar șterge legături existente, iar fără confirmare îți arată întâi ce s-ar pierde), `assign_product_storage_zones` (amplasare în mai multe zone, pentru numărat), `update_warehouse` (redenumire, tag, activare/dezactivare), `rename_storage_zone`, `merge_storage_zones` 🔒, `delete_empty_storage_zone`.
+- Modul `inventar` — trasabilitate lot: `update_inventory_lot_traceability` corectează lotul furnizorului și/sau expirarea unui lot existent sub blocare și cu jurnal de audit. Citește lotul înainte, trimite doar câmpurile schimbate și recitește după; nu folosi o actualizare generică de produs, fiindcă lotul și produsul sunt entități diferite.
+- Modul `inventar` — consum: `generate_daily_consumption` 🔒 generează consumul unei zile. ⚠ `warehouseId` **nu e filtru** — e doar gestiunea de rezervă pentru ingredientele fără gestiune configurată; generarea acoperă toate gestiunile. Dacă ziua e deja generată, tool-ul refuză; ștergerea unei rulări se face din `/daily-consumption`.
+- Modul `financiar`: `reprocess_daily_consumption` 🔒 (recalcularea consumului pe o perioadă, ca job pe fundal — urmărește-l cu `get_reprocess_job_status`) și `fix_reception_costs` 🔒 (corectarea costului unor loturi intrate greșit; după ea recalcularea perioadei e obligatorie ca rapoartele să se schimbe).
 - Răspunsurile de la `create_supplier` / `update_supplier` nu întorc secretele de portal sau marketplace. Dacă userul vrea accesul furnizorului, folosește fluxul de portal/link/regenerare, nu căuta parola în date.
 
 **SQL (doar-citire, cu acordul separat pe token):** `list_database_tables` → `describe_database_table` → `execute_sql_query`.
@@ -148,7 +181,13 @@ Verifici întâi structura cu `list_warehouses_full` și `list_storage_zones_ful
 
 - **De ce nu pot crea NIR-ul?** NIR-ul se creează doar legat de o factură sursă, iar toate liniile facturii trebuie să fie mapate pe produse interne. Verifică maparea în `/inventory/ai-review`.
 - **Am introdus avizul — de ce nu a intrat marfa în stoc?** Recepția pe aviz intră marfa în stoc doar când documentul e postat; recepțiile rămase în ciornă nu mișcă stocul (le vezi în Avize & Draft și în bannerul din `/purchases`, de unde le poți posta). Iar avizul rămâne „neînchis" până îl legi de factura oficială în tabul Reconciliere.
-- **De ce nu scade stocul când vând un produs?** Cel mai des: produsul nu are rețetă sau rețeta nu e legată de produs. Caută-l în `/daily-consumption`, tabul Consum Temporar, și folosește meniul de remediere, apoi „Reprocesează acest produs".
+- **De ce nu scade stocul când vând un produs?** Cinci cauze, în ordinea frecvenței:
+  1. **consumul zilei nu s-a generat încă** — scăderea nu e instantanee, se face o dată pe zi pentru zilele încheiate, deci vânzarea de azi se vede mâine (livrările fac excepție, scad imediat). Verifici cu `get_daily_consumption_status`;
+  2. **bonul e încă deschis** — o masă neînchisă nu consumă niciodată;
+  3. **metoda de plată e configurată să nu genereze consum** (ex. „consum intern") — Setări → Metode de plată;
+  4. **produsul n-are rețetă sau rețeta nu e legată de el** — îl găsești în `/daily-consumption`, tab Consum Temporar; folosește meniul de remediere, apoi „Reprocesează acest produs";
+  5. **„Scădere automată din stoc" e oprită** din Setări → Stocuri — atunci nu se generează nimic, la niciun produs, și nu primești eroare.
+  Pas cu pas: `consum-zilnic-cost-marfa.md` și skill-ul `verifica-consumul`.
 - **`set_initial_stock` îmi cere `warehouseId`.** Produsul are stoc real în mai multe gestiuni și sistemul nu ghicește. Citește gestiunile cu `list_warehouses_full` și stocul pe produs cu `get_stock_levels(productName)`, confirmă gestiunea cu utilizatorul, apoi reapelează `set_initial_stock(productId, quantity, warehouseId)`.
 - **Vreau food cost înainte de prima recepție.** Folosește `set_standard_costs`, nu stoc fictiv și nu NIR inventat. Explică: e cost provizoriu pentru rapoarte, iar loturile reale din recepții vor avea prioritate.
 - **Inventarul inițial îmi arată numai plusuri.** Dacă stocul așteptat era 0 peste tot, asta e normal la prima numărare; UI-ul o prezintă ca „stoc inițial stabilit". După aprobare, se creează ajustările reale.
@@ -156,13 +195,15 @@ Verifici întâi structura cu `list_warehouses_full` și `list_storage_zones_ful
 - **De ce nu apare / nu se poate trimite o zona catre numarator?** Zona trebuie sa apartina uneia dintre gestiunile sesiunii si sa aiba produse in snapshot-ul inventarului. Daca zona a fost creata sau populata dupa pornirea inventarului, linkul pe zona intoarce mesajul ca zona nu are produse in acest inventar; actualizeaza/refa sesiunea sau creeaza un inventar nou, apoi retrimite linkul.
 - **Cine a numarat cantitatea X la inventar?** Nu ghici din totalul liniei. Ruleaza `list_stock_count_sessions`, apoi `get_stock_count_session(sessionId, includeEntries:true)` si arata intrarile individuale cu numaratorul, ora si sursa. Daca exista doar contributii vechi agregate, spune clar ca sunt importate ca istoric legacy.
 - **Am corectat rețetele, dar rapoartele arată tot vechiul food cost.** Corectarea rețetei nu rescrie trecutul — rulează Reprocesarea pe perioada afectată din `/daily-consumption`.
-- **De ce diferă costul (COGS) de cel din rețetă?** Costul raportat e cel „realizat" — din loturile FIFO efectiv consumate, la prețurile lor reale de intrare — nu cel teoretic din rețetă.
+- **De ce diferă costul (COGS) de cel din rețetă?** Costul raportat e cel „realizat" — din loturile efectiv consumate (expiră primul), la prețurile lor reale de intrare — nu cel teoretic din rețetă. Și comenzile de livrare finalizate descarcă loturi imediat; o corecție istorică ajunge la ele prin reprocesarea intervalului (vezi `consum-zilnic-cost-marfa.md`).
 - **Cantitate × preț nu bate cu totalul liniei de factură.** Normal la penalități/abonamente: valoarea totală a liniei e autoritară, recepția folosește totalul real.
+- **Lotul furnizorului sau expirarea au fost introduse greșit.** Corectează lotul exact cu `update_inventory_lot_traceability`, apoi verifică readback-ul și jurnalul. Nu crea un lot nou și nu muta artificial cantitatea: ai rupe genealogia recepției și traseul de recall.
 - **De ce e blocată trimiterea comenzii către furnizor?** Există produse fără cod de furnizor, fără o alegere de catalog rezolvată sau sub MOQ. Dacă vezi **Alege produse**, nu e bug: același produs intern are mai multe opțiuni de catalog la furnizor și trebuie ales/split-uit înainte de draft/trimitere.
 - **De ce nu văd Recomandări Aprovizionare?** E nevoie de produse de furnizor (cataloage) asociate cu produsele tale din inventar — fără mapări nu există ce compara. Dacă `list_procurement_recommendations` întoarce zero rezultate cu `pragConfigurate: 0`, problema este că lipsesc pragurile/stocurile minime de reaprovizionare, nu că stocul este sigur.
 - **De unde vin alertele de stoc (Critic / Scăzut / Suprastoc)?** Din pragurile pe produs×gestiune: fiecare produs are stoc minim (și opțional maxim) pe gestiune, iar alertele se declanșează procentual față de ele — implicit Critic sub 10% din minim (sau stoc 0), Scăzut sub 25%, Suprastoc peste 150% din maxim; procentele se pot ajusta din setările de inventar. Notificările ajung la administratori/manageri/gestionari. Fără stoc minim setat pe produs, alerta apare doar la stoc 0.
 - **Pierderile apar în profit?** Doar tipurile de fișe de ieșire marcate că afectează P&L; poți avea și tipuri „neutre". Configurarea tipurilor e în `/stock-exits`.
-- **Stoc absurd (negativ sau uriaș) la un ingredient?** Verifică unitățile de măsură: rețeta în grame/ml vs produsul în kg/l — conversia trebuie să fie corectă; după corectare, reprocesează perioada.
+- **Stoc absurd (negativ sau uriaș) la un ingredient?** Două cauze, la fel de frecvente. (1) **Unitățile de măsură**: rețeta în grame/ml vs produsul în kg/l — conversia trebuie să fie corectă; între familii diferite (grame pe un produs ținut la bucată) traducerea nu se poate face și cantitatea se ia ca atare. (2) **Randamentul rețetei** — cifra din câmpul „Randament" împarte toate cantitățile, deci un randament pus din greșeală face consumul de câteva ori mai mic. După corectare, reprocesează perioada.
+- **Ecranul Stocuri îmi arată produsul o singură dată, cu totalul.** Așa e conceput: ecranul principal grupează produsul sub gestiunea lui de casă și afișează **totalul pe toate gestiunile**. Pentru cantitatea pe fiecare gestiune folosește `get_stock_levels(warehouseId)` sau pagina de depozit (Plan Fabrică 2D → Vezi depozitul). Detalii în `gestiuni-magazii-zone.md`.
 - **NIR-uri „uitate" în ciornă?** Bannerul din `/purchases` le arată și permite postarea în masă; și `/inventory/inbox-quality` semnalează NIR-urile ciornă mai vechi de 7 zile.
 - **Marfa primită diferă de comandă/factură (lipsă, deteriorat, preț diferit)?** Se înregistrează ca diferențe la recepție — le vezi și le rezolvi în `/inventory/disputes` sau direct pe comanda din `/purchase-orders/:id`.
 

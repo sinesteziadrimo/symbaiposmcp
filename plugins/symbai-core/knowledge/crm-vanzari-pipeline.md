@@ -66,7 +66,7 @@ Buton „**Wizard configurare rapidă**" (la prima deschidere: 3 pași cu ~20 ș
 
 ## Tool-uri MCP utile
 
-**Citire (fără permisiune de modul):**
+**Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `get_crm_funnel(brandId?, days?)` — pâlnia CRM + rate de conversie + defalcare pe sursă.
 - `list_crm_tasks(brandId?, status?, assignedTo?, limit?)` — coada de task-uri CRM.
 - `list_nba_suggestions(brandId?, limit?)` — Next Best Action (clienți de contactat acum, scor 0-100 + acțiune + motiv).

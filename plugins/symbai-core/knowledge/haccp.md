@@ -39,4 +39,4 @@ Totul stă pe pagina **`/haccp`** („HACCP & Siguranță Alimentară"), cu un *
 - HACCP-ul e **pasul 15 din onboarding** („DSV Chef") — vezi `onboarding/`.
 
 ## Permisiuni
-Citirile (`list_*`, `build_recall_report`, `trace_recall_to_customers`) merg mereu. Scrierile (loghează temperatură, incident, bifează curățenie, răcire, creează senzor/sarcină) cer modulul **Setări & Configurare** (`setari`) pe token — exact modulul care guvernează paginile HACCP în UI. „Permisiune insuficientă" → portal Hub → Acces AI. Ștergerea de entități întregi nu e disponibilă prin conexiune (din aplicație).
+Citirile (`list_*`, `build_recall_report`, `trace_recall_to_customers`) cer grantul `readModule` aferent pe token. Scrierile (loghează temperatură, incident, bifează curățenie, răcire, creează senzor/sarcină) cer modulul **Setări & Configurare** (`setari`) pe token — exact modulul care guvernează paginile HACCP în UI. „Permisiune insuficientă" → portal Hub → Acces AI. Ștergerea de entități întregi nu e disponibilă prin conexiune (din aplicație).

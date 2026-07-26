@@ -11,7 +11,7 @@ La final, restaurantul are cel puțin o rețea socială conectată (tipic pagina
 - **`marketing_social`** — conectarea conturilor și postările: `genereaza_link_conectare`, `conecteaza_instagram_din_facebook`, `schedule_social_post`, `cancel_social_post`.
 - **`setari`** — doar dacă faci și: canale de livrare (`create_delivery_channel`) sau reguli de notificare (`create_notification_rule`).
 
-Citirile (`verifica_integrare`, `list_social_accounts`, `list_social_posts`, `read_brand_memories`, `browse_brand_media`, `list_brands`, `get_config_status`, `list_entities`) sunt disponibile mereu. Fără modulul potrivit bifat în portal Hub → Acces AI, tool-urile de scriere întorc „permisiune insuficientă" — cere utilizatorului să activeze modulul pe token și reîncearcă.
+Citirile (`verifica_integrare`, `list_social_accounts`, `list_social_posts`, `read_brand_memories`, `browse_brand_media`, `list_brands`, `get_config_status`, `list_entities`) cer grantul `readModule` aferent pe token. Fără modulul potrivit bifat în portal Hub → Acces AI, tool-urile de scriere întorc „permisiune insuficientă" — cere utilizatorului să activeze modulul pe token și reîncearcă.
 
 ## Ce afli singur ÎNAINTE să întrebi — și ce întrebi utilizatorul
 

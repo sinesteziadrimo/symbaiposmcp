@@ -33,7 +33,7 @@ Userul (proprietar/bucătar-șef/manager) vrea să țină evidența HACCP fără
 | „pot livra/folosi lotul refrigerat", „peștele e sigur de expediat", „a ținut lanțul frig înainte de release" | `get_cold_chain_release_readiness` (`batchId` sau `lotId`) — audit read-only pe temperaturi, CCP/QC, incidente HACCP și hold-uri | `/haccp?tab=temps` + producție/QC |
 | „incident grav/recurent", „deschide o CAPA / NCR", „acțiune corectivă formală pt audit" | `open_capa` (`title`, `severity`; leagă de incident cu `sourceType:"haccp"`, `sourceId`=incidentId) → `update_capa` (investigating/action/verification/closed) → `list_capa` | (modul `productie`; detalii în skill `productie-flux`) |
 
-**Citirile** (`list_*`, `build_recall_report`, `trace_recall_to_customers`) merg mereu — sunt read-only pe tenant. **Scrierile** cer modulul `setari` pe token (vezi „Permisiune"). Două tool-uri vecine, tot sub `setari`, completează setup-ul: **`create_haccp_sensor`** (adaugă un senzor de temperatură configurat, cu prag min/max — apoi loghezi pe el prin `sensorId`) și **`create_cleaning_task`** (creează o sarcină nouă în checklist; tool-urile de aici doar o bifează).
+**Citirile** (`list_*`, `build_recall_report`, `trace_recall_to_customers`) sunt read-only, dar cer grantul `readModule` al domeniului. **Scrierile** cer modulul `setari` pe token (vezi „Permisiune"). Două tool-uri vecine, tot sub `setari`, completează setup-ul: **`create_haccp_sensor`** (adaugă un senzor de temperatură configurat, cu prag min/max — apoi loghezi pe el prin `sensorId`) și **`create_cleaning_task`** (creează o sarcină nouă în checklist; tool-urile de aici doar o bifează).
 
 ## Rețete (cele care contează)
 
@@ -50,7 +50,7 @@ Userul (proprietar/bucătar-șef/manager) vrea să țină evidența HACCP fără
 - **Severitate cu cap.** `high` = risc pentru sănătate (lanț frig pe carne/lactate, contaminare) → leagă-l de un recall; `medium` = pierdere de produs; `low` = rezolvare internă. La orice incident cu lot afectat, oferă `build_recall_report` ca să vadă impactul pe loturi și `trace_recall_to_customers` ca să vadă pe cine trebuie notificat. **După un incident grav sau recurent, escaladează la o CAPA** (`open_capa` → `update_capa` → închidere cu cauză-rădăcină + acțiune corectivă/preventivă + verificare): food safety-ul (BRC/IFS/ISO 22000) cere ca incidentul să NU rămână doar „rezolvat ad-hoc", ci să aibă acțiune corectivă formală + verificare. Tool-urile CAPA sunt sub modulul `productie` (detalii în skill `productie-flux`).
 - **Nu inventa cifre.** Temperatura, ora, lotul, ce s-a făcut — le iei de la user. Ce nu știi, întrebi. Nu „bifa" curățenii sau nu „nota" citiri pe care userul nu le-a confirmat.
 - **Ștergerea nu e prin conexiune.** Niciun delete de incident/sarcină/sesiune prin MCP — dacă userul vrea să șteargă, ghidează-l în aplicație (`/haccp`).
-- **Permisiune**: scrierile (loghează temperatură, incident, bifează curățenie, răcire) cer modulul **Setări & Configurare** (`setari`) pe token; citirile + recall + lista clienților expuși merg mereu. „Permisiune insuficientă" → portal Hub → Acces AI → bifează modulul.
+- **Permisiune**: scrierile (loghează temperatură, incident, bifează curățenie, răcire) cer modulul **Setări & Configurare** (`setari`) pe token; citirile + recall + lista clienților expuși cer `readModule`. „Permisiune insuficientă" → portal Hub → Acces AI → bifează modulul.
 
 ## Legături
 - Doctrina Chrome (deep-link, screenshot = livrabil, click pe element doar la nevoie, fallback fără extensie) → `knowledge/condu-chrome.md`.

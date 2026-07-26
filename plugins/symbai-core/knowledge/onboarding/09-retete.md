@@ -44,11 +44,16 @@ Nu cere date opționale (timp de preparare, etape, etichete, fișe de producție
 ```
 create_recipe({ name: "Paste Carbonara", productId: 1234, brandId: 1, yield: "1 porție" })
 ```
-Singurul parametru obligatoriu e `name`, dar **dă mereu `productId`**: fără el, tool-ul încearcă potrivire pe nume și, dacă numele rețetei diferă de numele produsului, rețeta rămâne NELEGATĂ (productId null) → vânzarea nu scade stocul. Legarea prin ID e și imună la redenumiri ulterioare ale produsului. `yield` ajută la scalare („1 porție", „5 kg"); restul câmpurilor (`prepTime`, `storageType`, `stages`...) sunt opționale.
+Singurul parametru obligatoriu e `name`, dar **dă mereu `productId`**: fără el, tool-ul încearcă potrivire pe nume și, dacă numele rețetei diferă de numele produsului, rețeta rămâne NELEGATĂ (productId null) → vânzarea nu scade stocul. Legarea prin ID e și imună la redenumiri ulterioare ale produsului.
+
+⚠ **`yield` (randamentul) este un divizor real, nu o etichetă**: tot ce scrii în rețetă se **împarte** la el la fiecare vânzare. Pune-l **1** (sau lasă-l gol) când rețeta e scrisă **pentru o porție** — cazul obișnuit la restaurant. Pune un număr mai mare **doar** dacă ai scris cantitățile pentru mai multe porții deodată (ex. o oală de 20 de porții). Contează **doar cifra**, nu textul de lângă ea: „5 kg" se citește „împarte la 5", chiar dacă produsul se vinde la bucată. Zecimalele se scriu cu **punct** — „2,5" se citește 2. Un randament pus din greșeală e una dintre cele mai frecvente cauze pentru „stocul nu scade cât ar trebui" și „food cost prea mic", și se vede abia peste zile. Restul câmpurilor (`prepTime`, `storageType`, `stages`...) sunt opționale.
 
 **Idempotență**: înainte de creare verifică `list_recipes({ query: "<numele produsului>" })` și, pe candidați, `get_recipe_details({ recipeId })` — dacă există deja o rețetă cu `productId`-ul produsului, NU crea alta (două rețete pe același produs = ambiguitate; sistemul alege una singură). `get_product_details` NU arată rețeta asociată produsului. Editează rețeta existentă cu tool-urile de la pasul 4-5.
 
 **4. Adaugă ingredientele — în unitatea REȚETEI.**
+
+⚠ **Poarta unităților — verificare OBLIGATORIE înainte de scriere.** Pentru fiecare ingredient compară unitatea în care scrii rețeta cu unitatea produsului (o ai deja din pasul 2, altfel `get_product_details`): masă cu masă (g↔kg), volum cu volum (ml↔l), bucăți cu bucăți. Perechile din familii diferite — „25 g" dintr-un produs ținut la „buc", „40 ml" dintr-o sticlă ținută la „buc" — **nu se pot traduce** și cantitatea se ia brut (25 de bucăți consumate). Nu scrie linia așa: fie schimbi unitatea produsului, fie recalculezi cantitatea în unitatea produsului (180 g dintr-un produs „buc de 1,8 kg" = 0.1 buc). **Corectează perechile imposibile ACUM** — după ce încep vânzările, corectura cere și recalcularea consumului pe toate zilele afectate. Pe un catalog care are deja rețete, `scan_recipe_unit_mismatches` (citire) îți listează toate perechile netraductibile, separate în „reparabile automat" și „de rezolvat manual", iar `fix_recipe_unit_mismatches` 🔒 (modul `inventar`) le corectează pe cele sigure — atenție, repară doar definiția rețetei; istoricul de consum rămâne de reprocesat separat.
+
 ```
 add_recipe_ingredients({
   recipeId: 567,

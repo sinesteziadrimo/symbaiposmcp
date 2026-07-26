@@ -17,7 +17,7 @@ Modelul de date, pe scurt:
 
 - **`setari`** (Setări & Configurare) — obligatoriu: `create_brand`, `update_brand`, `create_location`, `update_location`, `link_brand_location`, `unlink_brand_location`, `update_company`.
 - **`produse_meniu`** — doar dacă trebuie create manual cote TVA (`create_vat_rate`). De regulă NU e nevoie: `lookup_company_cui` creează automat cotele standard RO.
-- `lookup_company_cui` și toate `list_*`/`get_config_status` sunt tool-uri de citire — disponibile mereu, fără module.
+- `lookup_company_cui` și tool-urile `list_*`/`get_config_status` sunt read-only, dar datele operaționale cer grantul `readModule` aferent; numai contextul public minim este fără modul.
 
 Fără modulul potrivit, tool-urile de scriere întorc „permisiune insuficientă" — modulele se bifează de utilizator în portalul Hub → Acces AI (pe token), nu din aplicația POS.
 

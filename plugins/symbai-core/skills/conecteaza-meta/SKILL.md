@@ -61,6 +61,6 @@ description: Ghidează conectarea contului Meta la Symbai — pagina Facebook, I
 
 ## Permisiuni
 
-- `verifica_integrare` = citire, mereu disponibil.
+- `verifica_integrare` = citire `setari`; cere grantul `readModule` aferent.
 - `genereaza_link_conectare` + `conecteaza_instagram_din_facebook` cer modulul de scriere „Marketing & Social Media" pe tokenul MCP — dacă lipsește, îndrumă spre portal Hub → Acces AI.
 - Concepte (ce e o pagină, Business Manager, de ce trebuie cont Business etc.): `knowledge/integrari-meta.md`.

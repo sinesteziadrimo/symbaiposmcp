@@ -12,7 +12,7 @@ La final, restaurantul are stratul „către client" pornit: **portalul clienți
 
 - **`setari`** — tot ce se scrie în faza asta: `configure_portal_general/appearance/texts/features/display/menu_config`, `create_delivery_channel`, `create_menu_display_config`/`update_menu_display_config`, `update_game_config`/`update_game_schedule`/`update_game_pricing`/`set_game_date_override`.
 - **`produse_meniu`** — doar dacă trebuie corectate prețuri de meniu înainte de meniul fizic (`bulk_update_menu_item_prices`).
-- Citirile (`get_portal_config`, `list_sales_agents`, `list_portal_games`, `browse_brand_media`, `list_entities`...) merg mereu, fără module. Fără modulul potrivit, scrierile întorc „permisiune insuficientă" → utilizatorul bifează modulul în portal Hub → Acces AI, pe token.
+- Citirile (`get_portal_config`, `list_sales_agents`, `list_portal_games`, `browse_brand_media`, `list_entities`...) cer granturile `readModule` aferente. Fără modulele potrivite, citirile sau scrierile întorc „permisiune insuficientă" → utilizatorul ajustează accesul tokenului în Hub → Acces AI.
 
 ## Ce afli singur ÎNAINTE să întrebi — și ce întrebi utilizatorul
 

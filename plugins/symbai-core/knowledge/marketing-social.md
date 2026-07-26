@@ -104,10 +104,11 @@ Modulul acoperă tot marketingul restaurantului: postări social media (Facebook
 
 ## Tool-uri MCP utile
 
-**Citire (fără permisiune de modul):**
+**Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `list_social_accounts` — ce conturi social sunt conectate și active, înainte de orice programare.
 - `verifica_integrare` — checklist live al integrării (meta/facebook/instagram/tiktok/youtube/linkedin/google_business): credențiale, cont conectat, token valid (testat pe API), permisiuni lipsă, cont reclame. Sursa de adevăr la orice problemă de conectare.
 - `list_social_posts` — postările existente (ciorne/programate/publicate/eșuate), cu filtru pe status.
+- `diagnose_social_publish_failure` — diagnostic read-only pentru o postare sau pentru eșecurile recente: separă platformele deja publicate de cele eșuate/neconfirmate, arată eroarea reală, detectează media lipsă ori durata invalidă și marchează explicit cazurile cu risc de duplicare care cer reconciliere manuală înainte de retry.
 - `get_social_post_performance` — performanța REALĂ a unei postări sau a postărilor publicate într-o fereastră: reach, views, like/comment/share/save, citite live de la Meta pentru Facebook/Instagram. Insights lipsă = „indisponibil" cu motiv, nu zero.
 - `get_social_top_posts` — top postări după engagement/reach/views, cu postările fără insights excluse din clasament și numărate separat.
 - `read_brand_memories` — vocea brandului, publicul țintă, stilul vizual — de citit înainte de a propune conținut.
@@ -144,6 +145,7 @@ Pentru întrebări/rapoarte poți folosi și SQL read-only. Pentru orice link de
 ## Întrebări frecvente și capcane
 
 - **De ce nu s-a publicat postarea?** Cel mai des: contul platformei e deconectat sau token-ul a expirat → postarea trece pe „eșuată". Diagnostichează cu `verifica_integrare` (testează tokenul LIVE și spune exact ce lipsește), apoi reconectează după skill-ul `conecteaza-meta`.
+- **Facebook a ieșit, Instagram a eșuat — pot da retry?** Rulează întâi `diagnose_social_publish_failure(postId)`. Dacă apare `manual_reconciliation_required`, Meta poate fi publicat deja conținutul și doar răspunsul s-a pierdut: verifică feed-ul și reconciliază ID-ul remote; nu retrimite orbește și nu duplica platforma care are deja `success:true`. Pentru erori de durată (de exemplu Reel peste limita indicată) corectează clipul înainte de orice nouă publicare.
 - **Am programat o postare dar nu i-am pus oră** — fără dată/oră rămâne ciornă. Postările cu dată în viitor se publică la oră **doar dacă au fost aprobate**. Nimic creat prin asistent nu pleacă fără aprobare.
 - **Am programat o postare prin asistent și tot nu s-a publicat la oră** — pentru că aștepta aprobare. Toate postările create prin asistent/AI intră „în așteptare aprobare". Aprob-o din pagina Social Media (buton Aprobă) sau cere asistentului `approve_social_post`; abia după aceea se publică la ora programată. Vezi lista cu `list_social_posts(approvalStatus:'pending')`.
 - **Pot anula o postare deja publicată?** Nu — `cancel_social_post` funcționează doar pe ciorne, programate sau eșuate. Ștergerea de pe platformă se face pe platformă.

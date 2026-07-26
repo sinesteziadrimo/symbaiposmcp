@@ -7,7 +7,7 @@ description: Gestionează etichetele (tagurile) produselor în Symbai — creare
 
 Citește întâi `knowledge/etichete-taguri.md` (cele 3 scopuri ale tagurilor, tool-urile, capcanele) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`. Pentru rutare în onboarding: `knowledge/onboarding/03-etichete-rutare.md`; pentru legarea tag→imprimantă/ecran: `knowledge/echipamente-kds-imprimante.md`.
 
-Toate scrierile cer modulul **`produse_meniu`** pe token; lipsă → „permisiune insuficientă" (activare din portal Hub → Acces AI). Citirile merg mereu.
+Toate scrierile cer modulul **`produse_meniu`** pe token; lipsă → „permisiune insuficientă" (activare din portal Hub → Acces AI). Citirile cer grantul `readModule` aferent pe token.
 
 ## Regula de aur
 

@@ -86,7 +86,7 @@ Modulul acoperă serviciul la masă: planul de sală (desenat în designer, afi�
 
 ## Tool-uri MCP utile
 
-**Citire (fără permisiune de modul):**
+**Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `raport_vanzari` — încasări pe perioadă: total, nr. bonuri, bon mediu, bacșiș, reduceri, defalcare pe metodă de plată + comparație cu perioada anterioară. Pentru „cât am vândut azi", „cash vs card".
 - `performanta_ospatari` — vânzări per ospătar: nr. bonuri, încasări, bon mediu, bacșiș.
 - `vanzari_in_timp` — orele/zilele de vârf (grupare pe zi / oră / zi a săptămânii).

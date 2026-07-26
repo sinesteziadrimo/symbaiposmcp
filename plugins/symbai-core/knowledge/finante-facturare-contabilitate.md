@@ -17,7 +17,7 @@ Modulul Finanțe acoperă banii afacerii de la sertarul de numerar până la bal
 - **Bon fiscal ≠ factură** — bonul e tranzacția POS tipărită pe imprimanta fiscală; factura e documentul comercial separat, cu e-Factura opțională.
 - **e-Factura ANAF** — conectare OAuth la SPV, generare XML UBL, upload manual sau automat, verificare status (acceptat/respins), urmărirea termenului legal de 5 zile, storno/notă de credit cu referință la original.
 - **Serie de facturare** — prefix + număr curent configurabile per brand/locație. Pe serverele locale (offline) fiecare dispozitiv are propria serie, deci facturile se emit și fără internet, fără coliziuni de numere.
-- **Note contabile (registru contabil)** — înregistrări debit/credit generate automat: recepția (debit stoc 371/301 + TVA 4426 / credit furnizor 401), vânzarea (4111 / 707 + 4427), pe baza conturilor configurate per tip de produs (OMFP 1802), cu override-uri pe brand/locație/produs. Contul de stoc se derivă din TIPUL produsului (raw_material→301, merchandise→371, consumable→302, packaging→381, service→628) — funcționează chiar dacă brandul are 0 tipuri de produs configurate (mapare implicită pe tipul canonic). Tipurile configurate sunt necesare doar pentru conturi personalizate / override-uri.
+- **Note contabile (registru contabil)** — înregistrări debit/credit generate automat: recepția (debit stoc 371/301 + TVA 4426 / credit furnizor 401), vânzarea (4111 / 707 + 4427), pe baza conturilor configurate per tip de produs (OMFP 1802), cu override-uri pe brand/locație/produs. Contul de stoc se derivă din TIPUL produsului (raw_material→301, merchandise→371, consumable→302, packaging→381, service→628) — funcționează chiar dacă brandul are 0 tipuri de produs configurate (mapare implicită pe tipul canonic). Tipurile configurate sunt necesare doar pentru conturi personalizate / override-uri. ⚠ **Contul ales pe linia unei facturi de furnizor NU schimbă nota contabilă la marfa care intră pe stoc** — nota se face din **tipul produsului** (plus conturile personalizate pe tip/unitate, dacă există). Contul pus pe linie se vede în ecranul de mapare și în rapoarte, dar decide nota doar la **liniile de cheltuială** (servicii, utilități, transport) și la facturile pur contabile. Deci dacă nota iese pe cont greșit, repari **tipul produsului**, nu contul de pe linie — vezi `mapare-si-reconversie-facturi.md`.
 - **Conturi pe tip de produs** — fiecare tip de produs (marfă, produs propriu, masă servită etc.) are conturi de venit/stoc/cheltuială configurate în hub-ul „Conturi pe Tip Produs" (/ai-product-types); metodele de plată au și ele cont contabil asociat.
 - **Cotele TVA România** — 0 / 11 / 21%; mâncarea preparată e de regulă la 11%, băuturile și alte produse la 21%.
 - **Masă servită** — produs vândut fără rețetă cunoscută (ex. meniu de eveniment); costul se stabilește ULTERIOR printr-o fișă de ieșire de tip consum sau dintr-un eveniment legat — NU printr-o factură.
@@ -64,7 +64,7 @@ Modulul Finanțe acoperă banii afacerii de la sertarul de numerar până la bal
 
 ## Tool-uri MCP utile
 
-**Citire (fără permisiune de modul):**
+**Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `get_accounting_overview` — starea contabilă a unui brand: tipuri de produs cu/fără conturi, plan de conturi, înregistrări.
 - `get_accounting_status` — ce coduri contabile sunt setate / lipsă pe brand.
 - `get_journal_entries_summary` — total debit/credit pe perioadă, per tip sursă, per cont.
@@ -104,8 +104,10 @@ Modulul Finanțe acoperă banii afacerii de la sertarul de numerar până la bal
 - **Pot șterge o factură greșită?** Nu se șterge — anularea creează automat factura storno cu sume negative și anulează creanțele legate; reversarea anulării e posibilă.
 - **De ce nu merge exportul SmartBill / SAGA din Închiderea de Zi?** E anunțat „disponibil în curând" — conectorul se livrează într-o versiune următoare.
 - **De ce masa servită nu are cost?** E normal la început: statusul „Cost de stabilit" ține până legi o fișă de ieșire de tip consum sau un eveniment — costul NU vine dintr-o factură.
+- **Raportul financiar arată 0 după o eroare de sursă. Este zero real?** Nu presupune asta. O sursă indisponibilă sau o configurație P&L incompletă trebuie tratată ca eroare/blocaj, nu ca valoare zero. Recitește mesajul detaliat, verifică sursele și configurația raportului, apoi rulează din nou; nu lua decizii pe un „0" obținut prin fallback.
 - **De ce nu se vede pagina Facturare/Folio?** E parte din modulul Hotel — apare doar dacă brandul are domeniul de activitate hotel.
 - **Diferență între Z și vânzările POS?** Verifică bonuri neemise, vânzări nefiscalizate sau Z parțial — tab-ul Reconciliere Z ↔ POS din Rapoarte Fiscale explică diferența.
+- **Am cerut Z și apare „în coadă / verificare necesară", dar nu am fișier de extras.** Unele drivere pot doar trimite comanda către casa fiscală și tipări fizic raportul, fără să întoarcă un document electronic. Asta nu dovedește o eroare de conexiune. Verifică raportul tipărit pe casă și marchează rezultatul din fluxul „Verificare Z"; nu retrimite comanda orbește, fiindcă poți genera o operațiune fiscală duplicată.
 
 ## Pentru acces SQL (doar citire)
 

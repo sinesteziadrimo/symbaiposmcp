@@ -91,7 +91,7 @@ Modulul acoperă tot ce ține de relația cu clienții: rezervări de masă și 
 
 ## Tool-uri MCP utile
 
-**Citire (fără permisiune de modul):**
+**Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `get_reservations_overview` — rezumat rezervări: setări, statistici, rezervări azi/mâine, waitlist, tipuri configurate. Primul tool la „cum stăm cu rezervările".
 - `get_reservation_settings` — setările de rezervări pentru o locație/brand.
 - `list_portal_games` / `get_game_details` / `check_game_availability` / `get_game_slots` — jocurile din portal, program, prețuri și disponibilitate pe dată/oră.

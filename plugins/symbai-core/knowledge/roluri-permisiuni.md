@@ -21,8 +21,8 @@ Regula de aur: **pregătește rolul cu tool-urile de înțelegere (vezi ce înse
 ### A) Înțelege (READ — cer citire pe modulul `personal` în grant)
 
 - **`list_permission_catalog`** — vocabularul complet: toate categoriile + cheile + ce înseamnă fiecare, în română. Opțional `category` ca să vezi doar un grup (ex. `category: "payments"`). **Începe mereu de aici** ca să știi ce chei poți pune. Explică și `all` / `all:<categorie>`.
-- **`describe_role`** — tot despre un rol EXISTENT: permisiuni, angajați, **paginile web** și prezentarea recomandată în **Symbai Staff** (profil, primul tab, ordinea zonelor).
-- **`preview_role_access`** — dai un set IPOTETIC de chei și, opțional, `roleName`; vezi paginile și experiența Staff **înainte** de creare/modificare. Semnalează cheile necunoscute.
+- **`describe_role`** — tot despre un rol EXISTENT: permisiuni, angajați, **paginile web**, diagnosticul celor patru taburi din bara operațională (Livrări, POS, Comenzi QR, Rezervări) și prezentarea recomandată în **Symbai Staff** (profil, primul tab, ordinea zonelor).
+- **`preview_role_access`** — dai un set IPOTETIC de chei și, opțional, `roleName`; vezi paginile, taburile din bara operațională și experiența Staff **înainte** de creare/modificare. Semnalează cheile necunoscute.
 - **`list_role_presets`** — rolurile predefinite cu drepturile și prezentarea Staff recomandată. Punct de plecare bun.
 - **`suggest_role_setup`** — din atribuții și, opțional, numele rolului, propune permisiuni, preset, pagini și experiența Staff. Este o schiță transparentă, nu o decizie finală.
 
@@ -52,6 +52,7 @@ Regula de aur: **pregătește rolul cu tool-urile de înțelegere (vezi ce înse
 - **„Rol de vizualizare (read-only) pentru un asociat"** → alege doar cheile de tip `*_view` din categoriile care-l interesează (le vezi în `list_permission_catalog`) → `preview_role_access` → creează. (Un rol read-only NU vede paginile de configurare, care cer drept de „management".)
 - **„Inginer de proces la fabrică"** → `suggest_role_setup("inginer proces care vede randamentul utilajelor și eliberează calitatea")` → rafinează → creează.
 - **„De ce nu vede rolul X pagina Y?"** → `describe_role(rol X)` și uită-te în lista de pagini vizibile; dacă Y lipsește, adaugă permisiunea potrivită cu `set_role_permissions(addPermissions:[...])`. Ca să afli CARE permisiune deschide pagina Y, caut-o în `list_permission_catalog` (categoria zonei respective).
+- **„De ce lipsește Rezervări din bara Livrări / POS / QR / Rezervări?"** → `describe_role` și citește `access.operationsWorkspace`. Tabul Rezervări cere `reservations_view` sau `reservations_manage`; configurarea rezervărilor pe locație nu acordă singură accesul. Dacă diagnosticul spune că permisiunea există, verifică separat dacă pagina `/reservations` a fost ascunsă pentru client din Hub — acesta este un al doilea filtru, independent de rol.
 
 ## De reținut (onestitate + capcane)
 

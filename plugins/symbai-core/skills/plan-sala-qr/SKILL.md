@@ -30,7 +30,7 @@ Tabel intenție → tool MCP (toate scrierile cer modulul **Setări & Configurar
 | „schimbă unde duce QR-ul (fără retipărire) / dezactivează-l" | `set_dynamic_qr_fields` | `id` + `redirectUrl` (retarget) sau `active:false` (dezactivare — `/q/<cod>` dă 404, reversibil). Ia id-ul cu `list_dynamic_qr_codes`. |
 | „cere telefonul/email la scanare / activează plata directă pe QR / treci prin ospătar" | `list_qr_field_presets` → `set_qr_field_preset_fields` | `phoneVisible`/`phoneRequired`/`emailVisible`…, `directPayment`, `waiterConfirmation`, `clientFieldsPrompt` (`on_scan`/`before_order`/`never`). |
 
-**Citirile (mereu disponibile, fără modul):** `get_floor_config`, `list_zone_routing`, `list_floor_config_schedules`, `list_dynamic_qr_codes`, `list_qr_field_presets`.
+**Citirile read-only (cer grantul `readModule` al domeniului pe token):** `get_floor_config`, `list_zone_routing`, `list_floor_config_schedules`, `list_dynamic_qr_codes`, `list_qr_field_presets`.
 
 ## Cum NAVIGHEZI (deep-link stabil — NU click prin meniu)
 - **Designerul de sală** (unde se DESENEAZĂ): `navigate("/plan-sala")`. Aici tu nu lucrezi cu mouse-ul — doar deschizi pagina ca să ARĂȚI rezultatul mutărilor tale prin MCP (canvas-ul reflectă schimbarea — tool-urile scriu direct în configurația de sală). ⚠ Selecția configurației/brandului e în dropdown-urile din capul paginii (nu în URL) și se poate reseta la refresh — re-verifică.

@@ -22,7 +22,7 @@ Formatele uzuale (id-uri pt `format`): `a4-portrait`, `a4-landscape`, `a3-portra
 
 ## Tool-urile MCP
 
-**CITIRE (mereu disponibile):**
+**CITIRE (read-only; cere grantul `readModule` al domeniului):**
 - `list_material_designs({brandId?, type?, includeArchived?})` — materialele salvate ale brandului (id, nume, tip, dimensiuni, nr. pagini/elemente). Punctul de start: îți dă `designId`-ul.
 - `get_material_design({designId})` — citește un material ca să-l ÎNȚELEGI: dimensiunile colii (mm + px), fundalul, și TOATE elementele cu `id`, tip, poziție (px **și procente**), dimensiune, conținut/culoare. Ia `id`-urile de element de aici pentru update/remove/arrange.
 - `list_material_templates({group?})` — șabloanele gata făcute (grup Print / Social / QR): `templateId` + descriere + dimensiuni. **Pornește de aici** pentru rezultate frumoase rapid.

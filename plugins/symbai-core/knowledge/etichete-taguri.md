@@ -14,7 +14,7 @@ O **etichetă** (tag) e o grupare reutilizabilă atașată produselor (și, mai 
 
 ## Tool-urile MCP (toate testate live)
 
-Toate scrierile cer modulul **`produse_meniu`** („Produse & Meniuri") bifat pe token (portal Hub → Acces AI); altfel întorc „permisiune insuficientă". Citirile merg mereu.
+Toate scrierile cer modulul **`produse_meniu`** („Produse & Meniuri") bifat pe token (portal Hub → Acces AI); altfel întorc „permisiune insuficientă". Citirile cer grantul `readModule` aferent pe token.
 
 **Citire / previzualizare:**
 - `list_tags(brandId?, entityType?)` — toate etichetele (id, nume, culoare, entityTypes, brandId, descriere).

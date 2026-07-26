@@ -11,7 +11,10 @@ Modulul de rapoarte acoperă tot ce ține de cifre: dashboard-ul de start, rapoa
 - **Vânzări (cifră de afaceri)** — cât s-a vândut, cu TVA. Filtrabil pe perioadă, brand, locație.
 - **Venit brut vs net** — brut = cu TVA; net = fără TVA. Rapoartele le afișează separat, plus TVA-ul defalcat pe cote.
 - **Food cost** — costul ingredientelor raportat la vânzări (%). „Teoretic" = calculat din rețete; „realizat" = din consumul efectiv pe loturi. Reper sănătos: 28–32%.
-- **COGS (costul mărfii vândute)** — în P&L e **realizat**: calculat din consumul FIFO real pe loturi (ce a costat efectiv marfa vândută), cu fallback pe costul teoretic din rețetă acolo unde lipsește consumul. Reprocesarea consumului se reflectă în rapoarte.
+- **COGS (costul mărfii vândute)** — în P&L e **realizat**: calculat din loturile chiar consumate, la prețurile lor reale de intrare (la ieșire pleacă primul lotul care expiră cel mai devreme; la termene egale sau fără termen, cel intrat primul), cu revenire pe costul teoretic din rețetă acolo unde lipsește consumul. Recalcularea consumului se reflectă în rapoarte. Două precizări de reținut înainte de a trage concluzii:
+  - **Livrările (Glovo/Wolt/Bolt/Tazz) sunt costate teoretic**, din rețetă, nu din loturi. O corecție de preț pe o factură veche se vede la vânzările din sală după recalcularea perioadei, dar **nu** ajunge singură la livrări — pentru ele se folosește recalcularea **pe produs** din pagina Consum Zilnic.
+  - **Produsele oferite (protocol, consum intern) și cele transferate între mese consumă stoc, dar nu aduc venit.** De aceea food cost-ul poate urca fără nicio greșeală de rețetă sau de preț — verifică întâi volumul lor în raportul de sfârșit de zi, apoi caută o problemă de date.
+  - Detaliile (când se generează consumul, din ce gestiune și din ce lot scade, cum se recalculează) sunt în `consum-zilnic-cost-marfa.md`.
 - **Marjă** — preț de vânzare − cost. Brută (după COGS), netă (după toate cheltuielile), sau pe produs/categorie.
 - **Prime cost** — COGS + costul cu personalul. Semafor: verde ≤60%, galben ≤65%, roșu peste (praguri configurabile).
 - **Prag de rentabilitate (break-even)** — nivelul de vânzări de la care afacerea iese pe profit; afișat în P&L.
@@ -52,6 +55,7 @@ Modulul de rapoarte acoperă tot ce ține de cifre: dashboard-ul de start, rapoa
 
 1. **„Cât am vândut azi / luna asta?"** — `raport_vanzari` cu `perioada` potrivită: total încasări, număr bonuri, bon mediu, cash vs card + comparație automată cu perioada anterioară. Pentru detalii vizuale: pagina `/analytics`.
 2. **Verific profitul lunii** — `/reports/pnl`, perioada „Luna aceasta" → uită-te la profit net, prime cost și prag de rentabilitate → deschide categoriile de cheltuieli și folosește „Vezi facturile" pe liniile mari.
+2a. **P&L-ul refuză cu 409 / integritate incompletă** — nu transforma eroarea în zero și nu lua decizii dintr-un total parțial. Rulează `diagnose_pnl_integrity` pe aceeași perioadă și același brand/locație: întoarce blocajele exacte și, numai pentru diagnostic, un preview marcat explicit incomplet. Repară sursa indicată, apoi repetă `get_pnl`; raportul strict rămâne intenționat blocat până când cifrele sunt complete.
 2b. **Verific produse pe pierdere / profit pe SKU** — `get_product_pnl(mode:"loss", perioada, limit)` → repari costuri lipsă, rețete/prețuri sau ponderea de alocare; folosește `warnings` și `reconciliation` înainte să tragi concluzii. Pentru întrebări de concentrare profit („care 20% produse îmi fac 80% profit?"), deschide drill-down-ul pe produs din `/reports/pnl`, unde graficul Pareto arată procentul cumulativ.
 2c. **Verific distribuția B2B / retail** — `get_customer_pnl(mode:"loss", perioada, brandId?)` pentru clienți pe pierdere, `get_channel_pnl` pentru supermarketuri vs magazine proprii vs HoReCa, `get_supplier_pnl` pentru concentrarea achizițiilor și risc de scumpire. Explică userului că marja de distribuție este full-cost: cost marfă alocat + manoperă + regie, deci poate fi mai dură decât venitul brut pe client.
    Pentru dovadă vizuală, deschide `/reports/pnl` și caută secțiunea **Distribuție — pe client, canal și furnizor**: arată KPI-urile mari, bara „unde fac marja", donut-ul de venit, tabelul/rankingul de clienți și heatmap-ul produs × client. În răspunsul către user, rezumă 2-3 concluzii: „canalul X are marja cea mai bună", „clientul Y vinde mult dar are profit mic", „produsul Z pe clientul W e roșu".
@@ -66,8 +70,9 @@ Modulul de rapoarte acoperă tot ce ține de cifre: dashboard-ul de start, rapoa
 
 ## Tool-uri MCP utile
 
-**P&L prin conexiune (citire, fără permisiune de modul):**
+**P&L prin conexiune (read-only; cere grantul `readModule: financiar`):**
 - `get_pnl` — raportul P&L COMPLET pe perioadă (venituri nete, COGS, profit brut, personal, OpEx, profit net + marje, food/labor/prime cost cu semafor). Cifrele = identice cu pagina `/reports/pnl`. Primul reflex la „arată-mi P&L-ul / care e profitul".
+- `diagnose_pnl_integrity` — explică de ce `get_pnl` a refuzat un raport incomplet: enumeră `blockingIssues`, avertismentele și sursele lipsă și poate arăta un `partialPreview` etichetat clar ca incomplet. Este unealtă de diagnostic, nu înlocuitor pentru P&L-ul strict.
 - `get_product_pnl` — P&L managerial pe produs/SKU: venit, COGS direct, alocări de manoperă/overhead, profit net, loss-makers, produse fără cost, concentrare profit și reconciliere cu P&L-ul total. Când explici de ce un produs este roșu/loss-maker sau de ce s-a schimbat marja, citește `data.config`, `methodology`, `warnings` și `reconciliation` înainte să presupui un bug.
 - `get_customer_pnl` — P&L de distribuție pe client: marjă full-cost pe fiecare client/supermarket/magazin, nu doar venit. Bun pentru „ce client îmi face bani", „care client e pe pierdere", „marja pe Kaufland/Mega".
 - `get_channel_pnl` — P&L de distribuție pe canal de clienți (`b2bChannel`): compară supermarketuri, magazine proprii, HoReCa etc. Dacă apare „Fără canal", trebuie completat canalul pe client înainte de concluzii ferme.
@@ -87,7 +92,7 @@ Modulul de rapoarte acoperă tot ce ține de cifre: dashboard-ul de start, rapoa
 - `add_pnl_manual_day_expense` — adaugă cheltuieli recurente pe anumite zile pentru P&L-ul pe zile (formație live, DJ, pază suplimentară), fără să le amesteci cu facturile reale.
 - `create_pnl_snapshot` / `add_pnl_snapshot_adjustment` — îngheață un P&L și adaugă cheltuieli/venituri suplimentare (închidere de lună).
 
-**Citire (disponibile mereu, fără permisiune de modul):**
+**Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `raport_vanzari` — vânzări pe perioadă cu comparație automată vs perioada anterioară; primul reflex la „cât am vândut".
 - `top_produse` — best sellers după venituri sau cantitate (exclude anulate/returnate).
 - `vanzari_in_timp` — tipare și ore/zile de vârf (grupare pe zi / oră / zi a săptămânii).
@@ -114,10 +119,11 @@ Toate tool-urile de vânzări acceptă `perioada` (azi / ieri / saptamana_aceast
 
 ## Întrebări frecvente și capcane
 
-- **„De ce diferă food cost-ul din rețetă de cel din P&L?"** — P&L folosește COGS **realizat** (consum FIFO real pe loturi); rețeta dă costul teoretic. Diferența e normală (risipă, porționare, prețuri de achiziție diferite pe loturi) și e ea însăși un KPI (variația food cost teoretic vs real).
+- **„De ce diferă food cost-ul din rețetă de cel din P&L?"** — P&L folosește COGS **realizat** (loturile chiar consumate, la prețurile lor reale de intrare); rețeta dă costul teoretic. Diferența e normală (risipă, porționare, prețuri de achiziție diferite pe loturi) și e ea însăși un KPI (variația food cost teoretic vs real). Două excepții de spus explicit înainte de a căuta o greșeală: **livrările** (Glovo/Wolt/Bolt/Tazz) sunt costate teoretic, deci o corecție de preț de intrare nu se vede acolo decât după recalcularea **pe produs** din pagina Consum Zilnic; iar **produsele oferite (protocol, consum intern) și cele transferate** consumă stoc fără să aducă venit și umflă procentul. Explicația completă a mecanismului e în `consum-zilnic-cost-marfa.md`.
 - **„Au reprocesat consumul — de ce s-au schimbat cifrele din rapoarte?"** — corect așa: P&L, sfârșitul de zi și KPI-urile reflectă consumul recalculat.
 - **„De ce nu văd pagina de analiză hotel / magazin online?"** — paginile apar doar dacă brandul are domeniul de activitate respectiv (Hotel / Magazin Online) activ; pot fi și ascunse per client din administrare.
 - **„De ce nu se schimbă cifrele din P&L-ul salvat?"** — un snapshot e înghețat by design; modifici doar prin ajustări manuale pe snapshot. Pentru date la zi folosește `/reports/pnl`.
+- **„Top produse este gol, deși există vânzări POS?"** — nu presupune că nu s-a vândut. Liniile venite din POS/server local pot avea `productId`, dar `menuItemId` gol; categoria și imaginea trebuie recuperate din articolul de meniu activ al aceluiași brand. Verifică perioada, brandul, categoriile configurate și apoi existența vânzărilor pe `productId`; după remediere, lasă agregarea programată să recalculeze clasamentul înainte să închizi incidentul.
 - **„Am schimbat prețul pe produs și nu se vede în POS"** — prețul de vânzare stă pe **articolul de meniu**, nu pe produs; folosește `update_menu_item`, nu `update_product`.
 - **„Z-ul de pe casă nu bate cu POS-ul"** — `/finance/end-of-day` arată exact diferența Z vs POS per casă de marcat; cauze tipice: bonuri nefiscalizate, fereastra zilei de business diferită de ziua calendaristică.
 - **„Ce înseamnă «Fără locație» în filtre?"** — înregistrări vechi fără locație alocată; filtrul dedicat le izolează ca să nu „dispară" bani din raportul pe locație.

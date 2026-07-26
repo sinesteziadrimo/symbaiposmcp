@@ -70,7 +70,7 @@ Modulul Blog & SEO acoperă conținutul editorial al brandului tău și vizibili
 
 ## Tool-uri MCP utile
 
-- **Citire (fără permisiune de modul):** `list_blog_posts` (articolele brandului, filtru pe stare/categorie/tag), `get_blog_post` (detaliile unui articol), `list_blog_categories` (categoriile existente), `get_blog_analytics_overview` (trafic blog pe ultimele N zile: afișări, vizitatori, sesiuni, timp pe pagină, bounce rate), `list_blog_refresh_candidates` (ce articole au nevoie de reîmprospătare — vechime + trend de click-uri din Search Console).
+- **Citire (read-only; cere grantul `readModule` al domeniului pe token):** `list_blog_posts` (articolele brandului, filtru pe stare/categorie/tag), `get_blog_post` (detaliile unui articol), `list_blog_categories` (categoriile existente), `get_blog_analytics_overview` (trafic blog pe ultimele N zile: afișări, vizitatori, sesiuni, timp pe pagină, bounce rate), `list_blog_refresh_candidates` (ce articole au nevoie de reîmprospătare — vechime + trend de click-uri din Search Console).
 - **Scriere (modulul «Marketing & Social Media» pe token):** `create_blog_post` (articol nou), `bulk_create_blog_posts` (import/migrare până la 50 de articole per apel, cu dry-run, păstrare slug/date/canonical și redirect 301 din `legacyPath`), `update_blog_post` (orice câmp: titlu, conținut, meta, categorie, stare, recomandat), `bulk_update_blog_posts` (publică/arhivează/marchează recomandat mai multe deodată).
 - **Pentru link-ul exact către orice pagină:** `gaseste_in_aplicatie`.
 - **Permisiunea exactă:** vezi `tools-mcp.md`. Pentru a crea/edita articole, token-ul AI trebuie să aibă bifat modulul „Marketing & Social Media" în Hub → Acces AI; altfel tool-urile de scriere returnează „permisiune insuficientă".

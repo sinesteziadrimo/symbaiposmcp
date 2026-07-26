@@ -42,7 +42,7 @@ Fluxul corect:
 
 ⚠ La toate scrierile, **`productId` = `menu_items.id`** (NU products.id) și **`categoryId` = `menu_categories.id`**. Răspunsurile zic „(reîncarcă designerul)" pentru că UI-ul are cache — citește regula de cache mai jos.
 
-**CITIRE (mereu disponibile, fără permisiune de scriere):**
+**CITIRE (read-only; cere grantul `readModule` al domeniului):**
 - `list_physical_menu_designs({brandId, menuId?})` — designurile (`configId`, nume, format, nr. categorii/produse/pagini). Punctul de start: îți dă `configId`-ul.
 - `get_physical_menu_config({configId, section?, pageIndex?})` — citește pe secțiuni: fără `section` = setări GLOBALE (toate scalarele top-level: culori, fonturi, margini, columns, copertă, QR…); `section:'categories'` = lista categoriilor (id, nume, sortOrder, `visible`, nr. produse); `section:'page'`+`pageIndex` = override-ul unei pagini; `section:'raw'` = configul ÎNTREG (mare — doar la nevoie, refuzat dacă > ~60k caractere).
 - `get_physical_menu_item({configId, productId? | categoryId? | query?})` — inspectează produse: poziția în categorie, `sortOrder` și **mărimea pozei interpretată** (mare/mică/ascunsă, după `photoLayout`). `productId`=un produs; `categoryId`=toate dintr-o categorie; `query`=caută după nume; nimic=listă categorii.

@@ -41,7 +41,7 @@ Modulul de abonamente acoperă livrările recurente: produse sau servicii care m
 
 ## Tool-uri MCP utile
 
-- Citire: `get_subscriptions_dashboard` (KPI: MRR/ARR/ARPU/churn + numere pe status), `list_subscriptions` (lista abonamentelor, cu filtru pe status). Ambele sunt disponibile mereu (fără modul special).
+- Citire: `get_subscriptions_dashboard` (KPI: MRR/ARR/ARPU/churn + numere pe status), `list_subscriptions` (lista abonamentelor, cu filtru pe status). Ambele sunt read-only, dar cer grantul `readModule` financiar aferent.
 - Acces SQL read-only pentru rapoarte ad-hoc: `execute_sql_query`.
 - Acțiunile de scriere (creare/modificare/pauză/anulare/reîncercare plată) se fac din **interfață** — folosește `gaseste_in_aplicatie` ca să primești linkul direct la pagina abonamentului. Pe măsură ce apar tool-uri MCP de scriere pentru abonamente, permisiunea exactă va fi în `tools-mcp.md` (modulul „Livrări & Ecommerce" pe token).
 

@@ -37,7 +37,7 @@ Segmentarea îți împarte clienții în categorii ca să le poți trimite ofert
 
 ## Tool-uri MCP utile
 
-- Citire (mereu disponibile): `list_customer_groups`, `preview_guest_segment`, `preview_email_audience`, `get_customer_email_segments`, `get_customer_timeline`, `get_guest_loyalty_detail`, `evaluate_loyalty_drop_alerts`.
+- Citire (read-only; cere grantul `readModule` al domeniului pe token): `list_customer_groups`, `preview_guest_segment`, `preview_email_audience`, `get_customer_email_segments`, `get_customer_timeline`, `get_guest_loyalty_detail`, `evaluate_loyalty_drop_alerts`.
 - Scriere (modulul «Rezervări & Clienți» pe token): `create_customer_group`, `add_customer_group_member`, `create_customer`, `award_loyalty_points`, `recompute_loyalty_rfm`.
 - Scriere (modulul «Produse & Meniuri» pe token): `assign_tag`, `bulk_assign_tag`.
 - Scriere (modulul «Marketing & Social Media» pe token): `create_offer`.

@@ -81,7 +81,7 @@ Aproape nimic din dispecerat nu cere click — dar:
 - **Limbaj de restaurant, nu jargon** („cui dau comanda", „cât m-a costat mașina", „de ce a picat livrarea") — nu `assignedDriverId`/`slaDueAt`/`boundary`.
 
 ## Permisiuni (modul pe token)
-- **Citirile** (toate `list_*` de dispecerat/flotă/zone/alerte/AWB/RMA, `get_dispatch_analytics`, `get_vehicle_expenses`, `suggest_driver_for_order`, `check_rma_eligibility`) **nu cer permisiune de modul** — merg mereu (token = tenantul, read complet).
+- **Citirile** (toate `list_*` de dispecerat/flotă/zone/alerte/AWB/RMA, `get_dispatch_analytics`, `get_vehicle_expenses`, `suggest_driver_for_order`, `check_rma_eligibility`) cer grantul `readModule: livrari`; `readModules:null` este doar compatibilitatea tokenurilor legacy.
 - **Scrierile de livrare** (alocări, marcări, comandă rapidă, zone, vehicule, livrator, alerte, curieri externi, AWB, aprobă/respinge RMA, delay/preorder/substituire/SGR/snooze pe platforme) cer modulul **`Livrări`** (`livrari`) pe token.
 - **`process_rma_refund`** și **`refund_channel_order`** cer modulul **`Plăți Terminal`** (mută bani/valoare, sunt acțiuni de plăți). Au și plafon de refund din Hub când suma se poate estima.
 - **`create_delivery_channel`, `list_sales_agents`, `toggle_sales_agent`** sunt sub modulul **`Setări & Configurare`** (`setari`), nu `livrari`.

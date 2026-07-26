@@ -12,7 +12,7 @@ La final: (1) **tipurile de produs** au conturile contabile setate pe momente (r
 
 - **`financiar`** — tipuri de produs + plan de conturi: `create_product_type`, `update_product_type`, `update_product_type_accounts_per_unit`, `create_accounting_account`, `apply_accounting_codes`, `create_expense`.
 - **`setari`** — DSV/HACCP: `create_haccp_sensor`, `create_cleaning_task`.
-- Toate citirile (`list_product_types`, `get_accounting_overview`, `list_accounting_accounts`, `list_entities`, ...) sunt disponibile mereu, fără module. SQL (`execute_sql_query`) cere toggle-ul SQL separat pe token.
+- Citirile (`list_product_types`, `get_accounting_overview`, `list_accounting_accounts`, `list_entities`, ...) cer granturile `readModule` aferente. SQL (`execute_sql_query`) cere toggle-ul SQL separat pe token.
 
 Fără modulul potrivit, tool-urile de scriere întorc „permisiune insuficientă" — modulele se bifează de utilizator în portalul Hub → Acces AI, nu din aplicația POS.
 

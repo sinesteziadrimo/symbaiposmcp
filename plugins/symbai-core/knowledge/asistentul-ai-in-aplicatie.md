@@ -66,7 +66,7 @@ Symbai are AI integrat peste tot: asistentul global **Sym** (butonul plutitor di
 8. **Treci pe cheia ta OpenAI** — Setări → Integrări → cardul OpenAI → activezi „Folosește cheie OpenAI proprie" → introduci cheia (se salvează criptat, nu o mai vezi după) → opțional personalizezi nivelurile de modele; butonul de test al conexiunii folosește cheia activă de pe server.
 
 ## Tool-uri MCP utile
-**Citire (fără permisiune de modul):**
+**Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `gaseste_in_aplicatie` — găsește pagina/funcția potrivită și întoarce link direct; folosește-l înainte de a trimite utilizatorul undeva.
 - `explain_feature` — explică o funcționalitate Symbai.
 - `read_brand_memories` — citește memoriile brandului (voce de brand, public țintă, stil vizual) pentru marketing.

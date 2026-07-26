@@ -1,6 +1,7 @@
 # Intrări Marfă — recepția facturilor de la furnizori (pas cu pas)
 
 > Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie`. Acest fișier completează `stocuri-inventar-furnizori.md` (privirea de ansamblu pe stocuri) și `finante-facturare-contabilitate.md` (conturi & note contabile) — citește-le pe acelea pentru context. Aici intrăm în detaliu DOAR pe pagina **Intrări Marfă** (`/stock-entries`).
+> Fișiere-frate pentru detaliile care nu încap aici: `mapare-si-reconversie-facturi.md` (cum devine o linie de furnizor produsul tău, conturi, factor de pachet, ce învață sistemul), `reconciliere-dubluri-facturi.md` (cum eviți marfa intrată de două ori și facturile pierdute), `gestiuni-magazii-zone.md` (în ce gestiune și în ce zonă aterizează marfa).
 
 ## Pe scurt
 
@@ -30,15 +31,43 @@ Fiecare linie de factură are descrierea **furnizorului** (ex. „TABLA CUTATA W
 - **Contul contabil de cost/stoc** (ex. 371 mărfuri, 301 materii prime, 628 servicii) — se completează **automat din tipul produsului**; îl poți schimba.
 - **Contul de TVA** (de regulă 4426 TVA deductibilă).
 
+> ⚠ **Contul de pe linie ≠ contul din nota contabilă, la marfa care intră pe stoc.** Pentru o linie care intră pe stoc, nota contabilă se face **din tipul produsului** (și din eventualele conturi personalizate pe tip / pe unitate). Contul pus pe linie se vede în ecranul de mapare și în rapoarte, dar **nu schimbă nota**. Contul de pe linie decide nota contabilă doar la **liniile de cheltuială** (servicii, utilități, transport) și la facturile pur contabile. Deci: dacă nota iese pe cont greșit, **repari tipul produsului**, nu contul de pe linie.
+> Confirmarea învață regula **furnizor + descriere normalizată → produs + cont de mapare + factor de pachet**. Nu transforma această regulă într-una valabilă la orice furnizor. Numai regulile generale, curate și întreținute explicit se folosesc cross-furnizor. La marfa stocabilă, contul notei contabile rămâne determinat de **tipul produsului** și eventualele override-uri contabile ale tipului/unității.
+
 AI-ul propune maparea, tu o **confirmi (accepți)**. Sistemul **învață**: următoarea factură de la același furnizor cu aceeași descriere se mapează singură. O linie neacceptată **blochează** crearea NIR-ului.
 
 Locuri de mapare: pe fiecare factură (modala „Mapare e-Factură") sau centralizat în **Revizuire Mapări AI** (`/inventory/ai-review`) — toate liniile fără recepție, într-un singur ecran.
 
+> ⚠ **Rularea din nou a mapării AI pe o factură reia de la zero liniile neacceptate.** Dacă ai corectat manual câteva linii dar nu le-ai acceptat, ele se pierd. Acceptă întâi ce ai corectat (`accept_invoice_line_mapping`), abia apoi rulează `auto_map_efactura` pentru restul.
+
+### Ce anume învață sistemul
+La fiecare confirmare (și la fiecare NIR postat) se memorează perechea **furnizor + descrierea lui** → **produsul tău + contul + factorul de pachet**. De atunci înainte, aceeași descriere de la același furnizor se mapează singură, cu încredere maximă.
+
+- Regula învățată se aplică automat și la **celelalte facturi nefinalizate ale aceluiași furnizor** (propagare cu un click din pagină). Atenție: o mapare greșită se propagă exact la fel de repede ca una bună.
+- Vezi și editezi tot ce a învățat sistemul în **Reguli de Mapare** (`/inventory/mapping-rules`): tabul cu regulile **specifice unui furnizor** (prioritate maximă) și tabul cu regulile **generale** (rezervă, când nu există una pe furnizor). Tot acolo vezi regulile care se contrazic între ele.
+- Corectura se face **în regulă**, nu re-mapând linia la nesfârșit: cât timp regula rămâne greșită, se reaplică la fiecare factură nouă.
+- Detaliile complete (ordinea în care caută sistemul, ce înseamnă „încredere mare/mică", cum corectezi un factor învățat greșit) sunt în `mapare-si-reconversie-facturi.md`.
+
 ### Tip produs = ce conturi primește
-Tipul produsului (marfă, materii prime, consumabile, ambalaje, serviciu, utilități, combustibil, imobilizări etc.) decide automat conturile pe **momente**: la intrare pe factură (`invoice_entry`), la NIR/adaos, la consum, la vânzare. Vezi `finante-facturare-contabilitate.md` și pagina „Conturi pe Tip Produs" (`/ai-product-types`). Dacă o linie de serviciu ajunge greșit pe un cont de marfă (371), schimbă tipul produsului sau contul pe linie.
+Tipul produsului (marfă, materii prime, consumabile, ambalaje, serviciu, utilități, combustibil, imobilizări etc.) decide automat conturile pe **momente**: la intrare pe factură (`invoice_entry`), la NIR/adaos, la consum, la vânzare. Vezi `finante-facturare-contabilitate.md` și pagina „Conturi pe Tip Produs" (`/ai-product-types`). Dacă o linie de serviciu ajunge greșit pe un cont de marfă (371), **schimbă tipul produsului** — ăsta e comutatorul care schimbă efectiv nota; contul pus pe linie corectează doar ce se vede în mapare și în rapoarte.
 
 ### Reconversie (factor de pachet)
 Dacă furnizorul facturează în „bax" dar tu ții produsul la bucată, pui **factorul de pachet** (ex. un bax = 24): cantitatea se înmulțește (×24), prețul unitar se împarte (÷24), iar valoarea originală din factură rămâne neatinsă. Se învață automat pentru data viitoare.
+
+Trei reguli de operare:
+- **Când sistemul nu poate traduce singur unitatea** (bax → kg, cutie → bucată), se oprește și îți pune o singură întrebare clară: „1 bax = câte kg?". **Nu e o eroare** — e protecția care ține stocul corect; răspunzi o dată și merge mai departe.
+- **„Păstrez baxul"** (nu desfaci pachetul, îl primești ca atare) e permis **doar dacă ții produsul chiar în acea unitate**. Dacă produsul e ținut la bucată, baxul trebuie desfăcut prin factor.
+- **Factorul se învață pentru data viitoare.** Dacă a fost învățat greșit, îl corectezi din **Reguli de Mapare** (`/inventory/mapping-rules`), nu re-mapând linia la fiecare factură.
+
+Capitolul complet (ce ghicește singur sistemul, ce înseamnă numărul din câmpul „factor", unde nu ajută) e în `mapare-si-reconversie-facturi.md`.
+
+### Ce mai poți face pe o linie de factură
+Pe lângă mapare, ecranul de recepție are patru operații pe care merită să le știi (toate se fac **din aplicație**, nu prin conexiune):
+
+- **Spargere linie** — o linie se împarte în mai multe sub-linii, pe cantități. Util când același rând de factură conține de fapt mai multe produse reale sau când marfa merge în locuri diferite. Sumele se împart automat între sub-linii; operația se poate anula.
+- **Absorbție linie** — costul unei linii (transport, ambalaj, taxă) se repartizează peste liniile de marfă: egal, proporțional cu valoarea, sau pe o singură linie aleasă. **Se mută doar valoarea**, nu și cantitatea — așa transportul intră corect în costul mărfii, fără să apară ca produs pe stoc.
+- **Împărțire pe gestiuni** — aceeași linie se poate primi în mai multe depozite (ex. 40 kg la Magazie, 60 kg la Bucătărie). ⚠ **Împărțirea se stabilește doar în ecranul de recepție și se pierde dacă reîncarci pagina** — creează NIR-ul în aceeași sesiune de lucru.
+- **Produs nou propus de AI** — când asistentul nu găsește produsul în catalogul tău, îl **propune**, nu îl creează. Butonul „Creează și mapează" de pe linie îl creează cu numele, unitatea și tipul propuse (verifică-le înainte, mai ales tipul — el decide conturile). ⚠ Acceptarea în bloc (`accept_all_invoice_mappings`) **sare** aceste linii; ele se rezolvă una câte una.
 
 ### Preț recepție / preț vânzare
 Pe linie poți pune prețul de raft (la marfă apare „Preț recepție", la restul „Preț vânzare"). Acesta actualizează prețul de raft al produsului și se reține pe NIR. **Atenție (corect contabil):** sistemul postează azi marfa pe stoc la **costul de achiziție**, NU la prețul de vânzare cu adaos (conturile 371/378/4428 de „recepție la preț de vânzare" sunt configurate dar nu se execută încă la postare). Deci prețul de recepție e informativ pentru raft, nu schimbă valoarea de stoc.
@@ -110,21 +139,26 @@ Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește *
 - O ciornă din poză + o eFactura cu **același număr și sumă** trebuie să rămână UN singur document. Dacă vezi două, leagă-le în Reconciliere.
 - Înainte de „Leagă" manual: confirmă că numărul facturii și suma se potrivesc (legarea nu le verifică singură).
 - NIR creat de două ori pe aceeași factură = stoc dublat. Dacă bănuiești asta, caută în Recepții (NIR) după furnizor + dată.
+- Procedura completă (ce face sistemul singur la importul eFacturii, ce blochează legarea, ce faci dacă marfa a intrat deja de două ori) e în `reconciliere-dubluri-facturi.md`.
 
 ## Tool-uri MCP utile (conexiunea live)
 
-**Citire (fără permisiune de modul):**
+**Citire (read-only; cere grantul `readModule` aferent pe token):**
 - `list_received_efactura` — listează facturile de intrare (filtre: status, furnizor, brand, interval date, cu/fără NIR, căutare). Vezi rapid ce facturi sunt de procesat (`hasNir:false`).
 - `get_received_efactura_details` — antetul unei facturi (furnizor, sume, deductibilitate, dacă are NIR) + toate liniile cu starea mapării (produs, cont, acceptat, factor pachet). Folosește-l înainte de a mapa.
+- `diagnose_incoming_invoice_integrity` — găsește facturile cu zero linii și separă cazurile sănătoase, reparabile din XML-ul oficial păstrat, cele care cer re-descărcare ANAF și cele fără sursă recuperabilă.
+- `diagnose_inventory_document_reversal` — previzualizează anularea unui NIR/document postat și enumeră blocajele reale: factură generată din recepție, loturi deja consumate, inventar sau consum din aval. Nu modifică stocul.
 - (general) `list_suppliers`, `search_products_db`, `list_product_types`, `get_stock_levels`, `list_pending_nirs`, `list_reception_notes`.
 
 **Scriere (cer modulul `inventar` = „Stocuri & Recepție" pe token):**
+- `repair_missing_incoming_invoice_lines` — reconstruiește liniile unei facturi cu antet, dar zero linii, numai din XML-ul oficial deja păstrat. Rulează întâi diagnosticul; reparația este blocată dacă există deja linii, NIR/document din aval, XML ambiguu sau totaluri care nu se reconciliază. Nu creează NIR și nu postează stoc — după readback, maparea și recepția continuă normal.
 - `map_invoice_line` — leagă o linie la un produs + cont (+ factor de pachet). Contul se rezolvă automat din tipul produsului dacă nu-l dai. Setează linia ca acceptată și învață regula.
 - `accept_invoice_line_mapping` — confirmă o linie deja mapată.
-- `accept_all_invoice_mappings` — acceptă în bloc toate liniile deja mapate cu încredere ≥ 0.5 (nu creează produse noi — pe acelea le mapezi individual).
+- `accept_all_invoice_mappings` — acceptă în bloc toate liniile deja mapate cu încredere ≥ 0.5 (nu creează produse noi — pe acelea le mapezi individual). Îți întoarce și lista **`blocked[]`** cu liniile pe care NU le-a putut accepta și **motivul fiecăreia** (fără produs, fără cont, încredere prea mică, produs doar propus, linie spartă/absorbită); când nu acceptă nimic, îți dă și **`nextAction`** — pasul concret de făcut. Citește lista înainte de a repeta apelul: dacă nu se schimbă nimic în date, a doua rulare dă exact același rezultat.
 - `set_invoice_context` — setează pe factură: tip factură, brand/locație, magazie, deductibilitate TVA/cheltuială, cheltuieli în avans 471, modalitate de plată, observații.
 - `create_inventory_document` — creează un document de stoc (recepție DIRECTĂ): docType GOODS_RECEIPT/NIR/PURCHASE_RECEIPT pentru intrare, linii cu productId + qty + unitCost. `autoPost:true`+`confirm:true` postează imediat; altfel rămâne DRAFT.
 - `post_inventory_document` — postează pe stoc un document DRAFT (mișcă stocul real, ireversibil — cere confirmarea userului).
+- `repair_missing_incoming_invoice_lines` — reface idempotent liniile lipsă numai pentru o **ciornă** e-Factura fără recepție/plată/predare contabilă/supersedare, din XML-ul oficial deja păstrat. Cere sursă și upload e-Factura, ID ANAF numeric, hash valid (dacă a fost salvat) și același număr de factură; CUI-urile prezente trebuie să coincidă. Refuză orice dovadă neclară, nu inventează linii și nu creează NIR automat.
 - `create_nir_from_invoice` — pentru o factură EXISTENTĂ (Calea B): creează NIR-ul LEGAT de factură (`invoiceId`), îl postează pe stoc + generează notele contabile, marchează factura cu NIR. Liniile trebuie mapate înainte; `confirm:true` obligatoriu; `warehouseId` = magazia (opțional doar dacă toate liniile sunt servicii).
 
 **Scriere (cer modulul `financiar` = „Financiar & Contabilitate"):**
@@ -146,19 +180,33 @@ Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește *
 - **Factură existentă (Calea B):** `list_received_efactura(hasNir:false)` → `get_received_efactura_details` → pe fiecare linie nemapată `search_products_db` apoi `map_invoice_line` (cont auto din tip; `packMultiplier` pt. bax) → opțional `set_invoice_context` (magazie + deductibilitate) → `create_nir_from_invoice({ invoiceId, warehouseId, confirm:true })`. Verifică mereu prin **citire** (`get_received_efactura_details`, `list_received_efactura(hasNir:true)`), nu prin interfață (UI-ul se reîmprospătează la refresh).
 - **Factură de hârtie de la zero:** `create_incoming_invoice(...)` (ciornă) → mapezi liniile → `create_nir_from_invoice(...)` — Calea B integral prin MCP, fără aplicație.
 
+**Ce se face doar din aplicație (nu există tool):**
+- spargerea unei linii de factură și absorbția unei linii de cost (transport/ambalaj) peste liniile de marfă;
+- împărțirea unei linii pe mai multe gestiuni;
+- crearea produsului **propus** de asistent (butonul „Creează și mapează" de pe linie);
+- editarea și ștergerea regulilor de mapare învățate și a factorilor de pachet (**Reguli de Mapare**, `/inventory/mapping-rules`);
+- legarea manuală aviz ↔ factură / ciornă ↔ eFactura în tabul **Reconciliere**;
+- transferul între zonele aceleiași gestiuni (pagina Zone).
+
+> Când utilizatorul cere una dintre astea prin chat: dă-i linkul exact cu `gaseste_in_aplicatie`, plus lista concretă de făcut (numere de linii, documente de legat), obținută prin citiri. Dacă îl blochează în lucru, trimite o cerere de tool cu `trimite_ticket_symbai`, tip „sugestie".
+
 **SQL (toggle separat, doar citire):** pentru întrebări la care tool-urile de mai sus nu ajung, descoperă tabelele cu `list_database_tables` + `describe_database_table`, apoi `execute_sql_query` (doar SELECT) — ex. facturi de intrare cu liniile lor, NIR-uri, note de diferențe, reguli de mapare învățate.
 
 ## Întrebări frecvente
 
 - **De ce nu pot crea NIR-ul?** O linie e nemapată sau neacceptată, sau e mapată pe un produs șters din catalog. Verifică în Revizuire Mapări AI / `get_received_efactura_details`.
+- **Factura există, dar arată zero linii.** Nu o trata drept factură cu valoare zero și nu crea NIR gol. Rulează `diagnose_incoming_invoice_integrity`; repară numai dacă `repairCandidate=true` și lista `repairBlockers` este goală. `repair_missing_incoming_invoice_lines` revalidează tranzacțional XML-ul oficial, ID-ul ANAF, hash-ul, numărul facturii și lipsa oricărui efect ulterior; apoi recitește factura. Dacă XML-ul lipsește dar există identificatorul oficial, re-descarcă din ANAF/SPV. Nu inventa manual liniile fiscale.
 - **Am făcut recepție din poză — de ce nu a crescut stocul?** Depinde de modul ales de firmă (Setări → Stocuri → „Recepție din poză"): pe modul **doar ciornă** stocul intră abia după mapare → Aprobă → Creează NIR cu magazie; pe **verificare imediată** intră după ce confirmi produsele în ecranul de verificare; pe **direct pe stoc** intră automat când totul e curat (furnizor recunoscut, produse identificate, total verificat matematic) — orice nelămurire cade la verificare, cu motive scrise.
 - **A venit eFactura, dar am deja ciorna din poză — se dublează?** Dacă ciorna e neaprobată și sumele se potrivesc, eFactura o înlocuiește automat. Dacă nu, leagă-le manual în Reconciliere.
-- **De ce serviciul a ajuns pe cont de marfă (371)?** Tipul produsului e greșit (marcat ca marfă/stocabil). Schimbă tipul sau contul pe linie. Prin MCP, `map_invoice_line` cu produs de tip serviciu rezolvă automat contul de cheltuială corect.
+- **De ce serviciul a ajuns pe cont de marfă (371)?** Tipul produsului e greșit (marcat ca marfă/stocabil). **Repară tipul produsului** — la liniile de cheltuială contul de pe linie contează, dar rămâne greșit la următoarea factură dacă tipul nu e corectat. Prin MCP, `map_invoice_line` cu un produs de tip serviciu rezolvă automat contul de cheltuială corect.
+- **Am schimbat contul pe linie și nota contabilă e la fel.** Corect, nu e o defecțiune. La marfa care intră pe stoc nota se face **din tipul produsului**, nu din contul de pe linie (vezi nota din „Maparea unei linii"). Verifică tipul produsului (`get_product_details`) și conturile tipului (`list_product_types` / `get_product_type_details`), corectează acolo, apoi reface nota din aplicație („Modificare NIR").
+- **AI-ul a mapat totul, dar nu pot accepta o linie.** Linia n-are un cont valabil — se întâmplă la regulile învățate din catalogul furnizorului, care leagă produsul dar nu poartă și un cont. Alege contul o dată pe linia respectivă (sau pune tipul corect pe produs); după prima confirmare se învață și nu mai apare. `accept_all_invoice_mappings` îți spune exact asta în lista `blocked[]`.
+- **Am o factură care nu mă lasă să modific nimic.** Facturile împinse din contabilitate au identitatea înghețată (furnizor, număr, sume, linii): se mai poate schimba doar conversia de ambalaj. Restul se corectează în contabilitate, de unde a venit documentul.
 - **Preț recepție = preț de vânzare?** Câmpul „Preț recepție" actualizează prețul de raft al produsului, dar stocul se valorează la **cost**, nu la prețul de vânzare cu adaos (378/4428 nu se postează încă). E informativ.
 - **Deductibilitatea TVA pe care am pus-o nu se vede în note?** Corect — azi se salvează ca informație pentru contabil, nu schimbă încă nota contabilă (TVA merge integral pe 4426).
 - **Vreau ca marfa să intre direct pe stoc din poză / vreau ca angajații doar să pozeze și eu să verific.** Se configurează per firmă în Setări → Stocuri → „Recepție din poză" sau prin asistent (`configure_reception_policy`). Vezi secțiunea „Îți configurezi singur procedura".
 - **Cum văd ce au recepționat angajații prin poză?** Dacă ai pornit verificarea, apar în lista „Recepții de verificat" (pagina Preluare Marfă) — sau cere asistentului `list_receptions_to_review`. Le poți deschide, corecta și bifa verificate.
 - **Factura are 5 pagini — pot poza tot?** Da. Adaugă câte poze e nevoie (butonul „Fotografiază pagina N") sau încarcă PDF-ul cu mai multe pagini; se analizează ca un singur document.
 - **A venit marfă necomandată — o pot primi?** Da, la recepția pe comandă alegi produsul extra din catalog și intră pe stoc cu urmă scrisă (dacă procedura firmei permite angajatului să adauge/mapeze).
-- **Am modificat o recepție și nu mă lasă / îmi dă avertisment de inventar.** Modificarea e blocată dacă ar lăsa stocul pe minus (marfă deja consumată/vândută) — anulează întâi consumul din aval. Dacă între timp s-a făcut inventar, primești avertisment să reverifici soldurile.
+- **Am modificat o recepție și nu mă lasă / îmi dă avertisment de inventar.** Începe cu `diagnose_inventory_document_reversal`. O ciornă de factură generată automat din recepție trebuie abandonată întâi, fără a șterge recepția; apoi refaci diagnosticul. Dacă loturile au fost deja consumate/vândute, anulezi întâi mișcările din aval. Dacă între timp s-a făcut inventar, reverifici soldurile. Nu compensa o recepție greșită printr-o ajustare opacă: păstrează traseul de anulare și audit.
 - **„Permisiune insuficientă" la map_invoice_line / set_invoice_context?** Tokenul nu are modulul `inventar` („Stocuri & Recepție"). Activează-l din portal Hub → Acces AI.

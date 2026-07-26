@@ -11,7 +11,7 @@ La final, instanța are metodele de plată active cu care POS-ul poate încasa: 
 ## Permisiuni necesare pe token
 
 - **`setari`** — pentru `create_payment_method`. Fără el, tool-ul întoarce „permisiune insuficientă"; se activează din portalul Hub → Acces AI (îi dai utilizatorului instrucțiunea, nu poți activa tu).
-- Citirile (`list_entities`, `get_config_status`, `list_brands`) sunt mereu disponibile.
+- `list_brands` este context public minim; `list_entities` și `get_config_status` cer granturile `readModule` aferente pe token.
 
 ## Ce afli singur ÎNAINTE să întrebi — și ce întrebi utilizatorul
 

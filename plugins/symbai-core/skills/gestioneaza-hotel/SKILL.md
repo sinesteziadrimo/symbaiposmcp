@@ -10,7 +10,7 @@ Userul e proprietar/manager de hotel sau pensiune. Vrea răspunsuri și acțiuni
 ## Înainte de orice
 1. Citește **`knowledge/hotel-pms.md`** (concepte: sejur/stay, folio, rate manager, channel manager, housekeeping, group block, loialitate hotel separată de POS; harta de pagini; fluxurile zilnice; capcane OTA + folio + check-out). Și **`knowledge/condu-chrome.md`** (doctrina „click rar": tool MCP → deep-link → click pe element doar la nevoie; screenshot = livrabil; capcana unității active; fallback fără extensie). NU repeta aici regulile de Chrome — le aplici de acolo.
 2. **Context la început** (ca peste tot): `list_brands` + `list_locations` → afli `brandId`/`locationId`. Tool-urile de hotel le deduc singure dacă tenantul are **un singur** brand + o singură locație; dacă are mai multe, trebuie să le dai explicit (un hotel cu mai multe proprietăți = brand/locație distincte). „Data de azi" e **data de business** a hotelului (din setările proprietății), nu neapărat calendaristică.
-3. **Permisiune**: citirile merg mereu; scrierile cer modulul **Hotel** pe token. „Permisiune insuficientă" → portal Hub → Acces AI → bifează Hotel.
+3. **Permisiune**: citirile cer `readModule: hotel`; scrierile cer și modulul **Hotel** în `writeModules`. „Permisiune insuficientă" → portal Hub → Acces AI → bifează Hotel.
 
 ## Fluxul hibrid — intenție → tool MCP, apoi unde o ARĂȚI
 

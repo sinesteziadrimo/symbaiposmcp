@@ -25,7 +25,7 @@ Userul (proprietar/manager de fabrică sau magazin alimentar) vinde sau valorize
 | „cât arată cântarul X", „citește greutatea" | `capture_weight` (`scaleDeviceId`) |
 | „cântarul meu Y nu e suportat, cereți integrarea", „vreau să folosesc cântarul Z" | `request_scale_integration` (vezi secțiunea dedicată) |
 
-**Citirile** (`list_*`, `capture_weight`) și **`request_scale_integration`** merg mereu — nu cer permisiune. **Scrierile** cer un modul pe token: `create_scale_device` / `register_scale_model` → **Setări & Configurare**; `set_product_catch_weight` → **Produse & Meniuri** (vezi „Permisiune").
+**Citirile** (`list_*`, `capture_weight`) și **`request_scale_integration`** cer grantul `readModule` aferent. **Scrierile** cer un modul pe token: `create_scale_device` / `register_scale_model` → **Setări & Configurare**; `set_product_catch_weight` → **Produse & Meniuri** (vezi „Permisiune").
 
 ## Rețete (cele care contează)
 
@@ -55,7 +55,7 @@ Dacă userul are un cântar cu protocol propriu pe care driverele actuale nu-l a
 - **Confirmă prin citire, nu „pare bine pe ecran".** Tool-ul întoarce `success` + un rezumat — ăla e adevărul. Re-verifici cu `list_scale_devices` / re-citire produs.
 - **Nu inventa cifre.** Prețul pe kg, greutatea nominală, portul serial — le iei de la user. Ce nu știe, îl ajuți să afle (ex. portul COM îl vede în setările Windows ale PC-ului cu Print Agent).
 - **Ștergerea nu e prin conexiune.** Dacă userul vrea să șteargă un cântar sau un model, ghidează-l în aplicație (Setări).
-- **Permisiune**: `create_scale_device` / `register_scale_model` cer modulul **Setări & Configurare**; `set_product_catch_weight` cere **Produse & Meniuri**. Citirile + `request_scale_integration` merg mereu. „Permisiune insuficientă" → portal Hub → Acces AI → bifează modulul.
+- **Permisiune**: `create_scale_device` / `register_scale_model` cer modulul **Setări & Configurare**; `set_product_catch_weight` cere **Produse & Meniuri**. Citirile și `request_scale_integration` cer grantul `readModule` aferent pe token. „Permisiune insuficientă" → portal Hub → Acces AI → bifează modulul.
 
 ## Legături
 - Concepte catch-weight (greutate variabilă, conectare cântar, flux, model nou) → `knowledge/cantare-catch-weight.md`.

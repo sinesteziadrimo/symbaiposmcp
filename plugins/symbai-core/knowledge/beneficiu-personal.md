@@ -71,6 +71,7 @@ Pagina reală e tabul **„Beneficii Personal"** din `/staff` (vechiul link `/se
    - **Aplicare la produse:** tot meniul / pe etichetă / pe produse alese / pe tip de produs.
    - **La ce NU se aplică:** produse excluse, etichete excluse, tipuri de produs excluse (ex. alcool). Excluderile sunt peste scope-ul pozitiv.
    - **Cine primește (beneficiar):** toți / pe roluri / pe angajați aleși.
+   - **Branduri:** poți limita regula la unul sau mai multe branduri; dacă lista este goală, regula se aplică tuturor brandurilor. La o firmă multi-brand, explică explicit această diferență înainte de salvare.
    - **Buget** (la tipul buget): sumă + perioadă (zilnic/săptămânal/lunar) + la depășire (blochează/avertizează/permite).
    - **Doar când e la lucru:** comutator + sursele de „prezent" (pontaj / tură auto-deschisă în POS / tură programată).
    - **Cine poate aplica regula (aplicator):** doar pe sine / pe roluri / pe angajați aleși. *(Distinct de beneficiar — vezi mai jos.)*
@@ -93,6 +94,8 @@ Pagina reală e tabul **„Beneficii Personal"** din `/staff` (vechiul link `/se
 Pe masă → meniul „Acțiuni Masă" (cele 3 puncte) → **„Beneficiu Personal"** → alege beneficiarul (cine mănâncă) + regula + produsele → Aplică. Din același dialog poți aplica **mai multe beneficii într-o singură acțiune** (mai multe reguli/produse deodată), fără să reiei fluxul pentru fiecare. Dacă regula nu cere aprobare, prețul liniilor se reduce conform regulii, iar consumul intră în registru. Dacă regula are „Doar cu aprobare", se creează cerere pending; beneficiul se aplică doar după aprobare. Tot din dialog se poate **Scoate** beneficiul de pe un produs.
 *(Beneficiul se pune ÎNAINTE de plată; nu se aplică pe produse deja plătite sau pe note finalizate/transferate.)*
 
+⚠ Aplicarea este întotdeauna o alegere explicită: utilizatorul selectează beneficiarul, regula și produsele. Sistemul nu alege automat primul angajat sau prima regulă și nu aplică singur beneficiul.
+
 ## Cum citești rezultatul
 
 - **Raport beneficii** (`/reports/staff-benefits`) — cât s-a consumat, pe angajat/regulă/produs/zi.
@@ -113,8 +116,8 @@ Important pentru explicația către contabil: valoarea trimisă distinct este **
 ## Ce face asistentul prin conexiune (MCP) vs. în aplicație
 
 **Prin conexiune (MCP)** — dacă tool-urile de staff-benefits sunt active pe instanța clientului:
-- *Citire/explicare:* `list_staff_benefit_rules` (regulile + acoperirea lor), `diagnose_staff_benefit_rule` („de ce nu se aplică"), `get_staff_benefit_budget` (buget per angajat), `get_staff_benefit_report` (consum agregat, feed de P&L).
-- *Configurare:* `create_staff_benefit_rule`, `update_staff_benefit_rule`, `set_staff_benefit_employee_budget`, `toggle_staff_benefits` (activarea globală), `set_staff_benefit_accounting_mode` (ce ajunge la contabilitate — vezi mai jos). La reguli poți trimite `excludedProductIds`, `excludedTagIds`, `excludedProductTypeCodes` și `requiresApproval`. Necesită modulul de scriere **Personal / Setări** pe token.
+- *Citire/explicare:* `list_staff_benefit_rules` (regulile + acoperirea lor), `diagnose_staff_benefit_rule` („de ce nu se aplică"), `diagnose_staff_benefit_approval_queue` (număr pending, vechime, cereri blocate și preview-ul valorii — strict read-only), `get_staff_benefit_budget` (buget per angajat), `get_staff_benefit_report` (consum agregat, feed de P&L).
+- *Configurare:* `create_staff_benefit_rule`, `update_staff_benefit_rule`, `set_staff_benefit_employee_budget`, `toggle_staff_benefits` (activarea globală), `set_staff_benefit_accounting_mode` (ce ajunge la contabilitate — vezi mai jos). La reguli poți trimite `brandIds`, `excludedProductIds`, `excludedTagIds`, `excludedProductTypeCodes` și `requiresApproval`. `brandIds` este selecția autoritară: lista goală înseamnă global, iar scalarul legacy este sincronizat cu lista. Nu alege automat primul brand într-o firmă multi-brand. Scrierea cere modulul tokenului, dreptul de citire aferent, permisiunea POS și aria live brand/locație a actorului.
 - Context întâi: `list_brands` + `list_locations` (brandId/locationId), `list_entities(entityType:"roles")` pentru roluri, `list_tags` / `list_product_types` pentru scope-ul pe produse.
 
 **Rămâne în aplicație** (ghidează cu `gaseste_in_aplicatie` + deschide pagina prin Chrome dacă e conectat): **aplicarea efectivă pe o notă** (e acțiune de ospătar la POS, nu se face prin conexiune), aprobarea/respingerea cererilor „Doar cu aprobare" dacă nu există tool dedicat în sesiunea ta, bifarea fină a produselor/etichetelor în editorul de reguli, și citirea vizuală a panoului „Stare regulă".
@@ -123,7 +126,8 @@ Important pentru explicația către contabil: valoarea trimisă distinct este **
 ## Întrebări frecvente / „nu merge"
 
 - **„Nu apare butonul Beneficiu Personal pe masă"** — comutatorul global e oprit (`/staff` → tab „Beneficii Personal", sus), sau cache vechi pe telefon (reîncarcă). Verifică și că ospătarul e pe brandul regulii.
+- **„Regula apare la un brand greșit / nu apare la al doilea brand"** — verifică lista de branduri a regulii. Listă goală = toate brandurile; listă completată = numai brandurile selectate. Nu duplica regula înainte să verifici acest scope.
 - **„Selectez angajatul, nu se aplică"** — aproape mereu CONFIG, nu defect. Verifică în panoul „Stare regulă": (a) beneficiarul are un rol din cele permise? (b) e „la lucru" dacă regula cere asta (pontat / tură deschisă)? (c) produsul intră în scope-ul regulii? (d) bugetul nu e depășit? (e) aplicatorul are voie să pună regula?
-- **„Am aplicat beneficiul, dar nu s-a redus nota"** — verifică dacă regula are „Doar cu aprobare". Atunci cererea este pending până aprobă managerul; respingerea nu aplică nimic.
+- **„Am aplicat beneficiul, dar nu s-a redus nota"** — verifică dacă regula are „Doar cu aprobare". Atunci cererea este pending până aprobă managerul; respingerea nu aplică nimic. Rulează `diagnose_staff_benefit_approval_queue` ca să vezi câte cereri așteaptă, de când și ce valoare ar aplica, apoi mergi în `/staff?tab=staff-benefits` → **Aprobări**. Fiecare cerere cere o decizie umană; nu aproba automat și nu face aprobare în masă fără confirmarea owner-ului.
 - **„Mâncarea angajaților îmi apare ca reducere/pierdere în P&L"** — au fost trecute pe „Reducere" sau „Din partea casei" în loc de „Beneficiu personal". Schimbă obiceiul la POS (vezi Regula de aur); pentru lunile trecute, ajustează manual într-un P&L salvat.
 - **„Pot da și gratis, și plafon?"** — da: tip „buget" = gratuit până la suma X; peste, fie blochezi, fie avertizezi, fie lași să treacă (alegi tu).

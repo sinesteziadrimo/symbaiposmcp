@@ -13,7 +13,7 @@ La final, localul are un sistem de rezervări funcțional: setări active (onlin
 
 Diferența contează: configurarea regulilor e `setari`, lucrul cu rezervări concrete e `rezervari_clienti`. Fără modulul potrivit activat în portal Hub → Acces AI, tool-urile de scriere întorc „permisiune insuficientă" — cere utilizatorului să bifeze modulul pe token și reîncearcă.
 
-Citirile (`get_reservations_overview`, `get_reservation_settings`, `list_brands`, `list_locations`, `list_floor_zones`) sunt disponibile mereu.
+Citirile (`get_reservations_overview`, `get_reservation_settings`, `list_brands`, `list_locations`, `list_floor_zones`) cer grantul `readModule` aferent pe token.
 
 ## Ce afli singur ÎNAINTE să întrebi — și ce întrebi utilizatorul
 

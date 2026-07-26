@@ -129,7 +129,7 @@ Daca preturile Glovo par dublate sau cantitatea schimba totalul gresit, verifica
 8. **Expediezi o comandă de magazin online**: `/ecommerce/orders` → Procesează → `/ecommerce/awb` → tab Generează AWB → alegi contul de curier și comenzile eligibile → generezi AWB-urile → tipărești etichetele → urmărești în Tracking & Etichete → la ramburs, închizi banii în Reconciliere COD.
 
 ## Tool-uri MCP utile
-**Citire (fără permisiune de modul):**
+**Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `gaseste_in_aplicatie` — găsește pagina potrivită și dă link direct („unde configurez zonele de livrare?").
 - `raport_vanzari` — încasări pe perioadă cu defalcare pe metode de plată; bun pentru totalul zilei inclusiv comenzile online.
 - `get_orders_summary` — sumar comenzi pe perioadă: câte, ce produse, în ce cantități.

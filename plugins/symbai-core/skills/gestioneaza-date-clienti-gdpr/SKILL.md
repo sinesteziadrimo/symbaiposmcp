@@ -86,7 +86,7 @@ Aproape totul aici merge prin MCP. Apelezi la Chrome activ (`claude-in-chrome`, 
 
 ## Permisiune
 
-Citirile (export, jurnal consimțăminte, găsire duplicate, preview segment, listă grupuri, timeline) merg mereu. **Scrierile** — `forget_customer_gdpr`, `anonymize_guest`, `merge_guests`, `create_customer_group`, `add_customer_group_member` — cer modulul **Rezervări & Clienți** (`rezervari_clienti`) pe token. „Permisiune insuficientă" → portal Hub → Acces AI → bifează modulul.
+Citirile (export, jurnal consimțăminte, găsire duplicate, preview segment, listă grupuri, timeline) cer grantul `readModule` aferent pe token. **Scrierile** — `forget_customer_gdpr`, `anonymize_guest`, `merge_guests`, `create_customer_group`, `add_customer_group_member` — cer modulul **Rezervări & Clienți** (`rezervari_clienti`) pe token. „Permisiune insuficientă" → portal Hub → Acces AI → bifează modulul.
 
 ## Legături
 

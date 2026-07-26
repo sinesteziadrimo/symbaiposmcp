@@ -42,7 +42,7 @@ Modulul acoperă atracțiile și jocurile pe care le oferi clienților prin port
 
 ## Tool-uri MCP utile
 
-- **Citire (fără permisiune de modul):** `list_portal_games` (toate jocurile cu detalii complete), `get_game_details` (un joc: program, prețuri, excepții, recenzii), `check_game_availability` (da/nu pe dată/oră/jucători), `get_game_slots` (toate sloturile libere la o dată). Plus `gaseste_in_aplicatie` pentru linkul direct și `jurnal_activitate` pentru cine a creat/anulat o rezervare.
+- **Citire (read-only; cere grantul `readModule` al domeniului pe token):** `list_portal_games` (toate jocurile cu detalii complete), `get_game_details` (un joc: program, prețuri, excepții, recenzii), `check_game_availability` (da/nu pe dată/oră/jucători), `get_game_slots` (toate sloturile libere la o dată). Plus `gaseste_in_aplicatie` pentru linkul direct și `jurnal_activitate` pentru cine a creat/anulat o rezervare.
 - **Scriere — modul «Setări & Configurare» (`setari`) pe token:** `update_game_config`, `update_game_schedule`, `update_game_pricing`, `set_game_date_override` (creare și configurare jocuri).
 - **Scriere — modul «Rezervări & Clienți» (`rezervari_clienti`) pe token:** `create_game_reservation` (rezervare de joc manuală).
 - Niciun tool de jocuri nu cere confirmare (`confirm: true`). Permisiunea exactă a fiecărui tool e în catalogul din `tools-mcp.md`. Dacă un tool întoarce „permisiune insuficientă", modulul nu e bifat pe token → portal Hub → Acces AI.
