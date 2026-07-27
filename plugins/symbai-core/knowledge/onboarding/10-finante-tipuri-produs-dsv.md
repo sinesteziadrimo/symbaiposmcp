@@ -4,7 +4,7 @@
 
 ## Scopul fazei
 
-La final: (1) **tipurile de produs** au conturile contabile setate pe momente (recepție, vânzare, consum prin rețetă, producție) — fără asta notele contabile NU se generează automat la NIR-uri și vânzări; (2) **casieriile** (registrele de casă) și **soldurile inițiale** sunt configurate din aplicație, iar utilizatorul a văzut o dată wizard-ul de Închidere de Zi; (3) dacă unitatea prepară mâncare, scheletul **DSV/HACCP** există: senzori de temperatură + sarcini de curățenie; (4) utilizatorul știe unde sunt modulele Legal/GDPR și e-Factura. Faza depinde de: branduri/locații (faza 01), produse cu tipuri asignate (fazele de produse/meniu).
+La final: (1) **tipurile de produs** folosite efectiv au acoperite momentele lor relevante (recepție, consum, producție și, unde este cazul, vânzare); motorul are mapări canonice de rezervă pentru tipurile standard, iar conturile configurate aici sunt necesare pentru tratamente personalizate și override-uri — nu adăuga rânduri doar ca să faci semaforul verde; (2) **casieriile** (registrele de casă) și **soldurile inițiale** sunt configurate din aplicație, iar utilizatorul a văzut o dată wizard-ul de Închidere de Zi; (3) dacă unitatea prepară mâncare, scheletul **DSV/HACCP** există: senzori de temperatură + sarcini de curățenie; (4) utilizatorul știe unde sunt modulele Legal/GDPR și e-Factura. Faza depinde de: branduri/locații (faza 01), produse cu tipuri asignate (fazele de produse/meniu).
 
 În conversația cu utilizatorul (om de business, non-tehnic): „conturi contabile pe tipuri de produs", „registru de casă", „jurnal de temperaturi" — niciodată „MCP", „tool", „endpoint", „JSON", „moment invoice_entry".
 
@@ -19,7 +19,7 @@ Fără modulul potrivit, tool-urile de scriere întorc „permisiune insuficient
 ## Ce afli singur ÎNAINTE să întrebi — și ce întrebi utilizatorul
 
 **Citiri automate (fă-le întâi, fără să anunți):**
-1. `get_accounting_overview(brandId)` — starea contabilă dintr-un foc: tipurile de produs cu numărul de conturi per tip, **`typesWithoutAccounts`** (lista tipurilor fără conturi — ținta fazei), mărimea planului de conturi, numărul de note contabile, dacă sincronizarea cu Symbai Accounting e activă.
+1. `get_accounting_overview(brandId)` — starea contabilă dintr-un foc: tipurile de produs cu numărul de conturi per tip, **`typesWithoutAccounts`** (listă de verificat, nu verdict automat), mărimea planului de conturi, numărul de note contabile, dacă sincronizarea cu Symbai Accounting e activă.
 2. `list_product_types(brandId)` — fiecare tip cu proprietăți (canSell, hasStock, hasRecipe, hasReceptionPrice...) și conturile pe momente.
 3. `list_accounting_accounts(brandId)` — planul de conturi, grupat pe clase; cu `codePrefix: "7"` doar veniturile etc.
 4. `list_locations` — câte locații există (decide dacă are sens discuția despre conturi analitice per locație).
@@ -55,7 +55,9 @@ Reperele contabile standard RO (ca să verifici/corectezi, nu ca să predai cont
 
 Venitul vânzării NU se mapează de regulă pe conturile tipului — îl postează motorul contabil separat (în template-ul standard, mărfurile nu au rând de venit pe `direct_sale`; momentele de vânzare fac descărcarea de gestiune). Hub-ul semnalează drept conflict 707 pe produse din rețetă (corect: 701) și codul 7015 (inexistent în OMFP 1802).
 
-**Pas 1 — diagnostic.** `get_accounting_overview(brandId)` → dacă `typesWithoutAccounts` e gol și tipurile acoperă profilul, faza contabilă e gata: doar raportează. Dacă nu există tipuri deloc → trimite utilizatorul la hub-ul din aplicație pentru template-uri, apoi re-verifică prin citire.
+**Cum citești semaforul.** Interpretează fiecare tip după ce face în realitate: cumpărare, stoc, producție, consum sau vânzare. Un tip poate fi sănătos fără 707/4427 pe fiecare card atunci când venitul și TVA-ul vânzărilor POS sunt postate global. „Incomplet" este real numai când lipsește un cont necesar operațiunilor acelui tip. Citește avertismentul exact și verifică o notă reprezentativă înainte de modificare. Pentru deșeuri/subproduse verifică momentele de producție și consum; nu copia automat șablonul produsului finit.
+
+**Pas 1 — diagnostic.** `get_accounting_overview(brandId)` → dacă `typesWithoutAccounts` e gol și tipurile acoperă profilul, faza contabilă e gata: doar raportează. Dacă lista nu e goală, verifică rolul operațional al fiecărui tip și o notă reprezentativă înainte să propui conturi. Dacă nu există tipuri deloc → trimite utilizatorul la hub-ul din aplicație pentru template-uri, apoi re-verifică prin citire.
 
 **Pas 2 — tip nou (doar dacă lipsește ceva specific).**
 ```

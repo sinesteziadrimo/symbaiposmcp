@@ -99,7 +99,7 @@ Modulul acoperă tot marketingul restaurantului: postări social media (Facebook
 5. **Configurezi postări recurente automate**: `/marketing-automations` → automatizare nouă cu prompt, frecvență (zile + oră), platforme și tip conținut; dacă cere materiale, angajații primesc solicitări, iar execuțiile apar în jurnal.
 6. **Creezi un QR dinamic pentru un flyer**: `/qr-codes` → tab QR-uri dinamice → titlu + destinație (ex. pagina de meniu sau Instagram) → descarci PNG/SVG/PDF și tipărești; mai târziu schimbi destinația fără să retipărești nimic.
 7. **Răspunzi la o recenzie Google**: `/gbp` → secțiunea de recenzii → ceri sugestie AI → ajustezi → publici răspunsul.
-8. **Creezi un eveniment Facebook**: `/facebook-events` → eveniment nou cu categorie, dată, cover → inviți co-hosts → după publicare urmărești RSVP și postezi în feed-ul evenimentului.
+8. **Verifici sau creezi un eveniment Facebook**: pentru citire, `list_facebook_events` (brand, status și limită) → `get_facebook_event(eventId)` pentru fișa exactă; pentru creare/administrare folosești `/facebook-events` → eveniment nou cu categorie, dată, cover → inviți co-hosts → după publicare urmărești RSVP și postezi în feed-ul evenimentului.
 9. **Pornești portalul pentru clienți**: `get_portal_config` (vezi ce e activ) → `configure_portal_features` (pornești meniu/comenzi/rezervări/gamificare) → `configure_portal_appearance` + `configure_portal_texts` pentru aspect și mesaje → clienții accesează prin QR-urile de masă.
 
 ## Tool-uri MCP utile
@@ -108,6 +108,8 @@ Modulul acoperă tot marketingul restaurantului: postări social media (Facebook
 - `list_social_accounts` — ce conturi social sunt conectate și active, înainte de orice programare.
 - `verifica_integrare` — checklist live al integrării (meta/facebook/instagram/tiktok/youtube/linkedin/google_business): credențiale, cont conectat, token valid (testat pe API), permisiuni lipsă, cont reclame. Sursa de adevăr la orice problemă de conectare.
 - `list_social_posts` — postările existente (ciorne/programate/publicate/eșuate), cu filtru pe status.
+- `list_facebook_events` — evenimentele LIVE ale Paginii Facebook conectate la brand; filtre utile: `status: upcoming|past|canceled|all` și `limit`. Citește toate paginile necesare în limita de siguranță, deci nu presupune că primul lot de la Meta este lista completă.
+- `get_facebook_event` — fișa unui eveniment exact, numai dacă aparține Paginii Facebook din aria brandului/locației actorului. Întoarce doar câmpurile operaționale permise, nu tokenuri sau răspunsul brut Meta.
 - `diagnose_social_publish_failure` — diagnostic read-only pentru o postare sau pentru eșecurile recente: separă platformele deja publicate de cele eșuate/neconfirmate, arată eroarea reală, detectează media lipsă ori durata invalidă și marchează explicit cazurile cu risc de duplicare care cer reconciliere manuală înainte de retry.
 - `get_social_post_performance` — performanța REALĂ a unei postări sau a postărilor publicate într-o fereastră: reach, views, like/comment/share/save, citite live de la Meta pentru Facebook/Instagram. Insights lipsă = „indisponibil" cu motiv, nu zero.
 - `get_social_top_posts` — top postări după engagement/reach/views, cu postările fără insights excluse din clasament și numărate separat.
@@ -145,6 +147,7 @@ Pentru întrebări/rapoarte poți folosi și SQL read-only. Pentru orice link de
 ## Întrebări frecvente și capcane
 
 - **De ce nu s-a publicat postarea?** Cel mai des: contul platformei e deconectat sau token-ul a expirat → postarea trece pe „eșuată". Diagnostichează cu `verifica_integrare` (testează tokenul LIVE și spune exact ce lipsește), apoi reconectează după skill-ul `conecteaza-meta`.
+- **De ce asistentul nu vede evenimentele Facebook, deși pagina din aplicație le vede?** Folosește `list_facebook_events`, nu lista generică de postări și nu SQL. Tool-ul citește aceeași integrare Meta ca `/facebook-events`; dacă integrarea, Page ID-ul sau permisiunea `marketing_social` lipsesc, explică blocajul exact și nu prezenta o listă goală drept „nu există evenimente".
 - **Facebook a ieșit, Instagram a eșuat — pot da retry?** Rulează întâi `diagnose_social_publish_failure(postId)`. Dacă apare `manual_reconciliation_required`, Meta poate fi publicat deja conținutul și doar răspunsul s-a pierdut: verifică feed-ul și reconciliază ID-ul remote; nu retrimite orbește și nu duplica platforma care are deja `success:true`. Pentru erori de durată (de exemplu Reel peste limita indicată) corectează clipul înainte de orice nouă publicare.
 - **Am programat o postare dar nu i-am pus oră** — fără dată/oră rămâne ciornă. Postările cu dată în viitor se publică la oră **doar dacă au fost aprobate**. Nimic creat prin asistent nu pleacă fără aprobare.
 - **Am programat o postare prin asistent și tot nu s-a publicat la oră** — pentru că aștepta aprobare. Toate postările create prin asistent/AI intră „în așteptare aprobare". Aprob-o din pagina Social Media (buton Aprobă) sau cere asistentului `approve_social_post`; abia după aceea se publică la ora programată. Vezi lista cu `list_social_posts(approvalStatus:'pending')`.

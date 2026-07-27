@@ -19,6 +19,7 @@ Modulul acoperă tot ce ține de relația cu clienții: rezervări de masă și 
 - **Loialitate** — puncte acumulate la cumpărături, niveluri Bronze/Silver/Gold/Platinum, reguli configurabile per brand (puncte/leu, valoare de răscumpărare, bonus zi de naștere/înscriere).
 - **Waitlist (listă de așteptare)** — clienți walk-in fără rezervare, cu timp estimat; tabul apare doar dacă funcția e activată în setările de rezervări.
 - **Pacing / turn time** — controlul ritmului: câți clienți pot sosi per interval de 15 minute și cât stă în medie un grup la masă (pe dimensiune de grup).
+- **Canalul rezervării vs sursa de marketing** — canalul operațional spune *cum* a intrat rezervarea (`portal`, telefon, walk-in, manual etc.). Sursa de marketing spune *de unde a venit clientul* (Google, Instagram, partener, flyer QR, o campanie proprie) și este separată, ca să nu strice fluxul zilnic al gazdei. Fiecare client își configurează propriile surse per brand/locație; o locație poate avea lista ei. O sursă devine atribuire de încredere numai prin linkul urmărit, semnat și încadrat în brand/locație. Parametrii UTM scriși manual rămân context neconfirmat și nu schimbă singuri sursa raportată.
 - **Chestionar** — formular construit vizual (întrebări, logică, temă), trimis clienților sau completat public; există și declanșatoare pe feedback pozitiv/negativ.
 - **Loc CRM (crm_seat)** — paginile de vânzări/servicii B2B se văd doar de angajații nominalizați ca „Useri CRM" (locuri facturabile nominal, în Setări → Sales CRM → Useri CRM); regula se aplică inclusiv adminilor — nici adminul nu vede aceste pagini fără nominalizare.
 - **Sejur / folio (hotel)** — șederea unui oaspete și contul lui de cheltuieli pe durata șederii; hotelul are CRM și loialitate separate (pe nopți, RFM).
@@ -28,7 +29,7 @@ Modulul acoperă tot ce ține de relația cu clienții: rezervări de masă și 
 ### Rezervări & calendar
 - **Calendar** (`/calendar`) — vedere unificată: rezervări simple, evenimente și deal-uri, cu filtre globale brand/locație. Click pe element deschide fișa potrivită (rezervare sau eveniment, după tipul configurat).
 - **Rezervări** (`/reservations`) — centrul rezervărilor de masă, cu taburi: Listă de Așteptare (doar dacă waitlist-ul e activat), Plan Sală Live, Listă Rezervări, Timp Rotație & Analiză, Control Disponibilități, Petreceri (zi). Tot aici creezi/editezi rezervări și poți genera contract.
-- **Configurare Rezervări** (`/reservations/config`) — 4 taburi: Reguli Rezervare (activare, fereastră de timp, min/max persoane), Inventar & Zone, Control Flux (Ritm), Câmpuri Formular. Limitele se aplică rezervărilor online; personalul poate depăși din POS.
+- **Configurare Rezervări** (`/reservations/config`) — 4 taburi: Reguli Rezervare (activare, fereastră de timp, min/max persoane și lista de surse permisă), Inventar & Zone, Control Flux (Ritm), Câmpuri Formular. Sursele sunt configurabile pentru clientul și locația selectate; nu există o listă globală impusă. Limitele se aplică rezervărilor online; personalul poate depăși din POS.
 - **BEO Rezervare** (`/reservations/:id/beo`) — fișa BEO printabilă a unei petreceri: client, produse cu ore de servire, cronologie; buton „Printează BEO".
 
 ### Evenimente
@@ -44,7 +45,7 @@ Modulul acoperă tot ce ține de relația cu clienții: rezervări de masă și 
 ### Clienți (CRM)
 - **Clienți** (`/portal-customers`, alias `/customers`) — baza de clienți: Listă Clienți, Persoane Juridice, Segmente & Grupuri, Autentificare & RFID. Fișa clientului are taburi Profil, Prieteni, Evenimente, Misiuni, Insigne, Recompense, Comenzi, Copii și Grupări (ultimul apare doar dacă clientul face parte din grupări).
 - **Import Clienți** (`/customer-import`) — import din fișier în 5 pași: Încărcare → Mapare coloane → Previzualizare → Revizuire email-uri → Import.
-- **Follow-up Clienți** (`/customer-followup`) — Funnel, Next Best Action (sugestii zilnice cu scor: sună / trimite ofertă / cere recenzie), Task Queue, Playbooks (jurnale automate: confirmare, reminder, mulțumire + feedback, re-angajare), Timeline client.
+- **Follow-up Clienți** (`/customer-followup`) — Funnel, atribuirea rezervărilor pe surse (total, procent, zile și ore), Next Best Action (sugestii zilnice cu scor: sună / trimite ofertă / cere recenzie), Task Queue, Playbooks (jurnale automate: confirmare, reminder, mulțumire + feedback, re-angajare), Timeline client. Aceeași analiză de surse este disponibilă gazdei și în tabul **Timp Rotație & Analiză** din `/reservations`, fără a cere un loc CRM doar pentru acest raport operațional.
 - **Rapoarte Clienți** (`/customer-reports`) — privire de ansamblu (top clienți, distribuție loialitate, creștere lunară), distribuție pe taguri, constructor de segmente.
 - **Acces Carduri** (`/access-cards`) — carduri RFID și credite clienți (intrări, portofel virtual).
 
@@ -81,24 +82,29 @@ Modulul acoperă tot ce ține de relația cu clienții: rezervări de masă și 
 ## Fluxuri frecvente
 
 1. **Creezi o rezervare de masă**: /reservations → „Rezervare Nouă" → client, dată, oră, persoane, eventual masă → salvezi. Prin AI: `create_reservation`. Statusul se schimbă ulterior cu `update_reservation`, anularea cu `cancel_reservation`.
-2. **Configurezi sistemul de rezervări**: /reservations/config → Reguli (activare, fereastră, min/max persoane), Inventar & Zone, Control Flux, Câmpuri Formular → „Salvează Modificări". Prin AI: `configure_reservation_settings`, `configure_reservation_operating_hours`, `configure_reservation_turn_times`, `configure_reservation_deposit`, `configure_reservation_pacing`, sau `seed_reservation_settings` pentru valori recomandate pe tipul de business.
-3. **Organizezi o petrecere/eveniment privat**: creezi deal-ul în /sales-crm (sau rezervare de tip eveniment) → în fișa evenimentului adaugi Produse (meniul), Personal, eventual Producție și Cheltuieli → trimiți Contractul la semnat → ceri avansul → în ziua evenimentului printezi BEO-ul → după, vezi P&L-ul evenimentului.
-4. **Trimiti contractul la semnat**: din fișa evenimentului (tab Contract) sau din dialogul „Generează Contract" din /reservations → alegi modelul → variabilele se completează automat → trimiți pe email/WhatsApp/SMS/link → clientul semnează public pe link → după semnare se poate cere automat avansul.
-5. **Imporți clienți din Excel/CSV**: /customer-import → încarci fișierul → mapezi coloanele → previzualizezi → revizuiești email-urile → confirmi importul.
-6. **Pornești loialitatea**: /loyalty → Setări → reguli de acumulare (puncte/leu), valoare de răscumpărare, niveluri, bonusuri de zi de naștere/înscriere → punctele se acumulează automat la cumpărături.
-7. **Colectezi feedback post-eveniment**: clientul primește linkul de recenzie (/recenzie-eveniment/:token) → dă nota și comentariul → recenzia apare în fișa evenimentului (tab Recenzii) și în /feedback. Pentru întrebări structurate, construiești un chestionar în /questionnaires și îl trimiți (are și pagină publică).
-8. **Rezervi un joc/activitate (parc de distracții)**: verifici disponibilitatea cu `check_game_availability` sau `get_game_slots` → creezi rezervarea cu `create_game_reservation` (jucători, copii/adulți, contact, exclusivitate). Configurarea jocurilor se face în /portal-games.
+2. **Configurezi sistemul de rezervări**: /reservations/config → Reguli (activare, fereastră, min/max persoane și sursele proprii), Inventar & Zone, Control Flux, Câmpuri Formular → „Salvează Modificări". Prin AI: `configure_reservation_settings`, `configure_reservation_operating_hours`, `configure_reservation_turn_times`, `configure_reservation_deposit`, `configure_reservation_pacing`, sau `seed_reservation_settings` pentru valori recomandate pe tipul de business.
+3. **Urmărești o campanie de rezervări**: configurezi mai întâi sursa exactă pentru brand/locație → `build_reservation_tracking_link(brandId, locationId?, source, medium?, campaign?, expiryDays?)` → pui URL-ul rezultat în bio, reclamă sau într-un QR dinamic → urmărești rezervările confirmate în analiza pe surse. Linkul păstrează atribuirea și după navigarea prin portal. Un click sau o scanare QR nu este o rezervare; dashboard-ul numără rezervările create, nu promite conversii din simple accesări. Generarea linkului este o acțiune de management și cere dreptul de administrare a rezervărilor.
+4. **Organizezi o petrecere/eveniment privat**: creezi deal-ul în /sales-crm (sau rezervare de tip eveniment) → în fișa evenimentului adaugi Produse (meniul), Personal, eventual Producție și Cheltuieli → trimiți Contractul la semnat → ceri avansul → în ziua evenimentului printezi BEO-ul → după, vezi P&L-ul evenimentului.
+5. **Trimiți contractul la semnat**: din fișa evenimentului (tab Contract) sau din dialogul „Generează Contract" din /reservations → alegi modelul → variabilele se completează automat → trimiți pe email/WhatsApp/SMS/link → clientul semnează public pe link → după semnare se poate cere automat avansul.
+6. **Imporți clienți din Excel/CSV**: /customer-import → încarci fișierul → mapezi coloanele → previzualizezi → revizuiești email-urile → confirmi importul.
+7. **Pornești loialitatea**: /loyalty → Setări → reguli de acumulare (puncte/leu), valoare de răscumpărare, niveluri, bonusuri de zi de naștere/înscriere → punctele se acumulează automat la cumpărături.
+8. **Colectezi feedback post-eveniment**: clientul primește linkul de recenzie (/recenzie-eveniment/:token) → dă nota și comentariul → recenzia apare în fișa evenimentului (tab Recenzii) și în /feedback. Pentru întrebări structurate, construiești un chestionar în /questionnaires și îl trimiți (are și pagină publică).
+9. **Rezervi un joc/activitate (parc de distracții)**: verifici disponibilitatea cu `check_game_availability` sau `get_game_slots` → creezi rezervarea cu `create_game_reservation` (jucători, copii/adulți, contact, exclusivitate). Configurarea jocurilor se face în /portal-games.
 
 ## Tool-uri MCP utile
 
 **Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `get_reservations_overview` — rezumat rezervări: setări, statistici, rezervări azi/mâine, waitlist, tipuri configurate. Primul tool la „cum stăm cu rezervările".
 - `get_reservation_settings` — setările de rezervări pentru o locație/brand.
+- `get_crm_funnel` — funnel-ul CRM plus atribuirea rezervărilor pe surse, cu total/procent și distribuție pe zi/oră în fusul orar al organizației; cere accesul de citire CRM. Pentru gazda care are doar acces la rezervări, folosește raportul din `/reservations`.
 - `list_portal_games` / `get_game_details` / `check_game_availability` / `get_game_slots` — jocurile din portal, program, prețuri și disponibilitate pe dată/oră.
 - `get_portal_config` — configurația curentă a portalului clienți.
 - `list_entities` — listare rapidă de entități (inclusiv clienți) cu filtrare pe brand.
 - `jurnal_activitate` — cine a creat/modificat/anulat o rezervare și când (categoriile „Rezervări", „Contracte", „SERVICES_CRM", tipEntitate `reservation`).
 - `gaseste_in_aplicatie` — linkul direct către orice pagină din modul.
+
+**Management sensibil — cere `reservations_manage`:**
+- `build_reservation_tracking_link` — nu creează și nu modifică o rezervare, dar emite un URL urmărit și semnat pentru o sursă configurată, strict pe brand și, când este aleasă, pe locație. Fiind o capabilitate de distribuție și atribuire, este permisă numai utilizatorilor care pot administra rezervările; conturile Demo sau cu acces doar de vizualizare sunt refuzate.
 
 **Scriere — modul `rezervari_clienti`:**
 - `create_reservation` / `update_reservation` / `cancel_reservation` — creare, modificare (status, dată, persoane), anulare rezervări.
@@ -119,6 +125,8 @@ Modulul acoperă tot ce ține de relația cu clienții: rezervări de masă și 
 - **De ce nu apare pagina Cvent?** → E vizibilă doar cu integrarea Cvent activată în setările CRM și cu credențiale configurate.
 - **De ce clientul nu poate rezerva online un grup de 15 persoane, dar eu pot din POS?** → Limitele min/max persoane se aplică rezervărilor online; personalul poate depăși limitele din POS.
 - **Calendarul pare gol / lipsesc rezervări** → Verifică filtrele globale de brand și locație din partea de sus a paginii.
+- **Pot genera câte un link de rezervare pentru fiecare canal și apoi vedea un dashboard unic pe surse?** → Da. Configurează sursele clientului, apoi folosește `build_reservation_tracking_link` pentru fiecare canal/campanie. Rezervarea păstrează separat canalul operațional și atribuirea de marketing semnată. Vezi totalul, procentul și distribuția pe zi/oră în `/reservations` → **Timp Rotație & Analiză** sau în `/customer-followup`; prin chat, `get_crm_funnel` întoarce aceeași atribuire pentru utilizatorii cu acces CRM. Sursele istorice care nu mai sunt configurate rămân vizibile, dar un UTM inventat manual nu devine sursă de încredere. Hotel Analytics rămâne separat pentru rezervările hoteliere.
+- **Am generat linkul, dar sursa are 0 rezervări** → Verifică brandul și locația linkului, că sursa există exact în setările acelui scope și că linkul nu a expirat. Apoi separă traficul de conversie: scanarea/clickul nu dovedește că formularul a fost trimis. Raportul grupează după momentul creării rezervării în fusul orar al organizației.
 - **De ce nu pot șterge definitiv un client?** → Pentru clienți/POS/portal, fluxul corect este GDPR: anonimizare + dezactivare, cu istoricul financiar păstrat fără PII. Prin AI folosește `forget_customer_gdpr` cu confirmare explicită; pentru duplicate folosește fuziunea de clienți (păstrează istoricul, cu audit).
 - **„/customers" și „/portal-customers" sunt pagini diferite?** → Nu, e aceeași pagină de clienți, accesibilă pe ambele rute.
 - **Clientul zice că linkul de recenzie nu merge** → Linkurile de recenzie post-eveniment pot expira și acceptă o singură trimitere; dacă recenzia a fost deja trimisă, pagina o confirmă.

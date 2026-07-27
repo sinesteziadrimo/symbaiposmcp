@@ -201,6 +201,7 @@ Roluri standard predefinite (prin `seed_default_roles`): Admin/Proprietar, Manag
 - **De ce nu vede angajatul o anumită pagină?** Paginile sunt controlate de permisiunile rolului; navigarea spre o pagină nepermisă îl redirecționează la „Sarcinile Mele". Adaugă permisiunea pe rol din /staff → Roluri & Permisiuni.
 - **Cum primește angajatul parola?** Varianta recomandată: generezi din fișa lui un link securizat de setare parolă sau PIN (valabil 48h) și i-l trimiți — își alege singur parola. La nevoie, o poți seta și direct pe fișă.
 - **Cardurile de acces RFID țin de modulul Personal?** Nu — au pagina lor (/access-cards), unde se asociază clienților, se încarcă credite și se blochează cardurile pierdute.
+- **Pot șterge un angajat „de test” care are ture închise sau un raport Z pe numele lui?** Nu șterge istoricul ca să „cureți” interfața. Dezactivează angajatul; turele închise și documentele fiscale rămân în audit chiar dacă activitatea a fost făcută înainte de deschidere. Un raport Z sau o extracție cu `verification_required` se verifică și se clasifică din **Rapoarte Fiscale → Verificare manuală**, împreună cu contabilul dacă a ajuns în memoria casei — nu se elimină direct din baza de date și nu se mută pe alt angajat. Ștergerea este permisă doar pentru o fișă fără istoric și fără dependențe; un răspuns `409` care recomandă **Inactiv** este protecția corectă, nu un bug.
 
 ## Pentru acces SQL
 

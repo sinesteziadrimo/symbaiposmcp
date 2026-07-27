@@ -71,6 +71,9 @@ Ce apare în aplicație depinde de profilul rezolvat din rol + funcțiile activa
 - **HACCP pe mobil**: temperaturile (frigidere/congelatoare) și sarcinile HACCP (curățenie, verificări) se pot loga direct din aplicație — nu mai e nevoie de PC în bucătărie.
 - **Inventariere**: numărarea fizică de stoc (inventarierea) se poate face din Symbai Staff, direct din depozit, cu telefonul.
 - **Cockpit Manager + Marketing**: managerii au un cockpit dedicat în aplicație, iar tabul **Marketing** permite postarea pe rețelele sociale direct de pe telefon.
+- **Managerul de restaurant** are o experiență proprie: aplicația se deschide direct pe **Panou** (încasările zilei, mesele deschise cu banii de pe ele, cine e în tură, aprobările care îl așteaptă), iar taburile sunt **Panou · Azi · Mesaje · Stoc**. Aprobările (discount, retur, din partea casei) se rezolvă direct din Panou, fără drum la calculator. Pontajul propriu și Marketingul rămân în „Mai mult". Rezervările și planul sălii au secțiune proprie în meniu.
+- **Clopoțelul (Notificări)**: istoricul complet al notificărilor primite, cu filtru pe categorie și „marchează citit". Util când telefonul a fost pe silențios — nimic nu se pierde.
+- **„Panoul meu"**: fiecare manager alege ce indicatori vede pe ecranul de start. Ce nu apare în listă nu se aplică unității sau rolului lui — nu e ceva ce a oprit el.
 
 Explică simplu: prin conexiune poți citi/scrie datele de producție și sarcini, dar acțiunile fizice de teren (camera, printarea etichetei, operația la utilaj) se fac în **Symbai Staff** sau în scannerul web, nu din chat.
 
@@ -87,7 +90,11 @@ Nu adăuga permisiuni doar pentru a muta un tab mai sus și nu ascunde prin prez
 
 ## Notificări push
 
-- Notificările către personal (comenzi, bucătărie) sunt **tranzacționale**, nu campanii de marketing: NU folosi `preview_push_audience` / `send_push_campaign` pentru ele. Dacă un angajat nu primește notificări, verifică dacă s-a logat în aplicație și a acceptat notificările pe telefon.
+- **Fiecare angajat își alege ce primește.** În Symbai Staff: „Mai mult" → **Notificări** → butonul de setări (sau direct din clopoțel). Notificările sunt grupate în categorii pe înțelesul omului — *Aprobări care mă așteaptă, Bani și casă, Sala și rezervările, Bucătărie, Stoc și inventar, Personal și sarcini, Clienți și recenzii, Siguranță alimentară, Producție, Sistem și conturi* — iar pentru fiecare categorie se pot regla separat **„pe telefon"** (push, te întrerupe) și **„în clopoțel"** (o găsești când te uiți). Există și **ore de liniște**, care opresc doar push-ul; notificările se strâng în clopoțel, ca dimineața să găsești ce s-a întâmplat peste noapte.
+- **Câteva alerte nu pot fi oprite de nimeni**, pentru că omul răspunde legal de ele: bon fiscal neemis, bonul care nu a ieșit la imprimantă, mostre martor HACCP cu termen expirat, incident de siguranță, urgență raportată de un client în chat, și conflictul de sincronizare al unei note deja încasate. Ele apar în setări ca rânduri blocate, cu explicație — nu sunt ascunse.
+- Dacă un angajat spune „primesc prea multe notificări", răspunsul NU e să oprească aplicația din setările telefonului: du-l în **Notificări → setări** și stinge categoriile care nu-l privesc (ex. „Bucătărie" pentru un manager). Pe Android, fiecare categorie are canal propriu, deci sunetul se poate regla și din setările telefonului.
+- Un asistent poate citi și seta acestea prin conexiune: `get_staff_notification_catalog`, `get_employee_notification_preferences`, `configure_employee_notification_preferences` (ultimul cere previzualizare și confirmare explicită).
+- Notificările către personal (comenzi, bucătărie) sunt **tranzacționale**, nu campanii de marketing: NU folosi `preview_push_audience` / `send_push_campaign` pentru ele. Dacă un angajat nu primește notificări, verifică întâi setările lui de mai sus, apoi dacă s-a logat în aplicație și a acceptat notificările pe telefon.
 - Notificarea de „preparat gata" poate fi silențioasă după setările ecranului de bucătărie — vezi secțiunea Symbai POS de mai sus.
 - În POS-ul din browser (PWA), notificările depind de permisiunea browserului; la probleme de tip „nu sună" / „nu apare în fundal" / „apăs pe notificare și nu se deschide", verifică permisiunea de notificări a browserului și că aplicația web e instalată/deschisă — nu campaniile push.
 

@@ -191,6 +191,13 @@ Pagina de administrare: **Meniul Zilei** (folosește `gaseste_in_aplicatie("meni
 
 Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (ștergerile se fac doar din aplicație — la oferte folosește `update_offer active=false`). Autopilot / Win-Back Radar / Surprize din pagina Oferte se folosesc tot din aplicație.
 
+**Ce înseamnă fiecare acțiune de eliminare:**
+- **Scoate din meniu** elimină doar articolul vandabil din meniul respectiv; produsul, rețeta și istoricul rămân.
+- **„86" / Indisponibil** este temporar și reversibil; folosește-l când produsul revine.
+- **Dezactivează produsul** este alegerea sigură pentru un produs cu vânzări, stoc sau documente istorice.
+- **Șterge rețeta** elimină formula de consum, nu produsul și nu istoricul vânzărilor.
+- **Șterge definitiv** numai după verificarea stocului, loturilor, vânzărilor, rețetelor și celorlalte dependențe. Pentru duplicate folosește **Unifică Duplicate**, nu ștergere manuală.
+
 **Rutarea taguri→imprimante/KDS merge acum și prin MCP** (modul `setari`): `list_tag_routing_rules` (vezi ce e configurat) → `set_tag_routing` (leagă tagul de ecrane KDS și/sau imprimantă, per zonă de sală — exact ce face pagina Rutare Taguri) / `create_tag_routing_rule` (regulă de rezervă la nivel de locație) / `delete_tag_routing`. Un tag NOU creat prin MCP tot nu rutează nicăieri până nu-i setezi rutarea (cu tool-urile de mai sus sau din pagină) — preferă tagurile EXISTENTE ale clientului.
 
 **⚠ Ce rămâne DOAR din aplicație (nu prin MCP):**
@@ -223,6 +230,7 @@ Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (șter
 - **Produsul are grupuri de opțiuni, dar ospătarul nu le vede sau vânzările nu păstrează selecția.** Verifică în ordine: grupul și opțiunile sunt active; grupul este legat de produs; produsul este publicat și vandabil în meniul atribuit exact canalului + locației cerute; apoi fă o vânzare nouă de test. `diagnose_product_option_runtime({productId, brandId, locationId, channel})` validează fiecare grup obligatoriu și `minSelect`, apoi numără numai vânzările închise care au satisfăcut **toate** grupurile obligatorii după ultima schimbare relevantă. Diagnosticul de meniu nu citește stocul pe ascuns: pentru produsul/rețeta legată rulează separat `diagnose_consumption_warehouse_routing`, cu grant de citire `inventar`. Nu reconstitui alegerile pe vânzările vechi: selecția clientului nu poate fi dedusă sigur.
 - **De ce apare „indisponibil" deși am stoc?** Verifică întâi disponibilitatea programată din `/menu/promotions` → tab Disponibilitate (zi/oră/canal), apoi regulile „automat din stoc" și „86". Un operator l-a putut marca „86" manual — vezi /menu/center cine și de ce.
 - **Ce cote TVA folosesc?** În România: 0%, 11%, 21%. Mâncarea preparată de regulă 11%, băuturile 21%. Nu folosi cotele vechi 5/9/19.
+- **„Conturi pe Tip Produs" arată Incomplet/Conflict. Adaug tot ce propune cardul?** Nu automat. Verifică ce operațiuni face tipul și avertismentul exact. Venitul și TVA-ul POS pot fi postate global, deci 707/4427 nu trebuie duplicate pe fiecare tip doar pentru un card verde. Pentru un tip stocabil verifică recepția/consumul/producția relevante și o notă contabilă reală înainte de modificare.
 - **TVA lipsă la import HoReCa.** Serverul clasifică determinist lipsurile: mâncare/preparate/apă 11, alcool/băuturi zaharoase/aromate/cafea/non-food/incert 21. Dacă sursa are TVA, trimite valoarea explicită.
 - **Pachet meniu sau masă servită?** Pachet = grupare de produse care EXISTĂ deja separat în meniu. Masă servită = meniu de eveniment la preț fix la care NU cunoști rețeta la vânzare — costul se stabilește ulterior din consum.
 - **De ce nu pot importa rețetarul din Excel?** Conflictele de unitate de măsură (marcate galben) blochează importul până le rezolvi — intenționat, ca să nu-ți strice consumul.
