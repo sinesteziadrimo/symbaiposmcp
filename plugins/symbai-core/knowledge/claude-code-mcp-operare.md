@@ -49,7 +49,7 @@ Când managerul îi spune lui Claude Code/ChatGPT „urmează o promoție", „c
 5. Repetă exact apelul cu `confirm:true`, apoi recitește `get_factory_forecast_plan` și raportează dovada.
 6. Când ipoteza expiră, retrage ajustarea cu `remove:true`; nu lăsa un context vechi să devină „adevăr permanent".
 
-Tool-ul refuză o ajustare dacă produsul/data nu mai are bază adaptivă legată de un client/depou și de calendarul lui de livrare. În acel caz configurează întâi disponibilitatea produsului și zilele de livrare, apoi recalculează; agentul nu inventează termenul. Comenzile ferme nu sunt editate și cererea efectivă rămâne `MAX(ferm, forecast)`.
+Tool-ul refuză o ajustare dacă produsul/data nu mai are bază adaptivă legată de un client/depou și de calendarul lui de livrare. Un `legacyFallbackProduct` poate produce între timp o recomandare prudentă pe zilele observate în istoricul real, dar aceasta nu este dovadă de termen contractual și agentul nu o suprascrie. Configurează întâi disponibilitatea produsului și zilele de livrare, apoi recalculează; agentul nu inventează termenul. Comenzile ferme nu sunt editate și cererea efectivă rămâne `MAX(ferm, forecast)`.
 
 În strategia make-to-order strictă `firm_finished_forecast_semis`, inclusiv modelul Senneville, contextul de forecast nu produce produs finit pe stoc. El recalculează BOM-ul multi-nivel și recomandă semipreparatele net de stoc și producția deja deschisă, în limitele aceleiași fabrici. O comandă fermă nouă pornește separat controlul live de fezabilitate; dacă termenul este fizic imposibil sau indeterminat din lipsă de capacitate configurată, sistemul trebuie tratat ca urgent, nu ca plan fezabil.
 
