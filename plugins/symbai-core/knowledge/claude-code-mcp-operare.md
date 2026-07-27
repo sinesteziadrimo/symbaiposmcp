@@ -53,7 +53,7 @@ Tool-ul refuză o ajustare dacă produsul/data nu mai are bază adaptivă legat�
 
 În strategia make-to-order strictă `firm_finished_forecast_semis`, inclusiv modelul Senneville, contextul de forecast nu produce produs finit pe stoc. El recalculează BOM-ul multi-nivel și recomandă semipreparatele net de stoc și producția deja deschisă, în limitele aceleiași fabrici. O comandă fermă nouă pornește separat controlul live de fezabilitate; dacă termenul este fizic imposibil sau indeterminat din lipsă de capacitate configurată, sistemul trebuie tratat ca urgent, nu ca plan fezabil.
 
-Dacă fabrica nu are încă profil de forecast, `set_factory_forecast_policy` poate inițializa și activa numai nucleul sigur al profilului. Nu aplică automat un șablon și nu inventează zone, utilaje, ture sau capacități; acestea trebuie citite/configurate din realitatea fabricii înainte de promisiuni fizice.
+Dacă fabrica nu are încă profil de forecast, `set_factory_forecast_policy` poate inițializa și activa numai nucleul sigur al profilului. Primul apel fără `confirm:true` este preview și arată inclusiv `profileWillBeInitialized`; după acord, repetă exact apelul cu `confirm:true`, apoi recitește profilul și planul. Nu aplică automat un șablon și nu inventează zone, utilaje, ture sau capacități; acestea trebuie citite/configurate din realitatea fabricii înainte de promisiuni fizice.
 
 ## Ore Si Fus Orar
 

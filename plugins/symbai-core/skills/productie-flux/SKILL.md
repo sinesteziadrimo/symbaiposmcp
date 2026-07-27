@@ -80,7 +80,7 @@ Dacă managerul explică o promoție, o listare nouă, o scădere temporară sau
 
 `forecast_production_demand` rămâne doar analiza agregată, simplă, pentru make-to-stock (`netForecastHorizon`); nu o folosi drept sursă operațională pentru tabul Forecast MPS, pentru zilele contractuale de livrare sau pentru fabrica Senneville. Înainte să promiți material sau termen, `get_material_availability` arată ATP, iar fezabilitatea fizică se verifică prin `get_production_schedule_feasibility` / preview-ul schedulerului. La fiecare comandă fermă nouă, controlul live recalculează promisiunea și deschide alertă urgentă dacă termenul este imposibil ori indeterminat din lipsă de capacitate configurată; nu prezenta lipsa datelor de capacitate ca plan fezabil.
 
-Dacă profilul de forecast lipsește, `set_factory_forecast_policy` poate inițializa și activa doar nucleul minim sigur. Nu aplica implicit un șablon generic și nu inventa utilaje, zone, ture ori capacități.
+Dacă profilul de forecast lipsește, `set_factory_forecast_policy` poate inițializa și activa doar nucleul minim sigur. Apelează fără `confirm:true` pentru preview, arată dacă profilul va fi inițializat, apoi repetă exact cu `confirm:true` numai după acord și verifică prin citire. Nu aplica implicit un șablon generic și nu inventa utilaje, zone, ture ori capacități.
 
 Pentru auto-programare pe echipamente/ture/oameni, folosește `schedule_production_orders` cu `commit:false` întâi (preview). Re-rulează cu `commit:true` doar după confirmarea explicită a userului.
 
