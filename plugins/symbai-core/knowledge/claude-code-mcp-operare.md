@@ -38,6 +38,23 @@ Cand exista tool dedicat, foloseste tool-ul dedicat, nu SQL si nu click manual:
 
 SQL read-only este fallback pentru intrebari punctuale fara tool dedicat. Nu folosi SQL ca prima optiune cand exista un tool semantic.
 
+## Forecast MPS De Fabrică — Context Comercial Dat Agentului
+
+Când managerul îi spune lui Claude Code/ChatGPT „urmează o promoție", „clientul va lista produsul X", „mă aștept la Y bucăți" sau „săptămâna viitoare scade cererea", agentul nu înlocuiește forecastul cu o presupunere și nu scrie direct loturi:
+
+1. Identifică fabrica și gestiunea prin `list_brands` / `list_locations`, apoi citește `get_factory_forecast_plan(warehouseId, days, includeDaily:true)`.
+2. Compară informația managerului cu forecastul adaptiv, comenzile ferme, zilele reale de livrare, stocul, planul existent, capacitatea și semipreparatele derivate. Verifică și `liveOrderIncidents` / `urgent`: acestea sunt alertele reale ale comenzilor ferme care nu încap fizic, nu simple riscuri virtuale ale forecastului.
+3. Construiește `set_factory_forecast_context` cu `forecastQty` ca **total estimat pentru produs în ziua de livrare**, nu ca diferență, și rulează fără `confirm:true`.
+4. Arată preview-ul: valoarea curentă, valoarea cerută, comenzile ferme care rămân autoritare, cererea efectivă și efectul asupra semipreparatelor. Cere confirmare explicită.
+5. Repetă exact apelul cu `confirm:true`, apoi recitește `get_factory_forecast_plan` și raportează dovada.
+6. Când ipoteza expiră, retrage ajustarea cu `remove:true`; nu lăsa un context vechi să devină „adevăr permanent".
+
+Tool-ul refuză o ajustare dacă produsul/data nu mai are bază adaptivă legată de un client/depou și de calendarul lui de livrare. În acel caz configurează întâi disponibilitatea produsului și zilele de livrare, apoi recalculează; agentul nu inventează termenul. Comenzile ferme nu sunt editate și cererea efectivă rămâne `MAX(ferm, forecast)`.
+
+În strategia make-to-order strictă `firm_finished_forecast_semis`, inclusiv modelul Senneville, contextul de forecast nu produce produs finit pe stoc. El recalculează BOM-ul multi-nivel și recomandă semipreparatele net de stoc și producția deja deschisă, în limitele aceleiași fabrici. O comandă fermă nouă pornește separat controlul live de fezabilitate; dacă termenul este fizic imposibil sau indeterminat din lipsă de capacitate configurată, sistemul trebuie tratat ca urgent, nu ca plan fezabil.
+
+Dacă fabrica nu are încă profil de forecast, `set_factory_forecast_policy` poate inițializa și activa numai nucleul sigur al profilului. Nu aplică automat un șablon și nu inventează zone, utilaje, ture sau capacități; acestea trebuie citite/configurate din realitatea fabricii înainte de promisiuni fizice.
+
 ## Ore Si Fus Orar
 
 Aplicatia afiseaza toate orele in fusul orar al locatiei (setarea "Fus orar" din Setari -> General; pentru Romania: Europe/Bucharest, vara UTC+3 / iarna UTC+2). Datele brute primite prin tool-uri sau SQL vin insa de regula in ora universala (UTC, format ISO cu "Z" la final).
