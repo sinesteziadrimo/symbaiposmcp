@@ -64,6 +64,26 @@ Modulul acoperă serviciul la masă: planul de sală (desenat în designer, afi�
 3. Managerul aprobă sau respinge; abia la aprobare se modifică nota. Rolurile cu auto-aprobare aplică efectul direct.
 4. Pe o masă poate exista o singură cerere de reducere/atribuire client în așteptare — una nouă o înlocuiește pe cea veche, cu confirmare.
 
+**4b. Politica de reduceri — până la cât poate da ospătarul SINGUR**
+
+Implicit, ORICE reducere a unui angajat fără drept de reduceri merge la manager. Poți ridica praguri sub care se aplică instant, fără aprobare.
+
+- **Unde se setează:** Meniu → **Configurare Afișaj** (`/menu/display`) → secțiunea **„Politică reduceri"**. Se setează **per platformă** (POS Ospătar, POS Mobil, POS Bar, Recepție, Dispecerat livrări) și per brand — opțional și doar pentru o locație anume. Deci poți lăsa barul mai strâns decât sala.
+- **Ce setezi:**
+  - **Prag procent** (ex. 10%) și **prag sumă** (ex. 50 lei) sub care angajatul aplică singur. ⚠ Dacă ambele sunt setate, reducerea trebuie să le respecte **pe amândouă** — 15% dintr-o notă mică poate trece de procent, dar tot pică pe lei, și invers.
+  - **Ce se întâmplă peste prag:** *merge la manager* (implicit) sau *refuzat direct*.
+  - **Ce tipuri sunt permise** (procent / sumă în lei) și **pe ce nivel** (pe un produs / pe toată nota).
+  - **Butoane rapide** de procent și de sumă, ca ospătarul să nu tasteze.
+  - **Motiv obligatoriu** + lista de motive predefinite din care alege.
+- **Cine NU e afectat:** rolurile care au dreptul de reduceri (ex. șef de sală, manager, admin) aplică oricum direct — politica restrânge doar angajații fără acest drept.
+- **Prin conexiune (asistent AI):** `get_discount_policy` (vezi politica actuală) și `set_discount_policy` (o modifici; cere confirmare). Ex.: „lasă ospătarii să dea singuri până la 10% dar maxim 30 de lei, peste asta să ceară aprobare".
+
+Capcane:
+- **„Cere aprobare la orice reducere"** → politica e dezactivată (starea implicită) sau ambele praguri sunt 0. Activeaz-o și pune cel puțin un prag.
+- **„Am pus 20% dar tot cere aprobare"** → verifică pragul în lei: dacă e mic, o notă mare depășește suma chiar sub procentul permis.
+- **„Am setat pe POS Ospătar, dar la bar tot cere"** → politica e per platformă; setează și profilul barului.
+- **Reducerile rămân pentru CLIENȚI** — pentru mesele angajaților folosește Beneficiu Personal (vezi mai sus).
+
 **5. Transfer produse sau masă întreagă**
 1. „Acțiuni Masă" → Transfer Produse (asistent în 3 pași: alegi produsele → alegi destinația → confirmi) sau Transferă Masă (toată nota către alt ospătar).
 2. Transferul către alt ospătar trebuie acceptat de acesta: primește o notificare și poate accepta sau refuza.

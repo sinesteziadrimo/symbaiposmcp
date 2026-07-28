@@ -29,6 +29,7 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - **Ofertă** — reducere care chiar se aplică pe notă, automat (spre deosebire de banner-ele promoționale de pe website, care sunt doar vizuale).
 - **„86" / indisponibil** — produs marcat temporar indisponibil; verdictul e identic pe POS, website și meniul QR.
 - **Modificatori / opțiuni** — opțiuni de personalizare la comandă pentru un produs (ex. „Gătire", „Extra cașcaval +5", „Fără ceapă", „Tacâmuri"). Se configurează în tabul „Modificatori" de pe fișa produsului și apar pe portal/POS/telefon/Glovo/Wolt. O opțiune poate fi simplă notă sau legată de un produs (scade stoc + TVA propriu). Ghid dedicat: `modificatori-optiuni-produs.md`.
+- **Pachet (conținut fix)** — un produs cu tipul „Ambalaje/pachet" al cărui conținut e o listă FIXĂ de alte produse (ex. „Coș cadou: 2 vinuri + 1 ciocolată"), setată în tabul „Conținut Pachet" de pe fișa produsului. Se vinde ca un singur produs. ⚠ Dacă vrei ca CLIENTUL să aleagă (ex. „șaorma + sucul la alegere"), NU e pachet — e un grup de modificatori obligatoriu. Ambele, cu tabelul de decizie: `modificatori-optiuni-produs.md`.
 
 ## Paginile modulului
 

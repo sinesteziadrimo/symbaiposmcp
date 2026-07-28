@@ -59,3 +59,35 @@ Tipic: „adaugă la «Burger clasic» un grup «Extra» cu cașcaval +5, bacon 
 - **„Vreau aceleași extra-uri pe 20 de produse"** → configurează-le o dată, salvează-le ca șablon și aplică-l pe toate cu un singur pas.
 - **Diferența față de Meniul Zilei** → Meniul Zilei e un produs-meniu cu feluri la preț fix; modificatorii personalizează un produs normal deja ales. Pentru meniuri fixe cu feluri vezi ghidul Meniuri de evenimente și Meniul Zilei.
 - **Diferența față de variante (magazin online)** → variantele au stoc și preț propriu per combinație (mărime/culoare); modificatorii adaugă opțiuni peste un produs, cu suprapreț.
+
+---
+
+## Pachete (conținut FIX) — și cum le deosebești de combo-uri
+
+Sunt **trei lucruri diferite** care se numesc toate „pachet" în vorbirea curentă. Alege-l pe cel potrivit, altfel iese greșit:
+
+| Vrei să… | Folosește | Unde se configurează |
+|---|---|---|
+| Vinzi un set cu conținut **FIX** ca un singur produs (ex. „Coș cadou: 2 vinuri + 1 ciocolată") | **Pachet** (Conținut Pachet) | Fișa produsului → tab **„Conținut Pachet"** |
+| Vinzi un combo unde **clientul alege** (ex. „Șaorma + sucul la alegere") | **Grup de modificatori obligatoriu** | Fișa produsului → tab **„Modificatori"** |
+| Sugerezi pe pagina de produs din magazinul online „Cumpărate frecvent împreună" | **Bundle online** | Se face din asistent (`set_product_bundle`) |
+
+### Cum faci un pachet cu conținut fix
+
+1. Produsul-pachet trebuie să aibă **tipul de produs „Ambalaje/pachet"**. Fără el, tabul „Conținut Pachet" nu apare pe fișă.
+2. Deschide fișa produsului → tab **„Conținut Pachet"** → adaugă componentele: ce produs, ce cantitate și, opțional, un **preț suprascris** pentru componenta din pachet (când vrei să valorizezi altfel decât la prețul normal).
+3. Salvează. Pachetul se vinde ca UN singur produs; componentele sunt conținutul lui.
+
+### Prin conexiune (asistent AI / MCP)
+
+- `get_product_package` — vezi ce conține pachetul.
+- `set_product_package` — setezi conținutul (**înlocuiește complet** lista; cere confirmare).
+
+Tipic: „fă un pachet de sărbători din 2 sticle de vin roșu și o cutie de bomboane" → asistentul verifică tipul produsului, îți arată o previzualizare și scrie abia după confirmarea ta.
+
+### Capcane
+
+- **„Nu văd tabul Conținut Pachet"** → produsul nu are tipul „Ambalaje/pachet". Schimbă tipul produsului, apoi revino.
+- **„Am făcut pachet, dar clientul trebuie să aleagă sucul"** → nu e pachet, e **combo cu alegere**: fă un grup de modificatori **obligatoriu**, cu opțiuni legate de produsele reale (ca să scadă și stocul).
+- **„Am pus produsul de două ori în pachet"** → pune-l o singură dată, cu cantitatea totală.
+- **Un pachet nu se poate conține pe sine** — și nici nu se poate face pachet dintr-un pachet fără să te gândești la stoc: componentele sunt cele care se consumă.

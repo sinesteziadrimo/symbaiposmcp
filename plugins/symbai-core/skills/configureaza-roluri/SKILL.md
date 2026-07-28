@@ -45,6 +45,7 @@ Pentru **ordinea și aspectul Symbai Staff**, permisiunile sunt doar limita de a
 ## Exemple
 
 - **„Fă un ospătar care nu poate da reduceri"** → `suggest_role_setup("ospătar care ia comenzi și încasează, fără reduceri")` → `preview_role_access` → `create_role(name:"Ospătar fără reduceri", brandId, permissions:[...])` → `describe_role` pentru confirmare.
+- **„Vreau ca ospătarul să dea reduceri mici singur, dar peste un prag să ceară aprobare"** → asta NU e o permisiune de rol, ci **Politica de reduceri** din Meniu → Configurare Afișaj (`/menu/display`), setată **per platformă** (POS Ospătar, Bar, Mobil, Recepție, Dispecerat livrări): `get_discount_policy(brandId, profileType)` → `set_discount_policy(..., enabled:true, selfMaxPercent, selfMaxAmount, overLimitMode, confirm:true)`. Rolurile cu dreptul de reduceri aplică oricum direct — politica îi restrânge doar pe cei fără el. Detalii + capcane: `knowledge/comenzi-mese-ospatari.md`.
 - **„Ce vede casierul?"** → `describe_role(roleName:"Casier")` → citește lista de pagini vizibile.
 - **„De ce nu vede bucătarul pagina de alergeni?"** → `describe_role(roleName:"Bucătar")` (lipsește din pagini) → în `list_permission_catalog(category:"kitchen")` găsești cheia de alergeni → `set_role_permissions(roleId, addPermissions:["allergen_view"])` → reconfirmă cu `describe_role`.
 - **„Read-only pentru un asociat"** → alege doar chei `*_view` din categoriile relevante (`list_permission_catalog`) → `preview_role_access` (paginile de configurare NU apar, corect) → `create_role`.
