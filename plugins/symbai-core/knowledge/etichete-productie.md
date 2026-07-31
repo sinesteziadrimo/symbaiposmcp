@@ -41,6 +41,17 @@ Le pui pe etichetă din butonul „Câmp dinamic" din editor (sau le scrii direc
 - `{{operator}}`, `{{depozitare}}`, `{{descriere}}` — cine a făcut, condiții de păstrare, descriere.
 - Prefixele sunt compoziție liberă: scrii „Lot: {{lot}}" și iese „Lot: L240617-1".
 
+### Pe eticheta de RECEPȚIE (marfă primită de la furnizor)
+La recepție sunt DOUĂ loturi diferite, iar confuzia dintre ele e cea mai frecventă greșeală de șablon:
+- `{{lot}}` (sau `{{lotIntern}}`, același lucru, nume mai explicit) — lotul generat de Symbai, de forma
+  `GOODS-RE-5-L396554-P1201-W11`. **NU e lotul de pe marfa furnizorului.**
+- `{{lotFurnizor}}` — lotul scris de FURNIZOR pe ambalaj / în declarația de conformitate. Ăsta e cel pe
+  care îl cauți la un recall „de la furnizor încoace". Iese gol dacă furnizorul nu a declarat niciun lot.
+- `{{furnizor}}` — numele furnizorului de pe recepție. Gol pe etichetele de producție internă.
+
+Deci un tabel „Nr. lot / Nr. lot intern / Furnizor" se completează cu `{{lotFurnizor}}` / `{{lotIntern}}` /
+`{{furnizor}}` — în ordinea asta. Dacă pui `{{lot}}` la „Nr. lot", vei tipări lotul intern pe amândouă rândurile.
+
 ## Imprimanta de etichete
 - **ZPL (Zebra & termice de rețea)** — calea recomandată pentru imprimantele de etichete pe rolă. Imprimanta trebuie să fie **pe rețea, cu IP** (configurat în Setări → Imprimante). Sistemul transformă designul în imaginea etichetei și o trimite direct la imprimantă — nu trebuie nimic instalat în plus.
 - **PDF** — pentru coli A4 cu etichete autocolante sau pentru a verifica/arhiva. Butonul „Descarcă PDF" din fereastra de printare. Nu necesită imprimantă specială.
@@ -87,6 +98,13 @@ Pentru palet: desenează în Materiale Grafice un șablon de etichetă cu un **Q
 - **Alergenii vin din ingrediente** — dacă lipsesc, verifică alergenii produselor-ingredient din rețetă.
 - **Diacritice pe termice** — codul de bare și textul ies clar; la imprimante foarte simple, diacriticele pot fi simplificate. Verifică o etichetă de probă.
 - **Codul de bare ≠ codul QR de masă** — codul de bare de pe etichetă (Code128/EAN) e pentru produs/lot; QR-urile meselor sunt alt modul (`plan-sala-qr.md`).
+- **Un câmp scris greșit se TIPĂREȘTE ca atare.** Dacă scrii `{{furnizor_nume}}` sau orice nume care nu e în
+  lista de mai sus, sistemul nu-l recunoaște și îl lasă exact așa pe etichetă — pe hârtie apar acoladele.
+  Folosește butonul „Câmp dinamic" din editor, nu scrie tokenii din memorie. La printare primești și un
+  avertisment („Șablonul are câmpuri care nu există: …") — dacă îl vezi, corectează șablonul, nu-l ignora.
+- **Un câmp corect dar fără date iese GOL, fără avertisment** — ex. `{{lotFurnizor}}` când furnizorul n-a
+  declarat lot, sau `{{furnizor}}` pe o etichetă retipărită din Producție (acolo nu există furnizor).
+  Dacă un rând iese gol, întâi verifică dacă marfa are chiar acea informație.
 - **Nu inventa** loturi/date/alergeni — ele vin din lotul și rețeta reale; tu doar alegi șablonul și imprimanta.
 
 ## Legături

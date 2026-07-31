@@ -210,3 +210,9 @@ Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește *
 - **A venit marfă necomandată — o pot primi?** Da, la recepția pe comandă alegi produsul extra din catalog și intră pe stoc cu urmă scrisă (dacă procedura firmei permite angajatului să adauge/mapeze).
 - **Am modificat o recepție și nu mă lasă / îmi dă avertisment de inventar.** Începe cu `diagnose_inventory_document_reversal`. O ciornă de factură generată automat din recepție trebuie abandonată întâi, fără a șterge recepția; apoi refaci diagnosticul. Dacă loturile au fost deja consumate/vândute, anulezi întâi mișcările din aval. Dacă între timp s-a făcut inventar, reverifici soldurile. Nu compensa o recepție greșită printr-o ajustare opacă: păstrează traseul de anulare și audit.
 - **„Permisiune insuficientă" la map_invoice_line / set_invoice_context?** Tokenul nu are modulul `inventar` („Stocuri & Recepție"). Activează-l din portal Hub → Acces AI.
+- **Pe eticheta de recepție scrie alt lot decât cel de pe marfa furnizorului.** Șablonul folosește `{{lot}}`
+  (lotul intern generat de Symbai). Lotul de pe ambalajul furnizorului e `{{lotFurnizor}}`, iar numele
+  furnizorului e `{{furnizor}}`. Corectezi șablonul în Materiale Grafice → eticheta de recepție. Detalii și
+  celelalte câmpuri: `etichete-productie.md`.
+- **Pe etichetă apar acolade, ex. `{{furnizor_nume}}`.** E un câmp scris greșit în șablon — sistemul nu-l
+  recunoaște și îl tipărește ca atare. Alege câmpurile din butonul „Câmp dinamic", nu le scrie din memorie.
