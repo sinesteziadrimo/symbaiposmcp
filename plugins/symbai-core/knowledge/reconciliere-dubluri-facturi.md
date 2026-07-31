@@ -89,6 +89,26 @@ La primire marchezi recepția **„conformă"** sau **„cu diferențe"** + o no
 5. ⚠ **NU corecta printr-o ajustare de inventar.** Ajustarea scade cantitatea, dar lasă recepția și factura în evidență — pierzi urma banilor și rămâi cu o factură „recepționată" de două ori în contabilitate.
 6. Dacă recepția greșită a fost deja decontată în contabilitate, perioada este închisă sau dependențele nu pot fi demonstrate complet, oprește-te și rezolvă cu contabilul/echipa tehnică. Nu forța SQL și nu declara cazul închis doar fiindcă totalul stocului pare corect.
 
+## Furnizorul se potrivește pe COD FISCAL, nu pe nume
+
+Cea mai tăcută sursă de dubluri nu e factura, ci **furnizorul dublat**. Potrivirea automată dintre poză, aviz și e-Factura se face pe furnizor + numărul facturii; dacă aceeași firmă stă pe două rânduri în lista ta, ai două istorii separate și geamănul nu se mai găsește niciodată.
+
+De aceea, la recepția din poză, furnizorul nu se stabilește după numele citit de pe hârtie:
+
+1. Se caută **codul fiscal** în lista ta de furnizori — fără prefixul RO, fără spații, fără puncte. Dacă e acolo, se folosește rândul tău existent, cu numele și datele tale. O literă citită greșit de pe factură nu mai poate crea un al doilea furnizor.
+2. Dacă acel cod nu e la tine în listă, se cere **denumirea oficială** la ANAF (firme românești) sau VIES (firme din UE) și se mai caută **o dată** în lista ta, cu denumirea oficială. Aici se prinde furnizorul pe care îl aveai deja scris altfel: „MEGA IMAGE" la tine, „MEGA IMAGE S.R.L." la ANAF.
+3. Când nu iese sigur — mai mulți candidați, numele de pe document care nu seamănă cu firma căreia îi aparține codul, sau ANAF/VIES care nu răspunde — **te întreabă pe tine**. Nu creează un furnizor nou ca să scape de nelămurire.
+
+Capitolul complet, cu cele trei răspunsuri (confirmat / furnizor nou / alege tu), e în `intrari-marfa-receptie.md`.
+
+> ⚠ **Nu e retroactiv.** Regula asta oprește dublurile **noi**. Furnizorii dublați pe care îi ai deja în listă rămân exact așa cum sunt: nimic nu se unifică singur, în urmă, iar facturile lor vechi continuă să se împartă între cele două rânduri. Curățarea lor e o treabă de făcut o dată, cu mâna.
+
+Cum faci curat, în ordinea asta:
+
+1. **Completează CUI-ul acolo unde lipsește.** Un furnizor fără cod fiscal nu poate fi găsit la primul pas, cel sigur. Îi mai rămâne o șansă — a doua căutare, pe denumirea oficială — dar aceea merge doar dacă ANAF/VIES răspunde și dacă numele pe care l-ai scris tu seamănă destul cu cel oficial. Un CUI completat scapă de tot lanțul ăsta de „dacă". E cea mai ieftină reparație din tot capitolul.
+2. **Găsește rândurile care descriu aceeași firmă** — același CUI pe două rânduri, sau denumiri aproape identice („Metro" / „Metro Cash & Carry SRL"). Poți întreba asistentul pe un cod fiscal anume (`resolve_supplier_identity`): dacă în lista ta există mai mulți candidați pe acel cod, ți-i spune pe toți.
+3. **Unifică-i**, ca aceeași firmă să aibă un singur rând, apoi verifică facturile rămase nelegate în tabul Reconciliere. Până când unifici, verificarea de duplicat nu are cum să vadă geamănul.
+
 ## Tool-uri MCP utile
 
 **Citire (read-only; cere grantul `readModule` al domeniului pe token):**
@@ -101,6 +121,8 @@ La primire marchezi recepția **„conformă"** sau **„cu diferențe"** + o no
 - `diagnose_inventory_document_reversal` — preview read-only al blocajelor cunoscute înainte de anulare. Nu înlocuiește validarea finală și nu este suficient singur pentru a executa reversarea.
 - `list_reception_notes` — notele de diferență la recepție.
 - `list_receptions_to_review` — recepțiile din poză care așteaptă verificarea unui responsabil.
+- `resolve_supplier_identity` — cine e de fapt furnizorul de pe un cod fiscal: îl caută în lista ta, apoi (doar dacă e necunoscut) la ANAF/VIES, apoi din nou în lista ta cu denumirea oficială. Îți spune dacă e confirmat, dacă e într-adevăr o firmă nouă sau dacă ai **mai mulți candidați pe același cod** — exact ce cauți când vânezi furnizori dublați. Nu creează și nu modifică nimic.
+- `explain_photo_reception` — de ce o recepție din poză a rămas neterminată: furnizorul recunoscut sau nu (și între ce firme trebuie ales), avertismentele analizei (inclusiv factură care pare dublată) și câte linii mai au nevoie de produs.
 
 **Scriere (modul `inventar` = „Stocuri & Recepție"):**
 - `import_efactura` — descarcă și importă facturile din SPV. Toate regulile de mai sus (înlocuire / atașare / toleranță) se aplică identic și pe această cale.
@@ -123,7 +145,9 @@ La primire marchezi recepția **„conformă"** sau **„cu diferențe"** + o no
 - **Am marcat recepția „cu diferențe" și totuși s-a legat de factură.** Verificarea fizică e informativă pentru reconciliere. Blochează doar marcarea recepției ca verificată. Rezolvă nota de diferență cu furnizorul (stornare, factură de corecție) și abia apoi bifează.
 - **Am legat tot corect și marfa tot a intrat de două ori.** Cel mai frecvent motiv: pe lângă recepția legată de factură s-a mai făcut una separată (pe aviz sau „direct pe stoc"), iar cele două n-au fost unite. Caută în „Recepții (NIR)" după furnizor + interval de dată: două recepții cu aceleași produse și cantități, la câteva zile distanță. Confirmă documentul greșit și urmează diagnosticul + ordinea sigură din secțiunea 6; nu alege recepția de anulat doar după asemănarea totalurilor.
 - **Furnizorul mi-a trimis aceeași marfă pe aviz și pe factură, cu numere diferite.** Sunt două documente diferite pentru o singură livrare. Le legi manual în Reconciliere (avizul pe stânga, factura pe dreapta) — automat nu se potrivesc, pentru că potrivirea merge pe numărul facturii.
-- **Am doi furnizori identici în catalog și facturile se împart între ei.** Verificarea de duplicat compară pe furnizor; doi furnizori separați înseamnă două „istorii" separate, deci dublurile nu se mai văd. Unifică furnizorii (același CUI = un singur furnizor) înainte de orice altceva.
+- **Am doi furnizori identici în catalog și facturile se împart între ei.** Verificarea de duplicat compară pe furnizor; doi furnizori separați înseamnă două „istorii" separate, deci dublurile nu se mai văd. Unifică furnizorii (același CUI = un singur furnizor) înainte de orice altceva. ⚠ Recepția din poză nu-ți mai creează rânduri noi pentru o firmă pe care o ai deja — dar **nu repară în urmă**: cele două rânduri existente rămân două până le unifici tu.
+- **Dacă acum se caută după cod fiscal, dublurile vechi dispar singure?** Nu. Regula nouă previne apariția altora; ce e deja în listă rămâne neatins. Vezi capitolul „Furnizorul se potrivește pe COD FISCAL, nu pe nume" — acolo e ordinea de curățare.
+- **Furnizorul meu nu are CUI completat — contează?** Da, foarte mult. Fără cod fiscal ratează pasul sigur (căutarea pe cod) și rămâne să fie prins pe denumirea oficială — ceea ce depinde de răspunsul ANAF/VIES și de cât de aproape e numele scris de tine de cel oficial. Completează CUI-ul la furnizorii pe care îi folosești des; e reparația cu cel mai bun raport efort/rezultat.
 - **Am oprit verificarea de duplicat pentru că dădea alarme false.** Atunci ai oprit toată protecția anti-dublă-înregistrare, inclusiv pe cea automată. Repornește-o din Setări → Stocuri și rezolvă cauza reală (de obicei furnizori duplicați în catalog sau numere de factură tastate diferit).
 
 ## Pentru acces SQL

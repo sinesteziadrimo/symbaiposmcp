@@ -89,7 +89,8 @@ Nota contabilă la postare derivă contul de stoc din TIPUL canonic al produsulu
 
 Cum merge captura:
 - Faci poză la factură sau aviz cu telefonul (sau încarci fișiere). **Poți adăuga mai multe poze** dacă factura are mai multe pagini — butonul devine „Fotografiază pagina 2, 3…" și sistemul le tratează pe TOATE ca un singur document. Merge și cu **PDF-uri cu mai multe pagini** (le desface singur) — util la facturile mari de la Metro/Selgros sau magazinele online cu zeci de produse.
-- Sistemul citește furnizorul, numărul, liniile cu cantități și prețuri, și recunoaște produsele din recepțiile anterioare. Cu fiecare factură verificată, următoarele de la același furnizor merg mai repede.
+- Sistemul citește numărul facturii, liniile cu cantități și prețuri, și recunoaște produsele din recepțiile anterioare. Cu fiecare factură verificată, următoarele de la același furnizor merg mai repede.
+- **Furnizorul NU se stabilește „citind" numele de pe hârtie.** Se pleacă de la codul fiscal și se caută în lista TA de furnizori; abia dacă nu e acolo se întreabă ANAF sau VIES. De aceea pe recepție poate apărea alt nume decât cel tipărit pe factură — vezi capitolul „De unde știe sistemul CINE e furnizorul".
 
 Ce se întâmplă DUPĂ poză depinde de **modul ales de firmă** (Setări → Stocuri → „Recepție din poză"):
 1. **Doar ciornă** — se creează o ciornă în „Avize & Draft"; produsele se verifică și marfa intră pe stoc mai târziu, manual (mapare → Aprobă → Creează NIR). Comportamentul clasic, pentru firme prudente.
@@ -99,6 +100,40 @@ Ce se întâmplă DUPĂ poză depinde de **modul ales de firmă** (Setări → S
 **Produse care nu-s pe comandă:** dacă furnizorul a livrat ceva ce n-ai comandat, poți primi produsul extra pe stoc alegându-l din catalog direct la recepție — nu se mai pierde marfa fizică.
 
 **Reconcilierea cu eFactura oficială:** când vine eFactura de la ANAF pentru aceeași factură fizică (același furnizor + număr), sistemul evită dublarea: dacă ciorna din poză e neaprobată și sumele se potrivesc, eFactura o înlocuiește automat; dacă poza era deja aprobată/recepționată, eFactura oficială se atașează (nu se mai pierde) și un gard împiedică al doilea NIR pe aceeași factură. Sumele diferite → avertisment + legare manuală în tabul **Reconciliere**.
+
+## De unde știe sistemul CINE e furnizorul
+
+Numele tipărit pe factură nu decide nimic. O literă citită greșit, o denumire scurtată de furnizor, o ștampilă peste antet — niciuna nu are voie să nască un al doilea furnizor în lista ta. De aceea furnizorul se **caută**, în trei pași, în ordinea asta:
+
+1. **Codul fiscal, în lista TA de furnizori.** Prefixul RO, spațiile și punctele se ignoră. Dacă furnizorul e deja la tine în listă, se folosesc **numele și datele din lista ta**, iar căutarea se oprește aici. O literă citită greșit de pe hârtie nu mai contează.
+2. **ANAF sau VIES — doar dacă nu l-ai avut.** Pentru un cod fiscal românesc se întreabă ANAF, pentru un cod de TVA european se întreabă VIES: cum se numește **oficial** firma cu acest cod.
+3. **A doua căutare în lista ta, cu denumirea oficială.** Aici se prinde furnizorul pe care îl ai deja scris altfel — „MEGA IMAGE" la tine, „MEGA IMAGE S.R.L." la ANAF. În loc să apară un rând nou, ți se arată rândul tău existent.
+
+Pasul 2 se atinge **numai** dacă pasul 1 n-a găsit nimic. Pentru o firmă care își are furnizorii în listă, recepția obișnuită nu iese deloc în afară — nu așteaptă nimic de la ANAF sau VIES.
+
+### Cele trei răspunsuri: verde, galben, roșu
+
+- **VERDE — furnizor confirmat.** Identitatea vine dintr-o sursă sigură: codul fiscal l-a găsit în lista ta, tu ai ales furnizorul înainte de a poza, sau denumirea oficială de la ANAF/VIES a dus la un furnizor pe care îl aveai deja. N-ai ce verifica. Dacă procedura firmei e pe „direct pe stoc" și restul documentului e curat, marfa poate intra singură.
+- **GALBEN — furnizor nou.** Codul fiscal e valid, firma există la ANAF/VIES, dar la tine în listă nu e. Se propune crearea lui, cu **denumirea oficială**, nu cu ce s-a citit de pe poză. Nu e o avertizare și nu e o problemă — e o stare normală de business, o accepți cu o apăsare.
+- **ROȘU — alege tu.** Sistemul nu poate decide singur, așa că te întreabă, cu motivul scris pe înțeles. Se întâmplă când: ai mai mulți furnizori cu același cod fiscal în listă; numele de pe document nu seamănă deloc cu firma căreia îi aparține codul („codul duce la «X», dar pe document scrie «Y»"); sunt mai multe potriviri la fel de bune; codul fiscal e citit greșit (nu trece verificarea cifrei de control); tu ai ales un furnizor, dar codul de pe hârtie duce în altă parte; sau ANAF/VIES nu a răspuns.
+
+### Regula de aur: când nu e sigur, te întreabă
+
+**Sistemul nu inventează niciodată un furnizor nou ca să scape de o nelămurire.** Dacă ANAF sau VIES nu răspunde (rețea, serviciu picat, mentenanță), răspunsul este „alege tu", **niciodată** „furnizor nou". Motivul e practic: un furnizor dublat, apărut într-o zi cu internet prost, nu se mai desface ușor după ce are NIR-uri și facturi agățate de el.
+
+Tot „alege tu" primești și când:
+
+- **țara nu poate fi verificată deloc** — VIES acoperă doar Uniunea Europeană (plus Irlanda de Nord). Pentru Elveția, Turcia, Serbia, Moldova, Norvegia, Marea Britanie sau SUA nu există un ANAF ori un VIES de întrebat, deci nu se poate afirma că firma e nouă;
+- **VIES confirmă firma, dar nu-i dă numele** — câteva state (Germania, Spania, Italia) nu divulgă denumirea firmei. Se știe că firma există, dar nu avem cu ce s-o căutăm în lista ta, deci nu putem exclude un duplicat;
+- **țara furnizorului nu se poate stabili din document.**
+
+### Ce faci când e roșu
+
+Alegi furnizorul corect sau confirmi că e într-adevăr o firmă nouă. De obicei nu cauți orbește: candidații îți sunt puși în față cu numele lor (cel mult cinci, ca să rămână de citit și pe telefon). Excepția e când în lista ta sunt prea mulți furnizori cu denumiri asemănătoare — atunci ți se spune pe față că nu se poate alege și îl cauți tu.
+
+Până alegi, marfa **nu** intră singură pe stoc: recepția trece la verificare, cu motivul scris. Nu e o eroare — e pasul care ține lista de furnizori curată.
+
+**Poți cere asistentului**, fără să deschizi nimic: „cine e de fapt furnizorul cu CUI 14820019", „de ce mi-a pus alt nume decât pe factură", „verifică codul de TVA BG123456789", „de ce n-a recunoscut furnizorul la factura asta". Vezi tool-urile de citire din secțiunea de mai jos.
 
 ## Recepția pe LOTURI (fabrici) — același produs în mai multe loturi
 
@@ -148,6 +183,10 @@ Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește *
 - `get_received_efactura_details` — antetul unei facturi (furnizor, sume, deductibilitate, dacă are NIR) + toate liniile cu starea mapării (produs, cont, acceptat, factor pachet). Folosește-l înainte de a mapa.
 - `diagnose_incoming_invoice_integrity` — găsește facturile cu zero linii și separă cazurile sănătoase, reparabile din XML-ul oficial păstrat, cele care cer re-descărcare ANAF și cele fără sursă recuperabilă.
 - `diagnose_inventory_document_reversal` — previzualizează anularea unui NIR/document postat și enumeră blocajele reale: factură generată din recepție, loturi deja consumate, inventar sau consum din aval. Nu modifică stocul.
+- `resolve_supplier_identity` — spune CINE e de fapt furnizorul de pe un cod fiscal, fără să creeze nimic: caută întâi în lista ta, apoi (doar dacă e necunoscut) la ANAF/VIES, apoi din nou în lista ta cu denumirea oficială. Întoarce una din cele trei stări — confirmat / furnizor nou / alege tu — și, la nevoie, lista candidaților. Pentru „e alt furnizor decât scrie pe factură", „de ce mi-a schimbat numele", „am doi furnizori cu același CUI".
+- `lookup_eu_company_vat` — verifică un cod de TVA european în VIES (perechea europeană a lui `lookup_company_cui`, care merge doar pentru România). ⚠ Distinge trei răspunsuri: firma există / codul nu e valabil / serviciul nu răspunde acum. Ultimul **nu** înseamnă că firma nu există — nu adăuga furnizorul ca nou pe baza lui.
+- `explain_photo_reception` — povestea unei recepții făcute din poză, în cuvinte: de ce furnizorul a fost sau nu recunoscut (și între ce firme trebuie ales), ce avertismente a lăsat analiza documentului, câte linii au deja produs legat și câte nu. Răspunde direct la „de ce n-a intrat marfa pe stoc" și „ce mai e de făcut la factura asta".
+- `suggest_invoice_line_products` — ce produse ar putea fi liniile unei facturi, cu motivul fiecărei propuneri și cu mențiunea dacă e destul de sigură ca să se aplice singură. Vezi `mapare-si-reconversie-facturi.md`.
 - (general) `list_suppliers`, `search_products_db`, `list_product_types`, `get_stock_levels`, `list_pending_nirs`, `list_reception_notes`.
 
 **Scriere (cer modulul `inventar` = „Stocuri & Recepție" pe token):**
@@ -198,6 +237,10 @@ Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește *
 - **Factura există, dar arată zero linii.** Nu o trata drept factură cu valoare zero și nu crea NIR gol. Rulează `diagnose_incoming_invoice_integrity`; repară numai dacă `repairCandidate=true` și lista `repairBlockers` este goală. `repair_missing_incoming_invoice_lines` revalidează tranzacțional XML-ul oficial, ID-ul ANAF, hash-ul, numărul facturii și lipsa oricărui efect ulterior; apoi recitește factura. Dacă XML-ul lipsește dar există identificatorul oficial, re-descarcă din ANAF/SPV. Nu inventa manual liniile fiscale.
 - **Am făcut recepție din poză — de ce nu a crescut stocul?** Depinde de modul ales de firmă (Setări → Stocuri → „Recepție din poză"): pe modul **doar ciornă** stocul intră abia după mapare → Aprobă → Creează NIR cu magazie; pe **verificare imediată** intră după ce confirmi produsele în ecranul de verificare; pe **direct pe stoc** intră automat când totul e curat (furnizor recunoscut, produse identificate, total verificat matematic) — orice nelămurire cade la verificare, cu motive scrise.
 - **A venit eFactura, dar am deja ciorna din poză — se dublează?** Dacă ciorna e neaprobată și sumele se potrivesc, eFactura o înlocuiește automat. Dacă nu, leagă-le manual în Reconciliere.
+- **Pe recepție îmi arată alt nume decât cel tipărit pe factură.** Așa trebuie. Furnizorul se stabilește după **codul fiscal**, nu după numele citit de pe hârtie: dacă acel cod e deja în lista ta, se folosesc numele și datele din lista ta. Așa nu se naște un al doilea rând doar pentru că pe factura asta scria „S.R.L." și pe cealaltă nu. Numele citit de pe document se păstrează și se poate vedea lângă cel real (`resolve_supplier_identity`, `explain_photo_reception`).
+- **Furnizor nou — de unde știe denumirea, dacă nu-l am în listă?** De la sursa oficială: ANAF pentru un cod fiscal românesc, VIES pentru un cod de TVA european. De aceea firma nouă se creează cu **denumirea oficială**, nu cu ce s-a citit de pe poză. Înainte de a-l propune ca nou, sistemul mai caută o dată în lista ta **cu denumirea oficială** — ca să nu-ți dubleze un furnizor pe care îl aveai scris altfel.
+- **De ce mă întreabă care furnizor e? E clar pe factură.** Pentru că ceva nu se închide singur: ai doi furnizori cu același cod fiscal, codul duce la altă firmă decât numele de pe hârtie, sunt mai multe potriviri la fel de bune, codul e citit greșit, sau ANAF/VIES n-a răspuns. Sistemul preferă să te întrebe decât să inventeze un furnizor nou — un furnizor dublat e greu de reparat după ce are documente pe el. Alegi o dată și merge mai departe.
+- **ANAF/VIES nu răspunde — pot lăsa să se creeze furnizorul nou?** Sistemul nu ți-l propune ca nou în situația asta, intenționat. Poți alege tu furnizorul din listă dacă îl ai, sau reiei recepția mai târziu. Pentru firmele din afara UE (Elveția, Turcia, Serbia, Moldova, Norvegia, Marea Britanie, SUA) nu are cine confirma denumirea oficială, deci acolo confirmarea o dai mereu tu.
 - **De ce serviciul a ajuns pe cont de marfă (371)?** Tipul produsului e greșit (marcat ca marfă/stocabil). **Repară tipul produsului** — la liniile de cheltuială contul de pe linie contează, dar rămâne greșit la următoarea factură dacă tipul nu e corectat. Prin MCP, `map_invoice_line` cu un produs de tip serviciu rezolvă automat contul de cheltuială corect.
 - **Am schimbat contul pe linie și nota contabilă e la fel.** Corect, nu e o defecțiune. La marfa care intră pe stoc nota se face **din tipul produsului**, nu din contul de pe linie (vezi nota din „Maparea unei linii"). Verifică tipul produsului (`get_product_details`) și conturile tipului (`list_product_types` / `get_product_type_details`), corectează acolo, apoi reface nota din aplicație („Modificare NIR").
 - **AI-ul a mapat totul, dar nu pot accepta o linie.** Linia n-are un cont valabil — se întâmplă la regulile învățate din catalogul furnizorului, care leagă produsul dar nu poartă și un cont. Alege contul o dată pe linia respectivă (sau pune tipul corect pe produs); după prima confirmare se învață și nu mai apare. `accept_all_invoice_mappings` îți spune exact asta în lista `blocked[]`.

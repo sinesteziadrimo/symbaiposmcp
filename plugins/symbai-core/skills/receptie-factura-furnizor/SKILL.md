@@ -1,6 +1,6 @@
 ---
 name: receptie-factura-furnizor
-description: Procesează facturile de la furnizori și intrările de marfă (Intrări Marfă) — recepție directă pe stoc prin MCP (NIR + note contabile automate), maparea liniilor de eFactură la produse + conturi, factor de pachet, tip produs corect, magazie/unitate, deductibilitate, reconciliere aviz/poză cu eFactura. Folosește la „adaugă factura de intrare", „recepție marfă", „bagă marfa pe stoc", „mapează factura de la X", „de ce nu intră pe stoc", „leagă avizul de factură", „intrări marfă", „NIR", „factură furnizor".
+description: Procesează facturile de la furnizori și intrările de marfă (Intrări Marfă) — recepție directă pe stoc prin MCP (NIR + note contabile automate), maparea liniilor de eFactură la produse + conturi, factor de pachet, tip produs corect, magazie/unitate, deductibilitate, reconciliere aviz/poză cu eFactura, plus recunoașterea furnizorului de pe document (căutare pe cod fiscal în lista clientului, apoi denumirea oficială de la ANAF/VIES). Folosește la „adaugă factura de intrare", „recepție marfă", „bagă marfa pe stoc", „mapează factura de la X", „de ce nu intră pe stoc", „leagă avizul de factură", „intrări marfă", „NIR", „factură furnizor", „e alt furnizor decât scrie pe factură", „de ce mi-a schimbat numele furnizorului", „furnizor nou din poză", „de ce nu s-a recunoscut furnizorul", „am doi furnizori cu același CUI", „verifică furnizorul la ANAF".
 ---
 
 # Recepție factură furnizor / Intrări Marfă — corect, complet, rapid
@@ -21,14 +21,34 @@ Sunt DOUĂ situații. Confundarea lor dublează stocul — nu sări peste.
 **Procedura firmei e configurabilă** (Setări → Stocuri → „Recepție din poză"; citește-o cu `get_reception_policy`, schimb-o cu `configure_reception_policy`): modul (ciornă / verificare imediată / direct pe stoc), magazia implicită de recepție și cine poate corecta mapările / adăuga produse noi. Consult-o ÎNAINTE să explici de ce a intrat (sau nu) marfa pe stoc. Există și un **loop automat de eFactură**: verifică-dacă-e-ceva-nou → importă din SPV → mapează automat liniile (pe regulile învățate) → decizie (ce e curat trece, ce e neclar rămâne la om) → procesează, cu **NIR automat opțional** — facturile pot curge singure până la stoc, tu intervii doar la excepții.
 
 ## Principii (nu greși astea)
-- **Nu inventa** produse, conturi sau prețuri. Ce nu se potrivește clar → întreabă userul.
+- **Nu inventa** furnizori, produse, conturi sau prețuri. Ce nu se potrivește clar → întreabă userul.
 - **Caută înainte de a crea** (`search_products_db`); **verifică prin citire după** (`get_received_efactura_details`, `get_stock_levels`, `get_journal_entries_summary`).
 - **Contul vine din TIPUL produsului.** Leagă linia/produsul de tipul corect și contul se rezolvă singur (raw_material→301, merchandise→371, consumable→302/603, packaging→381, service→628 etc.). Nota contabilă se generează corect chiar dacă brandul n-are tipuri de produs configurate (sistemul folosește maparea implicită pe tipul canonic). Tipurile configurate (`create_product_type`) sunt necesare doar pentru CONTURI PERSONALIZATE / override-uri.
 - ⚠ **Contul de pe linie NU schimbă nota contabilă la marfa care intră pe stoc.** Pentru o linie care intră pe stoc, nota se face **din tipul produsului** (plus conturile personalizate pe tip/unitate, dacă există). Contul pus pe linie se vede în ecranul de mapare și în rapoarte, dar nu rescrie nota. El decide nota doar la **liniile de cheltuială** (servicii, utilități, transport) și la facturile pur contabile. Deci dacă nota iese pe cont greșit, **repari tipul produsului** (`get_product_details` → `list_product_types` / `get_product_type_details` → `update_product` sau `change_product_type` 🔒), nu contul de pe linie. Confirmarea învață regula **furnizor + descriere normalizată → produs + cont de mapare + factor**; nu o propagă automat la orice furnizor.
 - **Costul e obligatoriu la intrare.** Pe Calea A pune `unitCost` pe fiecare linie, altfel stocul se valorează la 0 și nota contabilă iese 0. Pe Calea B costul vine din factură.
 
 ## Faza 1 — Context
-`list_brands` + `list_locations` (brandId/locationId) și `list_warehouses_full` (magaziile). `list_suppliers` pentru furnizor. Dacă furnizorul lipsește → `create_supplier`. Dacă produsul lipsește → `create_product` (vezi mai jos).
+`list_brands` + `list_locations` (brandId/locationId) și `list_warehouses_full` (magaziile). `list_suppliers` pentru furnizor. Dacă produsul lipsește → `create_product` (vezi mai jos).
+
+### Cine e furnizorul — se CAUTĂ, nu se citește de pe hârtie
+
+Numele scris pe factură (mai ales pe una fotografiată) e întrebarea, nu răspunsul. O literă citită greșit n-are voie să nască un al doilea furnizor. Ordinea e mereu aceeași, iar **fiecare pas se face doar dacă cel dinainte n-a găsit nimic**:
+
+1. **Codul fiscal, căutat în lista TA de furnizori.** Se caută pe cod curățat (fără RO, fără spații, fără puncte), nu pe denumire. Găsit → gata: se folosesc numele și codul **din lista ta**, nu ce s-a citit de pe hârtie. Aici se opresc aproape toate recepțiile unui client care își are furnizorii introduși — nu se întreabă nimic în afară.
+2. **Denumirea oficială, cerută la ANAF sau VIES.** Doar dacă acel cod nu e în listă. Cod fiscal românesc → ANAF (`lookup_company_cui`); cod de TVA european → VIES (`lookup_eu_company_vat`).
+3. **A doua căutare în lista ta, acum cu denumirea oficială.** Aici se prinde furnizorul pe care îl ai deja, scris altfel — «MEGA IMAGE» la tine, «MEGA IMAGE S.R.L.» la ANAF. Fără pasul ăsta ar apărea al doilea rând pentru aceeași firmă.
+4. **Abia dacă nu s-a găsit nimic nicăieri** se propune un furnizor nou — creat cu denumirea **oficială**, nu cu ce s-a citit de pe poză.
+
+Tot lanțul îl poți rula ca simplă CITIRE, fără să creezi nimic: `resolve_supplier_identity({ taxId })` sau `resolve_supplier_identity({ invoiceId })`. Îți spune cine e furnizorul **și de ce**.
+
+**Trei culori, atât:**
+- 🟢 **Verificat** — luat dintr-o sursă sigură (codul fiscal din lista ta, sau denumirea oficială care a nimerit un rând existent). N-ai ce verifica.
+- 🟡 **Furnizor nou** — chiar nu există nicăieri. Se creează, e o situație normală de business și nu blochează nimic.
+- 🔴 **Alege tu** — sunt mai mulți candidați, denumirea de pe hârtie duce în altă parte decât codul fiscal, sau ANAF/VIES n-a răspuns. Se oprește și te întreabă.
+
+**Regula de aur: când sistemul NU e sigur, întreabă — nu inventează un furnizor nou.** Un răspuns care lipsește („ANAF nu răspunde acum", „țara asta nu se poate verifica") NU e o dovadă că firma nu există, deci nu duce niciodată la „furnizor nou". Motivul e foarte practic: un furnizor dublat, o dată ce are NIR-uri și facturi agățate de el, nu se mai desface.
+
+`create_supplier` merge pe aceeași ordine, chiar dacă îl chemi tu direct: caută întâi codul fiscal în listă și, dacă îl are, îți întoarce furnizorul existent („există deja"), fără să scrie nimic. **Codul fiscal e obligatoriu** — pe denumire furnizorii nu se creează, tocmai ca să nu se dubleze.
 
 ### Produs nou corect din prima (tip, unitate, magazie, TVA)
 `create_product({ name, brandId, type, unit, warehouseId, vat, receptionPrice })`:
@@ -62,6 +82,8 @@ Asta acoperă „adaugă factura de intrare" când nu vrei să treci prin eFactu
 1. `get_received_efactura_details({ invoiceId })` — liniile + starea (produs mapat, cont, acceptat, factor pachet).
 2. Pentru fiecare linie **nemapată / neacceptată**:
    - `search_products_db` pe descrierea liniei → găsește produsul intern. Lipsă? Întreabă userul dacă să-l creezi (`create_product` cu tipul corect) sau e altul existent (typo/diacritice).
+   - **Ce produs e, de fapt** — `suggest_invoice_line_products({ invoiceId, lineId? })` (doar citire) îți arată variantele **cu motivul fiecăreia**: cod de bare identic, codul de articol al furnizorului, o regulă salvată de la recepțiile anterioare, potrivire pe denumire în catalog sau ce ai mai cumpărat de la acel furnizor. Îți spune și cât de sigură e potrivirea și dacă e destul de sigură ca să se aplice singură. Nu creează și nu modifică nimic — e perechea de citire a lui `map_invoice_line`.
+   - **Un produs care seamănă foarte tare cu unul existent NU se creează automat** — ți se propune cel existent și alegi tu. Așa nu ajungi cu «Cartofi» și «Cartofl» în stoc, adică două stocuri pe același lucru și food cost fals.
    - `map_invoice_line({ invoiceId, lineId, productId })` — leagă + acceptă + învață regula. Contul se rezolvă automat din tipul produsului; dă `accountCode` doar dacă userul cere altul. (Implicit, dacă nu poate deriva, cade pe 371 — de aceea tipul produsului trebuie corect.)
    - **Factor de pachet (reconversie):** furnizorul facturează în bax/navetă/cutie, tu ții la bucată/kg → adaugă `packMultiplier` (ex. 24) + `packKeyword` („bax"). Cantitatea se înmulțește (×24), prețul unitar se împarte (÷24), **valoarea liniei rămâne exact cea din factură**, iar cifrele originale ale furnizorului se păstrează separat, ca dovadă. (Există DOAR pe `map_invoice_line` — Calea B. Pe Calea A convertești tu cantitatea în unitatea de stoc.) Reguli:
      - **Sistemul propune singur** factorul când îl recunoaște din descriere („bax", „navetă", „pachet", formule de tip „6x1L", oferte „5+1", plus mărimile obișnuite la bere/răcoritoare/apă). E o propunere — o confirmi, nu o aplici orb.
@@ -127,7 +149,11 @@ Următoarele se fac DOAR din aplicație. Nu improviza altă cale (ajustare de in
 
 ## Capcane (spune-le userului când apar)
 - **Stoc dublat** = ai folosit `create_inventory_document` pentru o marfă care avea deja factură în sistem (trebuia Calea B). Verifică în `list_pending_nirs` / Recepții (NIR).
-- **„De ce nu intră pe stoc după poză?"** Depinde de modul firmei (citește-l cu `get_reception_policy`): pe **doar ciornă** → mapare → Aprobă → NIR cu magazie; pe **verificare imediată** → intră după confirmarea din ecranul de verificare; pe **direct pe stoc** → intră automat când totul e curat (furnizor recunoscut, produse identificate, total verificat), altfel cade la verificare cu motive scrise.
+- **„De ce nu intră pe stoc după poză?"** Depinde de modul firmei (citește-l cu `get_reception_policy`): pe **doar ciornă** → mapare → Aprobă → NIR cu magazie; pe **verificare imediată** → intră după confirmarea din ecranul de verificare; pe **direct pe stoc** → intră automat când totul e curat (furnizor recunoscut, produse identificate, total verificat), altfel cade la verificare cu motive scrise. Un furnizor rămas pe 🔴 („alege tu") e exact unul dintre acele motive — se rezolvă alegând furnizorul, nu forțând postarea.
+- **„ANAF/VIES n-a răspuns" NU înseamnă „furnizor nou".** Când ANAF/VIES tace (rețea, serviciu picat) sau nu acoperă țara codului (Elveția, Turcia, Serbia, Moldova, Norvegia, SUA…), recepția te întreabă pe tine — nu creează furnizorul. Nu forța crearea „ca să meargă acum": un duplicat făcut într-o pană de rețea rămâne în listă cu documente agățate de el și nu se mai desface. Mai încearcă peste câteva minute sau alege furnizorul din listă.
+- **„Am deja furnizorul, dar mi-l propune ca nou."** Se întâmplă când în lista ta e salvat FĂRĂ cod fiscal, sau cu codul scris altfel. Verifică cu `resolve_supplier_identity({ taxId })` și, dacă rândul chiar există, completează-i codul fiscal pe fișa lui (`update_supplier`) — de la următoarea factură se recunoaște singur. Nu crea al doilea rând.
+- **„De ce mi-a schimbat numele furnizorului?"** Un furnizor nou se creează cu **denumirea oficială** de la ANAF/VIES, nu cu ce scria pe hârtie — de asta apare «MEGA IMAGE S.R.L.» acolo unde pe factură era «Mega Image». E intenționat: așa se leagă între ele documentele viitoare de la același partener, în loc să se împrăștie pe două grafii.
+- **„Pe factură scrie un furnizor, sistemul arată altul."** Codul fiscal bate denumirea — el e identitatea firmei, numele e doar text tipărit. Când cele două nu duc în același loc, recepția nu alege singură. Vezi cu `explain_photo_reception({ invoiceId })` ce a găsit și unde s-a împiedicat, apoi confirmă tu furnizorul corect.
 - **Stoc/notă pe valoare 0** = ai uitat `unitCost` pe Calea A (sau costul lipsește din factură).
 - **Serviciu pe cont de marfă (371)** = tip produs greșit. Leagă-l de un produs de tip `service` (cont 628 automat) sau schimbă tipul cu `update_product`.
 - **„Am schimbat contul pe linie și nota contabilă e la fel."** = normal, la marfa care intră pe stoc nota vine din TIPUL produsului (vezi Principii). Corectura se face pe tip (`update_product` / `change_product_type` 🔒 sau conturile tipului cu `update_product_type`), apoi se reface nota din aplicație („Modificare NIR"). Verifică rezultatul cu `get_journal_entries_summary`.

@@ -8,6 +8,8 @@ Acest fișier completează `intrari-marfa-receptie.md` (fluxul complet al recep�
 
 Denumirile furnizorului („BX COCA COLA 0.5 X 12") devin produsele tale în această ordine: **codul de bare / codul de articol al furnizorului → ce ai decis tu data trecută → ce ai mai primit de la furnizorul ăsta → abia apoi asistentul AI.** Tu confirmi, sistemul învață. Confirmarea memorează trei lucruri deodată: **produsul**, **contul** și **factorul de pachet**. De aceea o confirmare bună îți economisește ore la facturile următoare — și una greșită se propagă la fel de repede.
 
+Iar când ceva **seamănă foarte tare** cu un produs pe care îl ai deja, nu se creează al doilea rând: ți se propune produsul existent și alegi tu. Așa nu ajungi cu „Cartofi" și „Cartofl" pe stoc.
+
 ## Concepte
 
 - **Mapare** — legarea unei linii de factură (denumirea furnizorului) de un **produs din catalogul tău** + un **cont**. Fără mapare acceptată nu se poate face NIR, deci marfa nu intră pe stoc.
@@ -17,6 +19,7 @@ Denumirile furnizorului („BX COCA COLA 0.5 X 12") devin produsele tale în ace
 - **Factor de pachet (reconversie)** — de câte ori se desface unitatea furnizorului în unitatea ta de stoc (1 bax = 24 bucăți).
 - **Cifrele originale ale furnizorului** — cantitatea, unitatea și prețul așa cum apar pe document. Se păstrează separat, ca dovadă, și nu se modifică niciodată prin reconversie.
 - **Produs propus** — un produs pe care asistentul îl sugerează pentru că nu l-a găsit în catalog. E o propunere, nu un produs creat.
+- **Cele trei culori** — verde („luat dintr-o sursă sigură"), galben („produs nou, se creează") și roșu („alege tu"). Sunt aceleași trei răspunsuri pe care le dă și recunoașterea furnizorului; vezi capitolul dedicat.
 - **Cont de pe linie** vs **cont din notă** — două lucruri diferite la marfa care intră pe stoc; vezi capitolul dedicat.
 
 ## Paginile modulului
@@ -45,6 +48,28 @@ Ce înseamnă asta pentru tine:
 - **Încredere mică** = propunerea vine din asemănare de text. Se verifică linie cu linie. Acceptarea în bloc ia doar propunerile de peste jumătate din încredere; restul rămân marcate „de verificat" și **nu se aplică singure**.
 - ⚠ **Dacă marca de pe factură nu se potrivește cu marca produsului propus, propunerea se oprește automat** și linia rămâne fără produs, cu motivul scris. Nu e o eroare — e plasa care te apără de „Pepsi intrat pe stocul de Coca-Cola".
 - Regulile care arată spre un produs șters din catalog sunt ignorate complet, iar produsele din tipuri care nu se cumpără nu apar niciodată ca propunere.
+
+## Cele trei culori de pe o linie
+
+Fiecare linie primește unul din trei răspunsuri — aceleași trei ca la furnizor (vezi `intrari-marfa-receptie.md`, capitolul „De unde știe sistemul CINE e furnizorul"):
+
+- **VERDE — produs confirmat.** Legătura vine dintr-o sursă sigură: cod de bare identic, codul de articol al furnizorului, o regulă pe care ai confirmat-o tu data trecută, sau alegerea ta manuală. Doar verdele se poate aplica singur. ⚠ Și el se oprește dacă mai lipsește ceva pe linie — contul sau traducerea unității: **cine e produsul** și **cât intră pe stoc** sunt două întrebări diferite, iar a doua tot te așteaptă.
+- **GALBEN — produs nou.** Nu există nimic asemănător în catalog. Ți se propune crearea produsului, cu denumirea de pe document. Informativ, fără avertisment — e pur și simplu o marfă pe care o primești prima oară.
+- **ROȘU — alege tu.** Propunerea vine din **asemănarea denumirii**, nu dintr-o dovadă. Ți se arată candidații (cel mult cinci, cei mai buni), dar linia rămâne nelegată până apeși tu. Tot roșu primești când două produse sunt aproape la fel de bune — o diferență prea mică între ele nu e o alegere, e o monedă aruncată — sau când sunt prea multe denumiri asemănătoare ca să se poată decide.
+
+O potrivire pe denumire, oricât de frumos ar arăta procentul, rămâne o **citire**, nu o dovadă. De aceea nu se aplică singură, oricât de sigură pare.
+
+⚠ **„Se aplică singur" înseamnă „se scrie fără să apese nimeni".** Acceptarea în bloc e altceva: acolo **tu** confirmi dintr-o dată propunerile care trec de un prag de încredere. Rămâne decizia ta, doar că e dată pentru mai multe linii deodată — de aceea merită să te uiți peste ele înainte.
+
+## Un produs aproape identic se PROPUNE, nu se creează
+
+Pe factură scrie „CARTOFL 10/10". În catalog ai „Cartofi 10/10". Sistemul **nu** creează al doilea produs: îți pune în față produsul existent și te întreabă — e același, sau chiar e altul?
+
+Fără gardul ăsta ai ajunge cu „Cartofi" și „Cartofl" pe stoc: stocul împărțit între două rânduri, consumul scăzând din unul, cumpărăturile intrând în celălalt, iar costul mărfii greșit la amândouă. Un produs dublat, ca și un furnizor dublat, e mult mai greu de reparat după ce are documente pe el decât e de confirmat acum, o dată.
+
+- Verificarea nu se uită doar la nume: mai întâi **codul de bare**, **codul de articol al furnizorului** și **ce ai mai cumpărat de la furnizorul ăsta**. Numele e ultima treaptă, nu prima.
+- Diacriticele, majusculele, punctuația și gramajele lipite de denumire se ignoră la comparație — „CARTOFI 10 KG" și „cartofi 10kg" sunt același lucru.
+- **Ce faci:** alegi produsul existent (legătura se învață și data viitoare merge singură) sau confirmi că e într-adevăr alt produs și îl creezi.
 
 ## Ce învață sistemul când confirmi
 
@@ -77,6 +102,7 @@ Contul de pe linie decide nota contabilă doar la **liniile de cheltuială** (se
 
 Când asistentul nu găsește produsul în catalog, îl **propune** — nu îl creează. Linia rămâne fără produs, cu propunerea alături (nume, unitate, tip, cotă de TVA).
 
+- ⚠ **„Nu-l găsesc" înseamnă chiar nimic asemănător în catalog.** Dacă există ceva ce seamănă foarte tare, nu primești o propunere de produs nou, ci **produsul existent, de confirmat** (vezi capitolul de mai sus). Asta e diferența dintre galben și roșu pe o linie.
 - Propunerile se acceptă **individual**, cu butonul de creare de pe linie.
 - **Acceptarea în bloc din pagină** le poate crea, dacă procedura firmei permite adăugarea de produse noi la recepție. **Acceptarea în bloc prin conexiune le sare mereu** — rămân de rezolvat una câte una.
 - ⚠ **Verifică cota de TVA înainte de a accepta.** Propunerea vine cu o cotă presetată care poate să nu fie una dintre cele valabile azi (0 / 11 / 21%).
@@ -130,6 +156,7 @@ Pe lângă mapare, o linie de factură se poate lucra în patru feluri, toate **
 - `get_received_efactura_details` — antetul facturii + toate liniile cu starea mapării: produs, cont, acceptat, factorul aplicat, cantitatea și prețul originale ale furnizorului. Primul apel, mereu.
 - `list_received_efactura` — facturile de intrare, filtrabile după starea mapării (`mappingStatus`), status, furnizor sau brand.
 - `get_invoice_intake_decision` — verdictul complet pe o factură: e gata de NIR sau ce anume mai trebuie rezolvat (linii nemapate, conversie lipsă, locație ambiguă).
+- `suggest_invoice_line_products` — ce produse ar putea fi liniile facturii, cu **motivul** fiecărei propuneri (cod de bare, codul de articol al furnizorului, regulă salvată, denumire asemănătoare, istoricul de la acel furnizor), cât de sigură e potrivirea și dacă e destul de sigură ca să se aplice singură. Nu creează și nu modifică nimic — îți arată variantele, apoi legi linia cu `map_invoice_line`. Pentru „cu ce produs seamănă linia asta", „arată-mi variantele înainte să mapez".
 - `get_reception_policy` — procedura firmei la recepție (cine poate mapa, cine poate crea produse).
 - `search_products_db`, `get_product_details`, `list_product_types`, `get_product_type_details` — ca să alegi produsul și să verifici tipul (deci contul real).
 - `get_journal_entries_summary` (modul `financiar`) — ce s-a înregistrat efectiv, când suspectezi un cont greșit.
@@ -168,6 +195,8 @@ Pe lângă mapare, o linie de factură se poate lucra în patru feluri, toate **
 - **AI-ul a mapat totul, dar nu pot accepta o linie.** Linia n-are cont valabil — de regulă vine dintr-o regulă născută din catalogul furnizorului, care nu poartă cont. Alege contul o dată pe linie sau pune tipul corect pe produs; după prima confirmare se învață.
 - **Nu pot crea NIR-ul.** NIR-ul cere ca **toate** liniile să fie mapate și acceptate, iar produsele mapate să existe încă în catalog. Cere `get_invoice_intake_decision` pentru verdictul complet, apoi rezolvă exact ce-ți spune.
 - **Linia are produsul bun, dar sistemul a refuzat propunerea.** Marca de pe factură nu se potrivea cu marca produsului. Mapează manual — refuzul e o precauție, nu o interdicție.
+- **De ce nu-mi creează produsul, deși e clar același?** Tocmai pentru că e „clar același": în catalog există deja ceva ce seamănă foarte tare, așa că ți se propune produsul existent în loc să apară al doilea rând („Cartofi" lângă „Cartofl"). Alegi produsul existent — și legătura se învață, deci data viitoare merge singură — sau confirmi că e într-adevăr alt produs și îl creezi de pe linie. O apăsare acum e mult mai ieftină decât unificarea a două produse care au deja intrări, consum și cost pe ele.
+- **Linia arată o potrivire de 90% și tot îmi cere confirmarea.** Procentul spune cât de asemănătoare sunt două **denumiri**, nu că e același produs. Doar dovezile decid singure: codul de bare, codul de articol al furnizorului sau o regulă pe care ai confirmat-o tu. Asemănarea de text se arată, nu se aplică. La fel când două produse au scoruri foarte apropiate — acolo „câștigătorul" ar fi ales practic la întâmplare, deci alegi tu.
 - **Am o factură care nu se lasă modificată.** Facturile împinse din contabilitate au identitatea înghețată; se poate schimba doar conversia de ambalaj. Restul se corectează în contabilitate. Iar după crearea NIR-ului, modificările se fac din aplicație („Modificare NIR"), nu prin conexiune.
 - **Am corectat o linie, am rulat din nou asistentul AI și corectura a dispărut.** Rularea din nou reia de la zero liniile **neacceptate**. Ordinea corectă: accepți întâi ce ai corectat, apoi rulezi asistentul pentru restul.
 - **Aceeași descriere îmi duce marfa când la un produs, când la altul.** Ai două reguli care se contrazic (una a furnizorului și una generală, sau două ale aceluiași furnizor). Deschide lista de conflicte din Reguli de Mapare și păstrează una singură. Regula furnizorului bate întotdeauna una generală.
