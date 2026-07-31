@@ -37,7 +37,7 @@ Ingineria de meniu îți spune negru pe alb care preparate îți aduc bani și c
 
 ### 2. Happy Hour pe interval orar (umple o fereastră goală, fără să strici marja)
 1. **Idei de umplere** — `list_offer_suggestions` [citire] cu obiectiv „umple fereastra goală"; alege o idee.
-2. **Verifică marja ÎNTÂI** — `preview_offer_margin` [citire] cu tipul, valoarea și scope-ul (de preferat o categorie cu marjă mare). Acceptă doar verdict „pe plus" / ≥70% acoperire.
+2. **Verifică marja ÎNTÂI** — `preview_offer_margin` [citire] cu tipul, valoarea și scope-ul (de preferat o categorie cu marjă mare). Verdictul nu blochează publicarea, dar o ofertă „pe plus" e regula; sub cost doar deliberat (produs-momeală, lichidare).
 3. **Creează oferta cu fereastră orară** — `create_offer` [marketing] cu `timeStart`/`timeEnd` (ex. 15:00-18:00) + `daysOfWeek` (ex. luni-joi). **Fără fereastră de timp, oferta merge non-stop (24/7)** — deci pune întotdeauna intervalul pentru un happy hour.
 4. **După 10-14 zile** — `get_offer_scorecard` [citire]: păstrezi sau oprești.
 

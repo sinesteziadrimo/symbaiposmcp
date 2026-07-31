@@ -147,7 +147,7 @@ Fiecare flux de mai jos il construiesti ca secventa cu `create_email_sequence` (
 - `add_email_suppression` [marketing] — suprima la sunset (`confirm:true`); `get_email_suppression_list` [citire].
 
 **Oferta din flux** [marketing]
-- `create_offer` — reducere care chiar scade nota la POS. **Important: poti seta fereastra de timp** — `timeStart`+`timeEnd`+`daysOfWeek` pentru happy-hour recurent, sau `startsAt`/`expiresAt` pentru oferta cu termen (LTO). **Fara fereastra de timp, oferta merge non-stop (24/7).** Ruleaza intai `preview_offer_margin`; cu `confirmLoss:true` o publici chiar daca vinde sub cost.
+- `create_offer` — reducere care chiar scade nota la POS. **Important: poti seta fereastra de timp** — `timeStart`+`timeEnd`+`daysOfWeek` pentru happy-hour recurent, sau `startsAt`/`expiresAt` pentru oferta cu termen (LTO). **Fara fereastra de timp, oferta merge non-stop (24/7).** Ruleaza intai `preview_offer_margin` ca sa stii unde esti pe marja — verdictul e informativ, nu blocheaza publicarea (din 31 iulie 2026).
 - `create_discount_code` — cod de reducere/transport pentru pasul cu incentiv.
 - `set_product_recommendations` — produse afisate in browse abandonment.
 
