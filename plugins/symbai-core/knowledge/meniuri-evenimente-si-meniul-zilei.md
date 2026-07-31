@@ -33,6 +33,9 @@ Asistentul conectat la instanța ta poate acum **crea, modifica, configura și �
 - **După o scriere, interfața nu se schimbă instant** (aplicația ține date în cache). Dacă asistentul a zis „gata”, e salvat — dă un refresh sau cere-i o listare ca să confirmi; nu repeta comanda (se creează duplicate).
 - **Produsele opțiunilor trebuie să existe deja** în meniul brandului. Dacă vrei o opțiune cu un produs nou, cere întâi crearea produsului.
 - **Modificările pentru livrare (Glovo/Wolt)** se re-sincronizează automat; pot dura până apar pe platforme.
+- **Nu conteaza pe ce meniu sta produsul meniului zilei.** Spre deosebire de produsele obisnuite, meniurile zilei si cele de eveniment ajung pe platforme indiferent de meniurile-sursa asociate canalului — tocmai ca debifarea unui meniu sa nu le scoata tacit de acolo. Deci nu le muta pe „Meniu Delivery" ca sa apara; verifica in schimb `get_channel_menu_scope(id)`, care iti spune per meniu al zilei daca e permis pe acel provider, ce fereastra are, daca se publica si daca e vizibil chiar acum la clienti.
+- **Meniul zilei „pe timp" se vede doar în fereastra lui.** Un meniu de vineri 11:00–16:00 nu apare joi și nici vineri la 17:00 — nici în sală, nici pe platforme. Dacă muți ora, salvarea programului cere singură re-publicarea către Glovo/Wolt; dacă răspunsul spune că nu a plecat nimic (canal inactiv, sincronizare oprită sau mod „manual"), fereastra nouă se aplică pe platformă abia la următoarea sincronizare completă.
+- **„Ieri apărea, azi nu"** — cel mai des e alt meniu al zilei (altă zi a săptămânii), configurat diferit față de cel de ieri. Compară-le înainte de a bănui o defecțiune.
 - **Permisiuni**: modificările pe configurația meniului cer accesul „Produse & Meniuri”, iar ofertele pe rezervări cer „Rezervări & Clienți”, bifate pe tokenul de acces AI (Hub → Acces AI). Dacă lipsește, asistentul îți spune „permisiune insuficientă”.
 
 ## Vezi și

@@ -105,6 +105,30 @@ Full menu sync construieste meniul din meniurile asignate canalului si imbogates
 
 **Upsell și pachete pe platforme**: unui produs i se pot atașa recomandări „Merge perfect cu" (upsell afișat clientului direct în aplicația Glovo/Wolt) și **pachete cu reducere** (combo-uri); pe Wolt pachetul apare cu badge de reducere. Recomandările se configurează pe produs și pleacă spre platforme la sincronizarea meniului.
 
+### Ce meniu ajunge de fapt pe platformă (scope-ul canalului)
+
+Un canal de livrare nu publică „tot ce ai în aplicație": publică **meniurile-sursă asociate lui** (tab **Meniu & Prețuri** din Manager Canale). De aici vine cea mai frecventă neînțelegere pentru **produsele obișnuite**: produsul există, e activ, e bifat pentru livrare — dar stă pe un meniu care nu e asociat canalului, așa că nicio sincronizare nu-l poate duce acolo. Tipic la localurile care au un „Meniu <local>" pentru sală și un „Meniu Delivery <local>" pentru platforme.
+
+**Excepție importantă — meniurile zilei și meniurile de eveniment nu depind de scope.** Ele se adaugă în payload indiferent pe ce meniu stă produsul lor, tocmai ca debifarea unui meniu-sursă să nu le scoată tăcut de pe platformă. Pentru ele contează doar: să fie active, să fie bifate pentru livrare și pentru platforma respectivă, să servească locația canalului și să fie în intervalul de date al programului. Deci **nu muta un meniu al zilei pe meniul de delivery „ca să apară"** — nu asta îl blochează.
+
+Flux corect când cineva spune „nu apare pe Glovo/Wolt":
+1. `get_channel_menu_scope(id)` — îți spune ce meniuri publică efectiv canalul, câte produse intră, ce excluderi are și, pentru **fiecare meniu al zilei**, dacă e permis pe acel provider, ce fereastră are, dacă se publică pe platformă și dacă e vizibil chiar acum la clienți. Tot aici primești blocajele explicite (canal inactiv, sincronizare de meniu oprită, asociere lipsă sau dezactivată).
+2. Dacă e un **produs obișnuit** care lipsește din scope: ori îl adaugi pe meniul de delivery, ori extinzi scope-ul canalului cu `set_channel_menu_scope(id, sourceMenuIds)`.
+3. Abia apoi `sync_channel_menu(id)` — schimbarea de scope nu trimite singură meniul.
+
+Reguli de reținut: un canal fără asociere explicită publică toate meniurile brandului (comod, dar necontrolat); o asociere marcată **inactivă** înseamnă exact opusul — „nu publica nimic"; nu poți asocia meniul altui brand.
+
+### Cât de repede ajung modificările pe platformă (modul de re-sincronizare)
+
+Fiecare canal are un **mod de re-sincronizare automată**, care decide când pleacă structura de meniu:
+- **on_change** — la fiecare modificare din meniu (recomandat dacă schimbi des);
+- **nightly** — o dată pe noapte (economisește plafoanele platformelor, dar o modificare de la prânz se vede abia mâine);
+- **manual** — doar când ceri tu `sync_channel_menu`.
+
+Dacă cineva spune „am schimbat ceva și nu se vede pe platformă", verifică întâi modul canalului cu `get_delivery_channel` — pe **nightly** sau **manual** comportamentul e cel așteptat, nu o defecțiune. Excepție: **granițele de program** (deschiderea/închiderea unei ferestre orare, start/expirare de meniu al zilei) se trimit și pe canalele „nightly", pentru că altfel un meniu de prânz n-ar apărea deloc în ziua respectivă.
+
+Plafoane de care depinde promptitudinea: Glovo acceptă 5 sincronizări complete pe zi per canal, Wolt una la 15 minute. De-aia prețul și disponibilitatea merg prin actualizări mici (`update_channel_menu_items`), nu prin sincronizare completă.
+
 ### Disponibilitate programata: mic dejun, meniu de noapte, weekend
 
 Sursa canonica este `availability_schedules`, nu campurile custom Wolt legacy. Flux agent:
@@ -113,7 +137,9 @@ Sursa canonica este `availability_schedules`, nu campurile custom Wolt legacy. F
 3. Creezi sau modifici: `create_availability_schedule` / `update_availability_schedule` (modul `produse_meniu`). Parametrii importanti: `targetType` (`product|category|menu`), `targetIds`, `daysOfWeek` (`0=Duminica..6=Sambata`), `timeStart`, `timeEnd`, `channels` (`pos|kiosk|website|qr|delivery`), `locationId` optional.
 4. Recitesti `list_availability_schedules` si ii spui userului unde se vede: `/menu/promotions`, tab **Disponibilitate**.
 
-Explica simplu: „produsul se vede si se poate comanda doar in fereastra aleasa". In afara ferestrei, portalul/QR il ascunde sau il dezactiveaza, POS-ul blocheaza comanda, Wolt primeste `weekly_availability` la urmatorul sync de meniu, iar Glovo se comuta prin update mic de disponibilitate (sincronizare automata periodica doar cu diferentele, fara full sync repetat). Daca o platforma cade, Symbai merge fail-open: nu blocheaza POS-ul pentru ca Glovo/Wolt nu raspunde.
+Explica simplu: „produsul se vede si se poate comanda doar in fereastra aleasa". In afara ferestrei, portalul/QR il ascunde sau il dezactiveaza, POS-ul blocheaza comanda, Wolt primeste fereastra nativ (`weekly_availability`, inclusa in meniul publicat), iar Glovo se comuta prin update mic de disponibilitate (sincronizare automata periodica doar cu diferentele, fara full sync repetat). Daca o platforma cade, Symbai merge fail-open: nu blocheaza POS-ul pentru ca Glovo/Wolt nu raspunde.
+
+**Salvarea unui program cere singură re-publicarea către platforme.** Fereastra Wolt trăiește în meniul publicat, deci o oră mutată nu se aplică până nu se retrimite meniul — de-asta salvarea programului declanșează automat re-publicarea pe canalele de livrare, inclusiv pe cele setate „nightly". Dacă răspunsul îți spune că **nu a plecat nimic**, cauza e una dintre: nu există canal Glovo/Wolt, canalul e inactiv, are sincronizarea de meniu oprită sau e pe mod „manual". În acel caz spune-i clar utilizatorului că programul e salvat local, dar pe platformă se va aplica abia după o sincronizare completă — nu-l lăsa să creadă că e gata.
 
 Campuri utile pe produse/canal:
 - Glovo: `custom:glovo_options`, `custom:glovo_dietary_labels`, `custom:glovo_restrictions`; canalul poate avea `settings.glovo.priceIsLineTotal` daca `price` din webhook vine ca total de linie, nu pret unitar.
@@ -127,6 +153,19 @@ Daca preturile Glovo par dublate sau cantitatea schimba totalul gresit, verifica
 6. **Tratezi o livrare eșuată**: livratorul (sau dispecerul) o marchează eșuată cu motiv → în `/deliveries/failed` alegi: „Re-livrează" (înapoi în coada de dispecerat), „Reprogramează" la o oră anume, suni clientul sau „Anulează" definitiv.
 7. **Trimiți comanda unui curier extern**: activezi providerii în `/dispatch/settings` → în Mission Control, la comandă, „Curier extern…" → compari cotațiile → trimiți; comanda apare cu numele providerului în loc de livrator propriu.
 8. **Expediezi o comandă de magazin online**: `/ecommerce/orders` → Procesează → `/ecommerce/awb` → tab Generează AWB → alegi contul de curier și comenzile eligibile → generezi AWB-urile → tipărești etichetele → urmărești în Tracking & Etichete → la ramburs, închizi banii în Reconciliere COD.
+
+### „Meniul zilei / produsul nu apare pe Glovo/Wolt" — ordinea corectă de verificare
+
+Nu începe cu re-sincronizarea: în majoritatea cazurilor sincronizarea funcționează și problema e în altă parte. Mergi în ordinea asta și oprește-te la primul răspuns „nu":
+
+1. **E permis pe acel provider?** `get_channel_menu_scope(id)` — meniul zilei trebuie bifat pentru livrare **și** pentru platforma respectivă (unul bifat doar pentru Glovo nu apare pe Wolt). Pentru un produs obișnuit, verifică aici și dacă e în scope-ul canalului; pentru meniurile zilei scope-ul nu contează.
+2. **E în intervalul de date al programului?** Un program „valabil 13.07–31.12" nu publică nimic în afara lui. Tool-ul îți arată `valabilDeLa` / `valabilPanaLa`.
+3. **Fereastra e deschisă ACUM?** Un meniu al zilei „de vineri, 11:00–16:00" nu se vede joi și nici vineri la 17:00 — tool-ul îți spune direct `inchisAcum`. Ține minte că ziua se schimbă la miezul nopții, nu la închiderea localului.
+4. **Canalul e sănătos?** `get_delivery_channel(id)` — activ, cu sincronizarea meniului pornită. Apoi `wolt_integration_status(id)` / `glovo_integration_status(id)` pentru conexiunea live cu platforma.
+5. **Ultima sincronizare a reușit?** Tot din `get_delivery_channel`: dacă ultima sincronizare e veche sau a rămas „în așteptarea confirmării", meniul de pe platformă e cel vechi — retrimite cu `sync_channel_menu(id)` și verifică rezultatul.
+6. **Produsul nu e cumva marcat epuizat (86)?** Un produs 86-uit manual rămâne închis pe platformă și când fereastra lui se deschide — asta e intenționat.
+
+Cazul „ieri apărea, azi nu" are aproape mereu una din trei cauze: e alt meniu al zilei (altă zi a săptămânii) și acela nu e configurat la fel; canalul e pe mod „nightly" iar modificarea de azi n-a plecat încă; sau programul a fost editat după ora de deschidere a ferestrei.
 
 ## Tool-uri MCP utile
 **Citire (read-only; cere grantul `readModule` al domeniului pe token):**
@@ -143,6 +182,7 @@ Daca preturile Glovo par dublate sau cantitatea schimba totalul gresit, verifica
 - `get_delivery_channel` — detaliul complet al unui canal (toata configuratia + prezenta credentialelor + setarile per-provider, fara secrete). Read-back dupa `update_delivery_channel`.
 - `get_channel_setup_requirements` — EXACT ce credentiale cere fiecare platforma si DE UNDE le ia clientul: Glovo (apiKey + storeId din Glovo Partners), Wolt (venueId + conectare OAuth din butonul din UI), AppSmart (Marketplace storeId + platforma din Hub), Bolt/Tazz (apiKey + storeId/restaurant_id), local (fara credentiale). Cere-l INAINTE de a crea sau configura un canal ca sa stii precis ce sa ceri userului.
 - `list_availability_schedules` — programele zi+ora pentru produse/categorii/meniuri; primul pas cand userul intreaba „cand e disponibil micul dejun" sau „ce meniu e pe Wolt dimineata".
+- `get_channel_menu_scope` — **primul tool la „nu apare pe Glovo/Wolt"**: ce meniuri publica efectiv canalul, cate produse intra, ce excluderi are si, per meniu al zilei, daca e in scope, daca e permis pe acel provider, ce fereastra are si daca apare la clienti. Intoarce si blocajele explicite (canal inactiv, sincronizare oprita, lipsa asociere). Te scuteste de re-sincronizari inutile.
 
 **SQL (doar-citire, dacă token-ul are toggle-ul SQL):** `list_database_tables` → `describe_database_table` → `execute_sql_query` — pentru întrebări pe care rapoartele dedicate nu le acoperă (ex. livrări eșuate pe motiv).
 
@@ -155,6 +195,7 @@ Daca preturile Glovo par dublate sau cantitatea schimba totalul gresit, verifica
 
 **Scriere platforme livrare (cere `livrari`, cu exceptia refund-ului):**
 - `update_delivery_channel` — editeaza ORICE credentiala sau setare a unui canal existent: adauga/schimba tokenul (apiKey), apiSecret, webhookSecret, storeId/externalStoreId/venueId, environment; sau config: activ, autoAccept, menuSyncEnabled, `autoResyncMode` (cand se re-sincronizeaza automat structura de meniu: `on_change` la fiecare modificare in meniu / `nightly` o data pe noapte / `manual` doar cand ceri sync — util ca sa nu depasesti plafoanele Glovo 5/zi si Wolt 1/15min), prepTimeMinutes, maxOrdersPerHour, comision, sau `settings` (ex. `settings.glovo.transport=appsmart`). Trimite DOAR campurile de schimbat; un secret gol sau mascat NU sterge secretul existent; valorile secrete nu se afiseaza niciodata inapoi. Foloseste la „adauga tokenul Glovo", „schimba storeId-ul", „pune sync automat doar noaptea", „opreste sync automat la modificari".
+- `set_channel_menu_scope(id, sourceMenuIds)` — seteaza CE MENIURI publica un canal pe platforma (echivalentul tab-ului Meniu & Preturi), optional cu excluderi de categorii/produse. Foloseste-l dupa `get_channel_menu_scope` cand un produs sau un meniu al zilei nu e in scope. NU trimite singur meniul — dupa el ruleaza `sync_channel_menu`.
 - `sync_channel_menu(id)` / `update_channel_menu_items(id,...)` — retrimite meniul intreg catre platforma (respecta plafoanele) sau doar modificari mici de pret/disponibilitate. `snooze_delivery_channel(id,minutes,confirm)` / `resume_delivery_channel(id)` — opreste temporar / reporneste canalul la sursa.
 - `delay_channel_order`, `confirm_channel_preorder`, `replace_channel_order_items`, `mark_channel_deposits_returned`, `snooze_delivery_channel` — actiuni reale pe Glovo/Wolt si timeline Symbai. Pentru substituire, SGR si snooze cere confirmare explicita.
 - `refund_channel_order` — cere modulul `plati_terminal`, muta valoare/bani pe platforma si cere confirmarea sumei. Pentru Glovo trebuie `newTotal`; pentru Wolt foloseste `scope:"basket"` sau `scope:"items"`.
