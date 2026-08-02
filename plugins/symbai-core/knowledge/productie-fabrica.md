@@ -80,6 +80,10 @@ Regula de citire in planificare/dashboard: statusurile terminale sunt doar `comp
 ## Execuție shop-floor — operații pas cu pas
 Aceasta e calea industrială, pe tabletă (`/workstation-tablet`) sau din `/production`.
 
+**Ce muncă apare pe o tabletă** — se decide de **stație**: zonele și utilajele configurate pe ea (vezi „Echipamente, zone, ture"). Fabrica e brand × locație, iar coada acoperă toată fabrica; **gestiunea nu filtrează operațiile**. Selectorul din bara fabricii are bife (ce vezi) și o gestiune de postare (unde intră marfa produsă) — două lucruri diferite, vezi `gestiuni-magazii-zone.md`. Un pas fără zonă și fără utilaj în flux nu aparține niciunei stații: e o problemă de configurare a fluxului, nu de gestiune.
+
+**Gestiunea de postare a lotului** se fixează la creare (`destinationWarehouseId` pe `exec_create_batch`) și nu se mai schimbă. Când diferă de cea pe care e ancorată tableta, cardul o arată și oferă „Lucrează pe «gestiune»" în loc de butonul de pornire — un tap comută stația și pasul devine lucrabil. Motivul e contabil: documentul de stoc trebuie să știe fără echivoc în ce gestiune scrie.
+
 **Mod KIOSK (tableta muncitorului)**: pe Tabletă Stație, butonul Kiosk comută ecranul pe UN SINGUR pas — următoarea operație a stației, mare și clar, cu auto-avans — gândit pentru atelier, nu pentru birou. În kiosk, muncitorul se identifică cu **PIN-ul lui** înainte de acțiuni (fără sesiune, acțiunile cer login), ca declarările și auditul să poarte omul real, nu „primul angajat din listă". Setarea rămâne per tabletă; ieșirea din kiosk readuce board-ul complet.
 
 0. **Verifică staging-ul real al lotului**: `get_batch_material_readiness` (`batchId`, opțional `operationId`). Dacă statusul e `blocked`, nu porni operația. Dacă e `partial`, explică exact ce lipsește: link de staging/pegging sau lot sursă upstream nefinalizat.

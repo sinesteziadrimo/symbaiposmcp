@@ -50,6 +50,25 @@ Tot lanțul îl poți rula ca simplă CITIRE, fără să creezi nimic: `resolve_
 
 `create_supplier` merge pe aceeași ordine, chiar dacă îl chemi tu direct: caută întâi codul fiscal în listă și, dacă îl are, îți întoarce furnizorul existent („există deja"), fără să scrie nimic. **Codul fiscal e obligatoriu** — pe denumire furnizorii nu se creează, tocmai ca să nu se dubleze.
 
+### Furnizorul fără cod fiscal OPREȘTE recepția
+
+Nu e un inconvenient de recunoaștere — e o oprire. Dacă nici factura, nici fișa furnizorului n-au un cod fiscal valid, **NIR-ul nu se creează și stocul nu se mișcă**. Ce vede clientul:
+
+- factură normală: „Factura și fișa furnizorului nu conțin un cod fiscal valid. Alege furnizorul corect sau completează CUI-ul; stocul nu a fost modificat."
+- recepție din poză: „Codul fiscal al furnizorului nu a putut fi confirmat din poză și lipsește și din fișa furnizorului…"
+
+De ce e fail-closed: fără identitate fiscală nu se poate înregistra datoria către furnizor, iar un NIR postat pe un partener neidentificabil nu se mai desface curat.
+
+**Repararea, în bloc, înainte să se blocheze marfa la rampă:**
+1. `list_suppliers_without_tax_id` — lista completă a furnizorilor de reparat (implicit doar cei activi).
+2. Pentru fiecare: `resolve_supplier_identity({ taxId })`, sau `lookup_company_cui` (cod românesc) / `lookup_eu_company_vat` (cod european) ca să afli codul corect.
+3. `update_supplier({ supplierId, cui })`.
+4. Reia crearea NIR-ului.
+
+**Două avertismente:**
+- **Nu pune NICIODATĂ codul fiscal al PROPRIEI firme pe un furnizor.** Pe o factură de intrare, codul furnizorului e cel din blocul vânzătorului; cel din blocul cumpărătorului ești tu. Platforma refuză acum și crearea, și modificarea cu un asemenea cod, și îți spune de ce. Ia codul corect din `identitateFiscala.vanzator.cui` (`get_received_efactura_details`) — acolo scrie explicit cine e vânzătorul și cine e cumpărătorul.
+- **Codul fiscal e imutabil după ce furnizorul are documente.** Un cod greșit pus la creare nu se mai poate corecta („furnizorul are deja alt cod fiscal salvat") — de aceea se verifică ÎNAINTE, nu după.
+
 ### Produs nou corect din prima (tip, unitate, magazie, TVA)
 `create_product({ name, brandId, type, unit, warehouseId, vat, receptionPrice })`:
 - `type` decide contul contabil — alege-l corect: `raw_material` (materii prime, 301), `merchandise` (marfă de revânzare, 371), `consumable` (consumabile, 302), `packaging` (ambalaje, 381), `service` (servicii, 628), `asset` (imobilizări).
@@ -128,6 +147,16 @@ Aceeași livrare poate ajunge de trei ori: poza de la recepție, avizul șoferul
 
 ## Servicii / utilități fără stoc
 Factură doar de servicii/utilități (fără marfă pe stoc): nu face NIR. Folosește calea de cheltuieli (`create_expense`) sau, pe factură, `set_invoice_context({ invoiceType: "servicii" })` + linii pe produs de tip `service` (cont 628). Stocul nu se mișcă.
+
+### Linii de cheltuială pe o factură care ARE și marfă
+O factură mixtă (marfă + transport, comision, ambalaj facturat separat) are linii care **nu** intră în gestiune. Pentru ele nu cauți produs — le dai **natura cheltuielii**:
+
+1. `list_expense_destination_types({ invoiceId })` — ce naturi sunt configurate la tine (Utilități, Chirii, Transport…), cu contul principal și conturile alternative acceptate pe fiecare.
+2. `map_invoice_line({ invoiceId, lineId, productTypeCode: "…" })` — **fără `productId`**. Contul se completează din natura aleasă; dacă vrei un cont anume, el trebuie să fie unul dintre cele configurate pe acel tip (altfel primești un mesaj care îți listează exact ce e permis).
+
+⚠ **Fără natura cheltuielii, linia nu apare pe nicio categorie de P&L** — rămâne la „Nealocate". `accept_all_invoice_mappings` îți semnalează liniile astea separat (`no_expense_type`), ca să nu le confunzi cu marfa nemapată.
+
+Dacă lista de naturi vine goală: nu ai încă tipuri de cheltuială configurate. Se face o singură dată în Setări → Conturi pe Tip Produs (un tip fără gestiune, cu cont pe momentul „Intrare factură") — vezi `tipuri-produs-conturi.md`.
 
 ## Faza 7 — Verifică prin citire (mereu)
 - `get_received_efactura_details` — `mappingStatus` + linii rămase nemapate.

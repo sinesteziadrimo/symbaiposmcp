@@ -128,6 +128,31 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 
 **Ce rămâne doar din aplicație:** transferul între zone; pornirea/oprirea urmăririi pe zone; alegerea zonei de intrare; legarea unei zone de sală la o zonă de depozitare; pragurile de stoc minim/maxim pe gestiune; ștergerea și restaurarea unei gestiuni; anularea unui transfer deja confirmat; rafturile și etichetele QR. Dacă lipsa unuia dintre ele te blochează efectiv, trimite o cerere cu `trimite_ticket_symbai`, tip „sugestie".
 
+## În producție, gestiunea NU decide cine ce lucrează
+
+Într-o fabrică, oamenii lucrează pe **zone de producție** (Brutărie, Ambalare, Tranșare), iar tableta stației stă fizic într-o zonă. Gestiunea e altceva: e locul în care se ține evidența mărfii. Cele două nu trebuie confundate.
+
+Regula, în trei rânduri:
+
+- **Fabrica = brand × locație.** Nu gestiune. „Senneville la Călan" e o fabrică; depozitele ei de materii prime și de semipreparate sunt magazii din aceeași fabrică, nu fabrici diferite.
+- **Ce muncă vezi pe tabletă** se decide de **stație** — zonele și utilajele configurate pe ea. Un lot al aceleiași fabrici apare pe tableta care îi execută pașii, indiferent de magazia pe care a fost creat.
+- **Gestiunea contează unde chiar contează**: din ce magazii se ia materialul și în care se postează ce ai produs.
+
+Fiecare lot de producție primește, la creare, o **gestiune de postare** — acolo intră produsul finit și acolo se face nota contabilă. Ea se fixează în momentul creării și **nu se schimbă ulterior**. Dacă cine a creat lotul avea selectat „Depozit materii prime", lotul se va posta acolo chiar dacă restul planificării stă pe „Depozit semipreparate".
+
+Ce vezi în aplicație:
+
+- Selectorul de gestiuni din bara fabricii pune **două întrebări separate**: bifele = ce muncă vezi (fără nicio consecință contabilă, poți bifa toate), iar „Postează aici" = gestiunea în care intră marfa produsă. Prestabilit sunt bifate toate gestiunile fabricii.
+- Pe cardul unei operații, gestiunea apare **doar când diferă** de cea pe care e ancorată tableta. Pe o fabrică cu o singură gestiune nu o vezi niciodată.
+- Pe un asemenea rând, în locul butonului de pornire apare **„Lucrează pe «numele gestiunii»"**. Un tap comută tableta pe ea și pasul devine lucrabil. Nu e o restricție inventată: documentele de stoc și notele contabile trebuie să știe fără echivoc în ce gestiune se scrie.
+- Indicatorul „Stoc:" din dialogul de consum arată **tot ce poate lua stația**, nu doar magazia operației, și îți spune cât e la îndemână și cât trebuie adus din altă magazie a fabricii.
+
+Aceleași reguli în **Symbai Staff** (telefon) și pe tabletă, online și offline.
+
+**Cum aleg gestiunea de postare pentru loturi noi** — pune-o pe cea în care chiar vrei să intre produsul finit, înainte de a planifica. În aplicație: bara fabricii → „Postează aici". Prin conexiune: `exec_create_batch` acceptă `destinationWarehouseId`.
+
+**Loturi vechi ajunse pe gestiunea greșită** — nu se re-ancorează din hală. Le lucrezi comutând tableta pe gestiunea lor (butonul de mai sus), iar pentru loturile viitoare corectezi gestiunea de postare înainte de planificare.
+
 ## Întrebări frecvente și capcane
 
 - **Am creat gestiunea de două ori — de ce n-a oprit-o sistemul?** Numele gestiunii nu e verificat când o creezi din pagină (prin conexiune ar fi fost refuzat). Caută întâi cu `list_warehouses_full`, iar dacă ai deja dubluri, golește-o pe cea greșită prin transfer și dezactiveaz-o din aplicație.
@@ -138,6 +163,9 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 - **De ce nu pot transfera din depozitul Locației 1 în barul Locației 2?** Pentru că sunt locații diferite, iar transferul direct ar fi ambiguu contabil. Se face pe documente de ieșire și intrare, nu prin transfer.
 - **Am scos produsul din zonă și stocul n-a scăzut.** Corect: scoaterea din zonă e o operație de amplasare, nu de stoc. Ca să scadă cantitatea îți trebuie o fișă de ieșire, un transfer sau o ajustare de inventar.
 - **De ce nu merge transferul când nu am internet?** Mișcările de marfă între gestiuni se înregistrează exclusiv în sistemul central. Serverul local ține comenzile și producția și fără conexiune, dar transferurile se fac când unitatea e online.
+- **De ce nu văd pe tabletă un lot pe care l-am planificat?** Verifică întâi ZONA: tableta arată operațiile zonelor și utilajelor ei, deci un pas fără zonă și fără utilaj în flux nu aparține niciunei stații. Gestiunea nu mai ascunde munca — vezi secțiunea despre producție de mai sus.
+- **De ce scrie pe card altă gestiune decât cea din bara de sus?** Pentru că lotul se postează acolo. Apasă „Lucrează pe …" ca să comuți tableta și să poți porni pasul.
+- **Pot muta un lot deja creat pe altă gestiune?** Nu din hală. Gestiunea de postare se fixează la creare, pentru că de ea depind documentul de stoc și nota contabilă. Pentru loturile viitoare, alege gestiunea corectă înainte de planificare.
 - **Am pornit urmărirea pe zone și cantitățile par ciudate.** După pornire, sistemul repartizează istoricul pe zona de intrare, apoi reconstruiește cantitățile pe zone. Verifică zona de intrare a gestiunii și amplasează produsele în zonele lor înainte de primul inventar pe zone.
 
 ## Pentru acces SQL
