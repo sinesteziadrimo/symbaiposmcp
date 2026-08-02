@@ -84,6 +84,8 @@ Aceasta e calea industrială, pe tabletă (`/workstation-tablet`) sau din `/prod
 
 **Gestiunea de postare a lotului** se fixează la creare (`destinationWarehouseId` pe `exec_create_batch`) și nu se mai schimbă. Când diferă de cea pe care e ancorată tableta, cardul o arată și oferă „Lucrează pe «gestiune»" în loc de butonul de pornire — un tap comută stația și pasul devine lucrabil. Motivul e contabil: documentul de stoc trebuie să știe fără echivoc în ce gestiune scrie.
 
+Aceleași reguli se aplică pe **ecranele web de Producție** (tab-urile Execuție și Operații) și în **Symbai Staff**, nu doar pe tabletă. Bifele nu ating însă listele de loturi, rapoartele și stocurile, iar panourile fabricii numără mereu toată fabrica — detaliile, în `gestiuni-magazii-zone.md`, secțiunea „Unde se aplică bifele și unde nu".
+
 **Mod KIOSK (tableta muncitorului)**: pe Tabletă Stație, butonul Kiosk comută ecranul pe UN SINGUR pas — următoarea operație a stației, mare și clar, cu auto-avans — gândit pentru atelier, nu pentru birou. În kiosk, muncitorul se identifică cu **PIN-ul lui** înainte de acțiuni (fără sesiune, acțiunile cer login), ca declarările și auditul să poarte omul real, nu „primul angajat din listă". Setarea rămâne per tabletă; ieșirea din kiosk readuce board-ul complet.
 
 0. **Verifică staging-ul real al lotului**: `get_batch_material_readiness` (`batchId`, opțional `operationId`). Dacă statusul e `blocked`, nu porni operația. Dacă e `partial`, explică exact ce lipsește: link de staging/pegging sau lot sursă upstream nefinalizat.

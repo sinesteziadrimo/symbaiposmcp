@@ -147,7 +147,17 @@ Ce vezi în aplicație:
 - Pe un asemenea rând, în locul butonului de pornire apare **„Lucrează pe «numele gestiunii»"**. Un tap comută tableta pe ea și pasul devine lucrabil. Nu e o restricție inventată: documentele de stoc și notele contabile trebuie să știe fără echivoc în ce gestiune se scrie.
 - Indicatorul „Stoc:" din dialogul de consum arată **tot ce poate lua stația**, nu doar magazia operației, și îți spune cât e la îndemână și cât trebuie adus din altă magazie a fabricii.
 
-Aceleași reguli în **Symbai Staff** (telefon) și pe tabletă, online și offline.
+Aceleași reguli pe **tabletă**, în **Symbai Staff** (telefon) și pe ecranele de **Producție** din aplicația web (tab-urile Execuție și Operații), online și offline.
+
+### Unde se aplică bifele și unde nu
+
+Selectorul de gestiuni e prezent pe toate paginile de fabrică, dar nu tot ce vezi acolo răspunde la aceeași întrebare. Sunt trei comportamente, și merită știute ca să nu crezi că filtrul e stricat:
+
+- **Urmează bifele** — cozile de lucru: tableta stației, Symbai Staff, tab-urile Execuție și Operații din Producție, predările de pe tabletă și telefon, cererile de materiale, plus contoarele din bara de sus a Producției.
+- **Rămân pe gestiunea de postare** („Postează aici") — listele de loturi, inclusiv „Loturi & WIP", precum și rapoartele și stocurile. Aici bifele nu schimbă nimic, pentru că sunt evidențe contabile legate de o singură gestiune.
+- **Numără mereu toată fabrica, indiferent de bife** — panourile: Semnal fabrică din bara de sus, Panoul de producție, Planul Fabricii. Ele sunt construite să dea imaginea întregii fabrici, deci nu scad când debifezi o magazie.
+
+Pe rândurile aduse de bife — operații ale unor loturi care se postează în altă magazie — cardul arată numele gestiunii și un singur buton, „Lucrează pe «numele gestiunii»". Restul acțiunilor lipsesc intenționat: până nu comuți, orice consum, ieșire sau finalizare ar fi scrisă în gestiunea greșită.
 
 **Cum aleg gestiunea de postare pentru loturi noi** — pune-o pe cea în care chiar vrei să intre produsul finit, înainte de a planifica. În aplicație: bara fabricii → „Postează aici". Prin conexiune: `exec_create_batch` acceptă `destinationWarehouseId`.
 
@@ -166,6 +176,9 @@ Aceleași reguli în **Symbai Staff** (telefon) și pe tabletă, online și offl
 - **De ce nu văd pe tabletă un lot pe care l-am planificat?** Verifică întâi ZONA: tableta arată operațiile zonelor și utilajelor ei, deci un pas fără zonă și fără utilaj în flux nu aparține niciunei stații. Gestiunea nu mai ascunde munca — vezi secțiunea despre producție de mai sus.
 - **De ce scrie pe card altă gestiune decât cea din bara de sus?** Pentru că lotul se postează acolo. Apasă „Lucrează pe …" ca să comuți tableta și să poți porni pasul.
 - **Pot muta un lot deja creat pe altă gestiune?** Nu din hală. Gestiunea de postare se fixează la creare, pentru că de ea depind documentul de stoc și nota contabilă. Pentru loturile viitoare, alege gestiunea corectă înainte de planificare.
+- **Am debifat o gestiune și lista de loturi n-a scăzut deloc.** E normal. Bifele filtrează cozile de lucru (ce se lucrează acum), nu evidențele. Listele de loturi, rapoartele și stocurile rămân legate de gestiunea de postare — vezi „Unde se aplică bifele și unde nu" de mai sus.
+- **De ce panoul fabricii arată mai multe operații decât gestiunea pe care lucrez?** Pentru că panourile (Semnal fabrică, Panoul de producție, Planul Fabricii) sunt gândite să arate toată fabrica. Nu e o scurgere între gestiuni și nu înseamnă că ancora ta e greșită.
+- **Pe web văd operații pe care nu le pot porni.** Sunt operații ale unor loturi care se postează în altă magazie a aceleiași fabrici. Apasă „Lucrează pe …" ca să comuți, apoi acțiunile devin disponibile. Dacă în locul butonului vezi un mesaj, gestiunea aceea nu e în drepturile tale — cere-o de la șeful de tură.
 - **Am pornit urmărirea pe zone și cantitățile par ciudate.** După pornire, sistemul repartizează istoricul pe zona de intrare, apoi reconstruiește cantitățile pe zone. Verifică zona de intrare a gestiunii și amplasează produsele în zonele lor înainte de primul inventar pe zone.
 
 ## Pentru acces SQL
