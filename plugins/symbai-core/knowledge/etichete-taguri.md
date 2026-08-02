@@ -12,6 +12,8 @@ O **etichetă** (tag) e o grupare reutilizabilă atașată produselor (și, mai 
 
 **Alergenii NU sunt taguri.** Datele legale de alergeni se setează cu `set_product_allergens` (+ `create_allergen`) și se moștenesc din ingredientele rețetei — vezi `produse-meniu-retete.md`. Pagina aplicației se numește „Etichete & Alergeni" și agentul ei AI poate PROPUNE și etichete derivate din alergeni, dar sursa de adevăr pentru alergeni rămâne evidența de alergeni a produsului, nu etichetele.
 
+**Eticheta TIPĂRITĂ e alt obiect.** Tagul de aici e o grupare care rutează comanda la o imprimantă/ecran — nu se tipărește niciodată singur. Autocolantul lipit pe vas, pe bax sau pe palet e un **șablon de etichetă** (material grafic), cu alte reguli și alt loc de configurare → `etichete-productie.md` și `eticheta-container-rutare.md` (care lămurește și cele trei înțelesuri ale cuvântului „etichetă" în Symbai). Când userul zice „schimbă-mi eticheta", întreabă ÎNTÂI care dintre ele.
+
 ## Tool-urile MCP (toate testate live)
 
 Toate scrierile cer modulul **`produse_meniu`** („Produse & Meniuri") bifat pe token (portal Hub → Acces AI); altfel întorc „permisiune insuficientă". Citirile cer grantul `readModule` aferent pe token.

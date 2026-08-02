@@ -147,6 +147,7 @@
 - **Google Business Profile** (`/gbp`) — Manager fișa Google Business, 6 tab-uri: Location (date), Posts (postări GBP), Reviews (răspuns cu sugestie AI), Q&A, Photos, Metrics (ultimele 30 zile). Necesită locație Google conectată.
 - **Evenimente Facebook** (`/facebook-events`) — Creare și gestionare evenimente Facebook pe pagina ta — seri tematice, lansări, workshop-uri
 - **Analiză Social Media** (`/social-analytics`) — Dashboard analytics — engagement, reach, followers, ore optime
+- **Materiale Grafice** (`/graphic-materials`) — Studio de design drag & drop pentru materialele brandului: afișe, flyere, broșuri, table tents, postări/story social, vouchere, carduri QR de masă și **etichete tipărite** (materiale de tip „Etichetă", cu cod de bare/QR și câmpuri dinamice completate la print). Șabloane gata făcute, recolorare pe brand, magic resize, export PDF/PNG. Aici se DESENEAZĂ eticheta; printarea ei se face din Producție / Scanner Containere / tableta de stație.
 - **Memorii Brand** (`/brand-memories`) — Fișiere de memorie per brand pentru contextul AI marketing
 ## MARKETING — STRATEGIE & EXECUȚIE
 

@@ -263,8 +263,10 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: pentru overview/top articole → /blog/tracker; pentru editorul propriu-zis → /blog/:brandId/posts/:id/edit; pentru SEO/poziții căutare → /seo
 - **SEO Hub** `/seo` — Summary SEO (sub layout cu nav: Summary/Pages/Keywords/Research/Competitors/Settings): vizibilitate, poziție medie, click-uri organice, afișări, CTR, distribuție poziții, top winners/losers, top pagini, SERP features, status sync GSC.
 · NU aici: pentru scrierea/editarea articolelor → /blog/posts; pentru trafic blog → /blog/analytics
+- **Materiale Grafice** `/graphic-materials` — Studioul de design (drag & drop): afișe, flyere, broșuri, table tents, postări/story social, vouchere, carduri QR de masă și **etichete tipărite** (materiale de tip „Etichetă", cu cod de bare/QR și câmpuri care se completează singure la print). Șabloane gata făcute + compunere de la zero; export PDF/PNG.
+· NU aici: pentru PRINTAREA etichetelor de lot → /print sau Producție; pentru eticheta containerului (scanner/tabletă) → /production/scanner; pentru meniul fizic tipărit (alt modul) → /menu?tab=physical-menu; pentru generarea codurilor QR de masă → /qr-codes
 - **Coduri QR** `/qr-codes` — Două tab-uri: QR Mese (cod per masă → meniul digital al mesei, regenerare) și QR-uri dinamice (link scurt /q/cod cu destinație editabilă oricând fără re-tipărire, etichete, activ/inactiv, contor scanări, export PNG/SVG/PDF).
-· NU aici: pentru meniul public al portalului → /portal/menu; pentru carduri RFID/acces fizic → /access-cards sau /portal-customers?tab=auth
+· NU aici: pentru meniul public al portalului → /portal/menu; pentru carduri RFID/acces fizic → /access-cards sau /portal-customers?tab=auth; pentru DESENAREA cardului QR care se tipărește → /graphic-materials
 - **Livrări (flotă proprie)** `/deliveries` — Monitorizezi comenzile de livrare la domiciliu cu curierii TĂI: status comenzi, cine ce duce, timpi pe traseu.
 · NU aici: pentru comenzi de pe Glovo/Wolt/Bolt (agregatori) → /channels; pentru kanban dispecer + hartă live → /deliveries/dispatch; pentru zone de livrare → /deliveries/zones
 - **Inbox WhatsApp** `/whatsapp-inbox` — Citești și răspunzi la mesajele clienților de pe WhatsApp Business (primite și trimise).

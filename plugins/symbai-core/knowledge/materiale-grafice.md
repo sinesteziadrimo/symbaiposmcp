@@ -109,6 +109,8 @@ Acum POȚI vedea efectiv materialul randat și să-l pui într-o postare:
 ## Legături
 - Flux complet + livrare → skill-ul `materiale-grafice`.
 - **Etichete de PRODUCȚIE** (material de tip „Etichetă" cu cod de bare + câmpuri auto `{{lot}}`/`{{termenValabilitate}}`/`{{alergeni}}`, legate de rețetă, printate la lot pe Zebra/termică ZPL sau PDF) → `etichete-productie.md` + skill `etichete-productie`.
+- **Unde ajunge efectiv un șablon de etichetă** (un design frumos desenat aici nu iese singur la print — trebuie LEGAT). Legarea se face pe 8 axe: stație, operator, tip de container, tip de produs, zonă, gestiune, locație, brand. **Ordinea lor NU e fixă** — o dă profilul de fabrică ales pentru brand —, la ȘABLON tipul de recipient are prioritate specială, iar regulile se combină în loc să se oprească la prima potrivire. Nu deduce cine câștigă: cere explicația planului → `eticheta-container-rutare.md`.
+- **Dimensiunea la care se tipărește** un material de tip „Etichetă": rola declarată pe imprimantă e autoritatea. Dacă rola nu e declarată, se tipărește la dimensiunea desenată aici — și poate ieși tăiată pe rola reală, **fără nicio eroare**. Deci un șablon corect desenat nu garantează o etichetă corectă pe hârtie → `etichete-productie.md`.
 - Cum conduci Chrome (deep-link, screenshot = livrabil) → `condu-chrome.md`.
 - Coduri QR de masă (generare + print în lot) → `plan-sala-qr.md` / pagina „Coduri QR".
 - Meniul fizic tipărit (alt modul, alt set de tool-uri) → `meniu-fizic-design.md`.

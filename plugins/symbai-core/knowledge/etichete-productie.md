@@ -1,6 +1,6 @@
 # Etichete de producție — design frumos + printare pe rețetă/lot (valabilitate, alergeni, cod de bare)
 
-> Cum pui etichete profesioniste pe semipreparatele și produsele tale: le DESENEZI o singură dată în Materiale Grafice (cu cod de bare și câmpuri care se completează automat — lot, dată, valabilitate, alergeni), le legi de o rețetă ca „implicite", și apoi le PRINTEZI dintr-un singur buton când lotul e gata — pe o imprimantă de etichete (Zebra/termică) sau ca PDF. Designul materialelor în general → `materiale-grafice.md`. Imprimante & configurarea lor → `echipamente-kds-imprimante.md`. Fluxul de producție (loturi) → `productie-restaurant.md`.
+> Cum pui etichete profesioniste pe semipreparatele și produsele tale: le DESENEZI o singură dată în Materiale Grafice (cu cod de bare și câmpuri care se completează automat — lot, dată, valabilitate, alergeni), le legi de o rețetă ca „implicite", și apoi le PRINTEZI dintr-un singur buton când lotul e gata — pe o imprimantă de etichete (Zebra/termică) sau ca PDF. Designul materialelor în general → `materiale-grafice.md`. Imprimante & configurarea lor → `echipamente-kds-imprimante.md`. Fluxul de producție (loturi) → `productie-restaurant.md`. Eticheta **containerului** (recipientul fizic cu QR) și regula care decide ce șablon iese la fiecare print → `eticheta-container-rutare.md`.
 
 ## ⚠ READ FIRST — eticheta = un material grafic „de tip Etichetă", legat de rețetă, printat la lot
 
@@ -55,7 +55,11 @@ Deci un tabel „Nr. lot / Nr. lot intern / Furnizor" se completează cu `{{lotF
 ## Imprimanta de etichete
 - **ZPL (Zebra & termice de rețea)** — calea recomandată pentru imprimantele de etichete pe rolă. Imprimanta trebuie să fie **pe rețea, cu IP** (configurat în Setări → Imprimante). Sistemul transformă designul în imaginea etichetei și o trimite direct la imprimantă — nu trebuie nimic instalat în plus.
 - **PDF** — pentru coli A4 cu etichete autocolante sau pentru a verifica/arhiva. Butonul „Descarcă PDF" din fereastra de printare. Nu necesită imprimantă specială.
-- **Configurare** (o dată, în Setări → Imprimante → „Imprimantă Etichete"): limbajul (ZPL/PDF), rezoluția (203/300/600 DPI — 203 e standardul) și, opțional, dimensiunea fizică a etichetei (dacă o lași goală, se ia din șablon).
+- **Configurare** (o dată, în Setări → Imprimante → „Imprimantă Etichete"): limbajul (ZPL/PDF), rezoluția (203/300/600 DPI — 203 e standardul) și **dimensiunea fizică a rolei** (lățime × înălțime în mm).
+- ⚠ **Declară rola, nu o lăsa goală.** Câmpul e tehnic opțional, dar:
+  - pe eticheta de container **fără șablon legat** (eticheta minimală) e cea care dă dimensiunea reală — fără ea se tipărește pe o coală presupusă, iar aplicația îți spune explicit ce a presupus;
+  - **în toate celelalte cazuri**, dacă o lași goală, sistemul tipărește la dimensiunea la care ai **desenat șablonul**. Dacă rola de pe imprimantă e alta, eticheta iese tăiată sau pierdută pe hârtie — **fără nicio eroare și fără niciun avertisment**. „N-a dat eroare" nu înseamnă „e bine".
+  - **Fiecare imprimantă își are propria declarație** (trei pe 70×105 și una pe 110×150 = patru setări distincte), și se **re-declară ori de câte ori schimbi fizic rola**.
 
 ## Fabrică: eticheta pe o OPERAȚIE din flux + printare de la tableta de stație
 
@@ -68,6 +72,19 @@ La fabrici (producție pe flux tehnologic), eticheta nu se leagă doar de rețet
 
 ### Multe copii deodată (Zebra scoate rapid)
 La un lot gata poți printa sute/mii de etichete **dintr-o singură comandă** — imprimanta termică le repetă singură (o comandă, nu mii de joburi), deci e instant. Plafon 9999. Pe tabletă ai butoane rapide: **„Cât lotul (N)"** (o etichetă pe fiecare unitate produsă), **„4 (palet)"** și 50/100/500.
+
+### Eticheta de CONTAINER (recipientul fizic) — subiect înrudit, reguli proprii
+
+Etichetele de mai sus descriu **marfa** (rețetă/lot). La fabrici mai există eticheta care descrie **recipientul**: tava, naveta, baxul, lada, paletul — fiecare cu codul lui QR unic, printat din Scanner Containere, de pe tableta de stație sau din Symbai Staff. Acolo șablonul nu se alege doar după rețetă, ci după reguli pe **8 axe** (stație, operator, tip de container, tip de produs, zonă, gestiune, locație, brand), iar dacă nu e legat niciun șablon iese o **etichetă minimală de avarie** — sursa clasică a plângerii „eticheta e predefinită și nu o pot modifica".
+
+Trei lucruri de care depinde rezultatul, și pe care e ușor să le presupui greșit:
+- **Ordinea axelor NU e fixă** — o stabilește **profilul de fabrică** ales pentru brand, din Setări → „Etichete (Zebra)". Profilele livrate au ordini diferite: la fabrica multi-linie tipul de produs e primul, la cea nealimentară zona și gestiunea sunt primele.
+- **Șablonul și imprimanta se decid pe precedențe DIFERITE.** Imprimanta urmează locul (ordinea profilului); șablonul urmează ambalajul, cu **tipul de container pe prima poziție**, ca o regulă pe operator să nu suprascrie tăcut eticheta cerută de recipient.
+- **Regulile se combină, nu se opresc la prima potrivire** — și alegerea se face pe fiecare câmp separat (imprimanta dintr-o regulă, șablonul din alta).
+
+Când nu ești sigur, **cere explicația planului** („ce șablon și ce imprimantă ies pentru situația asta și de ce") în loc să deduci dintr-un tabel.
+
+Tot ce ține de asta (cum legi șabloane pe magazie/tip de container, cum ceri explicația unei etichete deja ieșite, cele două cauze ale unei etichete mici/sărace) → **`eticheta-container-rutare.md`**.
 
 ### Etichetă de palet cu QR mare
 Pentru palet: desenează în Materiale Grafice un șablon de etichetă cu un **QR/cod de bare MARE** (legat de `{{lot}}`), alege-l ca șablon pe operația de ambalare și pune **copii = 4** (câte una pe fiecare față a paletului → ușor de identificat din orice parte). Sau o singură etichetă mare, cum preferi.
@@ -105,10 +122,15 @@ Pentru palet: desenează în Materiale Grafice un șablon de etichetă cu un **Q
 - **Un câmp corect dar fără date iese GOL, fără avertisment** — ex. `{{lotFurnizor}}` când furnizorul n-a
   declarat lot, sau `{{furnizor}}` pe o etichetă retipărită din Producție (acolo nu există furnizor).
   Dacă un rând iese gol, întâi verifică dacă marfa are chiar acea informație.
+- **Desenat ≠ legat.** Un șablon frumos desenat în Materiale grafice, dar nelegat de nicio rețetă/operație/regulă, nu iese niciodată singur la print. E cel mai frecvent motiv pentru „am etichete, dar tot cea urâtă îmi iese".
+- **Rola imprimantei se declară, nu se ghicește.** Dacă imprimanta de etichete n-are declarată dimensiunea reală a rolei (lățime × înălțime în mm) sau o are greșită după o schimbare de rolă, designul nu încape pe hârtie: conținut înghesuit într-un colț, text tăiat, sau o etichetă mică pe o rolă lată. **La eticheta de container fără șablon legat primești un avertisment că s-a presupus coala; cu un șablon legat nu primești niciun semnal** — de aceea verifici rola chiar și când totul pare în regulă pe ecran. Vezi `eticheta-container-rutare.md`.
+- **Nu promite „cine câștigă" din memorie.** La etichetele de container, ordinea axelor ține de profilul de fabrică al brandului, șablonul are altă precedență decât imprimanta, iar regulile se adună. Cere explicația planului. Vezi `eticheta-container-rutare.md`.
 - **Nu inventa** loturi/date/alergeni — ele vin din lotul și rețeta reale; tu doar alegi șablonul și imprimanta.
 
 ## Legături
 - Cum DESENEZI eticheta (cele 14 tool-uri + coordonate fracționale + cod de bare + câmpuri dinamice) → `materiale-grafice.md` + skill-ul `materiale-grafice`.
+- Eticheta de container + rutarea șabloanelor (cele 8 axe, profilele de fabrică, precedența specială a tipului de recipient) + „de ce iese eticheta mică/săracă" → `eticheta-container-rutare.md`.
+- Cele TREI înțelesuri ale cuvântului „etichetă" (tag de rutare vs șablon tipărit vs nume de câmp) → `eticheta-container-rutare.md`; tagurile propriu-zise → `etichete-taguri.md`.
 - Imprimante de etichete, configurare, testare → `echipamente-kds-imprimante.md`.
 - Loturi de producție, finalizare, valabilitate, alergeni pe rețetă → `productie-restaurant.md` (sau `productie-fabrica.md` la fabrici).
 - Pagina exactă → `gaseste_in_aplicatie("etichete")` (design) / `gaseste_in_aplicatie("printează etichetă")` (producție).
