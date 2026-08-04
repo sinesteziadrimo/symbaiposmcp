@@ -40,6 +40,20 @@ Modulul Finanțe acoperă banii afacerii de la sertarul de numerar până la bal
 - **Cash Flow** (`/finance/cashflow`, și ca tab în /finance) — proiecția banilor pe zile/săptămâni/luni: Prezentare Generală (grafic + detaliu pe perioadă, sold inițial sugerat), Plăți Programate, Plăți Recurente, Termene Furnizori, Intrări Manuale. Sumele restante (scadențe depășite) apar în ziua de azi cu eticheta „(restant)" — nu dispar din proiecție.
 - **Registru Contabil** (`/accounting-ledger`) — toate notele contabile, filtrabile pe brand, perioadă, tip sursă (recepție, consum, vânzări zilnice, stornare, amortizare, pierdere/rebut...), status (Ciornă/Înregistrată/Stornată/Aprobată), cont, locație, produs. Soldurile pe conturi, cu detaliere până la înregistrările din spatele fiecărui cont; export CSV.
 - **Import Contabil** (`/accounting-import`) — hub cu 3 tab-uri: Import Contabil (wizard: încarci fișiere .xlsx/.csv/.xls/.mt940/.xml/.json max 50MB, tipul documentului e detectat automat — factură furnizor/client, aviz, retur, raport Z, extras bancar, registru de casă, stat de plată, plan de conturi, solduri inițiale, note contabile, mijloace fixe, decont, parteneri — apoi mapare AI a coloanelor, validare și import), Extrase Bancare și State de Salarii. Are istoric importuri.
+
+#### Extrase bancare — ce se leagă singur și ce rămâne de confirmat
+Încarci fișierul primit din internet banking (Extrase Bancare din `/accounting-import`). Merg fișierele MT940/SWIFT pe care le dau băncile din România — Banca Transilvania, BRD, UniCredit, BCR, ING, Raiffeisen, CEC și celelalte — plus CSV/Excel, CAMT și OFX. Banca și contul se recunosc din fișier; nu trebuie să le alegi tu.
+
+Ce face aplicația singură pentru fiecare linie din extras:
+- **Recunoaște partenerul** după IBAN sau CUI — chiar dacă banca scrie contul lipit de alte coduri în descriere. Dacă IBAN-ul sau CUI-ul e deja pe fișa furnizorului, plata se leagă automat de el; dacă se potrivește și numărul facturii și suma rămasă, se leagă direct de factură.
+- **Separă ce nu e plată de furnizor**: comisioane și taxe bancare, dobânzi, rate de credit, salarii, schimb valutar, depuneri și ridicări de numerar, decontări de card, transferuri între conturile tale. Acestea au flux contabil propriu și nu îți mai apar ca „de mapat".
+- **Plățile la buget** (IBAN de Trezorerie) sunt marcate ca obligații bugetare, nu ca furnizor nou.
+- **Nu inventează parteneri**: dacă extrasul dă un IBAN sau CUI care nu există la niciun partener, linia rămâne de confirmat. La fel dacă aceeași dovadă duce la doi parteneri diferiți — se corectează întâi fișele.
+
+Ce rămâne, în mod normal, de rezolvat manual: plățile unde banca nu a trimis nici IBAN, nici CUI, nici nume (rar), partenerii care încă nu au IBAN-ul completat pe fișă, și încasările de la clienți pe care vrei să le pui pe o anumită factură.
+
+**Ca să scadă excepțiile:** completează IBAN-ul și CUI-ul pe fișele furnizorilor cu care lucrezi des — acestea sunt dovezile după care se face legarea automată. Un furnizor cu IBAN completat se leagă singur de la prima plată.
+
 - **Mese Servite** (`/finance/served-meals`) — registrul meselor servite: creare manuală, dintr-un eveniment sau dintr-o comandă POS marcată „masă servită"; statusuri Ciornă / Cost de stabilit / Cost stabilit. Costul se stabilește ulterior prin legarea unei fișe de ieșire de tip consum sau a evenimentului asociat — nu printr-o factură.
 - **Sold Furnizori** (`/supplier-balances`) — facturi de la furnizori, solduri și plăți restante (scadențar).
 
