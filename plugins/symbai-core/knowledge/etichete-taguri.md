@@ -4,11 +4,12 @@
 
 O **etichetă** (tag) e o grupare reutilizabilă atașată produselor (și, mai rar, altor entități). Un produs poate avea oricâte etichete. Tagurile sunt **globale pe firmă**, nu per locație — eticheta pusă pe un produs îl urmează în toate meniurile și locațiile.
 
-## Cele 3 scopuri ale tagurilor — nu le amesteca
+## Cele 4 scopuri ale tagurilor — nu le amesteca
 
 1. **Rutarea bonurilor către secții** (cel mai important). Comanda luată la masă ajunge la imprimanta/ecranul de bucătărie potrivit DOAR pe baza etichetei: produs → etichetă de secție („Bar", „Bucătărie", „Grătar", „Pizza") → regula tag→imprimantă/KDS. Pentru rutare vrei **puține** etichete (una per post de lucru: 2–4 de obicei), NU una per categorie de meniu.
 2. **Atribute / marketing** — etichete care descriu produsul pentru filtrare în meniu, portal online sau campanii: „Recomandat", „Nou", „Vegan", „Picant", „Happy Hour", „Specialitatea casei". Aici poți avea oricâte, nu afectează rutarea.
 3. **Grupări pentru rapoarte / filtre** — folosești o etichetă ca să filtrezi rapoarte sau căutări (`search_products_db(tagNames:[...])`, filtrul `tag` din `auto_assign_vat_batch`).
+4. **Depozitare** — pe ce fel de marfă e („Lactate", „Mezeluri", „Legume & fructe", „Congelate", „Ambalaje"…). Se pun pe **materii prime**, nu pe produsele vândute, și servesc la gruparea listei de produse și la asignarea pe gestiuni. Ca să nu se amestece cu rutarea, se creează cu prefixul **`Depozitare: `** → vezi secțiunea dedicată mai jos.
 
 **Alergenii NU sunt taguri.** Datele legale de alergeni se setează cu `set_product_allergens` (+ `create_allergen`) și se moștenesc din ingredientele rețetei — vezi `produse-meniu-retete.md`. Pagina aplicației se numește „Etichete & Alergeni" și agentul ei AI poate PROPUNE și etichete derivate din alergeni, dar sursa de adevăr pentru alergeni rămâne evidența de alergeni a produsului, nu etichetele.
 
@@ -31,6 +32,19 @@ Toate scrierile cer modulul **`produse_meniu`** („Produse & Meniuri") bifat pe
 - `bulk_assign_tag(tagId, ...filtre)` — asignează la toate produsele care trec filtrele (AND între ele).
 - `bulk_remove_tag(tagId, ...filtre)` — scoate eticheta; aceleași filtre ca `bulk_assign_tag`.
 - `auto_tag_from_menu_categories(brandId, menuId?, color?)` — creează câte o etichetă per categorie de meniu cu produse și o asignează. Util când categoriile = secțiile, sau pentru filtre de raport; pe un meniu cu 30 de categorii face 30 de etichete — NU pentru rutare.
+
+## Etichetele de DEPOZITARE — împarte tot inventarul în câteva minute
+
+Sunt răspunsul la „vreau să-mi grupez materiile prime pe lactate, mezeluri, legume…". Două tool-uri, ambele pe modulul `produse_meniu`:
+
+- `suggest_storage_tags(...filtre)` — **nu scrie nimic**. Trece prin materiile prime și le împarte pe categoriile din catalogul standard: Lactate, Ouă, Mezeluri, Carne proaspătă, Pește & fructe de mare, Legume & fructe, Congelate, Panificație & aluaturi, Cofetărie & dulciuri, Cafea & ceai, Condimente & mirodenii, Băcănie & uscate, Băuturi răcoritoare & apă, Bere, Vin & spumant, Băuturi spirtoase, Ambalaje & take-away, Curățenie & chimicale. Pentru fiecare produs îți spune **ce cuvânt** a produs potrivirea, ca să poți contesta.
+- `apply_storage_tags(...aceleași filtre, confirm:true)` — creează etichetele lipsă și le asignează. Idempotent: etichetele existente se refolosesc, produsele care le au deja sunt sărite. Fără `confirm:true` primești doar previzualizarea.
+
+Reguli practice:
+- **Produsele care nu se potrivesc nicăieri sunt raportate ca NECLASIFICATE**, nu împinse într-un „Diverse". Le rezolvi cu `overrides: [{productId, slug}]` — decizia rămâne a omului acolo unde clasificarea automată nu are bază.
+- Poți aplica doar o parte din categorii: `slugs: ["lactate","mezeluri"]`.
+- Prefixul implicit `Depozitare: ` le ține grupate în listă și le separă vizual de etichetele de rutare. Îl poți schimba cu `prefix`, sau elimina cu `prefix: ""` — dar atunci ai grijă să nu ajungi cu o etichetă „Bar" de depozitare peste una „Bar" de rutare.
+- După aplicare, filtrezi produsele pe ele ca pe orice etichetă (`search_products_db(tagNames:[...])`, `hasTag` în tool-urile de stoc).
 
 ## Reguli de aur (disciplina corectă)
 

@@ -231,6 +231,21 @@ Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește *
 
 **SQL (toggle separat, doar citire):** pentru întrebări la care tool-urile de mai sus nu ajung, descoperă tabelele cu `list_database_tables` + `describe_database_table`, apoi `execute_sql_query` (doar SELECT) — ex. facturi de intrare cu liniile lor, NIR-uri, note de diferențe, reguli de mapare învățate.
 
+## Curățarea unei perioade întregi (după un import greșit)
+
+Se întâmplă: un import a intrat prost — facturi duplicate, NIR-uri pe gestiunea greșită, stoc umflat — și trebuie șters tot ce s-a produs într-un interval, ca să se reia curat. Trei tool-uri, în ordinea asta:
+
+1. **`preview_period_cleanup(from, to)`** — nu modifică nimic. Îți arată câte facturi și câte documente de stoc sunt în interval și, pentru fiecare, dacă se poate șterge sau **de ce e protejat**: deja procesată, provine din contabilitate, a adoptat o recepție deja postată, face parte dintr-o rulare de consum zilnic sau dintr-o sesiune de inventar.
+2. **`delete_invoices_period(from, to, confirm:true)`** — șterge facturile de intrare din perioadă. Cu `deleteLinkedNirs:true` anulează și recepțiile generate din ele, **reversând stocul** corect; cu `false` păstrează facturile care au NIR și ți le raportează ca omise. Dacă nu trimiți nimic, tool-ul îți arată întâi ce NIR-uri sunt în joc și te întreabă.
+3. **`void_inventory_documents_period(from, to, confirm:true)`** — pentru documentele de stoc **care nu vin din facturi** (ajustări, transferuri, consumuri manuale). Le anulează de la cel mai nou spre cel mai vechi, câte unul, reversând mișcările.
+
+Reguli fără excepție:
+- **Confirmă în cuvinte cu utilizatorul înainte de `confirm:true`.** Operațiile sunt ireversibile și ating contabilitatea. Arată-i cifrele din previzualizare: câte facturi, ce sumă, câte recepții s-ar anula.
+- **Nimic nu se forțează.** Documentele protejate rămân protejate, cu motivul lor scris. Dacă un document nu poate fi anulat, `diagnose_inventory_document_reversal` îți spune pasul corect pentru el.
+- **Recepția anulată nu dispare** — rămâne în istoric ca document anulat, pentru audit. Doar factura-ciornă se șterge efectiv.
+- **O lună închisă contabil oprește ștergerea**, oricât de curat ar arăta restul. Asta se verifică la execuție, nu la previzualizare.
+- Pe perioade mari, tool-ul de stoc lucrează în tranșe și îți spune unde s-a oprit; reia pe intervale mai scurte.
+
 ## Întrebări frecvente
 
 - **De ce nu pot crea NIR-ul?** O linie e nemapată sau neacceptată, sau e mapată pe un produs șters din catalog. Verifică în Revizuire Mapări AI / `get_received_efactura_details`.

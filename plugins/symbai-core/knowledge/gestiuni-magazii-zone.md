@@ -112,6 +112,9 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 ## Tool-uri MCP utile
 
 **Citire (modul `inventar`):**
+- `describe_warehouse_topology` — **începe cu ăsta**. Îți spune ce e fiecare gestiune (bar, bucătărie, patiserie, semipreparate, produs finit, ambalaje & consumabile, congelate, depozit central) și **pe ce s-a bazat**: eticheta gestiunii, denumirea, zonele din ea, mixul de produse. Gestiunile fără rol determinabil sunt raportate explicit, nu ghicite.
+- `trace_material_usage` — „unde se folosește laptele?": toate produsele care îl conțin, direct sau prin semipreparate, și gestiunile în care sunt ancorate.
+- `plan_material_warehouses` — calculează în ce gestiuni ar trebui să stea fiecare materie primă, cu motivul fiecărei recomandări. Nu scrie nimic.
 - `list_warehouses_full` — toate gestiunile, cu locație, brand, cod și status.
 - `list_storage_zones_full` — zonele de depozitare.
 - `get_warehouse_products_summary` — câte produse și pe ce categorii are o gestiune.
@@ -123,10 +126,27 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 
 **Scriere:**
 - Modul `produse_meniu`: `create_warehouse`, `update_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`, `set_initial_stock`.
-- Modul `inventar`: `assign_product_warehouses` (produsul are stoc și în gestiunea X), `assign_product_storage_zones`, `assign_unzoned_products`, `rename_storage_zone`, `merge_storage_zones` 🔒, `delete_empty_storage_zone`, `create_inventory_document` 🔒 (transferul), `post_inventory_document` 🔒.
+- Modul `inventar`: `assign_product_warehouses` (produsul are stoc și în gestiunea X), `apply_material_warehouse_plan` (aplică în masă planul calculat mai sus), `assign_product_storage_zones`, `assign_unzoned_products`, `rename_storage_zone`, `merge_storage_zones` 🔒, `delete_empty_storage_zone`, `create_inventory_document` 🔒 (transferul), `post_inventory_document` 🔒.
 - Modul `productie`: `map_zone_ingredient_warehouse` — leagă un ingredient de gestiunea din care se consumă pentru o anumită zonă de producție.
 
 **Ce rămâne doar din aplicație:** transferul între zone; pornirea/oprirea urmăririi pe zone; alegerea zonei de intrare; legarea unei zone de sală la o zonă de depozitare; pragurile de stoc minim/maxim pe gestiune; ștergerea și restaurarea unei gestiuni; anularea unui transfer deja confirmat; rafturile și etichetele QR. Dacă lipsa unuia dintre ele te blochează efectiv, trimite o cerere cu `trimite_ticket_symbai`, tip „sugestie".
+
+## Pune materiile prime pe gestiunile corecte, în masă
+
+Problema clasică: „laptele scade din magazia greșită" sau „vânzarea iese cu cost 0". Cauza e aproape mereu aceeași — **materia primă nu e asignată în gestiunea din care se consumă**. Când e asignată corect, aplicația alege singură gestiunea potrivită la fiecare vânzare: cappuccino-ul e ancorat pe Bar, deci ia laptele din Bar; clătitele sunt ancorate pe Bucătărie, deci iau laptele din Bucătărie. Laptele trebuie să existe în **ambele**.
+
+Rețeta, în patru pași:
+
+1. **`describe_warehouse_topology`** — vezi ce gestiuni are clientul și ce e fiecare. Dacă vreuna iese „rol nedeterminat", cere-i utilizatorului să-i pună o etichetă sau s-o redenumească înainte să mergi mai departe; nu presupune.
+2. **`plan_material_warehouses`** (opțional filtrat: `nameContains`, `hasTag`, `categoryName`, `supplierId`) — primești, pentru fiecare materie primă, gestiunile recomandate și **motivul** fiecăreia. Ordinea încrederii: mapare manuală existentă → are deja stoc acolo → e folosită într-un produs ancorat acolo → zonă de producție mapată → magazia de casă → afinitatea etichetei de depozitare.
+3. **Arată-i utilizatorului planul** — mai ales rândurile marcate „cere decizie umană" (materii prime care nu apar în nicio rețetă, sau unde nu există dovadă).
+4. **`apply_material_warehouse_plan(confirm:true)`** — aplică. Implicit adaugă numai recomandările cu încredere cel puțin medie (`minConfidence`), și **nu șterge niciodată** o asignare existentă: gestiunile pe care planul nu le susține sunt doar raportate, ca să decidă omul.
+
+Detalii care contează:
+- Dacă multe materii prime ies „nu apar în nicio rețetă", problema reală e că **rețetele nu sunt legate de produse** — rezolvă asta întâi (vezi `produse-meniu-retete.md`), altfel planul nu are din ce deduce.
+- Dacă produsele finite înseși nu sunt ancorate în nicio gestiune, planul n-are de unde porni: asignează întâi produsele finite, apoi reia.
+- Pentru cazurile fără rețete, ajută mult să pui înainte **etichetele de depozitare** (`suggest_storage_tags` + `apply_storage_tags`, vezi `etichete-taguri.md`): eticheta spune ce fel de marfă e, iar planul o poate lega de gestiunea cu rolul potrivit — dar doar când e o singură gestiune cu acel rol, altfel rămâne decizia omului.
+- Ștergerea unei asignări greșite se face explicit, cu `assign_product_warehouses` în `mode:'replace'` — atenție, aceea chiar șterge ce omiți din listă.
 
 ## În producție, gestiunea NU decide cine ce lucrează
 
