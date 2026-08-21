@@ -1,1 +1,4 @@
 _drafts/
+# Artefactul construit de build-package.ps1. Se livreaza prin nexuspos/plugin/,
+# nu de aici — doua copii ale aceleiasi arhive ar diverge tacut.
+publish/

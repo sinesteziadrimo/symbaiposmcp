@@ -126,6 +126,9 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 
 **Citire (nu schimbă nimic; cer grantul de citire pe modulul indicat):**
 - `get_daily_consumption_status` — s-a generat consumul pentru o dată? (citire `inventar`)
+- `get_consumption_breakdown` — **ce** s-a consumat efectiv într-un interval: pe zi, pe produs sau pe gestiune, cu cantitate și valoare. Semnalează separat liniile fără cost, care trag food cost-ul în jos fără să dispară din cantități.
+- `audit_consumption_chain` — verifică lanțul vânzare → consum → stoc → notă contabilă pe un interval și spune **unde s-a rupt**: zile cu note închise dar fără consum, documente rămase ciornă (stocul nu a scăzut), documente fără notă contabilă, consum fără cost și **stoc negativ** în gestiunile atinse. Rulează-l ca verificare finală după orice recalculare sau schimbare de gestiuni.
+- `scan_recipe_consumption_gaps` — ce **blochează** consumul din partea rețetelor: ingrediente fără produs legat sau cu produsul șters (astea opresc generarea pentru ziua întreagă, nu consumă parțial), rețete cu același nume, randamente citite greșit.
 - `diagnose_consumption_warehouse_routing` — simulează produsul într-un brand+locație și arată, ingredient cu ingredient, gestiunea aleasă, sursa alegerii și orice abatere către altă locație.
 - `get_reprocess_job_status` — progresul unui job de recalculare (citire `inventar`).
 - `get_stock_levels` — stocul curent, cu defalcare pe gestiuni; cu `warehouseId` doar gestiunea aleasă.
@@ -149,6 +152,19 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 ⚠ **`generate_daily_consumption` generează consumul întregii zile pentru unitatea aleasă.** `warehouseId` **nu** restrânge generarea la o singură gestiune (e doar gestiunea de rezervă când produsul n-are una) — nu-l folosi ca filtru. Dacă ziua e deja generată, tool-ul refuză; ștergerea și refacerea rulării se fac din pagina Consum Zilnic.
 
 ⚠ **Pe conexiunile legate de un angajat, modulul de pe token nu e suficient:** angajatul trebuie să aibă și dreptul din rolul lui pentru tipul de document (mișcări de stoc, consum, ajustări). Altfel tool-ul răspunde că lipsește permisiunea, deși modulul e activ.
+
+### Ordinea corectă când repari stocurile
+
+Când muți produse între gestiuni sau repari rețete, recalcularea singură nu e suficientă — trebuie și verificat rezultatul:
+
+1. `audit_product_warehouse_coverage` — vezi câte produse n-au gestiune și care ar consuma din gestiunea greșită.
+2. `plan_material_warehouses` → `apply_material_warehouse_plan` 🔒 — pui produsele în gestiunile corecte.
+3. `scan_recipe_consumption_gaps` + `scan_recipe_unit_mismatches` — repari rețetele **înainte** de recalculare. Un ingredient nelegat oprește generarea zilei întregi, deci recalcularea ar eșua oricum.
+4. `reprocess_daily_consumption` 🔒 pe perioada afectată.
+5. `get_reprocess_job_status` — **aștepți să se termine**. Cât rulează, documentele vechi sunt de-postate temporar, iar un audit făcut atunci arată probleme care nu există.
+6. `audit_consumption_chain` + `get_consumption_breakdown` — confirmi că stocurile au ieșit corecte.
+
+⚠ **Documentele rămase ciornă nu se postează la întâmplare.** Dacă pe aceeași zi și gestiune mai există documente de consum, postarea unei ciorne scade stocul a doua oară. `audit_consumption_chain` le separă: îți dă id-urile sigur postabile și, separat, pe cele nepostabile, cu motivul.
 
 ⚠ **Ce rămâne doar din aplicație:** ștergerea unei rulări de consum, recalcularea pe un singur produs și detaliul istoric „ce produs vândut a consumat ce ingredient". Lista zilelor lipsă pe interval se citește prin `get_daily_consumption_status(dateFrom, dateTo, locationId?)`, iar rutarea viitoare pe ingredient prin `diagnose_consumption_warehouse_routing`.
 

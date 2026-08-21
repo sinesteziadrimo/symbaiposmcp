@@ -106,13 +106,21 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 3. `scan_unzoned_products` → `assign_unzoned_products` pentru ce se vinde fără zonă.
 4. Generează etichetele QR din Plan Fabrică 2D și lipește-le pe rafturi.
 
-**5. Răspund la „cât mai am în Bar?"**
+**5. „Pune toate produsele în gestiunea corespunzătoare"**
+1. `describe_warehouse_topology` — confirmi ce e fiecare gestiune.
+2. `audit_product_warehouse_coverage` — vezi cifra reală: câte produse n-au gestiune și câte ar consuma din cea greșită.
+3. `plan_material_warehouses` — implicit analizează doar materiile prime. Pentru **tot** ce ține stoc dă `isStocked: true` și paginează cu `afterProductId` până când `cursorUrmator` vine `null`. Fără paginare acoperi doar începutul catalogului.
+4. `apply_material_warehouse_plan` cu `confirm: true`. Adaugă, nu șterge. Produsele pe care planul le-ar lăsa cu consumul decis la întâmplare sunt **sărite** și raportate: pentru cele marcate „rezolvabil prin magazia de casă" reiei cu `setHomeIfMissing: true`, restul cer o alegere manuală.
+5. `audit_product_warehouse_coverage` din nou — cifra trebuie să scadă. Apoi recalculezi consumul (vezi *Consum zilnic*), altfel mișcările vechi rămân pe gestiunile de dinainte.
+
+**6. Răspund la „cât mai am în Bar?"**
 `get_stock_levels` cu `warehouseId`-ul barului (și `productName` dacă e vorba de un singur produs). Nu folosi ecranul de Stocuri ca sursă — el arată totalul pe toate gestiunile.
 
 ## Tool-uri MCP utile
 
 **Citire (modul `inventar`):**
 - `describe_warehouse_topology` — **începe cu ăsta**. Îți spune ce e fiecare gestiune (bar, bucătărie, patiserie, semipreparate, produs finit, ambalaje & consumabile, congelate, depozit central) și **pe ce s-a bazat**: eticheta gestiunii, denumirea, zonele din ea, mixul de produse. Gestiunile fără rol determinabil sunt raportate explicit, nu ghicite.
+- `audit_product_warehouse_coverage` — **harta și dovada**: câte produse care țin stoc au gestiune, câte n-au niciuna, câte n-au magazie de casă și — cel mai important — câte ar consuma din gestiunea greșită pentru că au 2+ gestiuni în aceeași locație fără nimic care să aleagă între ele. Rulează-l înainte (ca să știi cât e de făcut) și după (ca să dovedești că s-a terminat).
 - `trace_material_usage` — „unde se folosește laptele?": toate produsele care îl conțin, direct sau prin semipreparate, și gestiunile în care sunt ancorate.
 - `plan_material_warehouses` — calculează în ce gestiuni ar trebui să stea fiecare materie primă, cu motivul fiecărei recomandări. Nu scrie nimic.
 - `list_warehouses_full` — toate gestiunile, cu locație, brand, cod și status.

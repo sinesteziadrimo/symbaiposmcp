@@ -157,7 +157,11 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: pentru rapoartele clasice cu tab-uri/filtre → /analytics; pentru P&L → /reports/pnl
 
 ## Finanțe & casă
-- **Finanțe & Contabilitate** `/finance` — Pagină-umbrelă, 7 tab-uri: Sumar (default), Cash Flow, Cheltuieli & Plăți, Reconciliere Canale, Control Viva, Control Card GP, Solduri inițiale. Buton „Ghid". Tab-ul „close" redirect→/finance/daily-close.
+- **Finanțe & Contabilitate** `/finance` — Pagină-umbrelă, 9 tab-uri: Sumar (default), Cash Flow, Cheltuieli & Plăți, Reconciliere Canale, Control Viva, Control Card GP, Solduri inițiale, Balanță inițială, Stoc inițial. Buton „Ghid". Tab-ul „close" redirect→/finance/daily-close.
+- **Balanță inițială** `/finance?tab=trial-balance` — Grila de deschidere pe plan de conturi (cont, denumire, sold final debitor/creditor), lipire din Excel, previzualizarea derivării (furnizori/clienți/casă), publicare = notă contabilă de deschidere + fixarea lunii. Read-only dacă balanța e ținută în Symbai Accounting.
+· NU aici: pentru soldurile per furnizor/client/casă → /finance?tab=opening-balances; pentru cantitățile de pe raft → /finance?tab=opening-stock
+- **Stoc inițial** `/finance?tab=opening-stock` — Cantitățile fizice la deschidere: produs, gestiune, cantitate, cost unitar (obligatoriu), opțional lot + termen de valabilitate; lipire din Excel; publicare = documente de deschidere pe gestiuni și loturi. **NU produce note contabile.** Se publică o singură dată; corecțiile ulterioare se fac prin inventar sau ajustări de stoc.
+· NU aici: pentru soldurile contabile → /finance?tab=trial-balance; pentru numărătoarea fizică periodică → /inventory-check; pentru luna de deschidere → /settings?tab=accounting
 · NU aici: pentru registrul fizic de numerar pe zi → /finance/cash-book; pentru note contabile/plan conturi → /accounting-ledger; pentru raportul Z fiscal → /finance/daily-close
 - **Cheltuieli & Plăți** `/finance?tab=expenses` — Tab cu 3 sub-tab-uri: „Toate Mișcările" (KPI ieșiri/intrări/sold furnizori + tabel filtrabil pe sursă manual/factură/extras), „Cheltuieli Manuale", „Sold Furnizori". Search + filtre perioadă/sursă/direcție.
 · NU aici: pentru salarii/payroll → /staff; pentru solduri furnizori detaliate (scadențar) → /supplier-balances; pentru proiecția plăților viitoare → /finance?tab=cashflow

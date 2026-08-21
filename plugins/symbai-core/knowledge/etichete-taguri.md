@@ -2,7 +2,17 @@
 
 > Gramatica completă a etichetelor (tagurilor) în Symbai: ce sunt, la ce folosesc, ce tool-uri MCP le ating și capcanele confirmate pe instanțe reale. Workflow-ul pas-cu-pas (rețete) e în skill-ul `gestioneaza-etichete`. Pentru rutarea în onboarding vezi și `onboarding/03-etichete-rutare.md`; pentru imprimante/ecrane `echipamente-kds-imprimante.md`.
 
-O **etichetă** (tag) e o grupare reutilizabilă atașată produselor (și, mai rar, altor entități). Un produs poate avea oricâte etichete. Tagurile sunt **globale pe firmă**, nu per locație — eticheta pusă pe un produs îl urmează în toate meniurile și locațiile.
+O **etichetă** (tag) e o grupare reutilizabilă atașată produselor (și, mai rar, altor entități). Un produs poate avea oricâte etichete. Eticheta pusă pe un produs îl urmează în toate meniurile și locațiile — produsele sunt comune pe firmă.
+
+## Unitatea etichetei: fără brand = TOATE unitățile
+
+O etichetă poate fi legată de un brand (și, mai fin, de o locație), dar **nu e obligatoriu**:
+
+- **fără `brandId`** = eticheta se aplică în **toate unitățile** firmei. Ăsta e default-ul și e ce vrei pentru taxonomie: „Lactate", „Vegan", alergeni, cote TVA, „Recomandat".
+- **cu `brandId`** = eticheta e a acelui brand: apare doar în rapoartele lui și poate primi rutare doar pe imprimantele/ecranele lui. Ăsta e cazul etichetelor de rutare, unde fiecare local are bucătăria și barul lui — „BAR ASTUR", „BUCĂTĂRIE DRUNKEN".
+- **cu `brandId` + `locationId`** (doar din aplicație) = îngustare peste brand, când eticheta e a unui singur local al unui brand cu mai multe locații.
+
+Lipsa brandului nu e o „scăpare" și nu e rezervată administratorului: e sensul implicit. Nimic nu completează brandul în locul tău — ce lași gol rămâne gol. Dacă firma are mai multe branduri și utilizatorul n-a spus al cui e eticheta, **întreabă-l** în loc să ghicești: o etichetă de rutare pusă pe brandul greșit nu poate fi legată de imprimanta celuilalt local („unități incompatibile" la salvarea regulii).
 
 ## Cele 4 scopuri ale tagurilor — nu le amesteca
 
@@ -26,7 +36,7 @@ Toate scrierile cer modulul **`produse_meniu`** („Produse & Meniuri") bifat pe
 - `search_products_for_tagging(filtre...)` — **DRY-RUN: previzualizează exact ce produse ar fi afectate de un set de filtre, FĂRĂ a asigna nimic.** Există prin MCP și e prima ta apărare împotriva greșelilor în masă. Întoarce numărul REAL de produse distincte + tagurile lor existente. Rulează-l ÎNTOTDEAUNA cu aceleași filtre înainte de `bulk_assign_tag`.
 
 **Scriere:**
-- `create_tag(name, brandId, color?, description?, entityTypes?)` — `entityTypes` default `["product"]` (exact ce trebuie pentru rutare). Întoarce id-ul.
+- `create_tag(name, brandId?, color?, description?, entityTypes?)` — `entityTypes` default `["product"]` (exact ce trebuie pentru rutare). **`brandId` e opțional**: fără el eticheta se aplică în toate unitățile (vezi secțiunea „Unitatea etichetei"); pune-l doar când eticheta e a unui singur brand. Întoarce id-ul.
 - `update_tag(tagId, name?, color?, description?)` — singura cale de a schimba culoarea/descrierea unui tag existent.
 - `assign_tag(tagId, entityId, entityType?)` — asignează la UN produs.
 - `bulk_assign_tag(tagId, ...filtre)` — asignează la toate produsele care trec filtrele (AND între ele).
@@ -60,7 +70,8 @@ Reguli practice:
 
 - **`create_tag` e idempotent pe (nume, brand) și NU suprascrie.** Re-crearea cu același nume întoarce tagul EXISTENT cu parametrii lui vechi — culoarea/descrierea pe care le-ai dat la al doilea apel se IGNORĂ. Ca să schimbi culoarea/descrierea unui tag existent → `update_tag`, nu `create_tag`.
 - **Tag NOU pentru rutare = bonuri pierdute** până când există regula tag→imprimantă/KDS. Un tag creat de tine NU rutează nicăieri singur — produsele lui generează bonuri nerutate care nu se printează și nu apar pe niciun ecran, **fără nicio eroare**. Regula de rutare se creează în aplicație (Setări → Imprimante / ecrane) sau, dacă tool-urile de rutare (`create_tag_routing_rule`, `set_tag_routing`, `list_tag_routing_rules`) sunt disponibile în catalogul conexiunii tale, direct prin conexiune. După ce creezi un tag de secție nou, spune-i utilizatorului EXPLICIT ce tag și unde trebuie să iasă, și cere un bon de test.
-- **`brandId` poate fi gol pe taguri vechi.** `create_tag` setează corect `brandId`, dar taguri create prin alte căi (import, `auto_tag_from_menu_categories`) pot rămâne fără brand setat. `list_tags(brandId)` le include oricum (filtrul nu exclude tagurile fără brand), deci nu te speria — dar dacă ai nevoie de izolare strictă pe brand, verifică `brandId` în răspuns.
+- **`brandId` gol NU e o eroare — înseamnă „toate unitățile".** `list_tags(brandId)` include și etichetele fără brand, exact pentru că ele aparțin fiecărei unități. Dacă ai nevoie de izolare strictă pe brand (rapoarte separate, rutare per local), citește `brandId` în răspuns și, unde lipsește, întreabă utilizatorul dacă eticheta trebuie legată de un brand — nu presupune că e o scăpare.
+- **Butoanele din aplicație care n-au selector de unitate creează etichete fără brand** (butonul „+" de pe produs, wizardul AI, tabelul de etichete, etichetele de container). E comportamentul corect: cine vrea eticheta legată de un brand o face din managerul de etichete, unde alege unitatea explicit.
 - **`bulk_assign_tag(tagId, brandId)` fără alt filtru etichetează TOATE produsele brandului.** `brandId` singur e un filtru valid — folosit intenționat e o unealtă („pune «Meniu» pe tot"), accidental e dezastru pe sute de produse. (Doar `tagId`, fără niciun filtru → 0 găsite, nu face nimic.) Confirmă scope-ul înainte.
 - **Produsele sunt globale pe firmă** — la firme cu mai multe locații, izolarea se face la regulile de rutare (per locație, în aplicație), nu la etichete. O etichetă „de barul X" pe produse vândute și în localul Y poate trimite bonuri la alt local dacă regula nu e limitată pe locație — verifică mereu limitarea pe locație a regulii.
 - **Eroarea „0 categorii găsite în brandId=N"** la `bulk_assign_tag` / `search_products_for_tagging` = numele categoriei e greșit. Verifică ortografia cu `list_menu_categories` (nu presupune — întreabă utilizatorul „X sau Y?" cu opțiuni reale din meniu).

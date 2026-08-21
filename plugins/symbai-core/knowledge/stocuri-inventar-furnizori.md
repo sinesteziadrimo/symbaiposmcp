@@ -14,6 +14,7 @@ Acest fișier e harta modulului. Pentru subiectele mari există fișiere dedicat
 - **`gestiuni-magazii-zone.md`** — ce e o gestiune, ce e o zonă, unde stă de fapt cantitatea, transferuri, deschiderea și închiderea unei gestiuni.
 - **`mapare-si-reconversie-facturi.md`** — cum devine o linie de factură de furnizor stoc corect: potrivirea la produs, contul, factorul de pachet și ce învață sistemul.
 - **`reconciliere-dubluri-facturi.md`** — cum eviți marfa intrată de două ori și facturile pierdute.
+- **`deschidere-solduri-stoc-initial.md`** — de unde pornește stocul când aduci o firmă existentă: foaia de stoc inițial (cantități + cost, pe gestiuni și loturi, **fără note contabile**) și legătura ei cu balanța inițială. Se face o singură dată; după publicare corecțiile trec prin inventar sau ajustări.
 
 Pentru diagnostic pas cu pas există și skill-ul `verifica-consumul`.
 

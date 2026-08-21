@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-comunicare
-description: Gestioneaza comunicarea cu clientii si echipa prin MCP + Chrome: campanii email, newslettere, flow-uri automate, send-time optimization, deliverability/warm-up, A/B, atribuire conversii, sabloane, WhatsApp/Messenger/Instagram, push si linkuri de conectare. Foloseste la "trimite o campanie", "cand e cel mai bine sa trimit emailul", "creste open rate", "cum stam fata de ActiveCampaign", "de ce nu se livreaza", "cine mi-a scris", "raspunde pe WhatsApp", "dezaboneaza". Confirmare explicita obligatorie inainte de orice trimitere reala.
+description: Gestioneaza comunicarea cu clientii si echipa prin MCP + Chrome: campanii email, newslettere, flow-uri automate, send-time optimization, deliverability/warm-up, A/B, atribuire conversii, sabloane, WhatsApp/Messenger/Instagram, push si linkuri de conectare. Foloseste la "trimite o campanie", "cand e cel mai bine sa trimit emailul", "creste open rate", "cum stam fata de ActiveCampaign", "de ce nu se livreaza", "cine mi-a scris", "raspunde pe WhatsApp", "dezaboneaza". Confirmare explicita obligatorie inainte de orice trimitere reala. Acest skill acopera numarul de WhatsApp Business AL FIRMEI, catre clienti (send_whatsapp_message / reply_to_conversation); daca se cere sa scrii de pe numarul PERSONAL al ownerului, printr-o punte locala, si in stilul lui, foloseste skill-ul `raspunde-whatsapp` — alt canal, alte tool-uri, alte riscuri.
 ---
 
 # Gestioneaza Comunicare — Email + WhatsApp + Push, MCP-First
@@ -119,6 +119,7 @@ Flow-uri utile pentru HoReCa:
 
 - Pentru inbox: `list_conversations`, apoi `get_conversation_messages`. Nu raspunde fara context.
 - Pentru raspuns: propune textul, cere confirmare, apoi `reply_to_conversation(confirm:true)`.
+- **Cand un mesaj e dat ca reply la altul, citeste intai la CE raspunde.** „nu, nu asta", „si asta?", „nu ignora" inseamna lucruri diferite in functie de ce citeaza; luat ca raspuns la ultimul mesaj din fir, raspunzi pe langa subiect. Daca nu poti afla la ce se referea, intreaba — e o intrebare fireasca.
 - Pentru WhatsApp initiat de tine: confirma numarul si textul; tine cont de fereastra 24h si template-uri aprobate.
 - Pentru push: arata cati destinatari, cere confirmare, apoi `push_notify_staff` sau `push_notify_customers`.
 - Pentru link magic: este credential temporar, confirma adresa inainte de `send_magic_login_link(confirm:true)`.

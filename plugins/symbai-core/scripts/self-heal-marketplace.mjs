@@ -180,12 +180,58 @@ try {
     }
   }
   if (!pluginsRoot) {
-    const fallback = path.join(os.homedir(), ".claude", "plugins");
-    if (fs.existsSync(path.join(fallback, "marketplaces", MARKETPLACE_NAME))) {
-      pluginsRoot = fallback;
+    // CLAUDE_CONFIG_DIR, apoi home: la rularea manuală de recovery (--force) nu
+    // avem CLAUDE_PLUGIN_ROOT, iar căutarea doar în home nu găsea nimic pe un PC
+    // cu folder de configurare mutat — recovery-ul ieșea tăcut, „ca și cum ar fi
+    // rulat".
+    const roots = [];
+    if (process.env.CLAUDE_CONFIG_DIR) roots.push(path.join(process.env.CLAUDE_CONFIG_DIR, "plugins"));
+    roots.push(path.join(os.homedir(), ".claude", "plugins"));
+    for (const fallback of roots) {
+      if (fs.existsSync(path.join(fallback, "marketplaces", MARKETPLACE_NAME))) {
+        pluginsRoot = fallback;
+        break;
+      }
     }
   }
   if (!pluginsRoot) ok();
+
+  // ------------------------------------------------------------------
+  // STAND DOWN dacă marketplace-ul e livrat LOCAL (din installerul Symbai).
+  //
+  // Livrarea prin installer pune marketplace-ul ca director pe disc și îl ține
+  // la zi Symbai Connect. Clona git rămâne pe disc, orfană — iar hook-ul ăsta o
+  // găsește, o aduce la zi de pe GitHub și, în faza 2, copiază pluginul din ea
+  // peste cache, mutând și pointerul din installed_plugins.json.
+  //
+  // Adică ar suprascrie exact ce tocmai a livrat installerul, la fiecare
+  // pornire de sesiune, iar GitHub ar câștiga mereu — două mecanisme de livrare
+  // care se bat, cu clientul la mijloc. Cine e pe sursă locală nu are nevoie de
+  // self-heal: are un serviciu care face asta.
+  // ------------------------------------------------------------------
+  // Fiecare fișier se citește separat: unul lipsă nu are voie să anuleze semnalul
+  // celuilalt. settings.json e declarația (ce vrea utilizatorul), known_marketplaces
+  // e materializarea (ce a înțeles Claude Code) — declarația are prioritate,
+  // fiindcă ea e cea pe care agentul tocmai a scris-o.
+  const readSoft = (file) => {
+    try {
+      return readJson(file);
+    } catch {
+      return null;
+    }
+  };
+  // CLAUDE_CONFIG_DIR, nu direct home: Claude Code rezolvă configurația ca
+  // `CLAUDE_CONFIG_DIR ?? join(homedir(), ".claude")`, iar `declared` are
+  // PRIORITATE aici. Citit din locul greșit, un settings.json străin ar acoperi
+  // semnalul corect din known_marketplaces — și clientul ar rămâne fără livrare
+  // locală ȘI fără self-heal, adică înghețat definitiv.
+  const configDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), ".claude");
+  const declared = readSoft(path.join(configDir, "settings.json"));
+  const known = readSoft(path.join(pluginsRoot, "known_marketplaces.json"));
+  const src =
+    declared?.extraKnownMarketplaces?.[MARKETPLACE_NAME]?.source?.source ||
+    known?.[MARKETPLACE_NAME]?.source?.source;
+  if (src && src !== "git" && src !== "github") ok({ skipped: "sursă locală" });
 
   const marketplaceDir = path.join(pluginsRoot, "marketplaces", MARKETPLACE_NAME);
   // dataDir găzduiește lock-ul + stamp-ul + markerul inflight. Cheiat EXCLUSIV

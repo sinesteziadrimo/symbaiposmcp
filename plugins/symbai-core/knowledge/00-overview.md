@@ -20,6 +20,7 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **Personal (Staff)** — angajați, roluri, contracte, ture, pontaj, salarizare, beneficii. → `personal-hr.md`
 - **Rapoarte / Analytics** — vânzări, KPI, food cost, marjă, performanță. → `rapoarte-preturi.md`
 - **Finanțe** — casierie (registru de casă), închidere de zi, facturi, e-Factura ANAF, contabilitate. → `finante-facturare-contabilitate.md`
+- **Deschiderea firmei** — de unde pornește totul când aduci o firmă existentă: balanța inițială (soldurile pe conturi, care produc nota de deschidere) și stocul inițial (cantitățile de pe raft, care NU produc note contabile). → `deschidere-solduri-stoc-initial.md` + skill `deschide-firma`
 - **Conturi pe Tip Produs** — ce cont primește fiecare fel de produs, pe fiecare moment; conturi diferite pe branduri/locații fără a dubla tipul; unificarea tipurilor dublate; naturile de cheltuială pentru liniile fără marfă. → `tipuri-produs-conturi.md`
 - **Marketing & Website** — postări social media, e-mail, ads, coduri QR (→ `marketing-social.md`); **site-ul public / magazinul online** — builder (pagini, componente, ierarhie de categorii, filtre faceted, hero, footer, pagini legale, temă) → `website-builder.md` + `ecommerce-magazin-online.md`
 - **Echipamente** — imprimante, ecrane bucătărie (KDS), agentul de imprimare, serverul local (edge), dispozitive. → `echipamente-kds-imprimante.md`

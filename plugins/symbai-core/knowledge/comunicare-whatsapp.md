@@ -45,6 +45,7 @@ Symbai adună într-un singur inbox mesajele de la clienți de pe toate canalele
 
 ## Capcane
 
+- **Nu confunda canalul oficial cu numărul personal al ownerului.** Ghidul acesta e despre WhatsApp Business (numărul firmei, către clienți, cu șabloane și consimțământ). Dacă i se cere să scrie de pe **numărul personal** al omului, printr-o punte locală — alt canal, alte tool-uri (`send_message`, nu `send_whatsapp_message`) și alte riscuri: acolo se aplică skill-ul `raspunde-whatsapp`, care impune imitarea stilului, ritm de om și plafoane de volum ca să nu fie banat contul personal.
 - **Mesaj de serviciu vs marketing** — răspunsul la întrebarea unui client e mereu permis; mesajul promoțional cere consimțământ + fereastra potrivită.
 - **Nu cere parole** la conectarea WhatsApp/social — aprobarea o face utilizatorul în browserul lui.
 - **Conversațiile sunt date personale** — respectă GDPR (vezi ghidul dedicat) la export/ștergere.

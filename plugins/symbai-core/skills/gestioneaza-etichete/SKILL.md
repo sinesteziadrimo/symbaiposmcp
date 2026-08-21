@@ -15,7 +15,7 @@ Toate scrierile cer modulul **`produse_meniu`** pe token; lipsă → „permisiu
 
 ## Inventarul de pornire (citește înainte să întrebi)
 
-1. `list_brands` → `brandId` (obligatoriu la `create_tag`; trimite-l peste tot unde e acceptat). La multi-brand, dacă cererea nu spune care → întreabă o dată.
+1. `list_brands` → `brandId`. **La `create_tag` e opțional**: fără el eticheta se aplică în TOATE unitățile (corect pentru atribute — Vegan, Lactate, alergeni, TVA), cu el eticheta e a acelui brand (corect pentru rutare — fiecare local are barul lui). La multi-brand, dacă cererea nu spune al cui e eticheta de rutare → întreabă o dată. Pe restul filtrelor (`list_*`, `bulk_assign_tag`) trimite-l peste tot unde e acceptat.
 2. `list_tag_summary(brandId)` → ce etichete există + câte produse au. **Refolosește etichetele existente** (același nume, nu variante noi) — au deja reguli de rutare în spate. NU recrea „BAR" dacă există „BAR TERASĂ".
 3. `list_menu_categories(brandId)` → structura REALĂ (ierarhică, cu path complet). Orice filtru pe categorie pleacă de aici — nu inventa ramuri.
 4. `list_untagged_products(brandId)` → ce a rămas neetichetat.
@@ -25,7 +25,7 @@ Toate scrierile cer modulul **`produse_meniu`** pe token; lipsă → „permisiu
 Scopul: fiecare produs vandabil are o etichetă de secție, ca bonul să ajungă la imprimanta/ecranul corect.
 
 1. **Întreabă scurt posturile fizice**: „Ce posturi primesc comenzi — bucătărie și bar? Mai e grătar, pizzerie, patiserie? Fiecare cu imprimanta/ecranul lui?" → lista scurtă de etichete (2–4).
-2. **Creează etichetele** lipsă cu `create_tag(name, brandId, color)` (idempotent pe nume+brand; reține id-ul). Culori sugestive: roșu bucătărie, albastru bar.
+2. **Creează etichetele** lipsă cu `create_tag(name, brandId, color)` (idempotent pe nume+brand; reține id-ul). Aici `brandId` chiar contează: o etichetă de rutare aparține unui local — fără brand ar putea fi legată de imprimanta oricărei unități, cu brandul greșit nu poate fi legată de a ta. Culori sugestive: roșu bucătărie, albastru bar.
 3. **Dry-run** per secție: `search_products_for_tagging(brandId, categoryName:"BAR")` (subtree rollup prinde toată ramura). Confirmă numărul cu utilizatorul.
 4. **Asignează**: `bulk_assign_tag(tagId, brandId, categoryName:"BAR")` (sau `categoryNames` / `categoryPath` pentru ramuri exacte). Răspuns `{assigned, skipped, total}`.
 5. **Rămășițe**: `list_untagged_products(brandId)` → `bulk_assign_tag` cu `nameContains`/`entityIds`, sau `assign_tag` pentru 1–2 cazuri.
@@ -35,7 +35,7 @@ Scopul: fiecare produs vandabil are o etichetă de secție, ca bonul să ajungă
 
 Pentru filtre de meniu/portal/campanii: „Recomandat", „Nou", „Vegan", „Picant", „Happy Hour".
 
-1. `create_tag(name, brandId, color, description)`. Aici poți avea oricâte — nu afectează rutarea.
+1. `create_tag(name, color, description)` — **fără `brandId`**: un atribut („Vegan", „Picant") descrie produsul, care e comun pe firmă, deci eticheta trebuie să se aplice în toate unitățile. Aici poți avea oricâte — nu afectează rutarea.
 2. Asignează țintit: rar pe categorie (un atribut e per produs), de obicei cu `nameContains` sau `entityIds` (lista de produse confirmată cu utilizatorul). Dry-run întâi.
 3. Atributele nu rutează bonuri — nu te complica cu reguli de imprimantă.
 
