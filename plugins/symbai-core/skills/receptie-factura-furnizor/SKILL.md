@@ -1,6 +1,6 @@
 ---
 name: receptie-factura-furnizor
-description: Procesează facturile de la furnizori și intrările de marfă (Intrări Marfă) — recepție directă pe stoc prin MCP (NIR + note contabile automate), maparea liniilor de eFactură la produse + conturi, factor de pachet, tip produs corect, magazie/unitate, deductibilitate, reconciliere aviz/poză cu eFactura, plus recunoașterea furnizorului de pe document (căutare pe cod fiscal în lista clientului, apoi denumirea oficială de la ANAF/VIES). Folosește la „adaugă factura de intrare", „recepție marfă", „bagă marfa pe stoc", „mapează factura de la X", „de ce nu intră pe stoc", „leagă avizul de factură", „intrări marfă", „NIR", „factură furnizor", „e alt furnizor decât scrie pe factură", „de ce mi-a schimbat numele furnizorului", „furnizor nou din poză", „de ce nu s-a recunoscut furnizorul", „am doi furnizori cu același CUI", „verifică furnizorul la ANAF".
+description: Procesează facturile de la furnizori și intrările de marfă (Intrări Marfă) — recepție directă pe stoc prin MCP (NIR + note contabile automate), maparea liniilor de eFactură la produse + conturi, factor de pachet, tip produs corect, magazie/unitate, deductibilitate, reconciliere aviz/poză cu eFactura, plus recunoașterea furnizorului de pe document (căutare pe cod fiscal în lista clientului, apoi denumirea oficială de la ANAF/VIES). Folosește la „adaugă factura de intrare", „recepție marfă", „bagă marfa pe stoc", „mapează factura de la X", „de ce nu intră pe stoc", „leagă avizul de factură", „intrări marfă", „NIR", „factură furnizor", „e alt furnizor decât scrie pe factură", „de ce mi-a schimbat numele furnizorului", „furnizor nou din poză", „de ce nu s-a recunoscut furnizorul", „am doi furnizori cu același CUI", „verifică furnizorul la ANAF". Se declanșează ȘI pe formulările prin care un patron cere de fapt o recepție fără să folosească cuvântul: „pune-mi X pe stoc", „adaugă stoc la X", „am primit marfă", „a venit marfa", „bagă 20 de kg de făină", „mai adaugă 10 bucăți", „crește-mi stocul la X", „am cumpărat de la Selgros/Metro/cash&carry" — toate astea sunt intrare de marfă și cer factură + recepție, NU o ajustare de stoc.
 ---
 
 # Recepție factură furnizor / Intrări Marfă — corect, complet, rapid
@@ -9,14 +9,44 @@ Scopul: marfa de la furnizor să intre pe stoc ȘI în contabilitate, corect. Ci
 
 **Regula de aur:** stocul se mișcă DOAR la postarea NIR-ului (document de inventar POSTED). Factura nemapată nu intră pe stoc. Recepția din poză depinde de modul firmei: pe modurile **ciornă** / **verificare** nu intră singură (se confirmă manual); pe modul **direct pe stoc**, când totul e curat, NIR-ul se creează și se postează automat — deci regula rămâne valabilă: tot un NIR mișcă stocul.
 
-## Pasul 0 — alege calea corectă (citește asta întâi)
+## Pasul 0 — întreabă de factură ÎNAINTE de orice (citește asta întâi)
 
-Sunt DOUĂ situații. Confundarea lor dublează stocul — nu sări peste.
+Regula care nu se negociază: **marfa intră pe stoc prin FACTURĂ → RECEPȚIE.** În ordinea asta. Recepția
+e consecința facturii, nu o alternativă la ea. O recepție fără factură crește stocul dar nu naște
+datoria către furnizor, nu are ce concilia și lasă un NIR orfan în contabilitate.
 
-- **CALEA A — marfa NU are încă o factură în sistem** (cumpărare cash & carry, aviz, sau eFactura n-a sosit încă din SPV): faci o **recepție directă** complet prin MCP cu `create_inventory_document` (vezi Calea A). Rapid și fără aplicație.
-- **CALEA B — factura/eFactura EXISTĂ deja în sistem** (importată din SPV, din poză OCR, sau împinsă din contabilitate — apare în `list_received_efactura`): **mapezi liniile** prin MCP, apoi creezi **NIR-ul legat de factură** (vezi Calea B). ⚠ NU folosi `create_inventory_document` pe Calea B — el creează o recepție SEPARATĂ, NElegată de factură, deci marfa intră de două ori și factura rămâne „fără NIR".
+Trei situații, în ordinea de PRECEDENȚĂ — verifică-le de sus în jos și oprește-te la prima care se
+potrivește:
 
-Întreabă-te: „Există această factură în `list_received_efactura`?" Da → Calea B. Nu → Calea A.
+1. **Userul ți-a dat o factură** — poză, PDF, fișier, sau pur și simplu ți-a dictat-o în chat
+   („am luat de la Selgros 20 kg făină, 180 lei"). **NU face recepție direct din ea.** Întâi o
+   introduci CA FACTURĂ cu `create_incoming_invoice` (o creează ca CIORNĂ, nu mișcă stoc), apoi
+   mapezi liniile cu `map_invoice_line`, apoi faci recepția legată cu `create_nir_from_invoice`.
+   Vezi „Factură manuală de la zero (prin MCP)" la finalul fișierului. Așa devine Calea B și rămâne
+   totul legat: factură ↔ NIR ↔ stoc ↔ notă contabilă. A face recepție directă dintr-un document
+   pe care îl ai în mână e cea mai frecventă greșeală și cel mai scump de reparat ulterior.
+2. **Factura există deja în sistem** (importată din SPV, din poză OCR, sau împinsă din contabilitate
+   — apare în `list_received_efactura`) → **Calea B**: mapezi liniile, apoi NIR-ul legat.
+   ⚠ NU folosi `create_inventory_document` aici — creează o recepție SEPARATĂ, NElegată de factură,
+   deci marfa intră de două ori și factura rămâne „fără NIR".
+3. **Nu există nicio factură și userul nu ți-a dat una** → **ÎNTREABĂ, nu presupune.** Formulare:
+   „Ai factura sau avizul? Dacă mi-l dai (poză sau doar numărul, furnizorul și liniile), îl introduc
+   întâi ca factură și fac recepția din el — așa rămâne legat de furnizor și de contabilitate."
+   Doar dacă userul confirmă că nu există (încă) — cash & carry cu bon, aviz care va fi facturat
+   ulterior, eFactura nesosită din SPV — folosești **Calea A** (`create_inventory_document`). Când
+   o faci, spune-i explicit că factura va trebui atașată când sosește, altfel rămâne recepție
+   neconciliată.
+
+⛔ **Ajustarea de stoc NU e o cale de intrare a mărfii.** Când userul zice „pune-mi 20 kg pe stoc",
+„adaugă stoc la X", „am primit marfă" sau „corectează-mi stocul în plus", asta e o RECEPȚIE, nu o
+ajustare — indiferent cât de mult sună a corecție. O ajustare pozitivă bagă cantitate fără furnizor,
+fără cost de achiziție real, fără factură și fără datorie; pe deasupra, plusurile de stoc se scad din
+costul mărfii vândute și pot împinge food cost-ul sub zero. Ajustarea pozitivă e legitimă DOAR ca
+rezultat al unei numărători fizice (inventariere) sau la încărcarea soldului inițial. Vezi
+`knowledge/stocuri-inventar-furnizori.md`.
+
+Întreabă-te, în ordine: „Am un document de la furnizor în mână?" → 1. „E deja în sistem?" → 2.
+„Nu e nici, nici?" → întreabă, apoi 3.
 
 **Procedura firmei e configurabilă** (Setări → Stocuri → „Recepție din poză"; citește-o cu `get_reception_policy`, schimb-o cu `configure_reception_policy`): modul (ciornă / verificare imediată / direct pe stoc), magazia implicită de recepție și cine poate corecta mapările / adăuga produse noi. Consult-o ÎNAINTE să explici de ce a intrat (sau nu) marfa pe stoc. Există și un **loop automat de eFactură**: verifică-dacă-e-ceva-nou → importă din SPV → mapează automat liniile (pe regulile învățate) → decizie (ce e curat trece, ce e neclar rămâne la om) → procesează, cu **NIR automat opțional** — facturile pot curge singure până la stoc, tu intervii doar la excepții.
 

@@ -114,6 +114,67 @@ Aplicatia poate tine date in cache. Daca un tool MCP a returnat succes, nu repet
 
 Chrome este dovada vizuala pentru user, nu sursa primara de verificare dupa write.
 
+## Verificat Nu Înseamnă Complet — Întreabă-te Ce Pas-Pereche Lipsește
+
+„Verifică prin citire" dovedește că **ai făcut ce ai cerut**. Nu dovedește că **operația e completă**.
+Sunt lucruri diferite, și confuzia dintre ele a stricat deja date la clienți reali: o recepție creată,
+citită înapoi, confirmată — succes pe toată linia — și totuși marfă pe stoc fără factură, fără datorie
+către furnizor, fără cost. Nimic n-a dat eroare. Tocmai asta e problema: operațiile incomplete reușesc.
+
+Deci după orice scriere, înainte să raportezi „gata", pune-ți întrebarea: **ce document sau ce legătură
+mai lipsește ca operația asta să fie întreagă din punct de vedere economic?** Dacă lipsește ceva,
+spune-o userului chiar dacă el n-a cerut — nu ca refuz, ci ca următorul pas.
+
+Perechile care se rup cel mai des:
+
+| Ai făcut | Nu e complet fără |
+|----------|-------------------|
+| recepție de marfă | factura furnizorului legată (altfel: stoc fără datorie, NIR orfan) |
+| factură de intrare introdusă | NIR-ul din ea (altfel: factura e ciornă, marfa NU e pe stoc) |
+| produs nou creat | tipul de produs (decide contul și costarea), unitatea de măsură, magazia |
+| produs de meniu creat | legătura la produsul de stoc (altfel consumul nu scade nimic) |
+| rețetă creată | ingredientele ei ȘI unități compatibile cu cele din stoc |
+| recepție cu `unitCost` 0 | prețul real de achiziție (altfel stocul se valorează 0 și nota contabilă iese 0) |
+| ajustare de stoc în plus | o sesiune de inventariere care s-o justifice — altfel nu e ajustare, e recepție deghizată |
+| consum zilnic generat | TOATE zilele perioadei; o singură zi lipsă scoate bonurile ei din rapoarte |
+| document șters | nota contabilă și rândurile de ledger care îl însoțeau |
+| lună raportată în contabilitate | consumul generat pe toate zilele ei, altfel costul e parțial |
+
+Regula de aur când userul cere o scurtătură: **întreabă înainte să improvizezi.** „Pune-mi 20 kg pe
+stoc" nu înseamnă „fă o ajustare", înseamnă „a intrat marfă" — cere factura. Un agent care întreabă o
+dată e infinit mai ieftin decât unul care lasă în urmă trei luni de date pe care nimeni nu le mai poate
+reconcilia. Dacă userul confirmă că documentul chiar nu există, execută varianta degradată, dar
+**spune explicit ce rămâne neconciliat și ce trebuie făcut când documentul apare**.
+
+## „Există" Nu Înseamnă „Funcționează" — Cifra Nu E Concluzia
+
+Secțiunea de mai sus e despre ce ai SCRIS. Asta e despre ce CITEȘTI, și e greșeala care produce cele
+mai încrezătoare afirmații false.
+
+Un tenant real a rămas cu produse care „aveau rețetă" — rețete existente, dar fără niciun ingredient
+în ele. Raportul spunea „0 fără rețetă". Agentul i-a spus patronului „toate produsele au rețetă".
+Adevărul: la fiecare vânzare acele rețete se desfăceau în zero linii, stocul nu scădea deloc, iar
+food cost-ul rămânea 0. Nimic n-a dat eroare, fiindcă din punctul de vedere al bazei de date rețeta
+chiar exista.
+
+Trei reflexe, în ordinea în care greșelile chiar se produc:
+
+1. **Un lucru „configurat" nu e un lucru care merge.** O rețetă poate fi goală. Un furnizor poate n-aibă
+   cod fiscal. O imprimantă poate fi definită și deconectată. O integrare poate avea token expirat. O
+   gestiune poate exista fără niciun produs. Înainte să spui „e configurat", întreabă-te **ce efect ar
+   trebui să producă** și verifică efectul, nu existența rândului.
+2. **O cifră fără numitor nu e o acoperire.** „200 de rețete" nu înseamnă „toate produsele au rețetă" —
+   rețetele pot fi legate de alte produse, sau de niciunul. Când un tool îți dă un numărător, caută
+   explicit numitorul; dacă raportul nu ți-l dă, cere-l din alt tool sau spune-i patronului că nu-l ai.
+   Nu-l deduce.
+3. **Zero poate însemna „niciunul" sau „n-am putut să mă uit".** Un raport care întoarce 0 pentru că
+   nu are date nu e același lucru cu unul care a verificat și n-a găsit nimic. La orice „nu există
+   probleme", întreabă-te dacă verificarea chiar a rulat pe tot.
+
+Formularea corectă când nu ești sigur: „raportul zice X, dar el numără doar Y — ca să-ți spun sigur
+trebuie să verific și Z". Un patron preferă un răspuns cu o rezervă adevărată în locul unuia curat și
+fals — pe al doilea îl descoperă peste trei luni, când nu mai poate reconstitui nimic.
+
 ## Navigare Si Chrome
 
 Pentru "du-ma la", "arata-mi", "unde este":

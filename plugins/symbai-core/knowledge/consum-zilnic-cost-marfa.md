@@ -82,6 +82,10 @@ Se decide **pentru fiecare ingredient în parte** (nu pentru rețetă), în func
 3. **Loturi rezervate** de o sesiune de producție sau o comandă neterminată — deblochează sesiunea, apoi regenerezi ziua.
 4. La **fabrici**, consumul se oprește dacă loturile nu acoperă cantitatea. E o protecție intenționată: la fabrică nu se permite stoc negativ. La restaurant stocul negativ e permis — e semnal de recepție neînregistrată sau de unitate greșită în rețetă, nu blocaj.
 
+Iar un caz care NU oprește consumul global, dar îl golește tăcut pe un produs anume — cel mai greu de văzut dintre toate:
+
+5. **Rețetă existentă, dar FĂRĂ ingrediente.** Produsul „are rețetă", deci nu apare în nicio listă de „produse fără rețetă". La vânzare, rețeta se desface în zero linii: nu scade nimic din stoc, iar costul mărfii vândute rămâne 0 pentru el, la nesfârșit. Se creează cel mai des la importuri în masă de rețetar, unde rețeta se creează dar liniile de ingrediente nu se mai atașează. Cum îl prinzi: `analyze_food_costs` raportează separat câte produse au **rețetă goală** (distinct de „fără rețetă"); alertele îl numesc pe fiecare. La fel de tăcute: rețeta legată de produs **doar prin nume** (se rupe la prima redenumire a produsului) și rețeta rămasă **ciornă sau arhivată** — ambele apar acum ca rânduri separate în același raport. Repararea e simplă odată văzută: completezi ingredientele, apoi reprocesezi perioada afectată ca să se recalculeze costul.
+
 ## Livrările (Glovo / Wolt / Bolt / Tazz)
 
 - Scad stocul **imediat** ce comanda e marcată livrată/ridicată, cu bon de consum propriu — nu așteaptă rularea zilnică.
