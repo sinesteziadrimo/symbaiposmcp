@@ -18,26 +18,17 @@ Cand pluginul este instalat si serverul MCP este conectat, Codex expune tool-uri
 Daca tool-urile lipsesc:
 - verifica instalarea pluginului;
 - verifica daca threadul a fost pornit dupa instalare;
-- pentru angajat, verifica daca ownerul i-a trimis un grant nominal si daca autentificarea OAuth a fost finalizata;
-- pentru owner cu token direct, verifica prezenta variabilei `SYMBAI_MCP_TOKEN` fara sa afisezi valoarea;
-- verifica URL-ul din configuratie (subdomeniul tau, nu al altui client);
-- porneste un thread nou dupa orice schimbare de plugin sau mediu.
+- verifica daca proprietarul a acordat accesul nominal angajatului si locatiei POS exacte;
+- instaleaza ultimul Pachet personalizat din POS si reia OAuth din butonul Conecteaza al panoului Symbai Connect;
+- porneste un thread nou dupa instalare sau reconectare.
 
 ## Autentificare
 
-Pentru un **angajat POS**, ownerul creeaza mai intai grantul nominal in Hub -> Acces AI, pentru angajatul si locatia POS exacte. Configuratia HTTP nativa nu contine token; Codex porneste OAuth prin `Authenticate` (sau `codex mcp login symbai`), iar angajatul se logheaza singur cu email + parola (nu PIN). Un cont POS fara grant de owner pentru acea locatie nu poate emite acces. Pentru **owner/conexiune tehnica**, tokenul direct vine din Hub si are forma `symbai_mcp_*`; nu il copia in git sau in raspunsuri.
+Proprietarul creeaza mai intai grantul nominal in Hub -> Acces AI, pentru angajatul si locatia POS exacte. Angajatul intra apoi in POS, descarca ultimul Pachet personalizat Symbai Connect, il instaleaza si apasa Conecteaza pentru Codex. Browserul deschide automat OAuth, unde angajatul foloseste emailul si parola contului POS, nu PIN-ul de la casa.
 
-**Calea recomandata (Codex actual)**: transportul Streamable HTTP nativ in `~/.codex/config.toml` — reteta completa e in skill-ul `conecteaza-codex`. Foloseste URL-ul cu sufixul `?tools=compact`: primesti setul de baza + `cauta_tool`/`ruleaza_tool` (gasesti si rulezi orice capabilitate la cerere, fara sa cari 1000+ definitii in context) + `ghid_symbai` pentru ghidurile de folosire. Pentru angajat setezi `auth = "oauth"`; nu instalezi Node.js si nu folosesti `mcp-remote`.
+Symbai Connect configureaza singur conexiunea nativa si salveaza autorizarea in profilul utilizatorului. Dupa confirmarea succesului, utilizatorul deschide o sesiune noua. Nu editeaza configuratii, nu ruleaza comenzi MCP si nu copiaza mesaje, URL-uri, coduri sau tokenuri. Fiecare instanta foloseste automat subdomeniul din pachetul personalizat.
 
-**Owner cu token direct**: aceeasi conexiune nativa, cu tokenul citit din variabila de mediu:
-
-```toml
-[mcp_servers.symbai]
-url = "https://<subdomeniu>.symbai.app/mcp?tools=compact"
-bearer_token_env_var = "SYMBAI_MCP_TOKEN"
-```
-
-Fiecare instanta Symbai are subdomeniul ei — foloseste-l pe al tau, nu pe al altui client.
+Daca accesul a expirat ori a fost revocat, proprietarul il acorda din nou in Hub, iar angajatul reinstaleaza ultimul Pachet personalizat si reia OAuth. Daca se schimba PC-ul, acelasi flux inlocuieste automat calculatorul vechi.
 
 ## Lucru sigur
 

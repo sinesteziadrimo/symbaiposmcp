@@ -1,6 +1,6 @@
 {
   "name": "symbai-core",
-  "version": "0.39.0+codex.20260810000000",
+  "version": "0.39.2+codex.20260825000000",
   "description": "Asistentul Symbai pentru Codex: skill-uri, knowledge si MCP live pentru operare in POS/ERP Symbai.",
   "author": {
     "name": "Symbai",
@@ -19,7 +19,6 @@
     "codex"
   ],
   "skills": "./skills/",
-  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Symbai Core",
     "shortDescription": "Lucreaza in Symbai direct din Codex.",

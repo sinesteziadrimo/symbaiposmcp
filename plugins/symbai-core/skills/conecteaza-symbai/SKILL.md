@@ -1,73 +1,37 @@
 ---
 name: conecteaza-symbai
-description: Configurează sau repară conexiunea MCP la instanța Symbai (serverul "symbai"), prin OAuth pentru angajat ori prin tokenul propriu al ownerului. Folosește când tool-urile symbai nu apar, la „conectează-mă la Symbai", „nu am acces", erori OAuth/401 sau configurație Claude greșită.
+description: Configurează sau repară automat conexiunea MCP Symbai pentru Codex ori Claude Code prin Symbai Connect + OAuth nominal. Folosește când tool-urile Symbai nu apar, accesul este refuzat, apare 401 sau utilizatorul schimbă calculatorul.
 ---
 
-# Conectează / repară conexiunea Symbai (MCP)
+# Conectează sau repară Symbai
 
-Scop: serverul MCP `symbai` să apară conectat în sesiunile Claude Code ale utilizatorului, cu tool-urile lui (`list_brands`, `raport_vanzari`, `gaseste_in_aplicatie` etc.).
+Scop: serverul `symbai` să apară conectat și să funcționeze direct, fără configurare tehnică făcută de utilizator.
 
-## Stabilește întâi tipul de acces
+## Fluxul unic pentru angajat
 
-- **URL-ul instanței**: `https://<subdomeniu>.symbai.app/mcp` (subdomeniul restaurantului lui).
-- **Angajat POS** — calea normală este OAuth, fără token copiat. Proprietarul trebuie să-i fi creat mai întâi un grant nominal în Hub → **Acces AI → Trimite acces AI**, alegând angajatul și locația POS exacte. Angajatul se autentifică apoi singur în browser cu emailul și parola contului POS (nu PIN). Contul/rolul POS fără grant de owner pentru acea locație nu poate emite acces.
-- **Proprietar / conexiune tehnică legacy** — poate folosi tokenul propriu `symbai_mcp_...` creat în Hub. Se afișează o singură dată; dacă s-a pierdut, se revocă și se creează altul. Nu cere unui angajat să primească tokenul ownerului.
+1. Proprietarul intră în Hub → **Acces AI**, alege angajatul și locația POS exacte, selectează permisiunile și acordă accesul.
+2. Angajatul intră în POS cu propriul cont și deschide **Conectează un asistent AI**.
+3. Descarcă ultimul **Pachet personalizat Symbai Connect** pentru sistemul său și îl instalează pe calculatorul pe care va lucra.
+4. În panoul Symbai Connect apasă **Conectează** lângă Codex sau Claude Code.
+5. Browserul se deschide automat. Angajatul se autentifică prin OAuth cu emailul și parola contului POS, nu cu PIN-ul de la casă, apoi aprobă accesul.
+6. Symbai Connect configurează aplicația și mută în siguranță rezultatul OAuth în profilul angajatului. După confirmarea succesului, angajatul deschide o sesiune nouă în Codex sau Claude Code.
 
-## Configurarea angajatului — OAuth, fără token
+Nu cere niciodată utilizatorului să editeze fișiere, să ruleze comenzi MCP sau să copieze un mesaj, URL, cod, header ori token. Nu trimite tokenul proprietarului unui angajat.
 
-În `~/.claude.json` (Windows: `C:\Users\<nume>\.claude.json`) adaugă la `mcpServers`, păstrând restul fișierului:
+## Verificare
 
-```json
-"symbai": { "type": "http", "url": "<URL>" }
-```
+1. Confirmă că pluginul `symbai-core` este instalat și activ.
+2. Deschide o sesiune nouă după conectare.
+3. Apelează `list_brands`; un răspuns valid confirmă conexiunea.
+4. Dacă un tool spune „permisiune insuficientă”, conexiunea funcționează: proprietarul verifică modulul acordat, iar rolul și alocările POS live pot limita suplimentar accesul.
 
-Nu adăuga `headers` și nu cere token. După restart, utilizatorul tastează `/mcp`, alege `symbai` → `Authenticate`; când se deschide Symbai, el apasă „Continuă cu contul de angajat", introduce personal emailul + parola și aprobă. Dacă apare „Acces neacordat", oprește-te: proprietarul trebuie să creeze sau să retrimită grantul nominal. Nu încerca tokenuri manuale și nu folosi permisiunile rolului ca substitut pentru grant.
+## Recuperare
 
-CLI-ul, numai dacă există, este fără header:
+- **Acces neacordat, expirat sau revocat:** proprietarul acordă din nou accesul nominal în Hub; angajatul descarcă și instalează ultimul Pachet personalizat din POS, apoi reia OAuth din **Conectează**.
+- **Angajat inactiv:** proprietarul reactivează contul POS, acordă accesul nominal și angajatul reinstalează ultimul Pachet personalizat.
+- **Calculator schimbat sau instalare mutată:** instalează ultimul Pachet personalizat pe noul calculator; acesta îl înlocuiește automat pe cel vechi.
+- **401:** redeschide Symbai Connect și apasă din nou **Conectează** pentru OAuth.
+- **Configurație manuală veche detectată:** Symbai Connect indică intrarea veche `symbai`; elimină doar acea intrare din lista MCP, apoi apasă **Conectează**. Nu afișa utilizatorului comenzi sau configurații.
+- **Doar PIN disponibil:** utilizatorul își setează parola contului din Personal, apoi reia OAuth.
 
-```
-claude mcp add --transport http --scope user symbai <URL>
-```
-
-## Configurarea proprietarului — token direct
-
-> Cel mai probabil utilizatorul **NU** are CLI-ul `claude` în terminal (rulează în aplicația Claude, nu cu pachetul npm instalat separat). Dacă încerci `claude ...` și primești „not recognized / command not found / nu se găsește", e **NORMAL** — NU o raporta ca eroare, NU instala nimic, treci direct la metoda 1 (editare fișier). Nu porni niciodată de la presupunerea că ai CLI.
-
-1. **Editează fișierul `.claude.json`** — în obiectul `"mcpServers"` de la nivelul rădăcină adaugă, păstrând restul neatins:
-   ```json
-   "symbai": { "type": "http", "url": "<URL>", "headers": { "Authorization": "Bearer <TOKEN>" } }
-   ```
-   După salvare, cere-i utilizatorului să închidă complet și să redeschidă aplicația — configurația se citește la pornire, iar aplicația poate suprascrie fișierul dacă sesiunea continuă mult după editare.
-
-2. **Scurtătură cu CLI** — DOAR dacă `claude --version` chiar afișează o versiune (verifică prin Bash întâi):
-   ```
-   claude mcp add --transport http --scope user symbai <URL> --header "Authorization: Bearer <TOKEN>"
-   ```
-   `--scope user` e important: fără el, conexiunea se leagă de folderul curent și sesiunile pornite din alt folder nu o văd.
-
-## Capcana #1 — claude_desktop_config.json / Settings → Developer → „Local MCP servers" (NU-l folosi)
-
-`claude_desktop_config.json` (Windows: `%APPDATA%\Claude\`; macOS: `~/Library/Application Support/Claude/`) este fișierul aplicației Claude **Desktop** (chatul) și acceptă DOAR servere locale stdio (`command` + `args`). Panoul **Settings → Developer → „Local MCP servers"** (butonul „Edit Config") editează exact acest fișier — deci e aceeași capcană, cu altă față. O intrare HTTP `symbai` pusă acolo **nu funcționează** și produce la pornire:
-
-> **"Some MCP servers could not be loaded ... are not valid MCP server configurations and were skipped: symbai"**
-
-⚠ Important: pentru un utilizator de **Claude Code**, panoul „Local MCP servers" rămâne **gol** — și e **NORMAL**. Serverul `symbai` (HTTP, cu token) trăiește în `~/.claude.json` al Claude Code, NU în aplicația de chat; se vede la `/mcp`, nu în panoul Developer. Nu trimite niciodată utilizatorul să adauge symbai acolo, și nu interpreta panoul gol ca „neconfigurat".
-
-Dacă utilizatorul vede eroarea de mai sus: deschide fișierul, șterge DOAR intrarea `symbai` din `mcpServers` (nu restul), salvează, apoi fă configurarea corectă de mai sus.
-
-## Verificare (în ordine)
-
-1. **Instanța e activă?** POST la `<URL>` fără autentificare trebuie să răspundă 401 și să indice fluxul OAuth; 404/HTML înseamnă URL greșit, timeout înseamnă problemă de rețea.
-2. **Angajat OAuth:** `/mcp` trebuie să ofere `Authenticate`, apoi browserul cere login Symbai. Fără grantul ownerului, răspunsul corect este „Acces neacordat" — nu este o problemă de configurare care se ocolește.
-3. **Owner cu token:** POST `initialize` cu `Authorization: Bearer <TOKEN>` trebuie să dea 200. Un 401 înseamnă token revocat/expirat/copiat greșit.
-4. **După restart**, într-o sesiune nouă, `/mcp` arată `symbai` conectat.
-5. **Confirmă TU cu `list_brands`**. Dacă un alt tool lipsește/refuză, verifică atât modulul de citire sau scriere din grant, cât și — pentru angajat — plafonul rolului POS și al alocărilor live. SQL ad-hoc este refuzat când angajatul are o arie brand/locație restrânsă.
-
-## Alte cauze frecvente
-
-- **Aplicația nu a fost repornită complet** — conexiunile MCP se încarcă la pornirea sesiunii; închide de tot aplicația (nu doar fereastra) și redeschide.
-- **Config în scope local, alt folder** — `claude mcp add` rulat FĂRĂ `--scope user`; re-adaugă cu `--scope user`.
-- **„Acces neacordat" la login** — contul POS nu este suficient: proprietarul trebuie să creeze un grant activ pentru exact acel angajat în Hub. Un grant expirat/folosit se înlocuiește cu unul nou.
-- **Angajatul are doar PIN** — OAuth cere parola contului, nu PIN-ul scurt de casă; setează parola din profil/Personal, apoi reia.
-- **„Permisiune insuficientă" la un tool** — conexiunea este bună. Proprietarul verifică modulele de citire/scriere din Hub; pentru un angajat, rolul POS și alocările live pot restrânge suplimentar citirile, scrierile și SQL-ul.
-- **Accesul s-a oprit brusc după ce mergea** — tokenul a fost revocat (din portal sau de echipa Symbai) ori a expirat → verifică în portal, regenerează.
+Accesul POS nu înlocuiește grantul proprietarului. Accesul final este intersecția dintre grant, consimțământul OAuth, rolul POS live și alocările live. Nu ocoli o permisiune lipsă prin SQL sau clickuri riscante.

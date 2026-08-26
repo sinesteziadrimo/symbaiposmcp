@@ -188,9 +188,9 @@ Nu inventa URL-uri. Pentru taburi, prefera deep-link-uri stabile cu `?tab=`.
 
 ## Permisiuni Si Module MCP
 
-Tool-urile de citire merg de obicei fara modul de scriere. Tool-urile de scriere cer modulul bifat pe token in Hub -> Acces AI. Daca apare "permisiune insuficienta":
+Tool-urile de citire merg de obicei fara modul de scriere. Tool-urile de scriere cer modulul acordat persoanei in Hub -> Acces AI. Daca apare "permisiune insuficienta":
 
-- explica simplu ca tokenul nu are modulul activ;
+- explica simplu ca accesul nominal nu are modulul activ;
 - spune modulul probabil: Comunicare, Stocuri, Setari, Rezervari & Clienti, Marketing, Livrari etc.;
 - nu incerca sa ocolesti permisiunea cu SQL sau clickuri riscante.
 
