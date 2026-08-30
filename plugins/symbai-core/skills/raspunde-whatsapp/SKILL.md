@@ -121,6 +121,17 @@ Dacă linia lipsește, nu presupune că mesajul se referă la ultimul din fir: p
 | Citești istoricul | `list_messages`, `get_message_context`, `get_last_interaction` | punte personală |
 | **Trimiți text** | **`send_message`** | **punte personală — numărul LUI** |
 | **Răspunzi citând un mesaj** | **`reply_to_message`** | **punte personală — numărul LUI** |
+| Marchezi firul citit | `mark_as_read` | punte personală |
+| Aprinzi „scrie…" | `set_typing` | punte personală |
+| Pui un emoji pe un mesaj | `react_to_message` | punte personală |
+| Corectezi ce tocmai ai trimis | `edit_message` (max 20 min) | punte personală |
+| Retragi ce tocmai ai trimis | `delete_message` | punte personală |
+| Vezi cine e într-un grup | `get_group_info` | punte personală |
+| Verifici dacă un număr are WhatsApp | `check_whatsapp_number` | punte personală |
+
+**Reacția nu e un răspuns.** `react_to_message` e cel mai ieftin „am văzut, mă ocup" din WhatsApp — nu ocupă un mesaj și nu intră în plafonul de trimiteri. Când omul cere ceva care durează, o reacție acum plus un răspuns când ai ce spune bat un „revin eu" gol. Dar nu reacționa la tot: cine pune emoji la fiecare replică sună la fel de robotic ca oricine altcineva.
+
+**Corectură vs retragere.** Dacă ai trimis ceva greșit și au trecut sub 20 de minute, `edit_message` e alegerea bună: destinatarul vede textul corect, marcat „Editat". `delete_message` lasă în loc „Acest mesaj a fost șters" — se OBSERVĂ, deci pe un mesaj deja citit e adesea mai rău decât o corectură scrisă normal. Retragi doar ce chiar nu trebuia să plece.
 
 ⛔ **Confuzia ireversibilă:** `send_whatsapp_message`, `send_whatsapp_media` și `reply_to_conversation` **NU** sunt tool-urile acestui skill. Ele aparțin canalului oficial de WhatsApp Business și trimit **de pe numărul firmei, către clienți**, cu alte reguli. Dacă în sesiune apar ambele seturi, verifică prefixul serverului înainte de fiecare trimitere. Un mesaj scris în stilul personal al ownerului, plecat pe canalul oficial de clienți, nu se poate retrage.
 
@@ -196,12 +207,13 @@ O serie = toate mesajele tale trimise **fără ca interlocutorul să răspundă 
 - **Formula pauzei, în ordinea asta:** `pauză = clamp( (caractere_mesaj_următor / 3) × jitter(0,6…1,8), 5 s, 90 s )`. Jitterul se aplică **înainte** de clamp; pragul de 5 s se aplică **ultimul**. Nu rotunji la secunde întregi.
 - **Niciun prag „minimum" nu e valoare implicită.** Valoarea implicită e **mediana măsurată**; minimul e doar podea. Dacă folosești de două ori la rând aceeași valoare, ai greșit.
 - **Ora curentă și fusul** le iei din timestamp-urile conversației (sunt în ora locală a userului). Dacă nu poți stabili ora cu certitudine, **întrebi userul cât e ora la el** — nu aplici fereastra de noapte pe ghicite.
-- **Latența se măsoară de când începi tu să compui**, nu de la bifa de citit (pe care nu o ai). După ce textul e confirmat, mai treci minimum 15 secunde.
+- **Latența se măsoară de când începi tu să compui.** După ce textul e confirmat, mai treci minimum 15 secunde.
+- **Marchează firul citit cu `mark_as_read` înainte să răspunzi**, exact ca omul care deschide conversația. Un fir în care ai răspuns dar bifele au rămas gri arată contradictoriu la celălalt capăt. Nu marca firele pe care doar le-ai citit ca să te informezi: bifele albastre sunt o promisiune de răspuns, iar dacă nu vine niciunul e mai rău decât tăcerea.
 - **Dacă mesajul primit e vechi** (peste ~2 ore), ritmul nu mai contează, contează conținutul: ori recunoști întârzierea în stilul lui, ori întrebi userul dacă mai e cazul să răspunzi. Și **nu compensezi** întârzierea cu mai multe mesaje — un om întârziat scrie mai scurt, nu mai mult.
 - **Întrebarea se pune ultima și încheie seria.** După ea nu mai trimiți nimic până nu răspunde — nici clarificări, nici context. O întrebare urmată de alte mesaje ale tale e cel mai clar semnal de bot din toată conversația. **O singură întrebare per serie.**
 - **Oglindește ritmul interlocutorului.** Dacă el răspunde în 20 de minute, nu răspunzi tu în 8 secunde.
 - **Un mesaj lung e mai sigur decât cinci scurte** — WhatsApp numără mesaje, nu caractere. Dar **nu sparge o frază în bucăți ca să pari uman**: ruperea artificială dublează riscul fără niciun câștig.
-- **Indicatorul „scrie…" lipsește pe punte**, și e un risc pe care nu-l poți compensa. Spune-i userului o dată: „mesajele trimise de mine pleacă fără «scrie…», ceea ce e un semnal în plus — un motiv în plus să fie puține."
+- **Indicatorul „scrie…" se aprinde cu `set_typing`**, imediat înainte de fiecare mesaj din serie, și se stinge dacă renunți. Un mesaj care apare fără ca nimeni să fi părut că scrie e un semnal în plus că la celălalt capăt nu e un om. Durata în care stă aprins face parte din pauză, nu se adaugă peste ea: îl aprinzi la începutul pauzei calculate, nu cu o secundă înainte de trimitere. ⚠ Cât e aprins, ești marcat **online** — ceea ce văd toate contactele lui, nu doar acest fir. Îl aprinzi doar când chiar urmează un mesaj.
 - **În afara ferestrei active nu inițiezi și nu răspunzi**, chiar dacă el tocmai a scris. Excepție unică: ora curentă cade într-un interval în care omul a mai scris de cel puțin 3 ori în istoric → ai voie la un mesaj scurt. Coada se eliberează după deschiderea ferestrei, cu decalaj aleator.
 
 ## Când ai mai mult de spus decât încape — condensarea
@@ -332,6 +344,7 @@ Skill-ul e pentru comunicarea **de lucru**. În rest îi dai userului textul, s�
 
 - **Eroare sau timeout la trimitere: nu reîncerci.** Poate a plecat oricum, iar a doua încercare e o dublură plus o rafală. Îi spui userului „nu știu dacă a plecat, verifică pe telefon" și te oprești. Maximum o reîncercare, și numai după ce userul confirmă că mesajul NU apare la el.
 - **Semnale că numărul are o restricție** — mesaje rămase la o singură bifă la mai mulți destinatari, trimiteri care eșuează în serie, deconectări repetate ale punții, cineva care spune „nu-mi mai intră mesajele de la tine": **oprești tot imediat**, nu mai trimiți nimic în ziua aceea din niciun chat, și îi spui clar: „posibil ca numărul să fie restricționat; de aici încolo scrie tu de pe telefon, orice mesaj în plus din punte agravează."
+  **Cum vezi bifele:** în transcript, mesajele tale poartă `(livrat)` sau `(citit)`. Unul care rămâne fără niciun marcaj la câteva minute după trimitere a rămas la o bifă. Iar dacă WhatsApp a spus el însuși ce se întâmplă, `connection_status` întoarce cauza la `whatsapp.problema` — acolo scrie negru pe alb dacă e restricție temporară și până când ține. **Citește-o înainte să presupui că e internetul.**
 - **După orice reconectare a punții:** minimum 10 minute fără nicio trimitere, apoi maximum un mesaj. Zero recuperare de backlog.
 
 ## Siguranța contului — ce e documentat și ce e presupus
