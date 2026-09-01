@@ -8,7 +8,7 @@
 
 Caracteristica-cheie: pagina e **„template-aware"** — vocabularul și taburile se adaptează după tipul de business ales (stilul CRM). Tabul „Pipeline" se redenumește automat: restaurant/cafenea/hotel → **Pipeline Rezervări**; sală/catering → **Pipeline Evenimente**; **parc de distracții → Pipeline Petreceri**; servicii → **Pipeline Vânzări**. Termenul „deal" devine în UI „rezervare/eveniment/petrecere/comandă" după vertical.
 
-**Deal-urile și pipeline-ul se conduc COMPLET prin conexiune (MCP)** — creezi lead-ul, îl muți pe etape, îi notezi activitățile, îl marchezi câștigat/pierdut, configurezi etapele. Fluxul canonic: `create_customer` → `create_deal` → `log_deal_activity` → `advance_deal` → `get_deal` / `get_crm_funnel`. Vezi lista completă la „Tool-uri MCP" mai jos.
+**Conexiunea MCP citește sigur pipeline-ul și ofertele comerciale**, cu listă compactă urmată de detaliu: `list_deals` → `get_deal`, respectiv `list_sales_quotes` → `get_sales_quote`; managerul are `get_sales_quote_summary`. În profilul nominal auditat actual, mutațiile legacy de deal/pipeline sunt retrase până când folosesc aceeași tranzacție și aceleași automatizări ca interfața. Crearea/mutarea/Won-Lost și configurarea etapelor se fac momentan în `/sales-crm` și `/settings/sales-crm`. Lista live a instanței este autoritară.
 
 Rămân **UI-only** doar: regulile de capacitate și câmpurile custom de formular pe tipurile de rezervare (Setări → Sales CRM). Pentru prezentări există tool-uri separate — vezi `prezentare-vanzare-mcp.md`.
 
@@ -19,6 +19,8 @@ Rămân **UI-only** doar: regulile de capacitate și câmpurile custom de formul
 - **Lead / Deal** — o cerere/oportunitate cu valoare, etapă, probabilitate, agent alocat. „Won" = confirmat și a avut loc; „Lost" = pierdut.
 - **Pipeline (Kanban)** — coloane = etape configurabile, carduri = lead-uri/evenimente trase drag-and-drop între etape. Pe card: **Lead Score 0-100**, Avans ✓/✗, Contract ✓/✗, buton „Avansează la etapa următoare".
 - **Etapă (stage)** — coloană din Kanban: nume, culoare, probabilitate de câștig (%), marcaj „este etapa Won/Lost".
+- **Ofertă comercială** — documentul cu linii, monedă, taxe, discount, valabilitate și termeni trimis clientului. Un deal poate avea mai multe variante, dar **o singură ofertă principală** conduce valoarea/moneda oportunității, split-urile și forecastul; variantele secundare nu se însumează.
+- **Document emis, înghețat** — după trimitere, oferta nu se rescrie. Pentru alte condiții creezi o variantă nouă; PDF-ul istoric folosește datele înghețate la emitere.
 - **Fișă de eveniment** — un deal de tip „eveniment" deschide o fișă cu până la 12 taburi (Deal, Sumar, Comunicare, Produse, Personal, Prep & Bucătărie, Producție, Cheltuieli, Contract, Recenzii, BEO, P&L). Mecanica completă (BEO, contract e-sign, avans, P&L per eveniment) e în `rezervari-clienti-evenimente.md`.
 - **Tip de rezervare/eveniment** — configurabil; decide dacă e „eveniment" sau rezervare simplă și ce **capabilități** are: **Sală/Cameră, Personal, Jocuri/Atracții, Produse, Contract, Chestionar** (+ comutatoarele Producție/Cheltuieli/BEO). Capabilitatea „**Jocuri/Atracții**" e mecanismul prin care o petrecere include jocuri — esențial pentru parcuri.
 - **Reguli de Capacitate** — limite (sloturi, săli, locuri) pe zi/perioadă; relevant pentru săli de evenimente și parcuri.
@@ -40,7 +42,7 @@ Rămân **UI-only** doar: regulile de capacitate și câmpurile custom de formul
 11. **WhatsApp** — configurarea canalului WhatsApp pentru conversații CRM.
 
 ### Fișa de Deal / Eveniment (click pe un card)
-Butoane lifecycle (Avans / Contract / Won / Lost), quick actions (Sună / WhatsApp / Email / Adaugă activitate), tracking avans (cerut/plătit) + contract (semnat/nesemnat) + payment link. Pentru **parcuri/petreceri**: jocuri (lasertag/VR), atracții, tort, mascotă, decorațiuni, defalcare adulți/copii, meniuri (adult/copil), chestionare (NPS), recenzii, cronologie petrecere. Pentru evenimente mari, taburile fișei: Deal, Sumar, Comunicare, Produse, Personal, Prep & Bucătărie, Producție, Cheltuieli, Contract, Recenzii, **BEO**, **P&L per eveniment**.
+Butoane lifecycle (Avans / Contract / Won / Lost), quick actions (Sună / WhatsApp / Email / Adaugă activitate), tracking avans (cerut/plătit) + contract (semnat/nesemnat) + payment link. Cardul **Oferte comerciale** arată variantele și oferta principală; de aici creezi/editezi schița, trimiți, descarci PDF-ul, marchezi acceptată/refuzată și alegi varianta care conduce oportunitatea. Pentru **parcuri/petreceri**: jocuri (lasertag/VR), atracții, tort, mascotă, decorațiuni, defalcare adulți/copii, meniuri (adult/copil), chestionare (NPS), recenzii, cronologie petrecere. Pentru evenimente mari, taburile fișei: Deal, Sumar, Comunicare, Produse, Personal, Prep & Bucătărie, Producție, Cheltuieli, Contract, Recenzii, **BEO**, **P&L per eveniment**.
 
 ### Funcții AI (toggle din setări)
 - **Lead Score** (0-100 pe valoare/urgență/avans), **AI Briefing pre-întâlnire**, **Generator AI propunere/BEO**, **AI Sale Creator** (agent autonom care vorbește cu clienții și creează deal-uri), **Smart Follow-ups** (creează automat task-uri pentru deal-uri fără activitate), **Next Best Action**.
@@ -84,21 +86,20 @@ Buton „**Wizard configurare rapidă**" (la prima deschidere: 3 pași cu ~20 ș
 - `update_game_config` / `update_game_schedule` / `update_game_pricing` / `set_game_date_override` — configurarea jocurilor/atracțiilor.
 - `configure_reservation_*` / `seed_reservation_settings` — sistemul de rezervări.
 
-**Scriere — modul «CRM & Automatizări Marketing» (`marketing_crm`) — deal-uri & pipeline:**
-- `create_deal` — lead/oportunitate nouă (brand, titlu, client, valoare, etapă, tip eveniment, dată).
-- `advance_deal` — mută deal-ul pe altă etapă SAU îl marchează won/lost. Declanșează automat ACELEAȘI automatizări ca interfața: task-urile configurate pe etapă, `deal.stage_changed`, iar la avans plătit / contract semnat pornește follow-up-urile de marketing. Trimite doar câmpurile de schimbat.
-- `log_deal_activity` / `mark_deal_activity_done` — notezi apel/email/vizită și le închizi.
-- `create_pipeline_stage` / `update_pipeline_stage` / `sync_sales_pipeline_template` — etapele Kanban.
-- `score_sales_deals` — recalculează Lead Score 0-100. `run_smart_followups` — follow-up-uri automate.
-- `set_crm_settings` — stilul CRM (vocabularul paginii).
+**Citire — modul «CRM & Automatizări Marketing» (`marketing_crm`):**
+- `list_deals` / `get_deal` — listă compactă paginată, apoi fișa completă a unei oportunități.
+- `list_sales_quotes(brandId?, dealId?, customerId?, status?, isPrimary?, limit?, cursor?)` — variantele comerciale, statusul efectiv, moneda, totalurile și marcajul principal; ofertele tehnice sunt semnalate separat.
+- `get_sales_quote(quoteId, itemLimit?, itemCursor?)` — o ofertă cu linii paginate, note și termeni; fără snapshotul intern sau cheile tehnice.
+- `get_sales_quote_summary(brandId?)` — număr și valori pe monedă/status. Numai oferta principală a deal-ului intră în pipeline/won, ca să nu dubleze forecastul.
+- `get_crm_funnel`, `get_sales_analytics`, `get_crm_settings`, `list_enterprise_crm_records` — funnel, performanță, configurare și obiecte enterprise auditate.
 
-**Citire (fără permisiune de scriere):** `list_deals`, `get_deal`, `get_crm_funnel`, `get_sales_analytics`, `get_crm_settings`, `get_event_fiche`.
+**Scriere deal/pipeline/ofertă:** folosește UI-ul actual. `create_deal`, `advance_deal`, `log_deal_activity`, `create_pipeline_stage` și celelalte mutații legacy se folosesc numai dacă apar explicit în lista live a instanței; nu presupune disponibilitatea lor dintr-un ghid mai vechi.
 
 > Permisiunea exactă a fiecărui tool e în `tools-mcp.md`. „Permisiune insuficientă" → modulul `marketing_crm` nu e pe token → portal Hub → Acces AI.
 
 ⚠ **„Ofertă" înseamnă TREI lucruri diferite — nu le confunda:**
-> 1. **Ofertă comercială pe un deal** (ce trimiți clientului) — se pregătește pe fișa deal-ului.
-> 2. **Deviz / cotație** (pagina „Oferte & devize") — document cu linii și total.
+> 1. **Ofertă comercială pe un deal** (ce trimiți clientului) — are variante și o singură principală; se citește cu `list_sales_quotes`/`get_sales_quote` și se operează pe fișa deal-ului.
+> 2. **Deviz tehnic / cotație de fabricație** — flux separat, cu versiuni și aprobări; tool-ul de listare îl marchează `technical`.
 > 3. **`create_offer` = promoție/discount pe bonul de restaurant** (happy hour, 1+1). **NU** e ofertă comercială. Dacă userul cere „fă o ofertă pentru clientul X", `create_offer` e tool-ul GREȘIT — ar scrie o reducere în meniu.
 
 ## Întrebări frecvente
@@ -108,7 +109,9 @@ Buton „**Wizard configurare rapidă**" (la prima deschidere: 3 pași cu ~20 ș
 - **Cum fac ca o petrecere de parc să includă jocuri?** → Tipul de rezervare trebuie să aibă capabilitatea „**Jocuri/Atracții**" activată + lista de jocuri permise. Atunci pe fișă poți adăuga sesiuni de joc, cu meniu + sală + personal + contract, P&L consolidat.
 - **Vocabularul nu se potrivește (zice „rezervări" dar eu am petreceri)** → Schimbă stilul CRM în `/settings/sales-crm` → General (alege Parc de Distracții) — taburile și termenii se rescriu.
 - **Cardul nu avansează / Won nu se marchează** → Verifică etapele (`?tab=pipelines`): trebuie să existe etape marcate Won/Lost; trage cardul în coloana potrivită sau folosește „Avansează la etapa următoare".
-- **Pot crea/avansa un deal prin Claude (MCP)?** → **Da, complet.** `create_deal` → `log_deal_activity` → `advance_deal` (mută pe etapă sau marchează won/lost, cu aceleași automatizări ca interfața). Plus rezervări, jocuri, clienți, loialitate, funnel/NBA/task-uri. UI-only rămân doar regulile de capacitate și câmpurile custom de formular.
+- **Pot crea/avansa un deal prin Claude (MCP)?** → În profilul nominal auditat actual, **nu încă prin tool semantic**: Claude poate citi deal-ul și ofertele, iar operația se face în `/sales-crm`. Dacă instanța afișează explicit un tool de scriere, lista live câștigă și acel tool poate fi folosit conform confirmărilor lui.
+- **De ce valoarea ofertelor nu este suma tuturor variantelor?** → Pentru că variantele sunt alternative. Doar oferta principală conduce deal-ul și forecastul; `get_sales_quote_summary` aplică aceeași regulă.
+- **Pot modifica oferta după ce am trimis-o?** → Nu. Documentul emis rămâne dovadă comercială; creezi o variantă nouă și, dacă e cazul, o marchezi principală.
 
 ## Pentru acces SQL
 

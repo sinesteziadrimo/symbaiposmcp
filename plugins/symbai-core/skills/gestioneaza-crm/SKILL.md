@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-crm
-description: Gestionează CRM-ul de vânzări Symbai — pipeline de lead-uri/deal-uri pe etape, configurarea CRM-ului pe verticalul tău (restaurant, sală evenimente, hotel, parc de distracții, servicii), adăugarea și gestionarea rezervărilor, evenimentelor/petrecerilor și a jocurilor/atracțiilor, plus funcțiile AI (Lead Score, propuneri, follow-up). Folosește la „configurează-mi CRM-ul", „pipeline de vânzări", „adaugă lead/deal", „etape pipeline", „adaugă o rezervare", „organizează o petrecere/eveniment", „CRM pentru parc de distracții", „rezervă un joc/atracție", „de ce nu văd pagina CRM", „cum trec deal-ul la etapa următoare", „reguli de capacitate", „avans și contract pe eveniment".
+description: Gestionează CRM-ul de vânzări Symbai — pipeline de lead-uri/deal-uri, activități și următorul pas, oferte comerciale cu variante/ofertă principală, configurare pe vertical, rezervări, evenimente și jocuri/atracții. Folosește la „configurează-mi CRM-ul", „pipeline de vânzări", „adaugă lead/deal", „fă/arată oferta clientului", „care e oferta principală", „adaugă o rezervare", „organizează o petrecere/eveniment", „CRM pentru parc de distracții", „de ce nu văd pagina CRM", „cum trec deal-ul la etapa următoare", „avans și contract pe eveniment".
 ---
 
 # Gestionează CRM-ul de vânzări — pipeline, configurare, rezervări, evenimente & jocuri
@@ -10,11 +10,11 @@ Ești asistentul Symbai care ajută clientul (proprietar/manager) să-și conduc
 ## Înainte de orice
 1. Citește **`knowledge/agent-operare-avansata.md`** pentru standardul de lucru cap-coadă, apoi **`knowledge/crm-vanzari-pipeline.md`** (pagina `/sales-crm` cu toate taburile ei, pipeline Kanban + lifecycle deal, fișa de eveniment, funcții AI, adaptarea per vertical, configurarea `/settings/sales-crm`) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`. Mecanica detaliată a rezervărilor/evenimentelor (BEO, contract e-sign, avans, P&L) e în `knowledge/rezervari-clienti-evenimente.md`; jocurile/atracțiile în `knowledge/jocuri-activitati.md`.
 2. **Context mereu întâi**: `list_brands` + `list_locations` (ai nevoie de `brandId`/`locationId`). Stare rezervări: `get_reservations_overview`. Pâlnie: `get_crm_funnel`.
-3. **Deal-urile și pipeline-ul se fac PRIN CONEXIUNE**, nu din pagină. Flux canonic: `create_customer` → `create_deal` → `log_deal_activity` → `advance_deal` → verifici cu `get_deal` / `get_crm_funnel`. `advance_deal` mută pe etapă ȘI marchează won/lost, valoare, agent, avans plătit, contract semnat — cu ACELEAȘI automatizări ca interfața. Etapele: `create_pipeline_stage` / `update_pipeline_stage`. Scor: `score_sales_deals`.
+3. **Lista live de tool-uri câștigă.** În profilul nominal auditat actual, conexiunea citește sigur pipeline-ul și ofertele (`list_deals` → `get_deal`; `list_sales_quotes` → `get_sales_quote`; sumar cu `get_sales_quote_summary`), dar mutațiile legacy de deal/pipeline au fost retrase până când folosesc exact același serviciu tranzacțional ca interfața. Pentru creare, mutare etapă, Won/Lost, activități și configurare pipeline folosește momentan `/sales-crm` sau `/settings/sales-crm`; nu afirma că `create_deal`/`advance_deal` există dacă nu apar în lista live.
 4. **⚠ Două limite reale:**
    - **UI-only rămân**: regulile de capacitate, câmpurile custom de formular pe tipurile de rezervare, și părți din fișa de eveniment (vezi lista de la (g)). NU deal-ul și nu pipeline-ul.
    - **Loc CRM nominal**: paginile `/sales-crm` se văd DOAR de angajații nominalizați „User CRM" (Setări → Sales CRM → Useri CRM) — inclusiv adminii. „Nu văd CRM-ul" = lipsă nominalizare, nu bug.
-5. **⚠ „Ofertă" = trei lucruri.** Ofertă comercială pe deal ≠ deviz (pagina „Oferte & devize") ≠ `create_offer`, care e **promoție/discount pe bonul de restaurant**. La „fă o ofertă pentru clientul X", `create_offer` e tool-ul GREȘIT.
+5. **⚠ „Ofertă" = trei lucruri.** Oferta comercială pe deal are variante și o singură ofertă principală; ea conduce valoarea și moneda oportunității. Este distinctă de devizul tehnic și de `create_offer`, care e **promoție/discount pe bonul de restaurant**. La „fă o ofertă pentru clientul X", `create_offer` e tool-ul GREȘIT.
 
 ## Regula de aur
 
@@ -32,6 +32,14 @@ ID-uri, nu nume (`brandId`, `locationId`, `gameId`). **Caută înainte de a crea
 2. **Lead nou**: butonul „+" → completezi (agent, tip eveniment, sursă, brand/locație, valoare, dată, nr. invitați/copii/adulți, sală, avans, prioritate, tort/mascotă, tag-uri, descriere — ce câmpuri apar e setat în Vizibilitate).
 3. **Marchezi Won/Lost** când deal-ul se confirmă/pierde. Dashboard-ul arată KPI + Performanță Agenți.
 4. **Funcții AI** (toggle în setări): Lead Score, AI Briefing pre-întâlnire, Generator propunere/BEO, AI Sale Creator (autonom), Smart Follow-ups. **Mesaje**: mod AI per conversație (Manual / Draft AI / Auto Încrezător / Full Auto).
+
+### Ofertele comerciale — ce contează zilnic
+
+1. Un deal poate avea mai multe variante, dar **una singură este principală**. Numai aceasta conduce valoarea, moneda, split-urile și forecastul; variantele secundare nu se adună încă o dată.
+2. Citește întâi `list_sales_quotes(dealId)`; pentru linii, note și termeni folosește `get_sales_quote(quoteId)`. Pentru portofoliu/manager folosește `get_sales_quote_summary(brandId)` — valorile sunt separate pe monedă și nu dublează variantele.
+3. Statusurile sunt `draft`, `sent`, `accepted`, `declined`, `expired`, `converted`. O ofertă `sent` cu valabilitatea depășită este raportată efectiv `expired` chiar înainte de reconcilierea de fundal.
+4. O ofertă trimisă este document comercial înghețat: modificările de preț/termeni se fac într-o variantă nouă. PDF-ul istoric se regenerează din snapshotul de la emitere, nu din datele clientului schimbate ulterior.
+5. Tool-urile de ofertă de mai sus sunt **citire**. Crearea/editarea/trimiterea/acceptarea și alegerea ofertei principale se fac în fișa deal-ului / `/services/quotes`. O ofertă marcată `technical` se gestionează în workspace-ul tehnic, nu în fluxul standard.
 
 ## (c) Deschide & gestionează o petrecere/eveniment (UI + MCP suport)
 Click pe card → fișa cu taburi (Deal, Sumar, Comunicare, Produse, Personal, Prep & Bucătărie, Producție, Cheltuieli, Contract, Recenzii, BEO, P&L — câte apar depinde de capabilitățile tipului). Fluxul tipic: adaugi **Produse** (meniul) + **Personal** + (pentru parc) **jocuri/atracții** → trimiți **Contractul** la semnat → ceri **Avansul** → în ziua evenimentului printezi **BEO** → vezi **P&L** per eveniment. Mecanica completă (contract e-sign multi-canal, avans, BEO, P&L) → `rezervari-clienti-evenimente.md`. Reguli de capacitate (sloturi/săli/locuri) → tabul „Reguli Capacitate".
@@ -66,7 +74,7 @@ Tabul «Prezentare» din `/sales-crm` rulează pitch-ul de vânzare cu slide-uri
 **⚠ Câmpuri FĂRĂ tool MCP — le faci în pagină (Chrome + user logat); NU spune „nu se poate", deschide pagina cu `gaseste_in_aplicatie` și completează/ghidează:**
 - **La o rezervare**: tipul rezervării/evenimentului și avansul pe acea rezervare (la creare prin tool nu există; tipurile se definesc în Setări → Sales CRM → Tipuri rezervări; câmpurile custom de formular sunt și ele UI).
 - **Din fișa de Deal/Eveniment** — ce e UI-only: Produse (meniul evenimentului), Personal alocat, Prep/Producție, Cheltuieli, payment link, BEO, plus câmpurile de petrecere (tort, mascotă, decorațiuni, defalcare adulți/copii, chestionare/NPS, cronologie).
-  ⚠ **NU pune aici**: etapa pipeline, Won/Lost, valoarea, agentul, avansul plătit, contractul semnat — toate se fac cu `advance_deal`. Citirea fișei: `get_event_fiche`.
+  În profilul MCP nominal actual, etapa pipeline, Won/Lost, valoarea, agentul, avansul plătit și contractul semnat se modifică din UI; `get_deal` rămâne citirea de verificare. Folosește `advance_deal` numai dacă apare explicit în lista live a instanței.
 - **Configurare CRM** — UI-only: regulile de capacitate, capabilitățile tipurilor, vizibilitatea câmpurilor, userii CRM (vezi (a)). Etapele și stilul CRM au tool-uri (`create_pipeline_stage`, `update_pipeline_stage`, `set_crm_settings`).
 - **Joc**: imaginea; TVA/valabilitate/activ pe preț; capacitate diferită per zi (vezi (e)).
 - **Prezentarea** (tabul Prezentare): integral UI → skill `construieste-prezentare`.
@@ -80,9 +88,9 @@ Tabul «Prezentare» din `/sales-crm` rulează pitch-ul de vânzare cu slide-uri
 - **„Clientul nu poate rezerva online un grup mare"** → limitele min/max sunt pe rezervările ONLINE; din POS personalul poate depăși.
 
 ## Verifică prin CITIRE (nu prin UI)
-După scriere: `get_reservations_overview` / `get_game_details` / `list_portal_games` / `get_crm_funnel` confirmă. Pentru deal-uri: `get_deal` (starea exactă) și `get_crm_funnel` (pâlnia pe etape) — prin conexiune, nu vizual. Succes la tool = salvat — nu repeta, spune userului să dea refresh. Audit „cine a creat/anulat" → `jurnal_activitate` (categorii „Rezervări"/„Contracte"/„SERVICES_CRM").
+După scriere: `get_reservations_overview` / `get_game_details` / `list_portal_games` / `get_crm_funnel` confirmă. Pentru deal-uri: `get_deal`; pentru oferte: `list_sales_quotes(dealId)` și apoi `get_sales_quote(quoteId)`. Succes la tool = salvat — nu repeta, spune userului să dea refresh. Audit „cine a creat/anulat" → `jurnal_activitate` (categorii „Rezervări"/„Contracte"/„SERVICES_CRM").
 
 ## Permisiuni & legături
-- Scrieri: rezervări/jocuri-rezervare/clienți/loialitate = modul **«Rezervări & Clienți»** (`rezervari_clienti`); **deal-uri/pipeline/etape/scor/follow-up = modul «CRM & Automatizări Marketing» (`marketing_crm`)**; configurare jocuri/rezervări = modul **«Setări & Configurare»** (`setari`). „Permisiune insuficientă" → modulul nu e pe token → portal Hub → Acces AI.
+- Scrieri: rezervări/jocuri-rezervare/clienți/loialitate = modul **«Rezervări & Clienți»** (`rezervari_clienti`); citirile de deal/ofertă cer **«CRM & Automatizări Marketing» (`marketing_crm`)**; configurare jocuri/rezervări = modul **«Setări & Configurare»** (`setari`). Scrierile CRM disponibile diferă după versiune/profil și se folosesc numai dacă apar în lista live. „Permisiune insuficientă" → modulul nu e pe token → portal Hub → Acces AI.
 - Mecanica evenimentelor/rezervărilor → `rezervari-clienti-evenimente.md`; jocuri → `jocuri-activitati.md`; CRM de retenție (playbook-uri/NBA/win-back) → `crm-automatizari-playbooks.md`; segmente → `segmentare-clienti.md`; loialitate → `loialitate-fidelizare.md`; prezentări → skill `construieste-prezentare`.
 - Blocaj (ceva ce nu se poate prin conexiune) → `trimite_ticket_symbai` (sugestie) + ghidează în app.
