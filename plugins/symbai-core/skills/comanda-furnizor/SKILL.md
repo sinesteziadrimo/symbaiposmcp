@@ -1,6 +1,6 @@
 ---
 name: comanda-furnizor
-description: Ciclul de aprovizionare — recomandări de ce și de la cine cumperi, compararea prețurilor între furnizori, furnizor nou + catalog (căutat întâi pe cod fiscal, apoi confirmat la ANAF/VIES), crearea și recepția comenzilor (PO), analiză aprovizionare și risc P&L pe furnizor. Folosește la „ce trebuie să comand", „de la care furnizor e mai ieftin", „adaugă furnizor nou", „compară prețuri furnizori", „generează comandă furnizor", „creează comandă de aprovizionare", „recepție pe comandă", „raport aprovizionare / cât cheltui pe marfă", „ce furnizor îmi riscă marja", „stoc scăzut la X", „de ce mi-a schimbat numele furnizorului", „am doi furnizori cu același CUI", „verifică furnizorul la ANAF", „e alt furnizor decât scrie pe factură".
+description: Aprovizionare — ce și de la cine cumperi, comparare prețuri furnizori, furnizor nou (căutat pe CUI, confirmat la ANAF/VIES), comenzi de achiziție + recepție, risc P&L pe furnizor. La „ce trebuie să comand", „de la cine e mai ieftin", „adaugă furnizor", „generează comandă furnizor", „am doi furnizori cu același CUI".
 ---
 
 # Comandă de la furnizor (aprovizionare) — de la necesar la recepție

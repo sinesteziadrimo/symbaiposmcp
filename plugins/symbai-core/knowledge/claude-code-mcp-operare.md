@@ -188,11 +188,13 @@ Nu inventa URL-uri. Pentru taburi, prefera deep-link-uri stabile cu `?tab=`.
 
 ## Permisiuni Si Module MCP
 
-Tool-urile de citire merg de obicei fara modul de scriere. Tool-urile de scriere cer modulul acordat persoanei in Hub -> Acces AI. Daca apare "permisiune insuficienta":
+Tool-urile de citire merg de obicei fara modul de scriere. Tool-urile de scriere cer modulul acordat persoanei in Hub -> Acces AI. Pe un cont de angajat, modulele se deriva generos din permisiunile rolului POS (cine face operatia in aplicatie o face si prin asistent), iar uneltele sensibile (salarii, registru de casa, jurnal, perioade, infrastructura din Setari) cer permisiunea exacta a paginii. Daca apare "permisiune insuficienta":
 
-- explica simplu ca accesul nominal nu are modulul activ;
+- explica simplu ca accesul nominal nu are modulul activ sau rolul nu are permisiunea ceruta (mesajul o numeste);
 - spune modulul probabil: Comunicare, Stocuri, Setari, Rezervari & Clienti, Marketing, Livrari etc.;
 - nu incerca sa ocolesti permisiunea cu SQL sau clickuri riscante.
+
+Daca lipsesc module intregi din lista de tool-uri, NU e o limita a sesiunii: ruleaza `verifica_conexiune` si citeste `arieAngajat` (cont alocat doar pe o parte din unitatile active -> doar tool-urile cu verificare de arie), modulele si profilul. Remediile sunt in skill-ul `conecteaza-symbai`.
 
 Catalogul complet este in `tools-mcp.md`. Daca lista live din MCP difera de catalog, lista live castiga; `tools-mcp.md` este orientativ si generat.
 

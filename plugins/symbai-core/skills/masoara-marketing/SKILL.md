@@ -1,6 +1,6 @@
 ---
 name: masoara-marketing
-description: Tabloul de bord săptămânal al proprietarului + ROI onest pe canale — ce canal îți aduce de fapt bani, cât cheltui, cât te costă un client nou (CAC), raport LTV:CAC pe fiecare canal, clienți noi vs reveniți, plus comparație pe perioade. Folosește la „cum stă marketingul", „raport săptămânal marketing", „ce canal îmi aduce bani", „ROI pe canale", „cât mă costă un client", „pe ce dau banii de marketing degeaba", „merge mai bine sau mai prost ca luna trecută".
+description: Tabloul de bord săptămânal + ROI onest pe canale — ce canal aduce bani, cât cheltui, CAC, LTV:CAC, clienți noi vs reveniți, comparație pe perioade. La „cum stă marketingul", „raport săptămânal marketing", „ce canal îmi aduce bani", „cât mă costă un client", „merge mai bine ca luna trecută?".
 ---
 
 # Măsoară marketingul (tabloul de bord al proprietarului + ROI onest pe canale)

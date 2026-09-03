@@ -1,6 +1,6 @@
 ---
 name: inchidere-zi-casa
-description: Ghidează închiderea legală a zilei de numerar în casierie (RO, OMFP 2634/2015) — verificarea meselor deschise și a predărilor de tură, numărarea fizică a banilor, generarea consumului zilnic, reconcilierea raportului Z fiscal cu vânzările POS, sigilarea zilei (filă + sigiliu) și depunerile la bancă peste plafon. Folosește la „închide ziua", „închidere de zi", „registru de casă", „raport Z nu bate cu POS", „plus/minus de casă", „predare de tură nu apare la închidere", „nu pot adăuga în registru, ziua e închisă", „depunere bancă plafon depășit", „sigilare zi", „redeschide ziua de casă", „consum zilnic nu s-a generat".
+description: Închiderea legală a zilei de numerar (RO, OMFP 2634/2015) — mese deschise și predări de tură, numărarea banilor, consumul zilnic, reconcilierea raportului Z cu POS, sigilarea zilei, depuneri la bancă peste plafon. La „închide ziua", „registru de casă", „raportul Z nu bate cu POS", „plus/minus de casă", „ziua e închisă, nu pot scrie", „redeschide ziua".
 ---
 
 # Închiderea zilei în casierie — corect și legal

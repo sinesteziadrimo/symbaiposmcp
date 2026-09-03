@@ -1,6 +1,6 @@
 ---
 name: website-agent-loop
-description: "DEPRECAT — folosește `copiaza-website`. Vechiul loop builder/reviewer pentru import de website. A fost înlocuit de skill-ul `copiaza-website`, care pornește de la scopul ADEVĂRAT al site-ului (numitor independent prin sitemap/feed), ține o coadă durabilă pe disc, lucrează pe loturi cu sub-agenți și verifică obiectiv cu `clone_parity_diff` (nu se mai oprește la 20%). Acest skill rămâne doar ca pointer."
+description: DEPRECAT — folosește `copiaza-website` (pornește de la scopul real al site-ului, coadă durabilă, loturi verificate cu `clone_parity_diff`). Acest skill rămâne doar ca pointer.
 ---
 
 # website-agent-loop — DEPRECAT

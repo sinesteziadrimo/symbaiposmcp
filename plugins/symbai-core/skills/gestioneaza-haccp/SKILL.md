@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-haccp
-description: Ține siguranța alimentară (HACCP) la zi prin conexiune (MCP) — fără click pe taburi — și arată dovada pe ecran. Loghează citiri de temperatură la frigidere/congelatoare, raportează și rezolvă incidente, bifează sarcini de curățenie (checklist de igienă), pornești și monitorizezi răciri rapide (blast chilling) și, la o alertă, construiești raportul de retragere (recall) al unui lot. Folosește la „notează că frigiderul are 4 grade", „congelatorul e la -18", „arată-mi temperaturile de azi / raport HACCP", „câte citiri au fost peste prag", „raportează că s-a stricat frigiderul peste noapte", „am găsit marfă expirată", „ce incidente HACCP am, sunt nerezolvate", „am rezolvat incidentul X", „ce am de curățat azi / checklist curățenie", „am terminat de curățat hota", „pornește răcirea rapidă pentru ciorbă", „s-a încadrat ciorba în timp", „dacă retrag lotul X ce produse sunt afectate / raport de retragere / trasează unde a ajuns lotul contaminat", „scor de conformitate igienă".
+description: HACCP prin MCP — citiri de temperatură, incidente (raportare + rezolvare), checklist de curățenie, răciri rapide (blast chilling), raport de retragere (recall) pe lot, scor de conformitate. La „notează că frigiderul are 4 grade", „raport HACCP de azi", „am găsit marfă expirată", „ce am de curățat azi", „dacă retrag lotul X ce e afectat".
 ---
 
 # HACCP hands-free — siguranța alimentară prin conexiune (MCP), nu prin click

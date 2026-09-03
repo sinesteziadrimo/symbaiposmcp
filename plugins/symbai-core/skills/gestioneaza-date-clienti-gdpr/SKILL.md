@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-date-clienti-gdpr
-description: Gestionează datele clienților și conformitatea GDPR în Symbai — export de date la cerere (dreptul de acces/portabilitate), ștergere/anonimizare („dreptul de a fi uitat"), jurnalul de consimțăminte (cine a acceptat/refuzat email/SMS/WhatsApp), curățarea duplicatelor (găsește + unifică) și grupuri/segmente de clienți. Folosește la „un client cere copia datelor lui", „exportă-mi datele clientului X", „cererea de a fi uitat / șterge datele clientului", „anonimizează clientul/oaspetele", „de ce nu primește clientul email — are opt-out?", „arată-mi jurnalul de consimțăminte", „cine a acceptat marketingul", „am clienți dublați, unește-i", „găsește duplicate", „fă un grup VIP", „câți clienți intră în segmentul X", „pot trimite marketing clientului Y?". Operațiuni rare dar importante — acțiunile ireversibile (ștergere/anonimizare) cer confirmare explicită de la user.
+description: Date clienți & GDPR — export la cerere, ștergere/anonimizare (ireversibil, cu confirmare), jurnal consimțăminte, duplicate (găsește + unifică), grupuri/segmente. La „clientul cere copia datelor", „dreptul de a fi uitat", „anonimizează clientul", „de ce nu primește email, are opt-out?", „am clienți dublați", „fă un grup VIP".
 ---
 
 # Date clienți & GDPR — hands-free, prin conexiune (MCP)

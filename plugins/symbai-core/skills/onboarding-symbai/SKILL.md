@@ -1,6 +1,6 @@
 ---
 name: onboarding-symbai
-description: Configurează de la zero (onboarding) un restaurant/hotel/business nou în Symbai prin conexiunea MCP — firmă + CUI, branduri, locații, gestiuni, produse și meniu (inclusiv import din Excel/CSV de pe calculatorul utilizatorului), etichete de rutare, imprimante și ecrane de bucătărie, plăți, plan de sală + QR, personal și roluri, rețete, tipuri de produs și conturi, rezervări, marketing, portal clienți și livrări. Folosește la „client nou", „configurare inițială", „hai să configurăm Symbai", „onboarding", „de unde încep", „abia am primit instanța/contul", „importă datele din vechiul sistem/program", „mută-mă de pe alt POS", sau când get_config_status arată o instanță aproape goală și utilizatorul vrea să o populeze.
+description: Configurează de la zero un business nou în Symbai prin MCP — firmă + CUI, branduri, locații, gestiuni, produse/meniu (inclusiv import Excel/CSV), etichete de rutare, imprimante/KDS, plăți, plan de sală + QR, personal, rețete, tipuri de produs, rezervări, marketing, portal, livrări. La „client nou", „hai să configurăm Symbai", „de unde încep", „abia am primit contul", „mută-mă de pe alt POS".
 ---
 
 # Onboarding Symbai — configurarea unui client nou prin Claude Code

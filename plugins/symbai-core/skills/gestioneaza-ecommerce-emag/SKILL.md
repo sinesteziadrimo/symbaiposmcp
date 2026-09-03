@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-ecommerce-emag
-description: Operează magazinul online și marketplace-urile (eMAG/Skroutz) prin conexiune (MCP) + navigare cu link direct, fără clickuri prin taburi — comenzi online, expediere cu AWB, retururi (RMA), coduri de reducere, variante și colecții de produse, feed-uri Google/Facebook, oferte și comenzi eMAG. Folosește la „ce comenzi online am azi", „comenzi neexpediate / de procesat", „pune AWB-ul pe comanda X / marcheaz-o expediată", „de ce nu intră comenzile de pe eMAG", „cum stau pe eMAG / starea integrării", „împinge prețurile/stocul pe eMAG", „adaugă un cod de reducere VARA10", „dezactivează codul X", „ce retururi am / aprobă returul / e eligibilă comanda pentru retur", „rata de retur / cât am rambursat", „de ce nu apare produsul în Google Shopping / verifică feed-ul", „variantele produsului X / colecțiile de pe site".
+description: Magazinul online și marketplace-urile (eMAG/Skroutz) — comenzi online, expediere cu AWB, retururi RMA, coduri de reducere, variante și colecții, feed-uri Google/Facebook, oferte/comenzi eMAG. La „ce comenzi online am", „pune AWB-ul", „de ce nu intră comenzile de pe eMAG", „împinge prețurile pe eMAG", „aprobă returul", „verifică feed-ul".
 ---
 
 # Magazin online & eMAG — operează hands-free, prin conexiune + link direct

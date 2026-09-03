@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-reclame
-description: Creează și gestionează reclame plătite Meta (Facebook/Instagram) DIRECT din chat, cu tool-uri — fără click prin wizard. Mai multe TIPURI de reclame: boost la o postare, trafic spre site/meniu, mesaje (Messenger), apel telefonic, aprecieri pagină, promovare eveniment. Folosește la „fă o reclamă", „promovează postarea X", „dă boost", „reclamă cu link spre meniu/site", „reclamă să mă sune lumea", „reclamă să primesc mesaje", „promovează evenimentul", „crește pagina", „pune reclamă pe Facebook cu 20 de lei pe zi", „pornește/oprește campania", „pune pe pauză reclama", „cum merge reclama", „cât cheltui pe reclame", „campanie publicitară".
+description: Reclame plătite Meta (Facebook/Instagram) direct din chat — boost, trafic spre site/meniu, mesaje, apel, aprecieri pagină, eveniment; buget, pauză/pornire, performanță. Bani reali, confirmare obligatorie. La „fă o reclamă", „promovează postarea", „dă boost cu 20 lei/zi", „pornește/oprește campania", „cum merge reclama", „cât cheltui pe reclame".
 ---
 
 # Gestionează reclame Meta (boost & campanii) din chat

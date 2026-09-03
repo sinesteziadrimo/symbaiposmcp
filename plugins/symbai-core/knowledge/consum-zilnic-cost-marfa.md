@@ -206,9 +206,9 @@ La restaurant stocul negativ e permis intenționat — e semnalul că lipsește 
 *Repari:* postezi NIR-ul rămas ciornă (`post_inventory_document` 🔒); înregistrezi recepția lipsă; corectezi unitatea; dacă sunt două produse aproape identice, `preview_finished_product_merge` → `merge_finished_products`.
 
 **7. „Am pus poza cu factura și nu s-a întâmplat nimic."**
-Depinde de procedura aleasă de firmă (Setări → Stocuri → „Recepție din poză"): pe **doar ciornă** documentul așteaptă în „Avize & Draft" până îl mapezi, aprobi și faci NIR; pe **verificare imediată** intră după ce confirmi produsele; pe **direct pe stoc** intră singur doar când totul e curat — orice nelămurire trece la verificare, cu motivul scris.
-*Verifici:* `get_reception_policy`; `list_received_efactura`; `list_receptions_to_review`.
-*Repari:* duci documentul mai departe (mapare → NIR) sau schimbi procedura cu `configure_reception_policy`, după ce explici efectul.
+Normal: **poza singură nu pune nimic pe stoc.** Recepția din poză se termină întotdeauna cu un om care mapează liniile, numără marfa și confirmă — abia acea confirmare creează NIR-ul. Deci sau recepția n-a fost dusă până la confirmare, sau firma e pe modul `supervisor` și recepția **așteaptă confirmarea cuiva cu drepturi financiare** (contabil / manager cu acces la facturi), sau a rămas o nelămurire care oprește confirmarea, cu motivul scris.
+*Verifici:* `get_reception_policy` (modul e `review` sau `supervisor`); `explain_photo_reception` (ce anume blochează documentul); `list_received_efactura`; `list_receptions_to_review`.
+*Repari:* duci documentul mai departe (mapare → confirmare → NIR); dacă e pe `supervisor`, ceri confirmarea unui responsabil cu drepturi financiare. Schimbarea procedurii se face cu `configure_reception_policy`, după ce explici efectul — dar valorile sunt **doar** `review` și `supervisor` (`draft`/`direct` au fost scoase și întorc „mode invalid").
 
 **8. „Am primit factura de două ori" / „văd două documente identice."**
 Poza și e-Factura oficială sunt același document. Dacă poza nu era aprobată și sumele se potrivesc, e-Factura o înlocuiește automat; dacă sumele diferă mai mult de 1 leu / 0,5%, sistemul nu alege singur și le lasă pe amândouă.

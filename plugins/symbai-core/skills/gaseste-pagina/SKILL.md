@@ -1,6 +1,6 @@
 ---
 name: gaseste-pagina
-description: Du userul pe pagina pe care o vrea, rapid — „du-mă la X", „deschide-mi Y", „sunt pe X, cum ajung la Y", „unde văd rapoartele", „unde adaug un produs", „dă-mi link la setări imprimante", „treci pe locația din centru / schimbă unitatea". Află ruta (cheat-sheet/tool), deschide pagina prin extensia Chrome dacă e conectată (altfel dă link), confirmă; la cereri ambigue întreabă o dată înainte.
+description: Du userul pe pagina dorită — afli ruta (cheat-sheet/tool), o deschizi prin extensia Chrome dacă e conectată (altfel dai link), confirmi; la ambiguitate întrebi o dată. La „du-mă la X", „deschide-mi Y", „unde văd rapoartele", „dă-mi link la setări imprimante", „treci pe locația din centru".
 ---
 
 # Du userul pe pagină (rapid) — sau dă link

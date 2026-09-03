@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-etichete
-description: Gestionează etichetele (tagurile) produselor în Symbai — creare, asignare în masă pe secții/categorii, etichete de rutare către imprimante/KDS, etichete de marketing/atribute (Recomandat, Vegan, Picant, Nou), audit și curățenie. Folosește la „pune tag pe produse", „fă o etichetă nouă", „rutează la bucătărie/bar", „etichetează tot barul", „taguri pentru imprimante/KDS", „ce produse n-au etichetă", „scoate tagul de pe X", „grupează produsele pe secții", „marchează produsele vegane/picante/recomandate".
+description: Etichetele (tagurile) produselor — creare, asignare în masă pe secții/categorii, rutare către imprimante/KDS, taguri de marketing (Vegan, Picant, Nou), audit și curățenie. La „pune tag pe produse", „rutează la bucătărie/bar", „taguri pentru imprimante/KDS", „ce produse n-au etichetă", „marchează produsele vegane".
 ---
 
 # Gestionează etichete (taguri) — corect, sigur, vizibil

@@ -1,6 +1,6 @@
 ---
 name: ruleaza-retentie
-description: Rulează o campanie de retenție cap-coadă — recâștigă clienții pierduți, ține-i pe cei în pericol, premiază VIP-urile, sărbătorește aniversarea. Alege rețeta potrivită (win-back / at-risk / aniversare / VIP), dimensionează audiența, verifică consimțământul, trimite pe canalul corect și măsoară câștigul real cu un grup de control. Folosește la „recâștigă clienții pierduți", „campanie de retenție", „win-back", „clienți inactivi", „clienții nu mai vin", „adu înapoi clienții care nu au mai trecut", „premiază clienții fideli".
+description: Campanie de retenție cap-coadă — win-back, at-risk, aniversare, VIP — rețeta, audiența, consimțământul, canalul, măsurarea cu grup de control. La „recâștigă clienții pierduți", „campanie de retenție", „clienții nu mai vin", „premiază clienții fideli".
 ---
 
 # Rulează o campanie de retenție (ca un specialist CRM)

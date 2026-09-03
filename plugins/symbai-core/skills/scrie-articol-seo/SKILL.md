@@ -1,6 +1,6 @@
 ---
 name: scrie-articol-seo
-description: Scrie un articol de blog de TOP, adaptat brandului și optimizat SEO + pentru AI (2026), prin conexiune (MCP). Înțelegi brandul, faci research pentru subiect/oraș/țară, alegi cuvântul-cheie și intenția, urmezi un content brief, scrii conținut real cu experiență, auditezi și CERI FEEDBACK înainte de publicare. Folosește la „scrie-mi un articol despre X", „fă un articol care aduce trafic", „scrie despre [subiect] pentru orașul meu", „articol SEO", „documentează-te și scrie", „un ghid pentru clienții mei". Dacă userul dă tema exact o aplici; dacă nu, întrebi.
+description: Scrie un articol de blog de top, pe brand, optimizat SEO și pentru AI — research pe subiect/oraș, cuvânt-cheie și intenție, content brief, conținut cu experiență, audit și feedback înainte de publicare. La „scrie-mi un articol despre X", „un articol care aduce trafic", „articol SEO", „documentează-te și scrie", „un ghid pentru clienții mei".
 ---
 
 # Scrie un articol SEO de top — brand-aware, cu research și feedback

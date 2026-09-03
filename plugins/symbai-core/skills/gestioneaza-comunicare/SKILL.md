@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-comunicare
-description: Gestioneaza comunicarea cu clientii si echipa prin MCP + Chrome: campanii email, newslettere, flow-uri automate, send-time optimization, deliverability/warm-up, A/B, atribuire conversii, sabloane, WhatsApp/Messenger/Instagram, push si linkuri de conectare. Foloseste la "trimite o campanie", "cand e cel mai bine sa trimit emailul", "creste open rate", "cum stam fata de ActiveCampaign", "de ce nu se livreaza", "cine mi-a scris", "raspunde pe WhatsApp", "dezaboneaza". Confirmare explicita obligatorie inainte de orice trimitere reala. Acest skill acopera numarul de WhatsApp Business AL FIRMEI, catre clienti (send_whatsapp_message / reply_to_conversation); daca se cere sa scrii de pe numarul PERSONAL al ownerului, printr-o punte locala, si in stilul lui, foloseste skill-ul `raspunde-whatsapp` — alt canal, alte tool-uri, alte riscuri.
+description: Comunicare cu clienții și echipa — campanii email, newslettere, flow-uri, send-time, deliverability, A/B, șabloane, WhatsApp Business/Messenger/Instagram, push. Confirmare obligatorie înainte de orice trimitere reală. La „trimite o campanie", „când e cel mai bine să trimit", „crește open rate", „cine mi-a scris pe WhatsApp", „dezabonează". Numărul PERSONAL al ownerului → raspunde-whatsapp.
 ---
 
 # Gestioneaza Comunicare — Email + WhatsApp + Push, MCP-First

@@ -1,6 +1,6 @@
 ---
 name: trimite-notificare-push
-description: Creează, segmentează, programează, trimite și analizează campanii de notificări push (pe telefon și în browser) către clienți, plus preferințe și dezabonări. Folosește la „trimite o notificare push", „anunță clienții pe telefon", „campanie push cu oferta de azi", „programează un push mâine la 11", „pe cine pot anunța prin push", „cum a mers notificarea", „oprește push pentru clientul X".
+description: Campanii de notificări push (telefon și browser) către clienți — creare, segmentare, programare, trimitere, analiză, preferințe și dezabonări. La „trimite o notificare push", „anunță clienții pe telefon", „campanie push cu oferta de azi", „programează un push mâine la 11", „cum a mers notificarea", „oprește push pentru clientul X".
 ---
 
 # Trimite o notificare push (web + mobil)

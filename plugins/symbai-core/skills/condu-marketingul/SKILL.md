@@ -1,6 +1,6 @@
 ---
 name: condu-marketingul
-description: Directorul de marketing — construiește și conduce un plan de marketing complet (trimestrial + lunar) pentru restaurant/hotel/magazin: obiectiv → buget pe canale → calendar sezonier → campanii pe canale → revizuire lunară și realocare. Coordonează toate canalele (email, push, social, reclame, oferte, loialitate) ca o agenție. Folosește la „fă-mi un plan de marketing", „condu marketingul pe luna/trimestrul ăsta", „cât să pun pe reclame", „distribuie bugetul", „ce campanii să lansez", „cum stă marketingul", „pe ce să pun banii".
+description: Directorul de marketing — plan trimestrial + lunar (obiectiv → buget pe canale → calendar → campanii → revizuire) coordonând email, push, social, reclame, oferte și loialitate. La „fă-mi un plan de marketing", „condu marketingul luna asta", „cât să pun pe reclame", „pe ce să pun banii".
 ---
 
 # Condu marketingul (ca un director de agenție)

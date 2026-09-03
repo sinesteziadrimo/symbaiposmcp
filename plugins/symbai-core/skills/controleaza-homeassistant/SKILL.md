@@ -1,6 +1,6 @@
 ---
 name: controleaza-homeassistant
-description: Controlează echipamentele clădirii (smart building) prin integrarea Home Assistant — ventilație, hotă, marchize/copertine, climatizare (VRF), lumini, prize, atracții loc de joacă, muzică, plus senzori de energie/solar — direct din Symbai, prin conexiune (MCP), pentru fiecare unitate în parte. Folosește la „pornește ventilația", „oprește hota", „deschide/închide marchizele", „aprinde luminile la terasă", „ridică temperatura la VRF/AC", „ce e pornit acum / ce consum am", „stinge tot la închidere", „pornește muzica la parter", „adaugă-mi echipamentul X în panou", „conectează Home Assistant la unitatea Y", „de ce nu văd dispozitivele", „controlează caruselul/trenulețul din locul de joacă". Fiecare client își conectează propriul Home Assistant la o unitate și își adaugă propriile echipamente.
+description: Controlează echipamentele clădirii prin Home Assistant, per unitate — ventilație, hotă, marchize, climatizare, lumini, prize, muzică, atracții, consum de energie. La „pornește ventilația", „oprește hota", „aprinde luminile la terasă", „stinge tot la închidere", „adaugă echipamentul X", „de ce nu văd dispozitivele".
 ---
 
 # Control smart-building prin Home Assistant — hands-free, prin conexiune (MCP)

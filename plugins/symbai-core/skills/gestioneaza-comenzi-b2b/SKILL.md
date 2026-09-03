@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-comenzi-b2b
-description: Conduce hands-free comenzile B2B și necesarul rețelei proprii — fabrică ori depozit central către magazine, francize și clienți firmă. Citește configurația rețelei, creează cererea cu sursa corectă pe produs, face forecast, planifică doar producția reală, apoi picking, rute, aviz, recepție și factură. Folosește la „ce comandă magazinele”, „de unde vine produsul”, „fă necesarul magazinului”, „francizele trimit la fabrică”, „rețea fără fabrică”, „planifică producția/comanda B2B”, „pregătește/livrează/facturează”. Pentru comenzile tale CĂTRE furnizori folosește skill-ul `comanda-furnizor`.
+description: Comenzile B2B și necesarul rețelei proprii (fabrică/depozit central → magazine, francize, clienți firmă) — configurația rețelei, cerere cu sursa corectă pe produs, forecast, planificare producție, picking, rute, rampe, aviz, factură. La „ce comandă magazinele", „fă necesarul magazinului", „planifică comanda B2B", „fă avizul/factura", „a sosit mașina". Comenzi CĂTRE furnizori → comanda-furnizor.
 ---
 
 # Gestionează comenzile B2B — vezi, planifică, pregătește, facturează, prin MCP, click rar

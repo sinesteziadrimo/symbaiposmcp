@@ -1,6 +1,6 @@
 ---
 name: investigheaza-printare
-description: Investighează problemele de printare și casă fiscală cerând SINGUR logurile de la Print Agent și Edge Server, fără să ceri userului să descarce ceva din aplicație. Folosește la „bonul s-a dublat / s-a printat de două ori", „nu iese bonul / bon neprintat", „de ce nu se printează la bucătărie", „casa fiscală e blocată / nu răspunde", „de ce a picat serverul local / edge", „verifică imprimanta X", „ce s-a întâmplat cu bonul comenzii Y". Citește logurile, înțelege exact ce s-a întâmplat și explică-i userului în cuvinte simple.
+description: Probleme de printare și casă fiscală — cere singur logurile de la Print Agent și Edge Server, înțelege ce s-a întâmplat și explică simplu. La „bonul s-a dublat", „nu iese bonul", „nu se printează la bucătărie", „casa fiscală e blocată", „de ce a picat serverul local", „ce s-a întâmplat cu bonul comenzii Y".
 ---
 
 # Investighează o problemă de printare / casă fiscală

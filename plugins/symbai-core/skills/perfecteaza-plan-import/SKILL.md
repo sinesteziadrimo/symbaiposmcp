@@ -1,6 +1,6 @@
 ---
 name: perfecteaza-plan-import
-description: După ce ai IMPORTAT un plan (PDF/imagine) în Planul 2D al fabricii, fă-l PERFECT — pune fiecare echipament la poziția lui reală pe plan și curăță zidurile, lucrând prin conexiune (MCP) cu poziții în cm. Folosește când importul automat a lăsat echipamentele „stagiate" lângă plan (în dreapta), zidurile groase/aproximative, sau utilajele pe poziții greșite. Trigger-e RO — "pune echipamentele la locul lor pe plan", "echipamentele sunt toate în dreapta, pune-le corect", "perfecționează planul importat", "așază utilajele pe markeri", "planul importat nu e bun, aranjează-l", "mută echipamentele pe pozițiile reale", "fă planul fabricii perfect după import", "leagă echipamentele la pozițiile de pe planul scanat".
+description: După importul unui plan (PDF/imagine) în Planul 2D al fabricii — pune echipamentele pe pozițiile reale (în cm) și curăță zidurile. La „echipamentele sunt toate în dreapta, pune-le corect", „perfecționează planul importat", „așază utilajele pe markeri", „mută echipamentele pe pozițiile reale".
 ---
 
 # Perfecționează un plan de fabrică importat

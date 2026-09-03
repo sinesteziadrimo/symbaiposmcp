@@ -1,6 +1,6 @@
 ---
 name: verifica-consumul
-description: Explică și repară de ce nu scade stocul din vânzări și de ce food cost-ul iese greșit — consum zilnic, rețete nelegate, unități și randament, cost pe loturi, recalcularea consumului pe perioadă sau pe un singur produs. Folosește la „de ce nu mi-a scăzut stocul", „nu s-a generat consumul", „de ce e food cost-ul aiurea", „cost 150%", „produsul apare la consum temporar", „am corectat rețeta și rapoartele arată la fel", „am stoc negativ", „de ce diferă costul din P&L de rețetă", „reprocesează consumul", „recalculează costurile", „consumul nu se generează la fabrică", „loturi insuficiente".
+description: Explică și repară de ce nu scade stocul din vânzări și de ce food cost-ul iese greșit — consum zilnic, rețete nelegate, unități/randament, cost pe loturi, reprocesare pe perioadă sau produs. La „de ce nu mi-a scăzut stocul", „nu s-a generat consumul", „food cost aiurea / cost 150%", „am stoc negativ", „reprocesează consumul", „loturi insuficiente".
 ---
 
 # Verifică consumul (de ce nu scade stocul / de ce e food cost-ul greșit)

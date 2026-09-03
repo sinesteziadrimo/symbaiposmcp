@@ -1,6 +1,6 @@
 ---
 name: plan-fabrica
-description: Te ajută să construiești PLANUL 2D al fabricii/halei — desenezi sala, ziduri, echipamente, operatori, zone de producție, magaziile și zonele de depozitare, pe nivele/etaje, și legi fluxul material între ele. Totul e legat de entitățile reale (echipamente, angajați, magazii, stoc) și de diagramele de producție. Trigger-e în română: "desenează-mi hala/fabrica", "vreau planul fabricii", "creează sala", "trasează peste plan", "unde pun utilajele pe plan", "pune operatorii pe plan", "pune magazia/echipamentele pe plan", "plan 2D fabrică", "harta halei", "fluxul fizic prin hală", "leagă magaziile cu zonele", "fă planul cu nivele/etaje", "arată-mi ce e stocat unde în hală", "pune zonele HACCP pe plan".
+description: Planul 2D al fabricii/halei — sala, ziduri, echipamente, operatori, zone de producție, magazii, nivele/etaje și fluxul material, legate de entitățile reale. La „desenează-mi hala/fabrica", „unde pun utilajele pe plan", „pune operatorii/magazia pe plan", „harta halei", „fluxul fizic prin hală", „zonele HACCP pe plan".
 ---
 
 # Plan 2D Fabrică — construiește harta halei

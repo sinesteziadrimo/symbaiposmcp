@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-loialitate
-description: Gestionează programul de fidelitate / loialitate prin conexiune (MCP) + navigare vizuală — niveluri (tier-uri), recompense, acordarea/răscumpărarea/expirarea punctelor, segmente RFM, alerte de scădere (win-back) și fișa de puncte a unui client. Acoperă DOUĂ programe SEPARATE: loialitatea hotel (pe nopți, /hotel/crm — cu tool-uri de scriere complete) și loialitatea POS/restaurant-retail (pe lei cheltuiți, /loyalty — configurare program + sold/puncte client prin MCP, niveluri/recompense avansate în pagină). Folosește la „cum stă programul de fidelitate", „câți membri am / câte puncte datorez", „câte puncte are clientul X", „adaugă un nivel Gold / Platinum", „adaugă o recompensă în catalog", „dă-i 500 de puncte clientului ca gest comercial", „scade niște puncte", „răscumpără o recompensă", „expiră punctele vechi", „recalculează RFM / segmentele", „cine sunt VIP-urii mei", „ce clienți buni au început să plece / cine pleacă / win-back", „de ce nu urcă clientul de nivel", „pornește programul de fidelitate".
+description: Programul de fidelitate (POS/retail pe lei și hotel pe nopți, separat) — niveluri, recompense, acordare/răscumpărare/expirare puncte, RFM, alerte win-back, fișa de puncte a clientului. La „cum stă programul de fidelitate", „câte puncte are clientul X", „adaugă un nivel Gold", „dă-i 500 de puncte", „cine pleacă / win-back", „de ce nu urcă de nivel".
 ---
 
 # Gestionează loialitatea — niveluri, recompense, puncte, RFM, win-back prin MCP + navigare

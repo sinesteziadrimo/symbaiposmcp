@@ -1,6 +1,6 @@
 ---
 name: conecteaza-meta
-description: Ghidează conectarea contului Meta la Symbai — pagina Facebook, Instagram Business și contul de reclame — pas cu pas, cu verificare server-side după fiecare pas. Folosește la „vreau să-mi leg Facebook/Instagram/Meta", „nu se conectează Instagram", „leagă contul de reclame", „a expirat tokenul Facebook", „nu se mai publică postările". Merge și pentru TikTok/YouTube/LinkedIn/Google Business (aceiași pași, alt nume de platformă).
+description: Conectează contul Meta la Symbai pas cu pas (pagina Facebook, Instagram Business, contul de reclame), cu verificare după fiecare pas; la fel TikTok/YouTube/LinkedIn/Google Business. La „leagă-mi Facebook/Instagram", „nu se conectează Instagram", „a expirat tokenul Facebook", „nu se mai publică postările".
 ---
 
 # Conectează Meta (Facebook + Instagram + reclame)

@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-hotel
-description: Operează recepția și managementul hotelului (PMS) prin conexiune (MCP) + navigare cu link direct — fără să bâjbâi prin tab-uri. Răspunzi la „cum stă hotelul azi / grad de ocupare", „am camere libere între X și Y", „ce rezervări am / cine sosește / cine pleacă azi", „fă o rezervare la camera dublă pentru weekend", „ce note de cont (folio) am deschise / cine are de plată", „ce camere sunt ocupate/murdare/scoase din uz", „trece consumul de la restaurant pe camera 204", „adaugă un tip de cameră / o cameră nouă", „cum stă programul de fidelitate al hotelului". Citirile (ocupare, disponibilitate, rezervări, folios, camere, loialitate) și o parte din scrieri (rezervare, check-in, charge-to-room, camere) se fac prin conexiune; restul recepției (check-out, încasare, factură, tarife, OTA, housekeeping) îl arăți prin link direct la pagina potrivită.
+description: Recepția și managementul hotelului (PMS) prin MCP + link direct — ocupare, disponibilitate, rezervări (sosiri/plecări), folio-uri, camere, charge-to-room, tipuri de cameră, loialitate hotel; check-out, tarife, OTA, housekeeping prin pagina potrivită. La „cum stă hotelul azi", „am camere libere între X și Y", „cine sosește azi", „trece consumul pe camera 204".
 ---
 
 # Gestionează hotelul (PMS) — recepție & management prin MCP + link direct

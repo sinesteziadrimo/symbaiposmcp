@@ -1,6 +1,6 @@
 ---
 name: cercetare-seo
-description: Cercetare SEO completă prin conexiune (MCP) — keyword research (volum, dificultate, intenție), ce trafic ai deja pe fiecare cuvânt din Search Console, analiza concurenților (share of voice, ce rankează ei și tu nu), research web pe o piață/oraș/țară și idei de conținut. Folosește la „ce cuvinte-cheie să țintesc", „ce trafic e pe fiecare cuvânt", „cine sunt concurenții mei în Google", „cu cine concurez", „dă-mi idei de articole", „cercetează piața în [oraș]", „ce caută oamenii", „pe ce apar deja în Google", „research pentru un articol", „gap față de concurenți".
+description: Cercetare SEO prin MCP — keyword research (volum, dificultate, intenție), trafic din Search Console, concurenți (share of voice), research pe piață/oraș, idei de conținut. La „ce cuvinte-cheie să țintesc", „cine sunt concurenții mei în Google", „dă-mi idei de articole", „ce caută oamenii".
 ---
 
 # Cercetare SEO — cuvinte-cheie, concurenți, trafic, idei

@@ -1,6 +1,6 @@
 ---
 name: symbai-update
-description: Actualizează (sau pornește auto-actualizarea) cunoștințelor și skill-urilor Symbai. Folosește când utilizatorul scrie /symbai-core:symbai-update sau cere „actualizează skill-urile Symbai" / „ia ultimele cunoștințe Symbai" / „de ce nu se actualizează singur pluginul" / „cum activez auto-update".
+description: Actualizează (sau pornește auto-actualizarea) cunoștințelor și skill-urilor Symbai. La /symbai-core:symbai-update, „actualizează skill-urile Symbai", „ia ultimele cunoștințe Symbai", „de ce nu se actualizează singur pluginul", „cum activez auto-update".
 ---
 
 # Actualizează pachetul Symbai (`symbai-core`)

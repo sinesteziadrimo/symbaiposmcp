@@ -1,6 +1,6 @@
 ---
 name: autoritate-offsite
-description: Construiește autoritatea de brand ÎN AFARA site-ului (off-site) ca să fii RECOMANDAT de motoarele AI (ChatGPT, Claude, Perplexity, Google AI) și găsit local — entitate (Google Business, Wikidata, eventual Wikipedia), directoare cu NAP consistent, recenzii reale (solicitare + răspuns) și mențiuni de brand autentice. Preia browserul (Chrome) pentru pașii care nu au API. Folosește la „vreau să fiu recomandat de AI/ChatGPT", „fă-mi pagină de Wikipedia/Wikidata", „construiește-mi prezența/autoritatea online", „off-site SEO", „mențiuni de brand", „înscrie-mă în directoare", „revendică Google Business", „răspunde la recenzii", „de ce nu mă recomandă ChatGPT". Lucrezi ca un PR/consultant de reputație ONEST — niciodată spam, recenzii false sau pagini false.
+description: Autoritate de brand off-site ca să fii recomandat de motoarele AI (ChatGPT, Perplexity, Google AI) și găsit local — Google Business, Wikidata, directoare cu NAP consistent, recenzii și mențiuni reale; onest, fără spam. La „vreau să mă recomande ChatGPT", „pagină Wikidata/Wikipedia", „înscrie-mă în directoare", „revendică Google Business".
 ---
 
 # Autoritate off-site — fă brandul o entitate recunoscută și recomandată de AI

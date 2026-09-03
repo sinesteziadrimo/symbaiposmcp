@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-personal
-description: Gestionează personalul în Symbai — angajați, roluri & permisiuni, ture cu raionul corect pentru rutarea comenzilor QR, Program Salon, contracte și salarizare, beneficii de masă pentru personal (mâncare/băutură gratis/redus cu buget) și schimbarea unității. Folosește la „adaugă angajat", „setează rol/permisiuni", „modifică permisiuni", „programează tură", „pune ospătarul pe raion", „de ce nu intră comanda QR la ospătar", „program salon", „fă contract angajat", „schimbă unitatea", „adaugă PIN/parolă angajat", „beneficiu personal", „masa personalului", „ospătarii/bucătarii mănâncă gratis", „dau mâncare la angajați", „buget de masă pentru echipă", „să le dau discount la mâncare?", „de ce nu se aplică beneficiul".
+description: Personalul — angajați (PIN/parolă), roluri & permisiuni, ture cu raionul corect pentru rutarea QR, Program Salon, contracte și salarizare, beneficii de masă cu buget, schimbarea unității. La „adaugă angajat", „programează tură", „pune ospătarul pe raion", „de ce nu intră comanda QR la ospătar", „fă contract", „masa personalului / beneficiu personal", „de ce nu se aplică beneficiul".
 ---
 
 # Gestionează personalul — angajați, roluri, ture, raioane, contracte

@@ -1,6 +1,6 @@
 ---
 name: materiale-grafice
-description: Creează și editează materiale grafice profesionale pentru restaurant prin conexiune (MCP), ca un grafician senior — fără clickuri. Afișe, flyere, broșuri, table tents, postări și story-uri pentru Instagram/Facebook, covere de eveniment, vouchere și carduri QR de masă. Pornești dintr-un șablon gata făcut sau compui de la zero, pui textele și oferta, aplici culorile și logo-ul brandului, aranjezi elementele, redimensionezi pentru alt format. Folosește la „fă-mi un afiș/poster", „un flyer cu meniul zilei", „o postare/story pentru Instagram", „un voucher de reducere", „un cod QR de masă frumos de printat", „un material pentru eveniment", „pune-l pe culorile/logo-ul meu", „fă și varianta pentru Instagram", „schimbă textul/mută titlul de pe afiș".
+description: Materiale grafice profesionale prin MCP, ca un grafician — afișe, flyere, broșuri, table tents, postări/story-uri Instagram/Facebook, covere de eveniment, vouchere, carduri QR de masă; din șablon sau de la zero, pe culorile și logo-ul brandului, pe orice format. La „fă-mi un afiș/flyer/poster", „o postare pentru Instagram", „un voucher", „pune-l pe culorile mele".
 ---
 
 # Materiale grafice — Claude ca grafician senior, prin MCP

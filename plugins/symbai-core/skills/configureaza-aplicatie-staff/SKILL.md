@@ -1,6 +1,6 @@
 ---
 name: configureaza-aplicatie-staff
-description: Configurează și explică Aplicația Staff / Symbai Staff din POS web: cardul „În Aplicație Staff" de pe /menu/platforms, profiluri pentru livratori, agenți teren, CRM, task-uri, preluare marfă, producție/fabrică, containere QR, preview telefon cu butoane clickabile și legătura cu rolurile reale din Personal. Folosește la „configurează Aplicație Staff", „Symbai Staff", „expo-sales", „ce vede livratorul", „ce vede operatorul de fabrică", „container QR pe mobil", „preview livrator", „ascunde CRM pentru livratori", „agent teren în aplicația staff", „rol pentru previzualizare", „profil livrator cu vânzări", „aplicația angajaților".
+description: Configurează Aplicația Staff (Symbai Staff) — cardul „În Aplicație Staff" din /menu/platforms, profiluri livrator/agent teren/CRM/task-uri/producție, preview telefon și legătura cu rolurile reale. La „configurează Aplicație Staff", „ce vede livratorul", „ascunde CRM pentru livratori", „container QR pe mobil".
 ---
 
 # Configurează Aplicația Staff

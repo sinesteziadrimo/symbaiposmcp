@@ -1,6 +1,6 @@
 ---
 name: adauga-produs-reteta
-description: Adaugă produse noi sau importă un meniu întreg — complet și corect, tip de produs, TVA, unități, rețete, taguri de rutare, alergeni, categorii. Folosește la „adaugă produsul X la N lei", „pune Y în meniu", „fă o rețetă pentru Z", „importă meniul de pe site/PDF/Excel", „introdu produsele", „pune-le pe categorii", „taguri pentru imprimante/KDS". Pentru pagina de produs din magazinul online bogată (galerie, descriere lungă, specificații, garanție, FAQ, preț redus, accesorii, pachete) → vezi skill-ul `construieste-website` + `knowledge/website-builder-pdp.md`.
+description: Adaugă produse, rețete și meniuri complet (tip produs, TVA, unități, taguri de rutare, alergeni, categorii) sau importă un meniu de pe site/PDF/Excel. La „adaugă produsul X la N lei", „pune Y în meniu", „fă o rețetă pentru Z", „importă meniul". Pagina de produs bogată din magazinul online → construieste-website.
 ---
 
 # Adaugă produse / importă meniu / creează rețete — corect și complet

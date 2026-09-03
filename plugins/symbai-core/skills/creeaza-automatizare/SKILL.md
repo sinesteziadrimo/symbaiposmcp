@@ -1,6 +1,6 @@
 ---
 name: creeaza-automatizare
-description: Construiește ORICE automatizare (regulă «declanșator → efecte») prin conexiune (MCP) — de la simple la compoziții complexe cu condiții, întârzieri, scări de escaladare și lanțuri de reguli — pentru restaurant, hotel, magazin și mai ales FABRICĂ (loturi & expirări, HACCP & temperaturi, utilaje & mentenanță, randament/rebut/cost, stoc minim). Fără limite: ce nu se poate construi azi se escaladează automat cu tichet către echipa Symbai, iar clientului i se spune că se rezolvă rapid. Folosește la „vreau o automatizare", „fă să mă anunțe când…", „blochează automat…", „când expiră un lot…", „dacă se strică utilajul…", „când scade stocul comandă singur", „escaladează dacă nu răspunde nimeni", „de ce nu s-a declanșat regula", „oprește automatizarea", „ce automatizări am".
+description: Construiește orice automatizare declanșator → efecte (condiții, întârzieri, escaladări, lanțuri) pentru restaurant, hotel, magazin și fabrică (loturi, expirări, HACCP, utilaje, stoc minim); ce nu se poate → ticket automat. La „vreau o automatizare", „anunță-mă când…", „când expiră un lot…", „de ce nu s-a declanșat regula", „ce automatizări am".
 ---
 
 # Automatizări fără limite — declanșator → efecte, prin conexiune (MCP)

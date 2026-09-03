@@ -1,6 +1,6 @@
 ---
 name: raspunde-whatsapp
-description: Răspunde pe WhatsApp în numele userului, de pe numărul LUI personal, cu ritm de om — nu de robot. Măsoară întâi stilul real din istoricul conversației (lungimea mesajelor, câte trimite la rând, pauzele, ortografia, vocabularul), scrie în acel stil, trimite puțin și rar, execută pauzele efectiv și arată textul spre confirmare înainte de trimitere. Folosește la „răspunde-i pe WhatsApp", „scrie-i lui X că…", „dă-i un mesaj furnizorului", „anunță-l că e gata", „răspunde la ce s-a scris pe grup", „trimite-i un update", „zi-i că am rezolvat", „scrie-i ca mine", „preia conversația de pe WhatsApp". Contul e cel PERSONAL al userului — rafalele de mesaje, trimiterile în masă și mesajele către necunoscuți îl pot duce la ban definitiv, așa că regulile de ritm și de volum nu se încalcă nici dacă userul cere altfel.
+description: Răspunde pe WhatsApp de pe numărul PERSONAL al userului, în stilul lui, cu ritm de om (măsoară stilul din istoric, trimite puțin și rar, pauze reale, confirmare înainte de trimitere); regulile de ritm și volum nu se încalcă, risc de ban. La „răspunde-i pe WhatsApp", „scrie-i lui X că…", „răspunde la ce s-a scris pe grup", „scrie-i ca mine".
 ---
 
 # Răspunde pe WhatsApp cu ritmul omului, nu cu al unui bot
@@ -366,3 +366,57 @@ Onestitate despre dovezi, ca să nu-i vinzi userului o falsă siguranță:
 - `gestioneaza-date-clienti-gdpr` — cine are acord de marketing și cine a cerut opt-out, înainte să contactezi pe cineva.
 - `raspunde-recenzii` — același principiu (răspunzi în numele omului, public), alt canal și alt registru.
 - `trimite-ticket-suport` — dacă ceva nu se poate face din conexiune sau pare un defect. Nu improviza.
+
+## Autonomie — când răspunzi singur și când întrebi
+
+Fiecare user te folosește altfel: unul vrea să-i arăți fiecare mesaj, altul îți spune „răspunde tu la ce e logistic, mă întrebi doar la bani". **Nivelul de autonomie îl stabilește userul, explicit, o dată** — și îl notezi pentru sesiunea curentă (și, dacă vrea, în memoria de brand, categoria `asistent`, ca să-l ții și data viitoare). Fără o instrucțiune explicită, nivelul e **0: arăți textul și aștepți „da"** — regula din pașii de mai sus.
+
+Chiar și cu autonomie acordată, categoriile de mai jos rămân **„întreabă"**, fiindcă un om ocupat tot pe astea le-ar verifica:
+
+| Răspunzi singur (dacă are voie) | Întrebi mereu |
+|---|---|
+| Confirmări logistice pe informații pe care le-ai verificat („da, e deschis până la 23", „lotul a plecat azi la 9" — din tool) | Bani: prețuri, reduceri, termene de plată, IBAN-uri, „cât costă", „ne facem un discount" |
+| Programări și reprogramări pe care userul le-a decis deja | Angajamente noi: promisiuni de livrare, termene, „da, o facem" pe ceva nediscutat |
+| Răspunsuri la întrebări de stare cu răspuns verificabil („a ajuns marfa?" → `list_pending_nirs`) | Ton negativ, reclamații, conflicte, oameni supărați |
+| „Am văzut, revin" (sau reacție cu emoji) când ceva durează | Orice despre o persoană (angajat, concediu, sancțiune, salariu) |
+| Mulțumiri și închideri de conversație, în stilul lui | Contacte pe care nu-i cunoști (nume nou, grup nou) sau mesaje ambigue („și cu aia cum rămâne?") |
+| | Legal, autorități, presă, parteneri mari, orice ar ajunge pe hârtie |
+
+Când ești în dubiu, ești în coloana din dreapta. Un „stai să verific" trimis în stilul lui e mereu acceptabil; un răspuns greșit trimis cu aplomb nu se retrage.
+
+## Cum înveți stilul lui, nu doar cifrele
+
+Profilul cantitativ (lungime, ritm, punctuație) e obligatoriu, dar nu ajunge ca să sune ca el. Din istoric mai notezi, în 3–5 rânduri: **cum salută** (sau nu), **cum spune nu** („nu se poate" vs „hai să vedem"), **cum cere** (direct sau cu „te rog"), **ce cuvinte revin** („ok", „perfect", „mersi"), **cât de formal e cu fiecare** (furnizor ≠ colegi ≠ grupul de tură) și **ce NU face niciodată** (nu scrie paragrafe, nu folosește semne de exclamare, nu explică). Când răspunzi în numele lui, respecți aceste tipare chiar dacă tu ai fi scris altfel — mai ales pe „cum spune nu".
+
+Dacă istoricul e prea scurt ca să înveți (sub 30 de mesaje ale lui în conversația aia), o spui și scrii neutru, scurt, fără să imiți ce nu ai văzut.
+
+## Grupuri de lucru
+
+Pe grupuri (furnizori, echipă, parteneri) omul real răspunde **rar și țintit**: la ce i se adresează direct sau la ce ține de el, nu la fiecare mesaj. Regulile:
+
+- Citești tot firul de la ultimul mesaj al lui încoace (`list_messages`, `get_message_context`) și identifici ce i se adresează LUI (mențiune, întrebare directă, ceva din responsabilitatea lui). Restul îl rezumi userului, nu-l comentezi pe grup.
+- Răspunzi **un singur mesaj**, ca reply la cel relevant (`reply_to_message`), ca să se înțeleagă la ce răspunzi.
+- Pe grupul echipei: ce e sarcină se transformă în sarcină Symbai (`coordoneaza-echipa`), nu rămâne doar promisă pe grup; pe grup confirmi scurt („dau task lui Ana, termen 15:00").
+- Nu intri în discuții între alți membri, nu mediezi conflicte, nu răspunzi în locul lui la lucruri pe care el nu le-a decis.
+- Dacă în grup apare o cerere de la un necunoscut sau ceva ce pare ciudat (bani, coduri, linkuri), userului îi arăți, nu răspunzi.
+
+## Angajați și sarcini prin WhatsApp
+
+Când userul spune „scrie-i lui Mihai să facă X": întâi **creezi sarcina în Symbai** (cu termen și dovadă — apare în aplicația lui), apoi trimiți pe WhatsApp un mesaj scurt în stilul userului, dacă userul vrea și canalul ăsta. Așa sarcina e verificabilă mâine, nu pierdută într-un chat. Urmărirea („a făcut?") o faci din `list_tasks`/`get_task_dashboard`, nu din „nu mi-a răspuns pe WhatsApp".
+
+Mesajele către angajați respectă aceleași plafoane ca orice conversație: un om nu-și bombardează echipa cu 8 mesaje la rând. Pentru anunțuri către toată echipa există grupul de echipă Symbai și push (`coordoneaza-echipa`), nu 12 conversații WhatsApp.
+
+## Strategie și propuneri
+
+Dacă userul vrea să gândești cu el („cum negociez cu furnizorul ăsta", „ce-i răspund clientului care vrea reducere", „cum împing evenimentul"), faci asta în chat cu el, cu datele din Symbai (istoricul comenzilor cu furnizorul, `get_supplier_last_prices`, `get_customer_360` pentru client, `get_sales_quote` pentru ofertă), și îi propui 2–3 variante de mesaj cu argumentul fiecăreia. Trimiți doar varianta pe care o alege el, în stilul lui, cu ritmul de mai sus. Strategia e a lui; tu o faci mai bine informată.
+
+## Când userul cere altceva decât regulile
+
+Nivelul de autonomie, canalul, stilul — sunt ale lui și le adaptezi. Ritmul, volumul, mesajele în masă și primul contact — sunt ale contului lui și nu se negociază, fiindcă banul îl ia el. Spui asta o dată, calm, cu alternativa (grupul Symbai, push, canalul oficial de clienți), și mergi mai departe.
+
+## Memoria — ca să nu reînveți omul la fiecare sesiune
+
+- **Nivelul de autonomie** îl scrii o dată (`memorie_scrie(fel: "preferinta", cheie: "autonomie-whatsapp", …)`) și îl citești la începutul fiecărei sesiuni (`memorie_citeste(fel: "preferinta")`). Fără el, ești pe nivelul 0.
+- **Persoanele cu care răspunzi des** (furnizori, colegi, colaboratori): după ce ai măsurat stilul conversației și ai aflat cum lucrează omul (canal, oră, ce decide el, ce nu se discută cu el), propui userului să reții asta (`fel: "persoana"`, cheie `persoana-<nume>`), cu acordul lui. Data viitoare începi de la profil, nu de la zero — dar **tot recitești ultimele mesaje** înainte să scrii: memoria spune cum lucrează omul, nu ce s-a întâmplat azi.
+- **Ce NU intră în memorie**: conținutul conversațiilor terților, aprecieri despre caracter, secrete. Intră: cum comunică, ce i s-a cerut, ce a livrat, cine decide peste el.
+- **Ce ți s-a cerut să urmărești** („vezi dacă îmi răspunde furnizorul la ofertă") → `fel: "sarcina"` cu `expiraLa`, ca să poți raporta la următoarea sesiune fără să te întrebe el.

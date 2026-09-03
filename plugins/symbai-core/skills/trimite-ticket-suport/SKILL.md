@@ -1,6 +1,6 @@
 ---
 name: trimite-ticket-suport
-description: Trimite un ticket către echipa Symbai (problemă tehnică, reclamație, sugestie de îmbunătățire, cerere de suport) prin tool-ul trimite_ticket_symbai. Folosește la „nu merge X în Symbai", „am o problemă cu aplicația", „vreau să raportez ceva", „ar fi util să existe...", „să mă ajute cineva de la Symbai/suport tehnic". TRIMITE AUTOMAT o sugestie când observi că utilizatorul se chinuie cu o sarcină, ceva a durat nejustificat de mult sau un tool/funcție lipsă l-ar fi ajutat.
+description: Ticket către echipa Symbai (problemă tehnică, reclamație, sugestie, cerere de suport) prin trimite_ticket_symbai; trimite AUTOMAT o sugestie când userul se chinuie, ceva durează nejustificat sau lipsește un tool. La „nu merge X în Symbai", „am o problemă cu aplicația", „vreau să raportez ceva", „ar fi util să existe…".
 ---
 
 # Trimite un ticket către echipa Symbai

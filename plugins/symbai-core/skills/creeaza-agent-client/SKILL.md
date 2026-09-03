@@ -1,6 +1,6 @@
 ---
 name: creeaza-agent-client
-description: Creează, publică și dă VOCE agenților AI care vorbesc cu clienții — chat pe website și în portal, plus Recepționerul telefonic (răspunde la telefon prin ElevenLabs). Faci tot prin conexiune (MCP): înțelegi businessul întrebând ce nu scrie în date, scrii promptul și cunoștințele, îl publici pe canale, îl testezi CA UN CLIENT REAL și verifici că apelurile chiar intră. Folosește la „fă-mi un agent care răspunde clienților", „vreau un bot pe site", „chat pe website", „agent de rezervări", „agent de vânzări", „cineva să răspundă la telefon", „recepționer telefonic AI", „vreau să răspundă AI-ul la telefon", „leagă-l la ElevenLabs", „ce voce are agentul", „schimbă vocea agentului", „de ce nu răspunde chatul de pe site", „agentul e făcut dar nu răspunde nimănui", „clientul mi-a scris pe site și n-a răspuns nimeni", „de ce nu intră apelurile la recepționer", „testează agentul ca un client", „pune agentul pe site", „îmbunătățește agentul existent".
+description: Creează, publică și dă voce agenților AI pentru clienți — chat pe website/portal și Recepționerul telefonic (ElevenLabs) — prompt, cunoștințe, canale, test ca un client real. La „vreau un bot pe site", „agent de rezervări", „să răspundă AI-ul la telefon", „schimbă vocea agentului", „agentul e făcut dar nu răspunde", „de ce nu intră apelurile".
 ---
 
 # Agenți care vorbesc cu clienții — de la zero până la „un client real a primit răspuns"

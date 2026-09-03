@@ -1,6 +1,6 @@
 ---
 name: investigheaza-masa
-description: Investighează ce s-a întâmplat pe o masă, o notă, o comandă sau ce a făcut un ospătar — ce e pe masă ACUM, cine ce a comandat, anulări, discounturi, transferuri, plăți, retururi, cine a aprobat. PLUS cereri de aprobare în așteptare: vezi ce trebuie aprobat și aprobă/respinge direct. Folosește la „ce e pe masa 12", „ce a făcut ospătarul Ion azi", „de ce s-a anulat nota X", „cine a dat discountul", „ce am de aprobat", „aprobă returul de la masa 5".
+description: Investighează o masă, o notă, o comandă sau un ospătar — ce e pe masă acum, cine ce a comandat, anulări, discounturi, transferuri, plăți, retururi, cine a aprobat; plus cererile de aprobare (vezi/aprobă/respinge). La „ce e pe masa 12", „ce a făcut ospătarul Ion azi", „de ce s-a anulat nota X", „cine a dat discountul", „ce am de aprobat".
 ---
 
 # Investighează o masă / notă / ospătar + aprobă cereri

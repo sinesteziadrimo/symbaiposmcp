@@ -1,6 +1,6 @@
 ---
 name: programeaza-postare
-description: Creează, programează, modifică, aprobă și publică postări pe social media (Facebook, Instagram, TikTok etc.) pentru restaurant. Folosește la „fă o postare", „programează pe Facebook mâine la 7", „postează oferta de azi pe Instagram", „modifică postarea", „aprobă postarea", „postează acum".
+description: Creează, programează, modifică, aprobă și publică postări pe social media (Facebook, Instagram, TikTok etc.). La „fă o postare", „programează pe Facebook mâine la 7", „postează oferta de azi pe Instagram", „modifică postarea", „aprobă postarea", „postează acum".
 ---
 
 # Programează o postare social media

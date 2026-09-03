@@ -1,6 +1,6 @@
 ---
 name: rapoarte-preturi
-description: Răspunde la întrebări despre rapoarte, vânzări, KPI, food cost, marjă, prețuri, P&L pe produs/SKU, P&L pe zilele săptămânii, P&L de distribuție pe client/canal, P&L pe furnizor și P&L pe livrări, ȘI despre configurarea P&L (categorii, KPI, praguri, grupări venituri, repartizare pe zile, template-uri industrie) + P&L salvat (snapshot peste care adaugi cheltuieli/venituri/angajați/evenimente suplimentare). Folosește la „cât am vândut", „top produse", „care e food cost-ul", „ce marjă am la X", „ce produse pierd bani", „ce zi e profitabilă", „merită să stau deschis lunea", „sâmbătă vs marți", „ce client/canal îmi face profit", „ce furnizor e risc de marjă", „cât profit fac din livrări", „de ce scade profitul", „cât datorez furnizorului", „cum îmi configurez P&L-ul", „categorii P&L", „de ce apare la Nealocate", „salvează P&L", „închidere de lună", „adaugă o cheltuială/un venit/un angajat în P&L", ȘI comparații pe perioade — „cum merge luna trecută vs acum 2 luni", „an vs an", „compară lunile/perioadele", „evoluția profitului".
+description: Rapoarte, vânzări, KPI, food cost, marjă, prețuri, P&L (pe produs, zi a săptămânii, client/canal, furnizor, livrări), configurarea P&L (categorii, KPI, praguri, template-uri), P&L salvat și comparații pe perioade. La „cât am vândut", „top produse", „food cost", „ce produse pierd bani", „merită să stau deschis lunea", „de ce apare la Nealocate", „luna trecută vs acum 2 luni".
 ---
 
 # Rapoarte, cifre și prețuri

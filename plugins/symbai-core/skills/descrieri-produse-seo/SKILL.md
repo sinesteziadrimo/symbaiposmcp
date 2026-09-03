@@ -1,6 +1,6 @@
 ---
 name: descrieri-produse-seo
-description: Scrie descrieri SEO unice și slug-uri pentru produsele din magazinul online, la scară, prin conexiune (MCP) — descrieri orientate pe beneficii, în română cu diacritice, slug ASCII, anti-duplicat, adaptate verticalei (mâncare/retail/jucării/cosmetice). Folosește la „produsele n-au descriere", „scrie descrieri la tot magazinul", „optimizează descrierile produselor", „pune slug-uri la produse", „descrierile mele sunt copiate de la furnizor", „fă descrieri SEO la cele 4000 de produse", „îmbunătățește textele produselor". Acționezi ca un copywriter SEO de e-commerce care lucrează în loturi, cu preview și control.
+description: Scrie la scară descrieri SEO unice și slug-uri pentru produsele din magazinul online (pe beneficii, română cu diacritice, anti-duplicat, pe verticală), în loturi cu preview. La „produsele n-au descriere", „scrie descrieri la tot magazinul", „pune slug-uri", „descrierile sunt copiate de la furnizor".
 ---
 
 # Descrieri produse SEO la scară

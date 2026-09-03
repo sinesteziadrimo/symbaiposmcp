@@ -1,6 +1,6 @@
 ---
 name: copiaza-website
-description: Copiază COMPLET un website extern în Symbai (magazin online / site de prezentare) — toate paginile, tot catalogul cu poze/descrieri/categorii/variante, blogul, paginile legale — printr-un proces care rulează ORE, descompus în sarcini mici verificate, care NU se oprește la 20% și NU declară „gata" până nu e verificat obiectiv. Folosește la „copiază-mi site-ul / magazinul", „adu-mi site-ul de pe X în Symbai", „clonează magazinul de pe Y", „importă tot site-ul meu", „mută-mă de pe vechiul magazin", „fă-mi site-ul identic cu cel vechi", „copiază toate produsele de pe site-ul meu", „de ce ai copiat doar o parte din site", „continuă copierea site-ului". Pentru un site MIC sau o singură pagină de prezentare (fără catalog mare) poți folosi direct `construieste-website`; pentru cataloage mari / site întreg / „să nu se mai oprească până nu termină" folosește ACEST skill.
+description: Copiază COMPLET un website extern în Symbai (toate paginile, catalogul cu poze/descrieri/variante, blogul, paginile legale), în loturi verificate, fără să se oprească la 20%. La „copiază-mi site-ul/magazinul", „clonează magazinul de pe X", „mută-mă de pe vechiul magazin", „continuă copierea". Site mic → construieste-website.
 ---
 
 # Copiază un website complet în Symbai — hands-free, pe ore, verificat

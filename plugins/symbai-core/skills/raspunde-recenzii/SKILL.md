@@ -1,6 +1,6 @@
 ---
 name: raspunde-recenzii
-description: Răspunde la recenziile clienților (Google, Facebook, Trustpilot, Booking, TripAdvisor, recenzii produse/eveniment) și trimite invitații de recenzie după comenzi. Folosește la „răspunde la recenzii", „am o recenzie negativă", „ce recenzii noi am", „cere recenzii clienților", „cum stau cu rating-ul", „reputație online", „răspunde pe Google/Booking". Adună recenziile, propune un răspuns potrivit (îl confirmă utilizatorul), îl trimite și urmărește sentimentul.
+description: Răspunde la recenzii (Google, Facebook, Trustpilot, Booking, TripAdvisor, produse/eveniment) și trimite invitații de recenzie după comenzi — adună, propune răspunsul (îl confirmă userul), trimite, urmărește sentimentul. La „răspunde la recenzii", „am o recenzie negativă", „cere recenzii clienților", „cum stau cu rating-ul".
 ---
 
 # Răspunde la recenzii & gestionează reputația

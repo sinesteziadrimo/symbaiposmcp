@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-blog-seo
-description: Scrie și gestionează conținutul de website al restaurantului prin conexiune (MCP) — articole de blog, SEO, oferte pe bon și bannere de promoție pe site, fără click prin tab-uri. Folosește la „scrie-mi un articol despre X", „pune articolul pe blog", „publică postarea", „fă o ciornă de articol", „actualizează articolul Y", „arată-mi articolele / draft-urile / ce am publicat", „pune-le pe categorii", „publică toate ciornele", „marchează articolul ca recomandat", „cum merge blogul / cât trafic am", „de ce nu apare în Google", „fă un banner pe site", „pune o promoție pe website", „adaugă o ofertă -20% / happy hour / 1+1", „pierd bani la oferta asta?", „ce promoții am active", „ce colecții de produse am". Tu faci munca prin conexiune; Chrome doar îi ARĂȚI userului rezultatul pe pagina lui.
+description: Conținut de website prin MCP — articole de blog (draft → publică, categorii, recomandat, analytics), promoții/bannere pe site, oferte pe bon, colecții. La „scrie/publică un articol", „publică toate ciornele", „cum merge blogul", „fă un banner pe site", „adaugă o ofertă -20% / happy hour / 1+1", „pierd bani la oferta asta?".
 ---
 
 # Blog, SEO & promoții website — Claude ca editor de conținut, prin MCP

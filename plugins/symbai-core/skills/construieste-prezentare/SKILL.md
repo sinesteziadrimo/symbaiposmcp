@@ -1,6 +1,6 @@
 ---
 name: construieste-prezentare
-description: Proiectează și construiește o prezentare de vânzare consultativă pentru clientul Symbai (ca cea Symbai HoReCa 2026, dar pe businessul LUI — restaurant, sală evenimente, catering, parc de distracții, hotel, servicii), cu discovery → dureri → soluții → dovezi → calcule ROI → obiecții → ofertă, slide-uri dinamice și coach pe telefon. Folosește la „fă-mi o prezentare de vânzare", „prezentare CRM", „pitch pentru clienții mei", „vreau o prezentare ca Symbai HoReCa", „prezentare de vânzare pentru parc/sală/nunți/team-building", „întrebări de discovery", „cum prezint oferta", „slide-uri de vânzare", „coach pe telefon", „de ce nu apare un slide în prezentare".
+description: Prezentare de vânzare consultativă pentru businessul clientului (discovery → dureri → soluții → dovezi → ROI → obiecții → ofertă), slide-uri dinamice, coach pe telefon. La „fă-mi o prezentare de vânzare", „pitch pentru clienții mei", „prezentare ca Symbai HoReCa", „de ce nu apare un slide".
 ---
 
 # Construiește o prezentare de vânzare — consultant + grafician, prin proiectare + navigare vizuală

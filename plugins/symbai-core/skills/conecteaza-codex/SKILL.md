@@ -1,6 +1,6 @@
 ---
 name: conecteaza-codex
-description: Configurează sau repară automat pluginul Codex Symbai și conexiunea MCP prin Symbai Connect + OAuth nominal. Folosește când tool-urile lipsesc, OAuth este refuzat, apare 401 sau utilizatorul mută conexiunea pe alt calculator.
+description: Configurează sau repară pluginul Codex Symbai și conexiunea MCP prin Symbai Connect + OAuth nominal. La „nu apar tool-urile în Codex", „OAuth refuzat", „401", „am mutat conexiunea pe alt calculator".
 ---
 
 # Conectează Codex la Symbai

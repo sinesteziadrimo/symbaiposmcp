@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-stocuri
-description: Te ajută să gestionezi stocul (inventarul) din depozite — verifici cât ai pe fiecare gestiune, faci numărare fizică (inventariere), setezi stoc inițial, urmărești consumul zilnic din vânzări, faci transferuri între depozite și scoți rapoarte de stoc/valoare. Trigger-e în română: "cât stoc am", "cât am în depozit", "stoc curent", "verifică stocul la X", "inventariere", "numărare fizică", "diferențe la inventar", "stoc minim / alertă stoc", "consum zilnic", "de ce a scăzut stocul", "transfer între gestiuni / din magazie în bucătărie", "marfă care expiră", "valoare stoc depozit", "stoc negativ", "din ce lot a venit", "trasabilitate marfă", "de ce nu mi-a scăzut stocul", "închid / dezactivez o gestiune", "stocul de pe ecran nu bate cu depozitul".
+description: Stocul din gestiuni — cât ai pe fiecare, inventariere (numărare fizică + diferențe), stoc inițial, consum zilnic din vânzări, transferuri între gestiuni, rapoarte de valoare, trasabilitate pe lot. La „cât stoc am", „inventariere", „diferențe la inventar", „de ce a scăzut/nu a scăzut stocul", „transfer din magazie în bucătărie", „stoc negativ", „din ce lot a venit".
 ---
 
 # Gestionează stocurile (inventar)

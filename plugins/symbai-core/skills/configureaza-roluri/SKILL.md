@@ -1,6 +1,6 @@
 ---
 name: configureaza-roluri
-description: Creează, editează și PREGĂTEȘTE roluri și permisiuni în Symbai — și înțelege exact ce vede și ce poate face fiecare rol. Folosește la „ce vede rolul X", „ce poate casierul/bucătarul", „de ce nu vede angajatul pagina Y", „fă un rol de ospătar care nu poate da reduceri", „pregătește-mi un rol pentru inginerul de producție", „ce permisiuni există", „arată-mi catalogul de permisiuni", „dă-i rolului dreptul de storno", „scoate-i accesul la rapoarte", „read-only pentru un asociat", „setează permisiuni", „modifică rol", „ce pagini vede rolul", „aplică rolurile standard pe brandul nou".
+description: Roluri & permisiuni — ce vede și ce poate fiecare rol, rol nou din preseturi, catalogul de permisiuni, read-only, storno/reduceri, ce primește rolul prin asistent. La „ce vede rolul X", „ce poate casierul", „de ce nu vede angajatul pagina Y", „fă un rol de ospătar fără reduceri", „aplică rolurile standard".
 ---
 
 # Configurează roluri & permisiuni — înțelege întâi, apoi acționează

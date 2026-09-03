@@ -1,6 +1,6 @@
 ---
 name: optimizeaza-seo
-description: Auditează și optimizează SEO-ul ÎNTREGULUI site/magazin prin conexiune (MCP) — audit pe tot site-ul (catalog, tehnic, date structurate, local, GEO) cu scor 0-100 și fix-uri prioritizate, scor on-page pe pagini/articole, optimizarea paginilor existente, configurarea pentru a fi recomandat de AI (GEO: entitate, Google Business Profile, mențiuni), conformitate (consimțământ cookies, date structurate) și raportare. Folosește la „optimizează-mi tot site-ul / magazinul SEO", „auditează-mi site-ul", „cât de bine stau cu SEO", „verifică SEO la pagina/articolul X", „cum îmbunătățesc SEO-ul", „de ce nu apar în Google", „optimizează-mi paginile", „fă site-ul conform", „cum apar în ChatGPT/AI", „audit SEO", „ce să repar", „raport SEO", „cum stau față de luna trecută". Acționezi ca un account manager SEO senior care explică și remediază.
+description: Audit și optimizare SEO pe tot site-ul/magazinul prin MCP — scor 0-100 cu fix-uri prioritizate (catalog, tehnic, date structurate, local, GEO pentru AI), scor on-page pe pagini/articole, conformitate cookies, raportare. La „optimizează-mi SEO-ul", „auditează-mi site-ul", „de ce nu apar în Google", „cum apar în ChatGPT", „ce să repar", „raport SEO".
 ---
 
 # Optimizează SEO — audit, fix-uri on-page, GEO și raportare

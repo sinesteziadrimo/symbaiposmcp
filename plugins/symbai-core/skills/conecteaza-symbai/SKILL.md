@@ -1,6 +1,6 @@
 ---
 name: conecteaza-symbai
-description: Configurează sau repară automat conexiunea MCP Symbai pentru Codex ori Claude Code prin Symbai Connect + OAuth nominal. Folosește când tool-urile Symbai nu apar, accesul este refuzat, apare 401 sau utilizatorul schimbă calculatorul.
+description: Configurează sau repară conexiunea MCP Symbai (Claude Code / Codex) prin Symbai Connect + OAuth nominal și explică DE CE lipsesc tool-uri. La „nu apar tool-urile Symbai", „văd puține tool-uri / lipsesc furnizorii, meniurile", „acces refuzat", „401", „am schimbat calculatorul".
 ---
 
 # Conectează sau repară Symbai
@@ -78,6 +78,18 @@ descarce încă unul.
 2. Deschide o sesiune nouă după conectare.
 3. Apelează `list_brands`; un răspuns valid confirmă conexiunea.
 4. Dacă un tool spune „permisiune insuficientă", conexiunea funcționează: proprietarul verifică modulul acordat, iar rolul și alocările POS live pot limita suplimentar accesul.
+5. Apelează `verifica_conexiune`: îți spune tokenul, modulele, SQL, profilul, plafoanele, câte tool-uri vezi și — pentru un cont de angajat — `arieAngajat`. Citește-l ÎNAINTE să tragi orice concluzie despre tool-uri lipsă.
+
+## Văd puține tool-uri / lipsesc module întregi (furnizori, meniuri, P&L…)
+
+NU e o limită a sesiunii și NU înseamnă „Symbai nu poate". Catalogul are peste 1600 de tool-uri; un cont cu rol complet și arie completă le vede pe toate cele din grant. Cauzele, în ordinea frecvenței — toate se citesc din `verifica_conexiune`:
+
+1. **Aria de angajat** (`arieAngajat.restransa: true`) — contul e alocat doar pe o PARTE din unitățile active (branduri / locații / gestiuni permise). Atunci rămân doar tool-urile cu verificare de arie, iar `tooluriCuArieCompleta` arată câte ar fi altfel. Remediu, în aplicație, de un administrator cu rol complet (de regulă proprietarul): Personal → fișa angajatului → pe fiecare axă limitată bifează unitățile active lipsă sau apasă «Permite toate». Unitățile dezactivate/arhivate nu contează. Efectul apare la următoarea pornire a sesiunii (reconectare) — spune-i explicit să repornească.
+2. **Rolul POS** — modulele se derivă generos din permisiunile rolului; un rol îngust (ospătar, bucătar) vede doar modulele domeniului lui, iar uneltele sensibile (salarii, contracte, registru de casă, jurnal, blocare perioadă, infrastructura din Setări) cer exact permisiunea paginii echivalente. Ștergerile de perioadă, GDPR-ul și forțările tehnice sunt doar pentru rolul complet. Remediu: `configureaza-roluri` (completează rolul), nu SQL.
+3. **Profilul de tool-uri** al tokenului (restaurant / fabrică / construcții / hotel / marketing) — ascunde domeniile din afara verticalei; se schimbă din Hub → Acces AI (revocă și acordă din nou cu profilul dorit).
+4. **Modulele grantului** din Hub → Acces AI — ce n-a bifat proprietarul nu apare.
+
+Conexiuni vechi cu token invalid (ex. o intrare „symbai-vechi" cu 0 tool-uri) se elimină din lista MCP; nu explică nimic despre cea nouă.
 
 ## Ce înseamnă fiecare verdict
 

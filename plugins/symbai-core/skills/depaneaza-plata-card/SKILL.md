@@ -1,6 +1,6 @@
 ---
 name: depaneaza-plata-card
-description: Află singur de ce nu merge plata cu cardul pe terminal (Card GP / GlobalPayments) și condu deblocarea. Folosește la „nu merge plata cu cardul", „butonul Card GP e gri / dezactivat / nu face nimic", „nu mă lasă să încasez cu cardul pe telefon", „scrie că nu s-a primit confirmarea, verificați terminalul", „plata cu cardul nu pornește", „nu se deschide aplicația de card", „am rămas blocat pe o plată cu cardul", „plata a rămas în verificare". Diagnostichezi cu date live, explici în două propoziții și duci omul exact la butonul care deblochează.
+description: Diagnostichează de ce nu merge plata cu cardul pe terminal (Card GP / GlobalPayments) și duce omul la butonul care deblochează. La „nu merge plata cu cardul", „butonul Card GP e gri", „nu s-a primit confirmarea, verificați terminalul", „am rămas blocat pe o plată", „plata a rămas în verificare".
 ---
 
 # Nu merge plata cu cardul (Card GP)

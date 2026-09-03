@@ -1,6 +1,6 @@
 ---
 name: productie-flux
-description: Orchestrator de producție — detectează întâi modul de producție al clientului (Setări → General sau întrebând „ai restaurant sau fabrică?") și rutează corect. Restaurant/bucătărie simplă → produci un lot și sistemul consumă automat ingredientele + creează lotul de produs (un singur pas). Fabrică → flux tehnologic pe operații, execuție pe stații (tabletă), MPS/MRP, containere QR, genealogie/recall, QC, plan fizic 2D al halei. Folosește la „cum produc X", „fă un semipreparat", „pornește un lot", „operațiile pentru produsul Y", „planifică producția săptămânii", „pune lotul în carantină QC", „de unde vine / unde a ajuns lotul", „recall", „trasabilitate", „necesar materii prime / MPS", „zone și echipamente", „desenează hala/planul fabricii", „explică-mi ziua de producție", „cum a mers producția azi", „explică-mi fluxul produsului".
+description: Orchestrator de producție — detectează modul (restaurant = lot cu consum automat într-un pas; fabrică = flux pe operații, stații, MPS/MRP, containere QR, genealogie/recall, QC, plan 2D). La „cum produc X", „fă un semipreparat", „pornește un lot", „planifică producția săptămânii", „pune lotul în carantină", „de unde vine lotul / recall", „explică-mi ziua de producție".
 ---
 
 # Producție — orchestrator (mai întâi: restaurant sau fabrică?)

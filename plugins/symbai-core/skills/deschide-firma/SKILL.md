@@ -1,6 +1,6 @@
 ---
 name: deschide-firma
-description: Conduce deschiderea unei firme în Symbai — balanța inițială (soldurile contabile, care produc nota de deschidere) și stocul inițial (cantitățile de pe raft, care NU produc note contabile), plus cele trei setări care le guvernează. Folosește la „îmi aduc firma în Symbai", „am soldurile din Saga/WinMentor", „balanță inițială", „sold inițial", „stoc inițial", „de la ce lună pornesc", „nu găsesc pagina de balanță inițială", „ce stoc am pe raft la început", „de ce nu pot publica balanța/stocul", „am publicat stocul și lipsesc produse", „balanța apare read-only".
+description: Deschiderea unei firme în Symbai — balanța inițială (solduri contabile → nota de deschidere), stocul inițial (cantități, fără note) și setările care le guvernează. La „îmi aduc firma în Symbai", „am soldurile din Saga/WinMentor", „balanță/sold/stoc inițial", „de ce nu pot publica balanța", „balanța apare read-only".
 ---
 
 # Deschiderea firmei — solduri + stoc, fără să dublezi marfa în contabilitate

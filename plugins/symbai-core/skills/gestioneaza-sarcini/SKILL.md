@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-sarcini
-description: Construiește și gestionează sarcini și liste (checklist-uri) pentru echipă în Symbai — țintă pe rol+tură+raion (vizibil automat celor în tură), atribuire pe nume, sarcini libere, recurență, oră-limită, dovadă (foto/notă/număr/semnătură), verificare, șabloane, dashboard manager. Folosește la „creează sarcină/listă/checklist", „task pentru angajat", „checklist de deschidere/închidere", „de ce nu vede angajatul sarcina", „programează sarcini recurente", „cine vede lista asta".
+description: Sarcini și liste (checklist-uri) pentru echipă — țintă pe rol+tură+raion, atribuire pe nume, recurență, oră-limită, dovadă (foto/notă/semnătură), verificare, șabloane, dashboard. La „creează sarcină/listă/checklist", „checklist de deschidere/închidere", „de ce nu vede angajatul sarcina", „sarcini recurente".
 ---
 
 # Gestionează sarcini și liste — corect și complet

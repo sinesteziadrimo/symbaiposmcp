@@ -1,6 +1,6 @@
 ---
 name: meniu-fizic
-description: Creează, înțelege și îmbunătățește meniul fizic tipăribil al restaurantului prin conexiune (MCP) + vision, ca un grafician senior. Întâi alegeți împreună meniul; dacă sunt schimbări la produse, le finalizați în /menu/pricing (titlu, descriere, gramaj, preț, categorie, ordine, alergeni); apoi alegeți o temă (i-o arăți userului), iar pe urmă rearanjezi pagină-cu-pagină: muți și reordonezi produse, schimbi mărimea pozelor, fonturi, fundal, adaugi elemente, evidențiezi produse, umpli paginile/coloanele goale, respecți tipul de meniu și numărul de pagini (A3 pliat = multiplu de 4). Folosește la „fă-mi meniul fizic / printabil", „aranjează meniul tipărit", „meniul arată urât, îmbunătățește-l", „pune pozele mai mari / schimbă tema meniului fizic", „designul meniului".
+description: Meniul fizic tipăribil prin MCP + vision, ca un grafician — alegi meniul, finalizezi produsele în /menu/pricing, alegi tema, apoi rearanjezi pagină cu pagină (ordine, poze, fonturi, fundal, elemente, pagini goale, multiplu de 4 la A3 pliat). La „fă-mi meniul fizic/printabil", „aranjează meniul tipărit", „meniul arată urât", „pune pozele mai mari", „schimbă tema meniului".
 ---
 
 # Meniul fizic — Claude ca grafician senior, prin MCP + vision

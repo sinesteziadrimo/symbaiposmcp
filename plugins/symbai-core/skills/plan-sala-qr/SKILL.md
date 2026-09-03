@@ -1,6 +1,6 @@
 ---
 name: plan-sala-qr
-description: Aranjează planul de sală și gestionează codurile QR fără să tragi nimic cu mouse-ul — prin conexiune (MCP) + navigare cu link direct + screenshot. Muți/redimensionezi/rotești mese, le aranjezi în grilă, creezi raioane (grupuri de mese per ospătar), rutezi o zonă la imprimanta/ecranul de bucătărie potrivit, faci programări de sală pe zile/sărbători, generezi QR pe mese și creezi/retargetezi/dezactivezi QR-uri dinamice. Folosește la „rearanjează terasa", „aranjează mesele frumos", „mută masa 5", „pune mesele în grilă", „adaugă un raion", „împarte mesele pe ospătari", „de ce nu iese bonul de la masa X la bucătărie/bar", „rutează zona terasă la imprimanta de bar", „generează QR pentru mese", „am adăugat mese noi, fă-le QR", „fă-mi un QR pentru promoție", „schimbă unde duce QR-ul fără să-l retipăresc", „dezactivează QR-ul vechi", „cere telefonul clientului la scanare", „activează plata directă pe QR", „layout de sală pentru Revelion / eveniment".
+description: Planul de sală și codurile QR prin MCP + link direct + screenshot — muți/redimensionezi/rotești mese, grilă, raioane per ospătar, rutarea zonei la imprimantă/KDS, programări de sală pe zile, QR pe mese și QR-uri dinamice. La „rearanjează terasa", „mută masa 5", „adaugă un raion", „de ce nu iese bonul de la masa X la bucătărie", „generează QR pentru mese", „schimbă unde duce QR-ul", „layout pentru Revelion".
 ---
 
 # Plan de sală + coduri QR — hands-free, prin MCP + navigare + screenshot

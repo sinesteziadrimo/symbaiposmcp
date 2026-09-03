@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-crm
-description: Gestionează CRM-ul de vânzări Symbai — pipeline de lead-uri/deal-uri, activități și următorul pas, oferte comerciale cu variante/ofertă principală, configurare pe vertical, rezervări, evenimente și jocuri/atracții. Folosește la „configurează-mi CRM-ul", „pipeline de vânzări", „adaugă lead/deal", „fă/arată oferta clientului", „care e oferta principală", „adaugă o rezervare", „organizează o petrecere/eveniment", „CRM pentru parc de distracții", „de ce nu văd pagina CRM", „cum trec deal-ul la etapa următoare", „avans și contract pe eveniment".
+description: CRM-ul de vânzări — pipeline lead-uri/deal-uri, activități, oferte comerciale cu variante, configurare pe vertical, rezervări, evenimente, jocuri/atracții. La „configurează-mi CRM-ul", „pipeline de vânzări", „adaugă lead/deal", „fă/arată oferta clientului", „organizează o petrecere/eveniment", „de ce nu văd pagina CRM".
 ---
 
 # Gestionează CRM-ul de vânzări — pipeline, configurare, rezervări, evenimente & jocuri

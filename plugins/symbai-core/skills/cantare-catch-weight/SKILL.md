@@ -1,6 +1,6 @@
 ---
 name: cantare-catch-weight
-description: Configurează cântare și produse vândute/valorizate la GREUTATE variabilă (catch-weight) prin conexiune (MCP) — carne, brânză, pește, patiserie la kg. Înregistrezi cântarul fizic legat de PC-ul cu Print Agent, marchezi produsele ca „la kg" (preț pe kg, greutate pe etichetă), citești greutatea live când Print Agent este conectat sau ultima stare raportată ca fallback, și — dacă modelul de cântar nu e încă suportat — CERI integrarea lui echipei Symbai printr-un ticket. Acoperă și cântărirea la pregătirea comenzilor B2B (picking cu greutate reală, manifest de încărcare, aviz/factură blocate pe necântărit) și cântarul telefonului din Symbai Staff (manual / prin PC / Bluetooth). Folosește la „conectează cântarul de la recepție/bucătărie", „produsul X se vinde la kg", „pune greutatea pe etichetă/bon", „vreau catch-weight / greutate variabilă", „ce cântare suportați", „cântarul meu Y nu e suportat, cereți integrarea", „cât arată cântarul", „nu pot emite avizul/factura — cere cântărire", „cântar la picking / pregătirea comenzilor", „cântar Bluetooth pe telefon".
+description: Cântare și produse vândute la greutate variabilă (catch-weight) — înregistrezi cântarul de la PC-ul cu Print Agent, marchezi produse „la kg", citești greutatea live, cântărești la picking B2B; model nesuportat → ticket. La „conectează cântarul", „X se vinde la kg", „cât arată cântarul", „nu pot emite avizul, cere cântărire".
 ---
 
 # Cântare & catch-weight (greutate variabilă) — prin conexiune, nu prin click
