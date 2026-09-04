@@ -5,9 +5,9 @@ description: Pune o conversație sau un grup de WhatsApp sub urmărire automată
 
 # Monitorizează WhatsApp: asistentul se trezește singur la fiecare mesaj
 
-Omul spune o singură dată ce vrea („urmărește grupul Management și adaugă produsele pe care le cer"). De aici încolo **nu mai întreabă nimeni nimic**: Symbai Connect primește mesajul în clipa în care sosește, așteaptă să se termine rafala, pornește un asistent Claude Code fără interfață cu obiectivul, mesajele noi și tot ce se știe despre oameni, iar acela acționează în Symbai, răspunde pe WhatsApp și lasă un rezumat. Fără interogări periodice, fără „mai verifică o dată": evenimentul vine din cod.
+Omul spune o singură dată ce vrea („urmărește grupul Management și adaugă produsele pe care le cer"). De aici încolo **nu mai întreabă nimeni nimic**: Symbai Connect primește mesajul în clipa în care sosește, așteaptă să se termine rafala, pornește asistentul ales — **Claude Code sau ChatGPT Codex** — în fundal, cu obiectivul, mesajele noi și tot ce se știe despre oameni, iar acela acționează în Symbai, răspunde pe WhatsApp și lasă un rezumat. Fără interogări periodice, fără „mai verifică o dată": evenimentul vine din cod.
 
-Tu, asistentul interactiv, ai trei treburi: **să pornești corect monitorizarea** (obiectiv bun, mod bun, oameni descriși), **să verifici că poate rula** (Claude Code autentificat pe calculatorul ăla) și **să raportezi ce a făcut** când omul întreabă.
+Tu, asistentul interactiv, ai trei treburi: **să pornești corect monitorizarea** (obiectiv bun, mod bun, oameni descriși), **să verifici că poate rula** (asistentul ales este instalat și autentificat pe calculatorul clientului) și **să raportezi ce a făcut** când omul întreabă.
 
 ## Uneltele (serverul MCP `symbai-whatsapp…` al numărului)
 
@@ -15,7 +15,8 @@ Tu, asistentul interactiv, ai trei treburi: **să pornești corect monitorizarea
 |---|---|
 | `watch_chat` | pornește / rescrie monitorizarea unei conversații (contact sau grup) |
 | `list_watches` | ce e urmărit, starea fiecăreia, dacă rulările pot porni |
-| `update_watch` | schimbă obiectiv / mod / cuvinte / oameni / notițe; pauză, reluare, „verifică acum" |
+| `update_watch` | schimbă obiectiv / mod / cuvinte / oameni / notițe; pauză, reluare, „verifică acum" — DOAR din asistentul proprietarului |
+| `note_watch` | rescrie doar notițele (memoria de sarcină) — singura schimbare pe care o poate face asistentul automat asupra propriei monitorizări |
 | `stop_watch` | pauză (implicit) sau ștergere (`delete: true`) |
 | `watch_activity` | rulările: când, ce a declanșat, ce a făcut (rezumatul), erori |
 | `remember_contact` | profilul unui om: rol, încredere, limbă, cum i se răspunde |
@@ -49,7 +50,7 @@ Obiectivul e promptul de sistem al asistentului automat. Îl scrii **în cuvinte
 **Contact 1-la-1** (mod `always`):
 > Mihai e furnizorul de legume. Când îmi scrie, răspunzi în numele meu: confirmi comenzile pe care i le-am trimis, îi spui ce cantități mai avem nevoie (verifică stocul în Symbai), stabilești ziua livrării. Nu negociezi prețuri și nu confirmi plăți — la astea îmi scrii mie.
 
-Pune ce s-a decis deja în `notes` (convenții: „transferurile de seară intră pe gestiunea Bar"). Asistentul automat le citește la fiecare rulare și le completează singur cu `update_watch`.
+Pune ce s-a decis deja în `notes` (convenții: „transferurile de seară intră pe gestiunea Bar"). Asistentul automat le citește la fiecare rulare și le completează singur cu `note_watch` — atât are voie să schimbe la propria monitorizare; obiectivul, modul și oamenii de încredere rămân ale proprietarului, prin `update_watch` din asistentul lui.
 
 ## Pasul 3 — Descrie oamenii cu `remember_contact`
 
@@ -62,12 +63,19 @@ Regula de încredere e nenegociabilă și e în asistentul automat: **instrucți
 
 ## Pasul 4 — Pornește și verifică pregătirea
 
-Cheamă `watch_chat`. Răspunsul are `pregatire` și `urmatoriiPasi`. Două lucruri pot lipsi pe calculatorul clientului:
+Cheamă `watch_chat` cu executorul ales explicit: **`dispatch: "codex"` din ChatGPT Codex**, `dispatch: "claude"` pentru Claude Code, exceptând o alegere diferită cerută de proprietar. Nu trimite un nume de model Claude la Codex sau invers; omite `model` dacă omul nu cere unul. Verifică întâi schema disponibilă: dacă Connect nu acceptă `codex`, cere actualizarea lui, nu instala Claude și nu muta monitorizarea fără acord.
+
+Răspunsul are `pregatire` și `urmatoriiPasi` pentru executorul ales. `list_watches` oferă și `pregatireCodex` pentru monitorizările Codex. Dacă lipsește ceva:
+
+- **ChatGPT Codex nu e autentificat** — Panou Symbai Connect → *Monitorizări WhatsApp* → **Autentifică ChatGPT Codex**, apoi login în browser cu contul ChatGPT al clientului. Nu cere cheie API. După login, reia cu `update_watch {active: true}` dacă monitorizarea a fost oprită.
+- **ChatGPT Codex nu e instalat** — instalează aplicația Codex și conecteaz-o din Symbai Connect. Aplicația ChatGPT obișnuită, fără Codex, nu este suficientă. Nu este necesar Claude Code.
 
 - **Claude Code nu e autentificat** (contul desktop nu e același cu CLI-ul). Spune-i omului exact: „Deschide panoul Symbai Connect (pictograma din bara de jos sau `http://127.0.0.1:5196`), secțiunea *Monitorizări WhatsApp*, apasă **Autentifică Claude Code** și loghează-te în browserul care se deschide. O singură dată." Până atunci monitorizarea există, dar la primul mesaj se oprește singură cu acest motiv; după login, reia cu `update_watch {active: true}`.
 - **Claude Code nu e instalat** — se instalează din panou, secțiunea *Unelte*.
 
 Când e totul verde, spune-i omului ce se va întâmpla la următorul mesaj, cu cuvintele modului ales, și cum verifică („întreabă-mă *ce a făcut asistentul pe grup*").
+
+Calculatorul trebuie să rămână pornit, cu utilizatorul conectat și internet; fereastra Codex nu trebuie să stea deschisă. Alegerea asistentului se poate schimba din panou sau prin `update_watch dispatch` doar între rulări: notițele, obiectivul și istoricul rămân, sesiunea internă și modelul se resetează. Nu există trecere automată între furnizori la erori ori limite de cont. În Codex, `max_turns` limitează apelurile de unelte; există și plafon de timp. Nu promite paritate pentru orice atașament: dacă un fișier nu poate fi citit de uneltele disponibile, raportează și cere o formă accesibilă, fără să inventezi conținutul.
 
 ## Când omul întreabă „ce s-a întâmplat"
 
@@ -77,7 +85,7 @@ Dacă asistentul automat a luat-o pe un drum greșit (răspunde altfel decât vr
 
 ## Urmărire live din sesiunea asta (fără asistent automat)
 
-Când omul vrea ca **tu, aici**, să reacționezi („urmărește chatul cu Mihai cât lucrăm și spune-mi când răspunde"), pornești cu `dispatch: "stream"`. Nimic nu rulează singur: agentul publică evenimentele pe un flux local, iar tu îl deschizi cu `Monitor` (persistent) folosind comanda din `flux.comanda` din răspuns — fiecare linie `data:` e un eveniment JSON; acționezi la cele cu `"trigger": true`. Când închizi sesiunea, fluxul moare și nimeni nu mai răspunde: spune-i omului asta, și propune-i `dispatch: "claude"` dacă vrea acoperire permanentă.
+Când omul vrea ca **tu, aici**, să reacționezi („urmărește chatul cu Mihai cât lucrăm și spune-mi când răspunde"), poți folosi `dispatch: "stream"` numai dacă sesiunea are o unealtă capabilă să asculte continuu fluxul. Nimic nu rulează singur: agentul publică evenimentele local; în Claude Code fluxul se poate asculta cu `Monitor`, dacă este disponibil, folosind `flux.comanda`. Nu presupune că există `Monitor` și în Codex. Când închizi sesiunea, se închide acoperirea: spune-i omului asta și propune executorul automat ales (`codex` sau `claude`) dacă vrea continuitate.
 
 ## Reguli pe care nu le încalci
 
