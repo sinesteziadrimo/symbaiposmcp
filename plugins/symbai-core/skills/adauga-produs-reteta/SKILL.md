@@ -5,6 +5,8 @@ description: Adaugă produse, rețete și meniuri complet (tip produs, TVA, unit
 
 # Adaugă produse / importă meniu / creează rețete — corect și complet
 
+Pentru **fotografii noi generate în Codex/ChatGPT Desktop**, inclusiv completarea doar a celor lipsă, folosește [genereaza-poze-meniu](../genereaza-poze-meniu/SKILL.md). Acesta inspectează stilul și rețetele și atașează rezultatul pe articolul de meniu; încărcarea unui folder de fotografii existente rămâne în fluxul de mai jos.
+
 Citește întâi `knowledge/agent-operare-avansata.md` pentru execuție idempotentă, apoi `knowledge/produse-meniu-retete.md` (termenii: produs ≠ articol de meniu ≠ rețetă) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`.
 
 **Două moduri de lucru:**

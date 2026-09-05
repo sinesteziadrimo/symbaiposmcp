@@ -24,6 +24,9 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 
 | Userul cere | Tool MCP | Pagina (deep-link) |
 |---|---|---|
+| **„am primit o comandă de la client / bagă comanda asta / mi-a trimis Kaufland"** | **`preview_b2b_customer_order` → arăți → `import_b2b_customer_order(confirm:true)`** — skill dedicat: `preia-comanda-client` | `/b2b-orders?tab=orders` |
+| „ce produse are contractate clientul / cu ce cod le cere" | `list_b2b_client_products` | `/b2b-orders?tab=catalog` |
+| „corectează prețul/codul/EAN-ul unui produs contractat" | `update_b2b_client_product` | `/b2b-orders?tab=catalog` |
 | „ce comenzi B2B am / pe ce stare / pe client" | `list_b2b_orders` (filtre `clientId`, `status`, `deliveryDate`) | `/b2b-orders?tab=orders` |
 | „ce conține comanda X / arată-mi comanda" | `get_b2b_order_items(orderId)` (+ `get_b2b_order_documents` pt. ce pas urmează) | `/b2b-orders?order=<id>` |
 | „ce clienți B2B am" | `list_b2b_clients` | `/b2b-orders?tab=clients` |
@@ -98,6 +101,7 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 - „Permisiune insuficientă" pe un tool → portal Hub → **Acces AI** → acordă modulul la citire și/sau scriere. Pentru angajat, rolul POS poate restrânge suplimentar scrierea.
 
 ## Legături
+- **Preluarea unei comenzi primite de la client** (PDF, EDI, WhatsApp, poză, text) → skill-ul `preia-comanda-client` + `knowledge/preluare-comenzi-clienti.md`.
 - Concepte complete + clienți/catalog/reguli + fluxuri + capcane + FAQ → `knowledge/b2b-comenzi-wholesale.md`.
 - Cum conduci Chrome (deep-link, screenshot = livrabil, click pe element doar la nevoie, unitatea activă, fallback fără extensie) → `knowledge/condu-chrome.md`.
 - Rute exacte + sub-tab-uri `?tab=` → `gaseste_in_aplicatie(termen)` / `knowledge/navigare-rapida.md` (skill `gaseste-pagina`).

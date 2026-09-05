@@ -11,6 +11,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 ## Ai DOUĂ surse de adevăr — combină-le
 
+**Fotografii generate pentru meniu în Codex/ChatGPT Desktop** („pune poze la preparate”, „completează pozele lipsă”, „refă fotografiile meniului”) → skill-ul [genereaza-poze-meniu](../genereaza-poze-meniu/SKILL.md): selecție și ingrediente prin MCP, inspectare vizuală, generare cu instrumentul nativ al gazdei, transfer și atașare pe articolul meniului. Generarea nu trece prin API-ul AI al site-ului.
+
 1. **Tool-urile MCP `symbai`** (conexiunea live la instanța clientului) = date reale + acțiuni:
    - citește orice (vânzări, produse, clienți, rezervări, ce s-a întâmplat pe o masă, ce a făcut un ospătar);
    - face modificări în modulele permise de tokenul lui (adaugă produs, rețetă, programează postare, creează rezervare etc.);

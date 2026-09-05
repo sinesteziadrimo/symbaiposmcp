@@ -12,18 +12,23 @@ Editarea meniului fizic are **tool-uri MCP semantice** — sunt **calea principa
 
 `update_menu_display_config` (REPLACE) rămâne DOAR ultima soluție, pentru un câmp structural pe care niciun tool nu-l acoperă — și atunci tot citești întâi întreg cu `get_physical_menu_config(section:'raw')`. Catalogul complet al tool-urilor + tabelul intenție→tool: secțiunea „Tool-urile MCP" mai jos.
 
-## Găsește meniul fizic potrivit + navighează (CERCETARE ÎNTÂI)
+## Găsește meniul și deschide designul
 
-Clientul zice „du-te la meniul fizic al restaurantului" / „aranjează meniul de print". NU sări la editare — întâi află EXACT pe ce lucrezi. Modelul real e pe 3 niveluri: **un BRAND are mai multe MENIURI, iar un meniu are unul sau mai multe DESIGNURI**.
+Rezolvă tenant → brand → meniu → design cu `list_brands`, `list_menus` și `list_physical_menu_designs`. Folosește selecția deja stabilită. Întreabă numai dacă meniurile candidate au scopuri diferite și intenția rămâne ambiguă. Pentru un design nou alege un nume și folosește `create_physical_menu_design({brandId, menuId, name, fromConfigId?})`; sursa de duplicare trebuie să fie din același meniu.
 
-1. **Nume brand/locație → brandId**: `list_brands` (+ `list_locations` dacă clientul a numit o LOCAȚIE — locația aparține unui brand). Potrivește numele spus de client → `brandId`. Meniurile fizice sunt legate de BRAND.
-2. **Meniurile brandului**: `list_menus(brandId)` → toate meniurile + `id` + `name`. Un brand are deseori mai multe (ex. „Restaurantul Exemplu" poate avea „Meniu Exemplu", „Meniu Exemplu print băuturi", „Meniu Exemplu print mâncare"). **Cel „de print"** se recunoaște după nume (conține „print"/„tipar"/„fizic"). Dacă-s mai multe candidate → **listează-le și întreabă clientul pe care** (băuturi? mâncare? general?).
-3. **Designurile meniului ales** (un meniu poate avea mai multe): **`list_physical_menu_designs({brandId, menuId})`** (NU SQL) → întoarce pentru fiecare design `configId`, `name`, `menuId`, format, nr. categorii/produse/pagini. Fiecare = un DESIGN (ex. „Design 1", „Design 2"). **`configId` = id-ul pe care îl editezi** cu tool-urile de mai jos. Fără `menuId` îți listează designurile TUTUROR meniurilor brandului. Dacă-s mai multe designuri → **arată-i-le clientului (eventual screenshot) și întreabă în care** lucrezi. Atenție la duplicate (pot exista două designuri cu același nume). (Un design al cărui meniu nu mai există = design orfan, meniul a fost șters → ignoră-l.)
-4. **Navighează**: URL direct **`/menu/physical`** (designer full-screen) SAU pagina `/menu` → tab „Meniu Fizic" — ambele deschid ACELAȘI designer. Link live: `gaseste_in_aplicatie("meniu fizic")`. ⚠ **Brandul + meniul + designul se aleg din dropdown-urile din capul paginii, NU din URL** — nu există deep-link cu `?brand=`/`?config=`. Selecția se ține minte în browser (localStorage) per brand+meniu. Deci fluxul real: deschizi `/menu/physical` → din cele 3 dropdown-uri alegi brandul → meniul (cel de print) → designul.
+Deschide `designerLink` din răspuns. Deep-link-ul `/menu/physical?menu=<menuId>&config=<configId>&agentReview=1` identifică meniul și designul și pregătește automat paginile. Folosește browserul autentificat disponibil în Codex/ChatGPT Desktop; o anumită extensie Chrome nu este obligatorie. Verifică selecția reală în interfață. Un design nou gol se populează la prima deschidere.
 
-   > **⚠ REGULA CELOR 3 DROPDOWN-URI (verifică ÎNTÂI, înainte de orice modificare sau screenshot):** în toolbar-ul din capul paginii sunt 3 selectoare în ordine: **(1) Unitate/Brand** → **(2) Meniu** → **(3) Design**. Verifică-le în această ordine de fiecare dată. Greșeală comună: ești pe brandul corect dar pe meniul greșit (ex. „Meniu Exemplu" în loc de „Meniu Exemplu Print") sau pe design-ul greșit (ex. „Implicit" în loc de „Design 5") — și modifici sau faci screenshot pe config-ul greșit. Un brand poate avea 2+ meniuri cu nume similare (ex. „Meniu Exemplu" = meniul digital, „Meniu Exemplu Print" = cel de tipărit); un meniu poate avea multe designuri. Nu presupune că e cel corect — citește dropdown-ul.
-5. **Design / meniu NOU**: un DESIGN nou la un meniu existent se face DOAR în pagină — butonul **„Designuri"** → „design nou" sau „duplică" unul existent (NU prin MCP: `create_menu_display_config` nu acceptă `physical-menu-*`). Un MENIU fizic nou de tot → creează întâi meniul (din `/menu/pricing` / tool-uri meniu), apoi adaugi un design pe el. Ghidează clientul pas cu pas.
+## Flux autonom și unelte de finalizare
 
+- `list_physical_menu_templates({style?})`: catalog complet, ordonat după stilul clientului. Alege singur tema potrivită când utilizatorul cere execuția.
+- `apply_physical_menu_template({configId, themeId, ...})`: aplică tema completă prin MCP, inclusiv fotografie, tipografie, decor și repaginare. Nu este necesar click în galerie.
+- `audit_physical_menu_readiness({configId})`: date live, lipsuri pe produse, structură și raportul `production`. Scorul estetic nu echivalează cu aprobarea de tipar.
+- `repaginate_physical_menu({configId, formatType?, density?})`: rearanjează fără să schimbe fonturile, prețurile sau fotografiile. Deschide apoi linkul pentru măsurarea reală a paginilor.
+- `inspect_physical_menu_pages({configId, pageStart?, pageLimit?, detail?})`: imagini MCP ale paginilor. `detail:'page'` oferă imagini individuale pentru verificarea textelor mici; implicit planșe cu patru pagini. Continuă după `nextPageStart` și verifică `complete`/revizia.
+- `prepare_physical_menu_image_upload` + `attach_physical_menu_image`: transfer de fișier generat în gazdă pentru copertă, fundal global, fundal de pagină sau preparat numai în designul fizic. Vezi skill-ul `meniu-fizic` pentru secvența completă și helperul de transfer. Nicio cheie API AI pe server nu este necesară.
+- `export_physical_menu_pdf({configId, mode:'reader'|'print'})`: pregătește și livrează PDF complet. La `needs-render`, deschide linkul și revino la tool după generare. La `ready`, descarcă din browserul autentificat. Linkul este temporar, nu public permanent.
+
+Cererea de creare a meniului autorizează alegerile estetice. Cere numai informațiile nerezolvabile din date: țintă ambiguă, compoziție, alergeni, porții sau cerințe de tipar incompatibile. Preferințele despre fonturi și poziția fotografiei se rezolvă autonom și se rafinează după inspecție.
 ## Cum funcționează (mecanica reală)
 
 Meniul fizic e un **config JSON** (obiectul `PhysicalMenuConfig`, ~120 chei) salvat server-side. NU-l atingi tu „brut": tool-urile MCP citesc/scriu peste el cu **merge sigur** (preservă toate câmpurile, ating doar ce ceri). Configul are 4 niveluri de obiecte: **global** / **pagină** / **categorie** / **produs (item)** — fiecare cu sute de câmpuri scalare; câte un tool de „set fields" per nivel le acoperă pe toate.
@@ -34,7 +39,6 @@ Fluxul corect:
 3. **MODIFICĂ prin field-setter** — trimiți DOAR câmpurile de schimbat (`fields{}`) și/sau cele de resetat la moștenire (`clear[]`). Serverul face merge, NU REPLACE → restul configului rămâne intact. Structura (poziții/pagini/categorii) → primitivele `swap`/`move`/`reorder`/`set_…_photo`/`add_/remove_…_element`. Permisiune: modulul **`setari`** (aceeași ca update_menu_display_config).
 4. **Uită-te la rezultat** (vision/Chrome) și iterează (vezi „Bucla de vision"); confirmă schimbarea re-citind cu un `get_*` (confirmă-prin-citire, `condu-chrome.md`).
 
-⚠ **Crearea unui design fizic NOU NU se face prin MCP** (nici update_menu_display_config, nici tool-urile noi): se face din aplicație — butonul „Designuri" → design nou / duplică unul existent. Apoi îl editezi cu tool-urile de mai jos. (Sub capotă, `create_menu_display_config` are `profileType` restrâns la profilurile POS — `waiter_mobile`/`bar_pos`/`kiosk` — și nu acceptă `physical-menu-*`.)
 
 ⚠ **`update_menu_display_config` (REPLACE) = ULTIMA SOLUȚIE.** Îl folosești DOAR pentru un câmp structural rar pe care niciun tool dedicat nu-l acoperă (ex. `pinnedPages`, `pageAssignments` rescris în bloc) — și atunci citești ÎNTÂI întreg cu `get_physical_menu_config(section:'raw')`, modifici, scrii tot înapoi (omiterea unui câmp = pierdere). Pentru orice altceva folosește field-setterele — sunt mai sigure.
 
@@ -89,8 +93,7 @@ Fluxul corect:
 
 ## Bucla de vision (cum vezi cum arată)
 
-Tu (Claude extern) vezi paginile prin **extensia Chrome**: deschizi `/menu/physical` (deep-link `navigate` — link din `gaseste_in_aplicatie("meniu fizic")`), faci screenshot la fiecare pagină din preview și **te uiți tu** (vederea ta multimodală) ca un grafician. Bucla: screenshot → judeci (coloane goale? pagină goală? poză prea mică/mare? dezechilibru? ordine proastă?) → editezi prin tool-urile MCP → dă refresh paginii → screenshot din nou → repetă până arată bine. **Screenshot-ul e și livrabilul pentru user** (îi arăți „uite cum arată acum"). Doctrina de conducere Chrome (deep-link, refresh resetează starea, click doar la nevoie) = `condu-chrome.md`. (Există și un „Director Artistic" in-app cu vision — dar vederea ta proprie e mai bună pentru nuanțe.)
-
+Deschide designerLink cu `agentReview=1`; editorul generează automat paginile. `inspect_physical_menu_pages` întoarce imagini pe care le inspectezi direct în conversație. Planșele arată ritmul; paginile individuale arată ingredientele, alergenii, prețurile și decupajele. După modificări, regenerează snapshot-ul și inspectează versiunea nouă. Dacă browserul nu este autentificat sau lipsește instrumentul de deschidere, spune limita precisă; nu afirma că ai văzut paginile dintr-un simplu URL. Manual poți folosi și screenshot-uri ale editorului ori PDF-ul descărcat.
 ## Harta câmpurilor — ce schimbi și unde (grupat pe intenția de grafician)
 
 ### Structură & format
@@ -277,16 +280,9 @@ Toate sunt câmpuri per-produs, opționale (lipsă = moștenește pagina/global)
 
 Reguli rapide: (1) Date care trebuie să apară peste tot → CATALOG (`update_menu_item`). „Doar pe afiș" → `custom*` prin `set_physical_menu_item_fields`. (2) „Toate / global" → setezi global ȘI golești override-urile de jos cu `clear[]`. „Doar pe pagina asta" → `set_physical_menu_page_fields`. „Doar produsul ăsta" → `set_physical_menu_item_fields({productId})`. (3) Mutările de categorie/pagină → `move_physical_menu_item` se ocupă singur de repaginare (sincronizează `pageAssignments`). (4) Vorbește userului în limbaj de restaurant; apelezi tool-uri tehnice.
 
-## Teme — aplică-le în app, fine-tuning prin MCP
+## Teme — aplicare completă prin MCP
 
-Există un set de teme predefinite (`bistro-navy` = cea mai echilibrată: navy+crem, Nunito, 2-col, poze mari dreapta, ramă pal groasă; restul: fine-dining text-only, steakhouse, patisserie card, editorial 4-col A3-landscape...).
-
-⚠ **Aplicarea unei teme NU se reproduce scriind doar config-ul.** `applyTheme` rulează ENGINE-SIDE în designer: selecția eroilor (seed determinist), decorul per-pagină, repaginarea. Deci:
-1. **Schimbarea temei** se face ÎN designer — userul apasă tema, SAU tu prin Chrome apeși „Aplică tema". Arată-i userului 2-3 teme și întreabă-l care-i place (vision: screenshot fiecare).
-2. **DUPĂ ce tema e aplicată**, citești config-ul rezultat (`get_physical_menu_config` + `get_physical_menu_item`) și faci tot fine-tuning-ul prin field-setterele de meniu fizic (poze, fonturi, fundal, mutări, umplere, freeform, featured — tot ce e mai sus).
-
-Scrierea `activeThemeId` în config = semnal că tema se re-aplică la load, dar nu reproduce gramatica — nu te baza pe ea pentru „look-ul" temei; aplică tema în app.
-
+Folosește `list_physical_menu_templates` și `apply_physical_menu_template`. Galeria din aplicație rămâne o alternativă vizuală, nu o condiție a fluxului. Temele includ identitate tipografică, paletă, ritm fotografic și decor vectorial de copertă. Colecția premium: Maison editorial, Nocturne atelier, Riviera botanica, Rosé pâtisserie și Cobalt social. Formatul cerut are prioritate: pentru A3 pliat, verifică `formatType:'a3-booklet'` după aplicare sau folosește `repaginate_physical_menu` cu acel format.
 ### Temele + ce face „gramatica de poze"
 Alege tema după tipul localului. Printre ele: `bistro-navy` (navy+crem, Nunito, poze mari), `fine-dining-elegant` (text-only, serif), `modern-minimalist`, `rustic-trattoria`, `bold-street-food`, `cafe-brunch-warm-minimal`, `cocktail-bar-dark` (speakeasy nocturn), `classic-wine-list`, `asian-izakaya`, `patisserie-dessert` (carduri rose-gold), `health-vegan-fresh`, `steakhouse-grill` (accent oxblood), `editorial-bistro-a3l` (4-col A3-landscape).
 
@@ -321,23 +317,14 @@ La `formatType: "a3-booklet"`, engine-ul **forțează automat** `totalPages % 4 
 
 ## Export PDF, formate și pagini speciale
 
-**Cum se exportă**: PDF-ul se generează pe SERVER (nu prin print din browser, ca să fie DPI/dimensiuni controlate) — randează HTML-ul designului cu dimensiuni exacte per format (`@page` = mărimea formatului). Imaginile din galerie se înglobează în documentul de export (self-contained), deci nu depind de rețea la randare. Tu nu setezi nimic manual aici — alegi formatul și conținutul, restul e automat.
+A3 pliat = pagină logică A4 210×297 mm și coală fizică A3 landscape 420×297 mm. Totalul include toate paginile speciale și anexele și este multiplu de patru. Reader și tipar folosesc aceeași pagină logică; impunerea doar o așază pe coală. Pentru opt pagini: față 8–1, verso 2–7; a doua coală față 6–3, verso 4–5.
 
-**Formate** (`formatType`): `a4-individual` (210×297mm, vertical), `a3-booklet` (broșură pliată, engine forțează multiplu de 4 pagini), `a3-single` (297×420mm), `a3-landscape` (420×297mm — placemat de masă, 4 coloane). Doar `a3-booklet` are constrângerea multiplu-de-4.
+`export_physical_menu_pdf` cu `mode:'reader'` pregătește paginile în ordine. `mode:'print'` pregătește colile impuse. Deschide linkul de pregătire când tool-ul indică `needs-render`, apoi repetă apelul. PDF-ul se livrează numai după generarea tuturor paginilor, pe revizia curentă. Descarcă fișierul din browserul autentificat înainte de expirarea linkului și inspectează-l. Nu trimite PDF-ul reader ca document impus și nu activa din nou „broșură” la un PDF print deja impus.
 
-**Pagini speciale structurale** (toggle, undefined sau true = afișat, false = ascuns): `coverPage`, `locationPage`, `bonFiscalPage`. `contentStartPage` = pagina unde încep produsele (după paginile speciale) — se recalculează automat când activezi/dezactivezi pagini speciale.
-
-**Pagini de recomandări dedicate**: `barRecommendations` / `chefRecommendations` = liste de `productId` (din config) care se randează pe pagini proprii; titlurile lor `barRecommendationsTitle` / `chefRecommendationsTitle`. Distinct de „evidențiere" (featured) pe item.
-
-**Pagini de final — nutrițional & alergeni** (listă compactă pe categorii, multi-coloană):
-- Activare globală: `showNutritionalEndPages` / `showAllergensEndPages`.
-- Stilizare: `nutritionalFontFamily`/`nutritionalFontSize` (px, default 8)/`nutritionalColor`/`nutritionalColumns` (1–4, default 2)/`nutritionalPageTitle`; identic cu prefix `allergens` (`allergensFontSize` default 8 similar).
-- Ordine: `endPagesReversed` (false/undefined = nutrițional apoi alergeni — default; true = alergeni apoi nutrițional).
-- **Cascadă de includere (inversă — exclude bate include)**: global ON → `pageOverrides[idx].showInNutritionalEndPage:false` exclude TOATE produsele de pe pagina respectivă → `item.showInNutritionalEndPage:false` exclude DOAR produsul. La fel pentru alergeni (`showInAllergensEndPage`).
-
+O copertă fără fotografii poate fi completă prin tipografie și decor; un alergen lipsă rămâne informație de confirmat. Pagina goală de completare este o decizie editorială de revizuit, nu motiv pentru a omite produse sau informații alimentare.
 ## Bucla „grafician senior" (per pagină, cu vision)
 
-Pentru fiecare pagină: screenshot (Chrome) → întreabă-te ca un grafician: *coloane/pagini goale? poze prea mici sau prea mari? echilibru stânga-dreapta? ordinea logică (best-sellers sus)? un produs-erou pe pagină? text înghesuit?* → aplică 1-3 schimbări prin tool-uri (poză cu `set_physical_menu_item_photo`, span/featured/spacing cu `set_physical_menu_item_fields`/`_page_fields`, mutare cu `move_physical_menu_item`, freeform cu `add_physical_menu_page_element`) → refresh → screenshot → repetă până e curat. Confirmă cu userul deciziile estetice mari; explică-i pe scurt CE ai schimbat și DE CE.
+Pentru fiecare pagină: imagine din MCP sau screenshot în browser → verifică: *coloane/pagini goale? poze prea mici sau prea mari? echilibru stânga-dreapta? ordinea logică? un produs-erou potrivit? text înghesuit?* → aplică 1–3 schimbări prin tool-uri (poză cu `set_physical_menu_item_photo`, span/featured/spacing cu `set_physical_menu_item_fields`/`set_physical_menu_page_fields`, mutare cu `move_physical_menu_item`, decor cu `add_physical_menu_page_element`) → refresh → inspectează → repetă până e curat. Ia autonom deciziile estetice în stilul cerut; întreabă doar pentru informații factuale indispensabile pe care nu le poți verifica. Explică pe scurt ce ai schimbat și de ce.
 
 ## Gotchas (durabile)
 
