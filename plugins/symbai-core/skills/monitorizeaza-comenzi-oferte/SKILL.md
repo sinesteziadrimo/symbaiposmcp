@@ -46,7 +46,21 @@ Rezultatul include `operationalWrite:false`, document cu `needsReview:true` și 
 | Ofertă furnizor | Prezintă prețul, moneda, TVA, ambalarea, cantitatea minimă, transportul și termenul dacă apar. Compară cu catalogul existent prin [comanda-furnizor](../comanda-furnizor/SKILL.md). Rămâne ofertă draft în biroul de preluare; nu modifică automat catalogul și nu emite achiziții. |
 | Document nerelevant / duplicat verificat | La cererea proprietarului, `connect_email_document_claseaza {id,expectedRevision}`. Dovada rămâne pentru a evita reintroducerea. Nu anula o comandă operațională doar pentru că ai clasat propunerea. |
 
-În această etapă, transferul în comenzi și în planificare se face prin uneltele existente, separat de biroul de preluare. Nu anunța „comandă introdusă” numai pentru că propunerea a fost salvată.
+### Verificarea salvată și aprobarea comenzii
+
+Pentru documentele personale din birou, folosește acest traseu, care păstrează legătura cu originalul:
+
+1. Recitește documentul curent și catalogul clientului. Data de livrare, CUI-ul cumpărătorului, dovada firmei vânzătoare și toate liniile trebuie să fie clare. Corectează extragerea înainte de pregătire, păstrând motivul. Unitățile acceptate în acest traseu sunt bucăți sau baxuri; alte unități cer clarificare, nu conversii ghicite.
+2. `connect_email_comanda_pregateste {id,expectedRevision,clientId,depotId,locationId,products:[{line:1,clientProductId:…},…]}` alege exact un produs contractat pentru fiecare linie. Cantitățile, data și referința vin din documentul salvat. Acest traseu folosește **prețurile contractate**, fără derogări sau dublarea unei referințe deja importate.
+3. Arată `review.preparedDraft`, inclusiv firma, adresa de livrare, condițiile, baxurile/bucățile, prețul per bucată, TVA-ul și sursa produselor. Compară explicit cu prețurile scrise în email; verifică dacă sunt per bucată sau per ambalaj. TVA necunoscut nu înseamnă zero. Nu anunța că s-a creat comanda. Omul poate aproba direct în **Emailurile mele**, în cardul **Așa va intra comanda**.
+4. După acordul proprietarului pentru această verificare, folosește `connect_email_comanda_aproba {id,expectedRevision,reviewId:review.id,confirm:true}`. Nu mai trimite alte linii sau alt număr de comandă. Rezultatul conține dovada și comanda reală, creată ca draft. Recitește documentul și verifică starea comenzii înainte de următorul pas.
+5. La întrerupere reia aceeași cerere. Dovada păstrează comanda existentă, inclusiv dacă între timp este confirmată ori anulată. Nu schimba numărul și nu crea un import separat. Dacă se schimbă documentul, regula, accesul, prețul, ambalarea, adresa sau condițiile, pregătește și arată o verificare nouă. Un document deja importat se consultă; corectarea ori anularea se face în comanda operațională autorizată, nu prin clasarea sursei.
+
+`connect_email_comanda_verificari {id}` recitește verificările salvate ale versiunii curente. Dacă uneltele lipsesc, tenantul trebuie actualizat pentru acest traseu; analiza poate continua, dar nu o prezenta ca import cu dovadă și nu ocoli lipsa prin alt import.
+
+**Comandă în corpul emailului cu atașamente de semnătură:** inspectează toate atașamentele. Dacă documentul complet este în corp, poți păstra prin corectare `attachmentReview:{checked:true,reason:"…"}`, explicând concret ce ai verificat și de ce nu lipsesc linii. Crește versiunea și apare la verificarea omului. Aceasta nu deblochează emailuri trunchiate sau documente ilizibile.
+
+Ofertele furnizorilor rămân propuneri pentru comparație. Aprobarea unui draft de comandă nu confirmă producție, achiziții ori mesaje.
 
 ## Producție și materii prime
 

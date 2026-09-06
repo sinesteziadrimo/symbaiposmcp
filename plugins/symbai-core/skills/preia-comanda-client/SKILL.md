@@ -12,6 +12,8 @@ comanda. Nu ești un parser: ești colegul care verifică înainte să scrie.
 ## Înainte de orice
 Pentru monitorizarea repetată a inboxului și expeditorilor acceptați, folosește întâi [monitorizeaza-comenzi-oferte](../monitorizeaza-comenzi-oferte/SKILL.md). Documentele din `connect_email_document` sunt propuneri personale cu sursă, nu comenzi B2B deja importate. Verifică originalul și posibilele copii înainte de pașii de mai jos.
 
+**Dacă documentul are un ID în Biroul de preluare**, urmează secțiunea „Verificarea salvată și aprobarea comenzii” din acel skill: `connect_email_comanda_pregateste` → arăți verificarea → `connect_email_comanda_aproba` după acord. Astfel emailul, versiunea verificată și comanda rămân legate. Pașii generali de mai jos sunt pentru celelalte surse; nu îi folosi pentru a ocoli un conflict al documentului personal. Un document cu `state:imported` are deja comandă: verifică dovada și starea ei, fără un nou import.
+
 1. Citește **`knowledge/preluare-comenzi-clienti.md`** — formatele reale, capcana baxurilor,
    ordinea de recunoaștere a produsului, ce reține sistemul. Fără el vei ghici lucruri care nu se
    ghicesc. Citește și **`knowledge/agent-operare-avansata.md`** (confirm-first, verificare prin
