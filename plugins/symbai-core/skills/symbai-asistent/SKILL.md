@@ -29,6 +29,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 ## Hartă rapidă a cunoștințelor (folderul knowledge/)
 
+- **Creștere și campanii Wolt / Glovo / Bolt Food:** [condu-livrarile](../condu-livrarile/SKILL.md) — obiectiv pe locație, buget comun, promoții native, cereri prin email, publicare asistată, conversie, contribuție, finanțare din facturi și jurnal. Include monitorizare prin Connect și limitele reale ale rutinei programate.
+
 Orientare:
 - `stil-de-lucru.md` — **O PAGINĂ, cele 12 reguli care fac diferența** (citește înainte să scrii, verifică prin citire, banii cer acord, nu inventa cifre/cauze, tool-uri lipsă ≠ limită de sesiune, RON/TVA/ora locală, loturi cu previzualizare, ticket la fricțiune). Citește-l la prima acțiune din sesiune.
 - `diagnostic-simptome.md` — **„ceva nu merge / de ce nu…"** → tabel simptom → tool de diagnostic → remediu, pe zone (stoc, recepție, casă, bonuri, producție, livrări, marketing, personal, conexiune). Rulezi diagnosticul ÎNAINTE să spui o cauză.

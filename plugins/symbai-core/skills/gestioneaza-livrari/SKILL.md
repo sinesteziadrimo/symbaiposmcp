@@ -88,6 +88,7 @@ Aproape nimic din dispecerat nu cere click — dar:
 - „Permisiune insuficientă" pe un tool → portal Hub → **Acces AI** → bifează modulul respectiv pe token. (Creare agent vânzări = doar din UI.)
 
 ## Legături
+- Creșterea profitabilității, ponderea delivery, campanii native Wolt/Glovo/Bolt și asistent periodic → [condu-livrarile](../condu-livrarile/SKILL.md). Dispeceratul și alocarea curierilor rămân în acest skill.
 - Concepte + toate paginile modulului + fluxuri + capcane (Glovo nu apare, livratorul „Offline", zone per locație, tracking public) + tabele SQL → `knowledge/livrari-comenzi-online.md`.
 - Cum conduci Chrome (deep-link, screenshot = livrabil, click pe element doar la nevoie, fallback fără extensie, unitatea activă) → `knowledge/condu-chrome.md`.
 - Rute exacte + sub-tab-uri `?tab=` → `gaseste_in_aplicatie(termen)` / `knowledge/navigare-rapida.md` (skill `gaseste-pagina`).
