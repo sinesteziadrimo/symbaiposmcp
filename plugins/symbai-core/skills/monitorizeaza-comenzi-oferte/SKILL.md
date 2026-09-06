@@ -27,6 +27,17 @@ Regulile și documentele apar în **Emailurile mele → Biroul de preluare** (`/
 
 Rezultatul include `operationalWrite:false`, document cu `needsReview:true` și ID real. Recitește-l cu `connect_email_document`. `duplicate:true` înseamnă că **aceeași sursă** a fost pregătită deja; dacă `extractionChanged:true`, verifică propunerea inițială, care nu a fost suprascrisă. Mesaje diferite cu conținut/referință asemănătoare sunt semnalate ca posibile copii, fără a pierde comenzile zilnice identice. Înainte de importul B2B verifică și numărul comenzii clientului: două inboxuri nu înseamnă două comenzi.
 
+## Corectări fără pierderea originalului
+
+`duplicate:true` nu actualizează extragerea. Dacă ai citit greșit o cantitate sau omul clarifică un detaliu:
+
+1. Recitește `connect_email_document {id}` în tenantul, brandul și contul nominal corecte. Compară cu originalul; o versiune veche din chat sau din istoric nu este baza unei noi operațiuni.
+2. Folosește `connect_email_document_corecteaza {id,expectedRevision,reason,extraction}`. Trimite **extragerea completă**, păstrând câmpurile corecte, și un motiv concret: ce ai corectat și din ce dovadă. Folosește versiunea tocmai citită. Nu muta sursa la altă firmă și nu ghici unități, conversii sau prețuri. Dacă informația rămâne incertă, păstreaz-o în `uncertainties`.
+3. Recitește documentul corectat. `connect_email_document_istoric {id}` listează versiunile și motivele; urmează `beforeRevision` pentru paginile mai vechi. Pentru liniile unei anumite versiuni folosește `{id,revision}`. Originalul nu este rescris. Corectarea rămâne o propunere și nu schimbă o comandă operațională.
+4. Dacă versiunea s-a schimbat între citire și salvare, recitește și compară modificările înainte să reiei; nu înlocui automat corectarea făcută între timp. Un document clasat nu se corectează și nu se importă din istoric.
+
+**După orice corectare refaci preview-ul din versiunea curentă.** Nu refolosi o aprobare pentru alte cantități, client, punct de livrare, dată sau condiții comerciale. În pagină sunt disponibile versiunea curentă, istoricul și butonul **Cere o corectare**, care pregătește cererea pentru asistent. Dacă noile unelte lipsesc, păstrează analiza și cere actualizarea tenantului; nu pretinde că ai salvat corectarea.
+
 ## Din propunere, în operațiuni
 
 | Ce este documentul | Pasul următor |
