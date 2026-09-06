@@ -31,7 +31,7 @@ Ia unitatea în lucru din `list_brands`/`list_locations`; dacă are mai multe ș
 9. `get_location_context` — vremea și sărbătorile pentru azi/mâine: influențează rezervările, terasa, livrările, personalul.
 10. Lunar: `get_pnl(luna_aceasta)` + `compare_pnl_periods` (profit bridge), `get_menu_engineering`, `get_marketing_scorecard(30)`, `list_expiring_documents(30)`.
 
-**Fabrică**: `get_factory_dashboard` (pipeline, utilaje, livrări, QC, lipsuri) → `get_daily_production_summary(ieri)` → `forecast_production_demand` cu `get_forecast_accuracy` → `get_material_requirements` / `get_batch_material_readiness` pentru loturile de azi → `get_staffing_coverage(azi)` → `list_quality_holds` → `get_b2b_live_deliveries` / `list_b2b_orders` → lunar `get_factory_monthly_close`, `get_production_yield_kpis`, `get_equipment_oee`.
+**Fabrică**: `get_factory_dashboard` (pipeline, utilaje, livrări, QC, lipsuri) → `get_daily_production_summary(ieri)` → `get_factory_forecast_plan` în gestiunea verificată, cu `get_forecast_accuracy` pentru incertitudinea predicției → `get_material_requirements` / `get_batch_material_readiness` pentru loturile de azi → `get_staffing_coverage(azi)` → `list_quality_holds` → `get_b2b_live_deliveries` / `list_b2b_orders` → lunar `get_factory_monthly_close`, `get_production_yield_kpis`, `get_equipment_oee`. Nu adăuga comenzile ferme încă o dată peste cererea deja reconciliată. Pentru pregătirea turei, prioritățile achizițiilor sau ședința dintre echipe, continuă cu [pregateste-ziua-de-lucru](../pregateste-ziua-de-lucru/SKILL.md).
 
 **Construcții**: `list_worksites` (active) → per lucrare `get_worksite_profit` → cozile de aprobat (costuri, jurnale, materiale, change orders) → `list_expiring_documents` → `get_compliance_status`.
 

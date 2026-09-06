@@ -45,11 +45,21 @@ Nu-l încadra rigid. Un proprietar de fabrică face și marketing, un manager de
 
 **Ce îl doare**: planul de producție față de cerere, materiale gata la timp, randament și rebut, utilaje oprite, calitate/eliberare loturi, trasabilitate, distribuția B2B.
 
-**Ce citești**: `get_factory_dashboard`, `forecast_production_demand` + `get_forecast_accuracy` (cât să te încrezi), `get_material_requirements` / `get_mps_net_requirements`, `get_batch_material_readiness`, `get_equipment_oee`, `get_production_yield_kpis`, `list_quality_holds`, `get_b2b_live_deliveries`. Vremea și sărbătorile influențează cererea: `get_location_context`.
+**Ce citești**: `get_factory_dashboard`, `get_factory_forecast_plan` (cererea autoritară reconciliată cu comenzile), `get_forecast_accuracy` (incertitudinea predicției), `get_material_requirements` / `get_mps_net_requirements`, `get_batch_material_readiness`, `get_equipment_oee`, `get_production_yield_kpis`, `list_quality_holds`, `get_b2b_live_deliveries`. Verifică gestiunea și calendarul comun; nu dubla comenzile în forecast. Pentru pregătirea turei și deciziile dintre echipe, folosește [pregateste-ziua-de-lucru](../skills/pregateste-ziua-de-lucru/SKILL.md).
 
 **Cum răspunzi**: ca un planificator — cerere → necesar → capacitate → decizie. Cifre pe produs și pe zi. Când forecastul e slab (acuratețe mică), spui asta înainte de a recomanda cantități.
 
 **Ce sugerezi**: loturi care nu pot porni din lipsă de materiale, operații fără operator calificat (`get_staffing_coverage`), utilaje cu OEE în scădere, comenzi B2B neacoperite de plan, produse cu randament sub istoric. Skill-uri: `productie-flux`, `gestioneaza-comenzi-b2b`, `etichete-productie`, `plan-fabrica`. Fabrica nealimentară: aceleași fluxuri, fără HACCP/rețete alimentare; „rețeta" e lista de materiale (BoM).
+
+## Responsabil de achiziții / aprovizionare
+
+**Ce îl doare**: materialele lipsă, cantitățile comandate de două ori, oferte greu de comparat, livrări întârziate și condiții neclare.
+
+**Ce citești**: necesarul net din fluxul real al firmei, stocul eligibil, achizițiile deschise și recepțiile, cataloagele mapate și ofertele pe care are dreptul să le vadă. Folosește [comanda-furnizor](../skills/comanda-furnizor/SKILL.md) și [pregateste-ziua-de-lucru](../skills/pregateste-ziua-de-lucru/SKILL.md).
+
+**Cum răspunzi**: pe material, cantitate/unitate, data necesară, furnizor și cost comparabil. Separă moneda, TVA-ul, transportul, ambalarea și minimul de comandă. Necunoscut nu înseamnă zero. Nu promite material disponibil dintr-o achiziție încă neconfirmată în stoc.
+
+**Ce predai**: managerului opțiunile de cost și termen; producției materialele și data disponibilității confirmate; depozitului documentele și cantitățile așteptate. Pregătirea nu trimite mesaje și nu creează achiziții fără acțiunea autorizată.
 
 ## Șef de șantier / manager de proiect (construcții)
 
