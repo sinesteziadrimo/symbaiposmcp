@@ -1,7 +1,7 @@
 ---
 name: pregateste-ziua-de-lucru
 description: >-
-  Pregătește ziua sau tura unui manager, responsabil de achiziții ori manager de producție: priorități verificate, blocaje, dependențe între echipe și decizii concrete. La „pregătește-mi ziua de lucru”, „ce am de rezolvat azi la achiziții”, „pregătește tura următoare” sau „ședința de coordonare”. Pentru o singură comandă, ofertă sau operație folosește skill-ul specializat.
+  Pregătește ziua sau tura pentru manager, achiziții, producție și operatori, vânzări, depozit și livrări, financiar, echipă, marketing ori restaurant și hotel: priorități verificate, blocaje și predare între colegi. La „pregătește-mi ziua de lucru”, „ce am de rezolvat azi”, „pregătește tura următoare” sau „ședința de coordonare”. Pentru o singură comandă, ofertă sau operație folosește skill-ul specializat.
 ---
 
 # Ziua de lucru, pregătită pentru omul care o conduce
@@ -17,8 +17,14 @@ Citește numai referința necesară:
 - [Manager](references/manager.md): rezultate, riscuri și deciziile săptămânii; ședință între echipe.
 - [Achiziții](references/achizitii.md): necesar net, cost comparabil, livrări deschise și predarea către manager.
 - [Producție](references/productie.md): cerere autoritară, tura următoare, capacitate comună și materiale.
+- [Vânzări și comenzi](references/vanzari.md): ce așteaptă verificare, ce este confirmat și ce termen poate fi promis.
+- [Depozit și livrări](references/depozit.md): recepții, marfă utilizabilă, pregătirea comenzilor și diferențe.
+- [Financiar](references/financiar.md): documente lipsă, scadențe, facturi și bani, cu surse distincte.
+- [Echipă și ture](references/echipa.md): sarcini, acoperire, dovezi și predarea schimbului.
+- [Marketing](references/marketing.md): calendar, rezultate comparabile, aprobări și următorul experiment.
+- [Restaurant și hotel](references/ospitalitate.md): serviciul următor, sosiri, plecări și situații de rezolvat.
 
-Pentru alte roluri, folosește [personas-utilizatori.md](../../knowledge/personas-utilizatori.md) și traseul potrivit: [comenzi](../gestioneaza-comenzi-b2b/SKILL.md), [depozit](../gestioneaza-stocuri/SKILL.md), [livrări](../gestioneaza-livrari/SKILL.md), [facturi din email](../monitorizeaza-facturi-email/SKILL.md), [echipă și ture](../coordoneaza-echipa/SKILL.md), [marketing](../masoara-marketing/SKILL.md), [hotel](../gestioneaza-hotel/SKILL.md). La un angajat cu rol îngust, pornește de la sarcinile și locul său de muncă; nu transforma cererea în auditul întregii firme.
+Pentru o specializare diferită, folosește [personas-utilizatori.md](../../knowledge/personas-utilizatori.md) și ghidul modulului real al firmei. La un angajat cu rol îngust, pornește de la sarcinile și locul său de muncă; nu transforma cererea în auditul întregii firme. Într-o ședință între roluri citește doar referințele echipelor implicate.
 
 ## Construiește o imagine care poate fi verificată
 

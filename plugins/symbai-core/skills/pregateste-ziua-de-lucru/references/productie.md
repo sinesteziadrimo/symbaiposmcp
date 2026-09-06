@@ -41,3 +41,9 @@ După orice aplicare autorizată, recitește documentele și recalculează restu
 Pornirea operațiilor, consumul, producția declarată, transferurile și eliberarea calitativă urmează operațiunile și permisiunile lor. Nu marca o sarcină sau operație ca terminată pe baza unui mesaj vag. Nu inventa măsurători QC/HACCP și nu ridica o blocare pentru a respecta un termen.
 
 La predarea turei arată: realizat confirmat, în curs, rest de produs, blocaje, materiale și documentele de urmărit. Separă diferența față de plan de cauzele doar presupuse.
+
+## Pentru operator, responsabilul de calitate sau mentenanță
+
+Adaptează pregătirea la postul omului: operația sau utilajul atribuit, lotul, instrucțiunea aplicabilă, materialele și ce îl împiedică să înceapă. Nu îi preda planul și datele confidențiale ale întregii firme dacă nu îi sunt necesare sau permise.
+
+Pentru calitate, arată verificările scadente, dovezile lipsă și loturile blocate; folosește procedura reală și [gestioneaza-haccp](../../gestioneaza-haccp/SKILL.md) când se aplică. Pentru mentenanță, arată incidentul, utilajul afectat, sarcina și impactul în plan. O intervenție propusă nu dovedește că utilajul este reparat. Măsurătorile, oprirea fizică, remontarea și repornirea se confirmă de persoanele responsabile, prin fluxul aplicabil.
