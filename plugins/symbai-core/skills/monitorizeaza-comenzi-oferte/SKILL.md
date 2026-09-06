@@ -77,6 +77,8 @@ Ofertele furnizorilor rămân propuneri pentru comparație. Aprobarea unui draft
 
 ## Producție și materii prime
 
+Pentru cererea completă „preia comenzile și organizează producția/aprovizionarea”, continuă cu [coordoneaza-comenzile-si-productia](../coordoneaza-comenzile-si-productia/SKILL.md), care leagă documentele, sursele de aprovizionare, planificarea și deciziile managerului.
+
 După ce omul cere continuarea și există comenzi ferme verificate, folosește [productie-flux](../productie-flux/SKILL.md) și [gestioneaza-comenzi-b2b](../gestioneaza-comenzi-b2b/SKILL.md).
 
 - **Fabrică:** `get_factory_forecast_plan` este sursa operațională, cu stoc și plan existent la nivelul fabricii. Comenzile ferme și forecastul sunt deja reconciliate; nu aduna încă o dată comenzile peste estimare. O comandă fermă nouă nu se simulează printr-o creștere manuală a forecastului.

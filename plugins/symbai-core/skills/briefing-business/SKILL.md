@@ -13,7 +13,7 @@ Citește întâi `knowledge/personas-utilizatori.md` (cine e omul) și `knowledg
 
 - **La cerere**: „cum stă businessul", „ce s-a întâmplat ieri", „briefing", „dă-mi o imagine".
 - **Proactiv, o singură dată pe sesiune**, când un proprietar/manager deschide sesiunea cu ceva vag („salut", „ce facem azi") sau când ai terminat un task și e prima sesiune din ziua respectivă: propui („vrei briefing-ul de azi? 20 de secunde"). Nu-l impui; nu-l repeta.
-- **Periodic**: dacă userul cere „în fiecare dimineață / în fiecare luni", îi spui că o sesiune nu rulează singură; îi oferi două căi reale — un prompt salvat pe care îl rulează el, sau un task programat în clientul lui (Claude Code are programări; Codex nu). Nu promite ce nu poți executa.
+- **Periodic**: dacă userul cere „în fiecare dimineață / în fiecare luni", folosește [programeaza-rapoarte](../programeaza-rapoarte/SKILL.md). Symbai Connect poate programa execuții atât cu Codex, cât și cu Claude Code, când uneltele de rutină sunt disponibile. Verifică programările existente înainte de creare. PC-ul și executorul local trebuie să fie pornite; destinatarii și canalul de livrare se stabilesc din cererea omului. Un prompt salvat nu reprezintă o programare activă.
 
 ## Ordinea de citire (adaptată la verticală)
 
