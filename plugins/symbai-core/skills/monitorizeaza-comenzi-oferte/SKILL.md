@@ -38,6 +38,19 @@ Rezultatul include `operationalWrite:false`, document cu `needsReview:true` și 
 
 **După orice corectare refaci preview-ul din versiunea curentă.** Nu refolosi o aprobare pentru alte cantități, client, punct de livrare, dată sau condiții comerciale. În pagină sunt disponibile versiunea curentă, istoricul și butonul **Cere o corectare**, care pregătește cererea pentru asistent. Dacă noile unelte lipsesc, păstrează analiza și cere actualizarea tenantului; nu pretinde că ai salvat corectarea.
 
+## Oferte ușor de comparat
+
+Când schema uneltelor acceptă `offerPrice` și `offerTerms`, păstrează și baza numerică de verificat, alături de prețul literal `unitPrice`:
+
+- Pe fiecare linie, `offerPrice` conține `amount`, `quantity`, `unit:kg|l|buc`, `tax:excluded|included|unknown` și `sourceQuote` literal. Exemplu: „sac de 25 kg, 120 lei fără TVA” → `amount:"120",quantity:"25",unit:"kg",tax:"excluded"`. Cantitatea este cea acoperită de preț, nu cantitatea pe care vrei să o comanzi. Folosește zecimale cu punct, fără monedă sau separator de mii. Nu transforma baxuri în kg sau bucăți fără ambalare explicită.
+- `vatPercent` se păstrează numai când cota este explicită în ofertă. Prețul cu TVA și fără cotă rămâne cu netul neclarificat; nu presupune zero ori cota standard. Păstrează moneda documentului, fără conversii valutare implicite.
+- `offerTerms` păstrează citate pentru `validity`, `delivery`, `payment`, `freight`, `minimumOrder`. Omite ce nu apare în sursă; nu presupune transport gratuit sau valabilitate nelimitată. Dacă baza unui preț nu este clară, omite `offerPrice` și descrie problema în `uncertainties`.
+- După salvare, `connect_email_document` întoarce `offerAnalysis` cu prețul ofertat pe unitate, prețul fără TVA când poate fi calculat, condițiile și problemele. Verifică numerele cu originalul: existența citatului nu garantează că extragerea cantității sau a prețului este corectă. Sursa trunchiată, firma incertă ori atașamentele neverificate rămân probleme de rezolvat.
+- Compară numai produse echivalente, cu aceeași monedă și unitate. Prezintă separat transportul, minimul de comandă și termenele; prețul mărfii nu este costul total de achiziție. Nu decide câștigătorul din prețul unitar când condițiile lipsesc.
+- La corectare trimite extragerea completă, inclusiv baza și condițiile încă valabile; recitește analiza versiunii noi. Istoricul păstrează baza veche pentru consultare. Nicio analiză nu actualizează catalogul și nu emite o achiziție.
+
+Dacă schema ori `offerAnalysis` lipsesc, continuă analiza explicită a sursei cu limitele indicate și semnalează că afișarea calculată în birou necesită actualizarea tenantului. Nu pretinde că acele câmpuri au fost salvate.
+
 ## Din propunere, în operațiuni
 
 | Ce este documentul | Pasul următor |
