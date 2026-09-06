@@ -16,8 +16,9 @@ Pentru monitorizarea repetată a inboxului și expeditorilor acceptați, folose�
    ordinea de recunoaștere a produsului, ce reține sistemul. Fără el vei ghici lucruri care nu se
    ghicesc. Citește și **`knowledge/agent-operare-avansata.md`** (confirm-first, verificare prin
    re-citire).
-2. **Regula de aur: preview întâi, întotdeauna.** `preview_b2b_customer_order` nu scrie nimic.
-   Arăți rezultatul, ceri DA-ul, abia apoi `import_b2b_customer_order` cu `confirm: true`.
+2. **Regula de aur: preview întâi, întotdeauna.** `preview_b2b_customer_order` nu salvează comenzi.
+   Rezolvi neclaritățile, faci verificarea finală de mai jos, arăți rezultatul și folosești acordul
+   proprietarului înainte de `import_b2b_customer_order` cu `confirm: true`.
 3. Nu inventa. Nu completa cantități, prețuri sau produse care nu sunt pe document.
 
 ## Pasul 1 — adu documentul la text
@@ -73,13 +74,32 @@ recunoscut + cantitatea în baxuri și bucăți. Apoi, separat și pe scurt, **c
 Nu turna toate avertismentele într-o listă lungă. Spune întâi ce e **blocant**, apoi ce e doar de
 știut.
 
-## Pasul 4 — importă
+## Pasul 4 — verificarea finală și importul
 
-După DA, exact aceleași linii plus `confirm: true` (și eventualele corecturi decise):
+După ce liniile și condițiile sunt clare, reia `preview_b2b_customer_order` cu **`validateDraft: true`**
+și toate alegerile care vor fi folosite la import: prețurile documentului, urgența, derogările
+cerute, data, punctul de livrare, observațiile și numărul intern. Nu schimbă producția și nu
+salvează o comandă. Rezultatul final este **`preparedDraft`**, iar **`reviewHash`** leagă importul
+de acest conținut.
+
+Arată un rezumat din `preparedDraft`: firma și punctul, data, bucățile/baxurile, prețurile și
+totalul, TVA-ul, sursa livrării și orice derogare. La magazinele proprii explică transferul
+intern cu valoare zero; la furnizorul care facturează direct nu prezenta acea linie drept
+vânzarea fabricii. Dacă sunt probleme fiscale, spune ce rămâne de clarificat.
+
+După acord pentru acest rezultat, importă **aceleași date** și trimite `reviewHash` în
+**`expectedReviewHash`**:
 
 ```
-import_b2b_customer_order({ …, confirm: true, documentSource: "whatsapp" | "email" | "pdf" })
+import_b2b_customer_order({ …, confirm: true, expectedReviewHash: "valoarea întoarsă de preview",
+  documentSource: "whatsapp" | "email" | "pdf" })
 ```
+
+Nu inventa hashul și nu îl elimina pentru a depăși un refuz. Dacă prețul, ambalarea, TVA-ul,
+sursa sau condițiile s-au schimbat, reia verificarea și arată diferența înainte de un nou acord.
+Un preț cu precizie neacceptată se clarifică; nu îl rotunji din proprie inițiativă.
+Pe un tenant care nu întoarce `preparedDraft` și `reviewHash`, nu pretinde că ai această
+protecție. Verifică versiunea disponibilă și păstrează cazul pentru verificare manuală.
 
 Importul **refuză** o comandă cu linii nerezolvate — nu introduce nimic parțial. Când reușește,
 comanda intră ca **ciornă**, iar codurile și denumirile clientului rămân învățate: la comanda
