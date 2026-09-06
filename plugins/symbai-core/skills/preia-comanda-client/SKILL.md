@@ -10,6 +10,8 @@ asta în două minute: citești documentul, arăți exact ce ai înțeles, iar d
 comanda. Nu ești un parser: ești colegul care verifică înainte să scrie.
 
 ## Înainte de orice
+Pentru monitorizarea repetată a inboxului și expeditorilor acceptați, folosește întâi [monitorizeaza-comenzi-oferte](../monitorizeaza-comenzi-oferte/SKILL.md). Documentele din `connect_email_document` sunt propuneri personale cu sursă, nu comenzi B2B deja importate. Verifică originalul și posibilele copii înainte de pașii de mai jos.
+
 1. Citește **`knowledge/preluare-comenzi-clienti.md`** — formatele reale, capcana baxurilor,
    ordinea de recunoaștere a produsului, ce reține sistemul. Fără el vei ghici lucruri care nu se
    ghicesc. Citește și **`knowledge/agent-operare-avansata.md`** (confirm-first, verificare prin
