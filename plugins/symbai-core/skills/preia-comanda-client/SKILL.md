@@ -85,6 +85,19 @@ Importul **refuză** o comandă cu linii nerezolvate — nu introduce nimic par�
 comanda intră ca **ciornă**, iar codurile și denumirile clientului rămân învățate: la comanda
 următoare aceleași linii se potrivesc singure.
 
+### Dacă răspunsul se pierde sau operațiunea este reluată
+
+Păstrează numărul intern și cererea trimisă. Recitește comenzile, apoi reia aceeași cerere dacă
+rezultatul încă nu este cunoscut. `idempotentReplay: true` înseamnă că cererea fusese deja
+procesată: folosește ID-ul întors și verifică starea curentă. Comanda poate între timp să fi
+fost confirmată, livrată sau anulată; nu o prezenta drept o ciornă nouă și nu o recrea.
+
+Nu schimba numărul intern și nu activa `allowDuplicatePo` pentru a depăși o întrerupere sau
+avertismentul despre un duplicat. Acordul pentru o a doua comandă cu același număr al clientului
+trebuie să privească o comandă nouă, verificată. Două emailuri, două inboxuri sau doi colegi nu
+înseamnă automat două comenzi. Dacă versiunea tenantului nu recunoaște reluarea, verifică
+documentul existent și păstrează cazul pentru reconciliere, fără să forțezi un nou import.
+
 ## Pasul 5 — confirmă și spune ce urmează
 
 Verifică prin re-citire (`list_b2b_orders` sau `get_b2b_order_items`), apoi un mesaj scurt: comanda
