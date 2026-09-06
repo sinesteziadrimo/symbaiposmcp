@@ -8,6 +8,8 @@ Fixează gestiunea și data la care materialul trebuie să fie disponibil. Pentr
 
 Arată baza calculului disponibilă în răspuns: cerere, stoc eligibil, rezervări, recepții confirmate, achiziții încă deschise și necesar net. O achiziție cu termen după data necesară nu dovedește acoperirea deficitului de azi. „Trimis”, „livrat”, „recepționat” și „disponibil în stoc” sunt stări diferite; folosește starea canonică și dovada ei.
 
+O listă fără alerte sub minim nu dovedește că aprovizionarea este acoperită. Verifică dacă pragurile minime sunt configurate pentru produsele și gestiunea analizate; `minStock=0` nu este un necesar calculat. Dacă pragurile lipsesc, spune ce acoperă verificarea și continuă cu cererea confirmată sau consumul relevant, folosind uneltele permise. Nu inventa praguri și nu modifica stocurile ori setările pentru a obține un rezultat favorabil.
+
 Nu ghici ambalarea. Un factor implicit de o bucată poate fi neconfirmat; conversia din baxuri se oprește până la clarificare. Nu schimba unități, mapări ori stocuri pentru a elimina o alertă.
 
 ## 2. Compară ce este comparabil
