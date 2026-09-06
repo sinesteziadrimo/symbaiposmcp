@@ -11,6 +11,8 @@ Omul îți dă un rezultat: ce comenzi să urmărești, pentru ce firmă și pâ
 
 Reia firma, utilizatorul, brandul și locația deja alese. Verifică-le prin conexiunea nominală, `list_brands` și `list_locations`; alege gestiunea din datele firmei, fără ID-uri preluate de la alt tenant. Citește configurația rețelei prin `get_b2b_distribution_network_setup` și folosește [productie-flux](../productie-flux/SKILL.md) pentru modul de producție. Un restaurant deservit de depozit central nu trebuie transformat în fabrică.
 
+Pentru alegerea gestiunii descoperă `list_work_warehouses`: lista arată numele, locațiile și brandurile accesibile contului, cu paginare explicită. Rezolvă numele din cerere prin această listă; cere o alegere după nume numai dacă există ambiguitate reală. Gestiunea comună păstrează brandul cererii, iar o gestiune principală configurată nu garantează pregătirea planificării. Dacă unealta încă nu este disponibilă în versiunea firmei, păstrează contextul neverificat până îl poți confirma printr-o citire nominală permisă.
+
 Dacă sunt mai multe companii, lucrează separat în fiecare conexiune autorizată. Identitatea fiscală din document stabilește compania potrivită; adresa de email sau numele brandului nu o înlocuiesc. Păstrează separat comenzile, stocul, furnizorii, capacitatea și rezultatele fiecărei firme.
 
 Cererea de monitorizare a inboxului autorizează preluarea conform regulilor cerute. Nu reprezintă singură aprobare pentru comenzi ferme, producție, achiziții, ture noi ori mesaje. Folosește acordul existent când acoperă exact acțiunea și verificarea actuală; nu cere din nou aceeași aprobare. Când lipsește, pregătește mai întâi rezultatul complet de verificat.

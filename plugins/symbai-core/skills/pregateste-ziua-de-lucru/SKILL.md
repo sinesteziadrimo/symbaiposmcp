@@ -12,6 +12,8 @@ Transformă datele disponibile într-o ordine utilă de lucru: **ce cere atenți
 
 Reia rolul, firma și locația din conversație; verifică identitatea nominală și aria disponibilă. Eticheta „manager” aleasă în ghidul Connect nu acordă permisiuni. Numele firmei sau gestiunii introdus în cerere se rezolvă la datele reale, nu se folosește ca identificator verificat. O persoană poate lucra în mai multe roluri; nu o încadra rigid.
 
+Pentru achiziții, stocuri sau producție, caută `list_work_warehouses` prin `cauta_tool` și citește gestiunile accesibile, filtrate după brandul și locația verificate. Parcurge `nextAfterId` până la `complete=true` dacă prima pagină nu rezolvă alegerea. Potrivește numele și contextul cererii; nu îi cere omului ID-uri interne. Dacă rămân mai multe variante potrivite, oferă numele și locațiile lor într-o singură întrebare. La gestiunile comune păstrează brandul cererii; `isPrimaryPlanningWarehouse` este un indiciu de configurare, nu dovada că gestiunea este cea cerută sau că producția poate începe. O listă goală ori unealta indisponibilă în versiunea firmei înseamnă context neverificat, nu stoc zero; folosește numai alternativele de citire nominală disponibile și permise.
+
 Citește numai referința necesară:
 
 - [Manager](references/manager.md): rezultate, riscuri și deciziile săptămânii; ședință între echipe.
