@@ -28,7 +28,7 @@ Rezultatul are o recomandare motivată și alternative, sau verdictul „nu se p
 
 ## 3. Pregătește aplicarea și predarea
 
-Pentru necesar → achiziții, obține previzualizarea prin `create_purchase_orders_from_requirements(commit:false)` în gestiunea potrivită și păstrează `previewToken`. Respectă strategia și modul potrivite firmei. Nu transforma o eroare de permisiuni într-o solicitare de rol mai larg.
+Pentru aprovizionarea gestiunii pe următoarele zile, folosește `prepare_procurement_forecast` în gestiunea și brandul verificate; păstrează distincte necesarul și cantitatea executabilă după ambalaj/MOQ. Pentru lipsurile unui plan autoritar de fabrică, obține previzualizarea prin `create_purchase_orders_from_requirements(commit:false)` și păstrează `previewToken`. Alege fluxul care răspunde cererii; nu aduna rezultatele celor două motoare și nu transforma o eroare de permisiuni într-o solicitare de rol mai larg.
 
 Înainte de crearea autorizată a drafturilor, arată toate liniile și totalurile, cantitățile rotunjite, furnizorii și datele necesare. Nu folosi doar primele lipsuri dintr-un rezumat ca dovadă că întreaga comandă a fost verificată. Dacă planul B2B a creat deja achiziții pentru aceleași lipsuri, recitește-le înainte de altă generare.
 
