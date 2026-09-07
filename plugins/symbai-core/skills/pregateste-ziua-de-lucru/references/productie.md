@@ -46,4 +46,14 @@ La predarea turei arată: realizat confirmat, în curs, rest de produs, blocaje,
 
 Adaptează pregătirea la postul omului: operația sau utilajul atribuit, lotul, instrucțiunea aplicabilă, materialele și ce îl împiedică să înceapă. Nu îi preda planul și datele confidențiale ale întregii firme dacă nu îi sunt necesare sau permise.
 
+Caută aceste unelte după numele exact și citește schema disponibilă, ca să pornești din informația potrivită postului:
+
+| Post | Prima citire potrivită | Limita rezultatului |
+|---|---|---|
+| Operator | `get_operator_assignments` cu identitatea verificată, gestiunea canonică și data turei | Specializarea pe un utilaj nu dovedește că omul este alocat unei operații; separă calificările, tura și sarcinile efectiv întoarse. |
+| Calitate | `list_quality_holds`, `list_quarantine_lots`; pentru lotul ales, `list_qc_inspections` | O blocare poate rămâne activă și pe un lot cu sold zero. Separă dosarele deschise de marfa rămasă blocată; nu însuma cantități fără unități verificate. |
+| Mentenanță | `list_equipment_downtime` pentru intervalul ales; `list_production_equipment` în aria permisă | Opririle programate exclud echipamente din planificare. Lista goală nu certifică starea fizică a utilajelor și nu acoperă automat toate incidentele sau reviziile preventive. |
+
+Dacă omul nu are operații sau ture atribuite în datele citite, spune acest lucru și cere postul ori lotul la care lucrează; nu îi inventa sarcini. Dacă lipsește accesul sau unealta, arată verificarea rămasă deschisă. Nu extinde drepturile și nu înlocui citirea cu o acțiune de modificare care apare în căutare.
+
 Pentru calitate, arată verificările scadente, dovezile lipsă și loturile blocate; folosește procedura reală și [gestioneaza-haccp](../../gestioneaza-haccp/SKILL.md) când se aplică. Pentru mentenanță, arată incidentul, utilajul afectat, sarcina și impactul în plan. O intervenție propusă nu dovedește că utilajul este reparat. Măsurătorile, oprirea fizică, remontarea și repornirea se confirmă de persoanele responsabile, prin fluxul aplicabil.
