@@ -3,65 +3,40 @@ name: masoara-marketing
 description: Tabloul de bord săptămânal + ROI onest pe canale — ce canal aduce bani, cât cheltui, CAC, LTV:CAC, clienți noi vs reveniți, comparație pe perioade. La „cum stă marketingul", „raport săptămânal marketing", „ce canal îmi aduce bani", „cât mă costă un client", „merge mai bine ca luna trecută?".
 ---
 
-# Măsoară marketingul (tabloul de bord al proprietarului + ROI onest pe canale)
+# Măsoară marketingul
 
-Acest skill îți dă **rezumatul de proprietar în sub 2 minute**: 8 indicatori de rezultat (nu 40 de cifre), un clasament cinstit al canalelor după banii reali pe care îi aduc, și verdictul „pe ce să pui mai mult / de unde să tai". Filozofia 2026: **măsori pe VENIT, nu pe vanity** (uită de like-uri și de „deschideri" de email), și **arăți mereu ≥2 perspective de atribuire** pentru că nicio singură măsurare nu spune tot adevărul.
+Leagă reclama de rezultatul comercial și arată ce este observat, estimat sau necunoscut. Citește `knowledge/masurare-marketing-atribuire.md`; pentru website și CRM citește `knowledge/website-marketing-crm.md`.
 
-Citește întâi `knowledge/masurare-marketing-atribuire.md` (creierul deciziei: LTV:CAC, payback, de ce platformele umflă ROAS-ul). Toate cifrele sunt în RON.
+Pentru impactul fiecărei postări, organic → retargeting → lead/plată și funneluri configurabile, citește `knowledge/marketing-impact.md`. Folosește `get_marketing_impact_report` + `get_marketing_impact_sources`, apoi `get_marketing_journey` pentru explicația unui rezultat. Arată modelul, fereastra și sursele necunoscute; `mixed_social` nu este trafic organic dovedit.
 
-## Tool order live (2026)
+## Ordinea de lucru
 
-- Pentru „cum stă marketingul / ce canal aduce bani": începe cu `get_marketing_scorecard(days, model?)`. Îți dă venitul atribuit, cheltuiala ads, ROAS combinat și canalele cu LTV:CAC sub 3.
-- Pentru „arată-mi atribuirea onest": `compare_attribution_models(days)` înainte de concluzii; arată last/first/linear/time_decay/position dacă există date. Nu lua decizia pe un singur model.
-- Pentru „cum merge campania X": `get_ad_campaign_insights(campaignId, startDate?, endDate?)`, nu doar `get_ad_campaign_status`. Statusul spune dacă rulează; insights spune spend, CTR, CPC, CPA, conversii, ROAS și trend pe zile.
-- Pentru „pot să-i trimit clientului X încă un mesaj": `check_contact_frequency_budget(customerId, brandId?)` înainte de orice mesaj/retargeting 1-la-1. Respectă verdictul `canSend`.
+1. Identifică brandul, locația, perioada, moneda și obiectivul. Pentru website păstrează și websiteId exact. Nu agrega branduri sau monede implicit.
+2. Pentru website: `get_website_marketing_setup` și `get_website_marketing_report`. Pentru rezultatul general: `get_marketing_scorecard`, `get_attribution_report`, `get_ad_campaign_insights`. Rapoartele website nu includ automat costurile Google/Meta.
+3. Compară definițiile conversiilor, ferestrele de atribuire, anulările și calitatea măsurării. `compare_attribution_models` arată sensibilitatea la model, nu dovedește efectul cauzal. Nu aduna veniturile revendicate de Meta și Google.
+4. Completează cu `raport_vanzari`, `get_pnl`, `get_attribution_ltv_by_channel`, `compare_pnl_periods`. `get_sales_analytics` descrie oportunități CRM, nu bonuri POS. Valoarea unui contract câștigat nu este o încasare.
+5. Raportează câțiva indicatori utili, definiți precis: cheltuială, venit net, contribuție după costuri variabile, clienți noi, cost pe client/lead calificat, payback și rezultatele principale ale domeniului. Arată perioada comparabilă și lipsurile datelor.
+6. Pentru fiecare recomandare: observație → ipoteză → schimbare → metrică → limită de cheltuială și regulă de decizie. Separă recomandarea de executarea autorizată.
 
-## A. Tabloul de bord săptămânal (rutina de fiecare luni)
+## Calcul corect
 
-1. **Context:** `list_brands` + `list_locations` (afli `brandId`/`locationId`). `read_brand_memories(brandId)` dacă vrei tonul/poziționarea în rezumat.
-2. **Adună cele 4 surse de adevăr** [citire] — pe ultimele **7 zile** (sau cât cere proprietarul):
-   - `get_attribution_report` — ce canal a generat comenzi/venit atribuit. **Cere-l cu ≥2 modele** (last-click + time-decay / first-touch) ca să vezi diferența. Last-click umflă canalele de jos de pâlnie (căutare pe nume de brand, retargeting) — spune-o explicit.
-   - `get_attribution_ltv_by_channel` — calitatea clienților aduși de fiecare canal (LTV pe canal), nu doar prima comandă. Aici se vede dacă un canal aduce „turiști" sau clienți care revin.
-   - `raport_vanzari` — venitul real total + bonul mediu + numărul de clienți (numitorul pentru CAC).
-   - `get_pnl` — cheltuiala totală de marketing și profitul, ca să raportezi marketingul ca **% din venit** (reper sănătos HoReCa: **3-6%**; lansare 8-15%).
-3. **Calculează indicatorii care contează** (din cifrele de mai sus — fă tu aritmetica, nu inventa un tool):
-   - **CAC** = (cheltuială reclame + cost promoții) ÷ clienți NOI din perioadă.
-   - **LTV** = bon mediu × frecvență vizite × luni reținute × marjă brută %.
-   - **ROAS combinat (blended)** = venit atribuit total ÷ cheltuială totală de marketing.
-   - **LTV:CAC pe canal** și **payback** (în câte zile îți recuperezi CAC-ul).
-   - **Raport clienți noi vs reveniți** (mixul care prezice creșterea).
-4. **Semnalează problemele — regula de prag:**
-   - Orice canal cu **LTV:CAC < 3** = pierde marjă → propune reducere/oprire.
-   - Orice canal cu **payback > 90 zile** = blochezi cash prea mult → de redus sau de regândit oferta.
-   - Reper HoReCa: bonul e mic (30-80 lei) dar repetiția e mare → LTV:CAC bun trece ușor de 3:1, iar restaurantele bine conduse ajung la 20-60x. Dacă un canal e sub 3, chiar e o scurgere.
-   - **LTV:CAC > 5** la nivel combinat NU e doar bine — înseamnă că **investești prea puțin** în creștere; spune-i proprietarului că poate apăsa pedala.
-5. **Compară cu perioada trecută** [citire]: `compare_pnl_periods` — venit/profit/cheltuială marketing săptămâna asta vs trecută (sau lună vs lună, an vs an). **Citește VARIAȚIA, nu cifra brută** — „+12% venit, dar CAC +30%" e o poveste, „45.000 lei" singur nu spune nimic.
-6. **Rezumatul de proprietar** (pe limba lui, RON, semafor verde/galben/roșu), exact 8 indicatori de rezultat:
-   > ROAS combinat · CAC · LTV:CAC · marketing ca % din venit · mix clienți noi vs reveniți · venit din email (RPR) · rezervări viitoare (7-14 zile) · profit. Plus **„ce facem săptămâna asta"** (1-3 mișcări).
+- CAC folosește clienți noi deduplicați, un interval coerent cu latența achiziției și costurile incluse explicit. Dacă nu ai identitatea clienților, nu înlocui numitorul cu vizitatori sau leaduri.
+- LTV pe cohortă folosește contribuția după costuri relevante și perioada de observare. Un calcul bon × frecvență × retenție × marjă este o estimare; declară ipotezele și nu amesteca frecvențe săptămânale cu durate în luni.
+- ROAS este venit atribuit / cost publicitar. MER poate folosi venitul total / costul de marketing, cu definiția numitorului explicită. Nu numi oricare dintre ele profit sau ROI.
+- Nu există prag universal LTV:CAC 3:1, payback 90 de zile, ROI email 45:1 sau multiplicator 2,3 pentru „corectarea” ROAS. Marja, cashflow-ul, sezonalitatea și capacitatea decid pragul acceptabil.
+- Un raport mare nu demonstrează că trebuie crescut bugetul; e posibil să existe selecție, saturație sau atribuire pe clienți care cumpărau deja. Un raport mic cere diagnostic înainte de oprire.
 
-## B. Clasamentul cinstit al canalelor (ROI onest)
+## Pe domenii și canale
 
-Când proprietarul întreabă „ce canal îmi aduce bani":
+- Restaurant: comenzi plătite, rezervări confirmate/onorate, marjă după livrare, intervale și zone disponibile. Cateringul se urmărește în CRM.
+- Ecommerce: comenzi nete de anulări/retururi, contribuție, produs și variantă, client nou vs recurent. Coșul nu este venit.
+- Fabrică: formular acceptat → calificare verificată → ofertă → contract. Citește separat cererile nesincronizate și timpul de răspuns; folosește `qualify_website_marketing_lead` numai pentru o decizie comercială autorizată și reală.
+- Email: `get_email_campaign_analytics`, `get_email_conversion_attribution`, `get_email_ab_test_report`; analizează clicuri, comenzi, venit per destinatar și dezabonări. Deschiderile pot fi influențate de protecțiile de confidențialitate; nu secvenția mesaje doar din absența unei deschideri.
+- Oferte: `get_offer_scorecard` și marja după discount. Răscumpărarea cuponului nu demonstrează singură incrementalitate.
+- Google/Meta: diagnosticele tehnice și acceptarea unui eveniment nu sunt atribuirea unei vânzări. Consultă ghidul website pentru exportul CRM Data Manager și stările de procesare.
 
-1. `get_attribution_report` cu **≥2 modele** → arată last-click vs time-decay **una lângă alta** pe fiecare canal. Diferența dintre ele = cât de „înșelător" e last-click-ul.
-2. `get_attribution_ltv_by_channel` → adaugă calitatea clientului (un canal poate părea ieftin la prima comandă dar aduce clienți care nu revin).
-3. `get_pnl` (cheltuiala pe canale) → calculează CAC per canal.
-4. **Clasează canalele după LTV:CAC**, nu după volum. Marchează cu roșu orice canal cu **LTV:CAC < 3** sau **payback > 90 zile**.
-5. **Avertismentul obligatoriu de onestitate:** „ROAS-ul raportat de Meta/Google e umflat în medie de ~2,3 ori — îl folosesc ca să ORDONEZ canalele, nu ca să decid bugetul." Pentru decizia de buget adevărată trebuie un test cu grup de control (holdout), care azi se face **din aplicație** / din platforma de reclame (lift test nativ Meta/Google) — nu promite un tool care nu există.
+## Experimente și limite
 
-## C. Adâncește pe canal (când un indicator e roșu)
+Folosește experimente cu grup de control când volumul și platforma permit. Stabilește alocarea, metrica, efectul minim relevant, durata, bugetul și riscurile înainte de lansare. Șase săptămâni sau 10% control nu sunt reguli universale. Nu pretinde că un raport de atribuire singur analizează corect un experiment randomizat.
 
-- **Reclame slabe:** `list_ad_campaigns` → `get_ad_campaign_insights` pentru campaniile active/slabe; folosește `get_ad_campaign_status` doar pentru publicare/eroare Meta. Pauza sau schimbarea de buget trec la `condu-marketingul`/`gestioneaza-reclame` și cer confirmarea proprietarului.
-- **Email — măsoară-l CORECT:** `get_email_campaign_analytics` + `get_email_conversion_attribution` (fereastră 7 zile). **Raportează pe click, RPR (venit per destinatar), comenzi plasate, plângeri** — NICIODATĂ pe „deschideri" (Apple le umflă cu 15-20 puncte; o rată reală de 28% apare ca 52%). Reper sănătos: email aduce ~45 lei la 1 leu cheltuit.
-- **Oferte/promoții:** `get_offer_scorecard` — întrebarea corectă nu e „câți au folosit cuponul", ci „câți NU ar fi venit oricum". O ofertă bună aduce clienți incrementali, nu subvenționează clienți care veneau oricum.
-
-## Reguli
-
-- **Arată MEREU ≥2 perspective de atribuire** (last-click + time-decay/first-touch). O singură măsurare ascunde adevărul; spreadul dintre ele e informația cea mai utilă. Spune clar că last-click supra-creditează căutarea pe nume de brand și retargetingul.
-- **Măsoară pe VENIT, nu pe vanity.** Indicatorii care decid: ROAS combinat, CAC, LTV:CAC, % din venit, mix nou-vs-revenit, RPR la email, rezervări viitoare, profit. Nu like-uri, nu „deschideri" brute, nu impresii.
-- **Praguri de alarmă:** LTV:CAC < 3 = scurgere de marjă (taie/reduce); payback > 90 zile = blochezi cash; LTV:CAC > 5 combinat = investești PREA puțin în creștere.
-- **Onestitate pe ROAS:** platformele umflă ROAS-ul ~2,3x. Atribuirea ordonează și diagnostichează canalele; adevărul pe bani îl dă doar un test cu holdout (6 săptămâni, 10-20% grup de control) — făcut din aplicație/platformă, NU dintr-un tool de aici. Nu inventa tooluri de experiment.
-- **Tablou disciplinat:** maximum 8 indicatori de rezultat, citibili în 2 minute, cu semafor. Fiecare indicator trebuie să declanșeze o decizie — dacă nu, scoate-l. Cadență: zilnic pentru reclame active, **săptămânal** pentru tabloul de marketing.
-- **Variație, nu absolute:** raportează mereu „vs țintă" și „vs perioada trecută" (`compare_pnl_periods`), nu cifra brută izolată.
-- **Doar citire** — acest skill nu cheltuie și nu trimite nimic; doar arată adevărul. Pentru acțiuni (realocă buget, oprește campanii, lansează win-back) trece la `condu-marketingul` și confirmă cu proprietarul. Pentru P&L detaliat / food cost / comparații pe perioade vezi skill-ul `rapoarte-preturi`.
-- Necesită citire pe „Marketing & Social Media" / „Reclame" / „Comunicare" + „Financiar". Citirea e activă implicit; dacă un tool dă 401, îndrumă spre portal Hub → Acces AI. Concepte: `knowledge/masurare-marketing-atribuire.md`.
+Măsurarea nu autorizează cheltuieli, trimiteri de mesaje, încărcări de audiențe sau schimbări live de buget. Pregătește propunerea concretă și execută doar în limitele autorizării existente și ale toolului. Dacă un instrument lipsește sau accesul este refuzat, raportează limita; nu inventa rezultate sau funcții.

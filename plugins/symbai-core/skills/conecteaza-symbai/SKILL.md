@@ -9,6 +9,8 @@ Scop: serverul `symbai` să apară conectat și să funcționeze direct, fără 
 
 ## Regula de aur: citește starea, nu o deduce
 
+Pentru Accounting, inclusiv firme care nu au POS, urmează [fluxul Accounting din același Connect](../../knowledge/symbai-connect-accounting.md). Pachetul se descarcă din Accounting → Setări → Integrări → Symbai Connect; autentificarea firmei se face cu contul Accounting. Pașii POS de mai jos se aplică numai conexiunilor POS. La utilizarea ambelor produse, păstrează toate conexiunile și verifică separat identitatea fiecăreia.
+
 Simptomul („nu merge", „nu văd tool-urile", „scrie blocat") nu spune cauza. Cauza o
 spune serverul Symbai, iar tu o ai la un apel distanță. **Nu porni niciodată de la
 o listă de cauze posibile și nu alege una ca să ai ce răspunde** — un motiv

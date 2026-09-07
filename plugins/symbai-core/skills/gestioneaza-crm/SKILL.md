@@ -94,3 +94,8 @@ După scriere: `get_reservations_overview` / `get_game_details` / `list_portal_g
 - Scrieri: rezervări/jocuri-rezervare/clienți/loialitate = modul **«Rezervări & Clienți»** (`rezervari_clienti`); citirile de deal/ofertă cer **«CRM & Automatizări Marketing» (`marketing_crm`)**; configurare jocuri/rezervări = modul **«Setări & Configurare»** (`setari`). Scrierile CRM disponibile diferă după versiune/profil și se folosesc numai dacă apar în lista live. „Permisiune insuficientă" → modulul nu e pe token → portal Hub → Acces AI.
 - Mecanica evenimentelor/rezervărilor → `rezervari-clienti-evenimente.md`; jocuri → `jocuri-activitati.md`; CRM de retenție (playbook-uri/NBA/win-back) → `crm-automatizari-playbooks.md`; segmente → `segmentare-clienti.md`; loialitate → `loialitate-fidelizare.md`; prezentări → skill `construieste-prezentare`.
 - Blocaj (ceva ce nu se poate prin conexiune) → `trimite_ticket_symbai` (sugestie) + ghidează în app.
+
+
+## Website, marketing și CRM (2026-09)
+
+Pentru captarea cererilor, retargeting Meta/Google și măsurarea rezultatului comercial, citește `knowledge/website-marketing-crm.md`. Verifică tool-urile disponibile pe tenant. Folosește `get_website_marketing_playbook`, `get_website_marketing_setup`, `configure_website_marketing` și `get_website_marketing_report` cu brandId/websiteId exacte. `sync_website_marketing_leads` recuperează cererile păstrate în așteptare. Calificarea reală se înregistrează prin `qualify_website_marketing_lead`; exportul la Google are previzualizare locală, autorizare externă explicită și verificarea procesării. Nu dubla pixelii prin custom HTML și nu transforma automat cererile în abonați de marketing.

@@ -4,22 +4,22 @@
 
 ## Pe scurt
 
-Clientul tau primeste email, WhatsApp si notificari push de la tine — dar in capul lui sunt UN singur brand, nu trei canale separate. Daca le tratezi separat, ajunge sa ia acelasi mesaj pe trei cai in cateva ore si se enerveaza: 23% dintr-un public renunta la un brand care comunica prea des. Acest fisier arata cum orchestrezi cele trei canale (plus social pentru descoperire) ca un ciclu unic anti-oboseala: un mesaj per persoana per fereastra, un buget total de frecventa, fiecare canal pe momentul lui. Lucrezi MCP-first: citesti permisiunile reale (`check_marketing_allowed`, `check_contact_frequency_budget`, `comms_get_status`), faci un plan, ceri confirmare in cuvinte si abia apoi trimiti.
+Clientul tau primeste email, WhatsApp si notificari push de la tine — dar in capul lui sunt UN singur brand, nu trei canale separate. Daca le tratezi separat, ajunge sa ia acelasi mesaj pe trei cai in cateva ore si se enerveaza: frecventa excesiva poate duce la dezabonare. Acest fisier arata cum orchestrezi cele trei canale (plus social pentru descoperire) ca un ciclu unic anti-oboseala: un mesaj per persoana per fereastra, un buget total de frecventa, fiecare canal pe momentul lui. Lucrezi MCP-first: citesti permisiunile reale (`check_marketing_allowed`, `check_contact_frequency_budget`, `comms_get_status`), faci un plan, ceri confirmare in cuvinte si abia apoi trimiti.
 
 ## Concepte
 
 - **Fiecare canal are un rol — nu-l forta in altul:**
-  - **Email** = lifecycle bogat si ieftin. Trimite-l PRIMUL: e cel mai ieftin canal, suporta poveste/imagini/multe linkuri, returneaza 20:1–40:1 (cel mai mare ROI). Bun pentru welcome, povestea unui produs, newsletter, oferte detaliate, win-back lung.
-  - **Push** = scurt si urgent. Titlu sub 40 de caractere, text sub 120, UN singur indemn. Bun pentru reminder, happy-hour de azi, "iti expira punctele", "ai uitat ceva in cos". Push cu imagine face +25–40% click fata de text simplu.
-  - **WhatsApp** = conversatie si caldura. Bun pentru confirmare/modificare rezervare, raspuns la o intrebare, win-back cald catre clientul bun care nu a deschis emailul. Pereche email+SMS/WhatsApp recupereaza 12–18% din clientii pierduti, mult peste email singur.
+  - **Email** = lifecycle bogat si ieftin. Trimite-l PRIMUL: e cel mai ieftin canal, suporta poveste/imagini/multe linkuri, costul si rezultatul trebuie masurate pentru publicul respectiv. Bun pentru welcome, povestea unui produs, newsletter, oferte detaliate, win-back lung.
+  - **Push** = scurt si urgent. Titlu sub 40 de caractere, text sub 120, UN singur indemn. Bun pentru reminder, happy-hour de azi, "iti expira punctele", "ai uitat ceva in cos". Imaginea este o ipoteza de test, nu o crestere garantata de clicuri.
+  - **WhatsApp** = conversatie si caldura. Bun pentru confirmare/modificare rezervare, raspuns la o intrebare, win-back cald catre clientul bun care nu a deschis emailul. Combina canalele numai daca exista acord si relevanta; compara rezultatele si costurile.
   - **Social organic** = descoperire (oameni care inca nu sunt clienti). NU e canal de lifecycle 1-la-1 — vezi `knowledge/marketing-social.md`.
 - **Regula de aur: un mesaj / un contact / o fereastra.** Niciodata acelasi promo pe 4 canale in aceeasi zi. O singura oferta/zi pe client. Daca trimiti pe push, NU repeta acelasi lucru pe email cateva ore mai tarziu.
 - **Buget total de frecventa (peste TOATE canalele):** maxim **1–2 mesaje marketing/client/zi** si **3–5/saptamana**. Push singur: implicit **2/saptamana**, plafon dur **3/saptamana** inclusiv loialitate. Capul se numara cumulat, nu separat pe canal.
 - **Ore de liniste 21:00–08:00 in fusul CLIENTULUI** (Europe/Bucharest pentru RO), nu al tau. Symbai respecta deja fereastra — n-o suprascrie.
-- **Secventiere lansare (mesaj nou, ne-urgent):** email ziua 0 → push reminder scurt catre cei care NU au deschis emailul ziua +1–2 → WhatsApp catre segmentul cald nedeschis ziua +3. Asa fiecare atingere e pe alt canal si nu pari spam.
-- **Secventa de abandon (cos/rezervare neterminata), 3 atingeri:** email la ~**1h** (reminder bland) → push la **12–24h** (beneficii + dovada sociala) → SMS/WhatsApp la **24–36h** (urgenta + stimulent mic). **Iesire imediata la conversie** — daca a cumparat, opresti tot. Recuperare tipica 8–12%.
+- **Secventiere lansare (mesaj nou, ne-urgent):** email ziua 0 → push reminder scurt catre cei care nu au reactionat prin clic sau conversie ziua +1–2 → WhatsApp catre segmentul cald nedeschis ziua +3. Asa fiecare atingere e pe alt canal si nu pari spam.
+- **Secventa de abandon (cos/rezervare neterminata), 3 atingeri:** email la ~**1h** (reminder bland) → push la **12–24h** (beneficii + dovada sociala) → SMS/WhatsApp la **24–36h** (urgenta + stimulent mic). **Iesire imediata la conversie** — daca a cumparat, opresti tot. Procentul recuperat se masoara pe acest flux, fara reper garantat.
 - **Consimtamant per canal + suppression partajat:** cineva poate accepta emailul dar nu pushul. Verifici opt-in-ul fiecarui canal inainte de trimitere, iar cine s-a dezabonat ramane suprimat pe acel canal.
-- **Next-best-channel:** cand alegi UN canal pentru un client, alege-l pe cel cu sansa cea mai mare de reactie pentru EL (a deschis ultimele 3 emailuri → email; nu deschide niciodata dar are app → push).
+- **Next-best-channel:** cand alegi UN canal pentru un client, alege-l pe cel cu sansa cea mai mare de reactie pentru EL (are clicuri recente pe email → testeaza email; prefera notificari si a acceptat push → considera push).
 
 ## Fluxuri frecvente
 
@@ -72,12 +72,12 @@ Clientul tau primeste email, WhatsApp si notificari push de la tine — dar in c
 
 ## Întrebări frecvente și capcane
 
-- **De ce nu trimit acelasi promo pe email + push + WhatsApp ca sa fiu sigur ca ajunge?** Pentru ca clientul primeste trei notificari la acelasi mesaj in cateva ore si se dezaboneaza. 23% renunta la un brand care comunica prea des; 46% dintre useri se dezaboneaza de la push la 2–5 mesaje/saptamana. Un mesaj bine tintit pe UN canal bate cinci la rand. Foloseste secventiere (email → push → WhatsApp pe zile diferite), nu repetare in aceeasi zi.
+- **De ce nu trimit acelasi promo pe email + push + WhatsApp ca sa fiu sigur ca ajunge?** Pentru ca clientul primeste trei notificari la acelasi mesaj in cateva ore si se dezaboneaza. Respecta preferintele si plafoanele reale, urmarind dezabonarile si reclamatiile. Un mesaj bine tintit pe UN canal bate cinci la rand. Foloseste secventiere (email → push → WhatsApp pe zile diferite), nu repetare in aceeasi zi.
 - **Care e bugetul total de mesaje?** 1–2 marketing/client/zi si 3–5/saptamana — **cumulat pe toate canalele**, nu pe fiecare separat. Inainte de orice trimitere 1-la-1 verifica `check_contact_frequency_budget`; inainte de trimitere in masa, fa preview/audienta si respecta plafonul de destinatari.
-- **Cu ce canal incep?** Cu emailul (cel mai ieftin si bogat). Pushul vine ca reminder scurt DOAR catre cei care n-au reactionat la email. WhatsApp e pentru caldura/conversatie, la final, pe segmentul cald.
+- **Cu ce canal incep?** Cu emailul (cel mai ieftin si bogat). Pushul vine ca reminder scurt DOAR catre cei care nu au reactionat prin clic sau conversie. WhatsApp e pentru caldura/conversatie, la final, pe segmentul cald.
 - **Push la ora 22:00 daca am o oferta tare?** Nu. Orele de liniste 21:00–08:00 in fusul clientului sunt respectate de sistem — nu le suprascrie. Pranzul (10:30–13:00) si cina (16:30–18:00), weekend 17:00–20:00 sunt ferestrele bune.
 - **Consimtamantul e unul singur pe client?** Nu — e per canal. Cineva poate accepta emailul si refuza pushul. Verifica opt-in-ul fiecarui canal (`check_marketing_allowed`, segmentele cu opt-in) inainte sa trimiti pe acel canal.
-- **Cum stiu daca a meritat?** Pune 10% holdout la fluxurile de retentie si compara conversia/banii grupului expus vs control cu `get_attribution_report` — asa transformi "am trimis 5.000 de mesaje" in "fluxul asta a adus X vizite in plus". CTR-ul masoara atentia, liftul pe comenzi masoara banii.
+- **Cum stiu daca a meritat?** Dimensioneaza un grup de control dupa volum si efectul urmarit, apoi compara rezultatele prin instrumentul de experiment disponibil; `get_attribution_report` singur nu dovedeste efectul incremental — asa transformi "am trimis 5.000 de mesaje" in "fluxul asta a adus X vizite in plus". CTR-ul masoara atentia, liftul pe comenzi masoara banii.
 - **Capcana: dublarea trimiterii pentru ca ecranul nu s-a reimprospatat.** Dupa orice trimitere, verifica prin tool de citire (`get_..._analytics`, `list_email_campaigns`), nu repeta comanda pe baza UI-ului.
 - **Capcana: o campanie deja trimisa nu se mai editeaza.** Faci o campanie noua pe segmentul potrivit (non-deschideri, click-fara-conversie, VIP) si o trimiti pe canalul lor preferat.
 - **Capcana: secventa de abandon care merge mai departe desi clientul a cumparat.** Pune mereu conditia de iesire la conversie — altfel ii trimiti "ai uitat ceva in cos" cuiva care tocmai a platit.
@@ -89,3 +89,6 @@ Clientul tau primeste email, WhatsApp si notificari push de la tine — dar in c
 - `knowledge/gdpr-clienti-oaspeti.md` — consimtamant, dezabonari, anonimizare.
 - `knowledge/loialitate-fidelizare.md` — RFM, win-back, puncte care expira, membership.
 - skill-ul `gestioneaza-crm` — pipeline, rezervari, follow-up automat; skill-ul `programeaza-postare` — social organic.
+
+
+Pentru website si CRM: `knowledge/website-marketing-crm.md`. Cadentele de mai sus sunt ipoteze de pornire in limita preferintelor configurate, nu permisiunea de a contacta mai des. Absenta unei deschideri de email nu dovedeste lipsa interesului. Nici formularul contact si nici acordul analytics nu reprezinta acord pentru toate canalele de marketing.

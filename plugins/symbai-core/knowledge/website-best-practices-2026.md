@@ -1,59 +1,59 @@
-# Best-practice website e-commerce 2026 — aplică-le ȘI explică-le clientului
+# Website ecommerce 2026 — decizii de design care pot fi verificate
 
-> Ce face un magazin online să convertească, cu DOVEZI (Baymard Institute 2025 — 16.000+ elemente UX scorate pe 180+ magazine; Nielsen Norman Group; Shopify). Aplică-le când construiești sau îmbunătățești un site. **La FIECARE alegere, spune-i clientului în limbaj de business DE CE ai pus-o și cum îi crește conversia** — folosește cifrele de aici. Pentru tool-urile concrete vezi `website-builder.md` + skill-ul `construieste-website`.
+Actualizat la 6 septembrie 2026. Folosește cercetarea ca bază pentru ipoteze de design și verifică efectul pe magazinul concret. Nu transforma procente dintr-un studiu de utilizabilitate în promisiuni de venit pentru client. Pentru componente și configurare: [website-builder.md](website-builder.md); pentru măsurare, consimțământ și CRM: [website-marketing-crm.md](website-marketing-crm.md).
 
-## Cum lucrezi (proces — important)
-1. **Când REPLICI un site existent**: deschide-l în browser, **fă screenshot-uri** la header, megamenu, pagină de categorie, pagină de produs, footer. Înțelege STRUCTURA reală (ierarhia categoriilor = din breadcrumb, nu din grupările vizuale ale meniului). Apoi replică prin platformă.
-2. **VERIFICĂ VIZUAL ce ai construit**: după ce pui ceva, **deschide pagina și fă screenshot** (sau descrie ce e pe ecran), compară cu sursa/cu ce trebuia, **îmbunătățește**. NU spune „gata" pe baza lui „am rulat tool-ul" — spune „gata" doar după ce ai VĂZUT rezultatul corect. (Vezi și auditul de sănătate al magazinului.)
-3. **EXPLICĂ-i clientului** fiecare decizie: „Am pus X pentru că Y — asta înseamnă mai mulți clienți care găsesc produse și cumpără."
+## Cum lucrezi
 
-## Principiul de aur (cauza #1 a clienților pierduți)
-**95% din magazine NU arată clientului UNDE este** (Baymard). Asta produce senzația „mă uit puțin și mă pierd". Antidotul, peste tot: arată mereu unde ești (categorie activă evidențiată + breadcrumb) și oferă mereu un pas înainte (nicio pagină fără „unde merg mai departe").
+1. Identifică ce vinde magazinul, cui, dimensiunea catalogului, principalele căutări și barierele reale: livrare, stoc, alegerea variantei, încredere sau plată. Notează ce știi și ce rămâne ipoteză.
+2. Dacă reproduci un website, inspectează paginile și interacțiunile pe desktop și mobil. Taxonomia produselor se verifică din categorii și breadcrumb; un grup vizual din meniu nu este automat categorie în catalog.
+3. După modificare, verifică în browser: găsire produs, selecție variantă, coș, checkout, erori și revenire. Screenshotul demonstrează aspectul; nu demonstrează că plata sau formularul funcționează.
+4. Explică problema rezolvată și criteriul de verificare. Măsoară un rezultat comercial principal și efectele adverse, în aceeași perioadă și cu costuri comparabile.
 
-## 1. Header & navigare principală
-- **Bară de categorii DEDICATĂ (rând separat)**, nu logo+categorii+search+iconuri pe un singur rând. *De ce*: rândul înghesuit forțează categoriile să se micșoreze/dispară (58% desktop / 67% mobil au navigare slabă — Baymard). *Explică*: „Categoriile au acum rândul lor, vizibile mereu — clientul vede tot ce vinzi dintr-o privire, nu se mai pierde."
-- **Max ~7-9 departamente** în bară (peste ~8 scade scanabilitatea). Linkurile informaționale (Despre/Blog/Contact) → în footer sau un rând utilitar, nu în bara de categorii.
-- **Header sticky** (rămâne lipit la scroll). *De ce*: căutarea, coșul și categoriile sunt mereu la un click → fără dead-end. *Conversie*: **+3-7% în medie, până la 25%** când coșul e în bara sticky. *Explică*: „Meniul te urmează pe pagină, deci clientul cumpără fără să mai deruleze înapoi."
-- **Evidențiază categoria activă** (unde ești acum). *De ce*: 95% nu o fac → orientare. *Explică*: „Clientul vede mereu în ce secțiune e — nu se mai rătăcește."
+## Navigare potrivită catalogului
 
-## 2. Mega-menu (meniul mare la hover)
-- **Grupuri cu ANTET** (sub-categorii grupate sub titluri bold), nu o listă lungă. *De ce*: meniurile fără antete au **+23% abandon** (Baymard); cu antete reduc clickurile spre conținut cu ~50% (NN/g). *Explică*: „Sub-categoriile sunt organizate pe grupuri — clientul găsește mai repede."
-- **Hover-intent (mică întârziere + comutare lină)**: nu deschide/închide brusc la fiecare trecere a mouse-ului. *De ce*: 61% din site-uri n-au întârziere → meniul clipește și deschide din greșeală categoria vecină — frustrant. *Explică*: „Meniul nu mai clipește când treci cu mouse-ul — se deschide neted."
-- **Anteturile sunt LINKURI clickabile** (du la pagina întregii categorii), nu doar etichete care deschid lista. *De ce*: 33% nu le fac clickabile → blochează clientul care vrea „tot din categoria asta".
-- **Cap ~28-36 linkuri pe panou**; grupuri >10 → „Vezi toate →". *De ce*: peste ~36 linkuri clientul renunță și caută; >50 = **+34% bounce**.
-- **Imagini în mega-menu** (thumbnail pe coloană) pentru cataloage mari — recunoaștere > memorare.
+Un magazin mare poate avea nevoie de un rând distinct de categorii și de căutare vizibilă. Un catalog mic sau un brand editorial poate funcționa mai bine cu un header simplu. Nu impune tuturor două rânduri, un număr fix de categorii sau un megamenu.
 
-## 3. Căutarea ca navigare (search-first)
-- **Bară de search PROEMINENTĂ** în header (nu doar un iconuriț). *De ce*: la 4000+ produse, mulți clienți preferă să caute decât să răsfoiască. *Explică*: „Cine știe ce vrea, scrie și găsește instant — mai puține clickuri, mai multe vânzări."
-- **Autocomplete instant**: sugestii de produse (cu poză + preț), categorii, căutări populare/recente, toleranță la greșeli de scriere.
-- **Recovery la „0 rezultate"**: niciodată ecran gol — arată căutări alternative (lărgite), categorii înrudite, produse populare. *De ce*: 50% din site-uri n-au asta → pagini cu abandon mare.
+- Arată categoria activă și o cale clară spre categoria părinte. Folosește etichete cunoscute clienților, nu coduri interne.
+- Grupează listele ample prin antete și oferă acces la întreaga categorie. Pe mobil, categoriile comerciale trebuie să fie ușor de găsit, fără a fi ascunse sub mai multe niveluri administrative. Vezi [cercetarea Baymard despre navigarea mobilă](https://baymard.com/blog/main-navigation-product-categories).
+- Dacă există meniu la hover, evită deschiderile accidentale și pierderea submeniului pe traseul cursorului. Baymard recomandă investigarea unei întârzieri de 300–500 ms; verifică și clicul, atingerea, focusul și tastatura. [Sursa](https://baymard.com/blog/dropdown-menu-flickering-issue).
+- Un header fix este util doar dacă păstrează accesul la acțiuni fără să acopere prea mult conținut sau câmpul cu focus. Testează pe ecrane mici și cu zoom.
 
-## 4. Mobil
-- **Drawer/accordion** pentru arborele de categorii (drill-down progresiv), nu un perete de linkuri. Search + coș lipite (sticky), butoane mari (thumb-zone).
-- Bara de categorii desktop se transformă pe mobil în meniu hamburger cu acordeon.
+## Căutare și categorii
 
-## 5. Findability & ANTI-DEAD-END (nu pierde clientul după ce a intrat)
-*Plângerea clasică „mă uit și nu mă duce altundeva" = pagini-terminus. Fiecare pagină trebuie să ofere un pas înainte.*
-- **Breadcrumbs** (Acasă › Categorie › Subcategorie › Produs) pe paginile de listă și produs — fiecare e link în sus. *De ce*: indică unde ești + cale înapoi; esențial pe mobil.
-- **Pagini de categorie-părinte cu tile-uri de subcategorii** (cu poză) DEASUPRA produselor. *De ce*: 76% nu pun subcategoriile în față → clientul vede un perete de 4000 produse și renunță. *Explică*: „Pe o categorie mare, clientul vede întâi sub-secțiunile cu poze și intră țintit — nu se sperie de listă."
-- **Pe pagina de PRODUS, niciodată terminus**: „Produse similare", „Clienții au mai văzut", „Cumpărate împreună", **„Vizualizate recent"**, și un link **„Înapoi la {Categorie}"**. *Conversie*: recomandările aduc lifturi mari de conversie; cross-sell-ul = 10-30% din venit. *Explică*: „După ce vede un produs, clientul are mereu unde merge mai departe — așa crește coșul mediu."
-- **Filtre (facete) ca ajutor de navigare**: preț, vârstă, brand, în-stoc, cu nr. de rezultate, filtre aplicate ca etichete ștergibile, **păstrate la paginare** (în URL). *De ce*: doar 16% au filtre eficiente — diferențiator real; filtrele care se resetează = abandon.
-- **404 util**: search + categorii top + produse populare + recent văzute, nu un mesaj sec. *De ce*: la mii de produse, linkuri se învechesc — fiecare 404 e o ieșire potențială.
+- Afișează sugestii relevante cu fotografie, nume și preț corecte; păstrează termenul când vizitatorul trece din sugestii la rezultatele complete.
+- La zero rezultate, păstrează căutarea, explică situația și oferă alternative reale: eliminarea unui filtru, categorie apropiată, sinonim verificat sau contact. Nu pretinde că un produs indisponibil există.
+- Alege filtre din atributele utile ale produselor: dimensiune, compatibilitate, material, brand, preț sau disponibilitate. Arată selecțiile și permite eliminarea lor; păstrează-le la paginare și revenire.
+- Categoriile părinte pot prezenta subcategorii pentru orientare. Numărul de produse și metoda de încărcare depind de cât de atent trebuie comparate articolele, de dispozitiv și de performanță. „Încarcă mai multe” este o opțiune utilă, nu o interdicție asupra paginării. [Cercetarea Baymard despre liste](https://baymard.com/blog/number-of-items-loaded-by-default).
+- Păstrează URL-uri accesibile, revenirea la poziția din listă și accesul la footer. Un 404 trebuie să ofere o cale utilă către căutare sau categorii, păstrând statusul HTTP corect.
 
-## 6. Magazine specializate (ex. copii) — cârlige curate
-- **„Cumpără după vârstă"** (0-1, 1-3, 3-6, 6-9, 9-12) și **„Cumpără după ocazie"** (zi de naștere, botez, Crăciun, back-to-school, nou-născut). *De ce*: părinții cumpără pe vârstă/ocazie, nu pe taxonomia ta de SKU-uri; cataloagele plate îi blochează. *Explică*: „Am adăugat «după vârstă» și «după ocazie» pentru că așa gândește un părinte — îi dăm un prim click sigur în loc să-l lăsăm în fața a 4000 de produse."
+## Pagina de produs
 
-## 7. Viteză, încredere & conversie
-- **„Load More" + lazy-load** pentru liste mari (NU infinite scroll, NU paginare clasică), păstrând URL-uri reale (?page=N). *De ce*: „Load More" face clientul să vadă MAI multe produse decât paginarea și să le citească mai atent decât infinite scroll (Baymard); infinite scroll strică butonul „înapoi" și comparația.
-- **Bară de promisiune livrare** în header + progres „Mai ai X lei până la transport gratuit". *De ce*: costurile de transport = motivul #1 de abandon coș (**39-47%**); **80% adaugă produse** ca să prindă pragul de transport gratuit; suma în lei convertește mai bine ca procentul. *Explică*: „«Mai ai 39 lei până la transport gratuit» — clientul mai adaugă un produs; crește coșul mediu și scade abandonul."
-- **Viteză percepută**: prefetch la hover, schelet (skeleton) în loc de spinner, feedback instant la „Adaugă în coș". *De ce*: 1s întârziere pe mobil ≈ **-20% conversie**; 0.1s mai rapid ≈ +8.4%. *Explică*: „Site-ul pare instant — fiecare secundă de așteptare costă vânzări."
-- **Badge-uri de ghidare**: „Nou", „Popular", „Recomandat" — scurtături de decizie într-un catalog mare.
-- **Personalizare-lite fără cont**: „Vizualizate recent" + „Categorii populare" (din localStorage) — a doua vizită pare ghidată.
+Vizitatorul trebuie să poată evalua produsul: fotografii relevante, variante, stoc, preț total, dimensiuni/specificații, livrare și retur. Datele provin din catalog și din politicile reale. Numărul de fotografii se alege după informația necesară, nu după o cotă arbitrară.
 
-## Șablon de explicație pentru client (folosește-l mereu)
-> „Am pus **[ce]** pentru că **[de ce / cifra]** — în practică înseamnă **[beneficiu de business: mai mulți clienți care găsesc produse / coș mediu mai mare / mai puțin abandon]**."
+Recomandările pot ajuta când sunt compatibile sau alternative reale. Nu inventa „cumpărate împreună”, popularitate, reduceri, recenzii, stoc limitat ori urgență. Separă recomandarea editorială de dovada bazată pe comenzi. Măsoară marja și rata retururilor, nu doar valoarea coșului.
 
-Exemple gata:
-- „Am pus o bară de categorii dedicată sus pentru că un meniu înghesuit pierde clienții (peste jumătate din magazine au navigare slabă) — acum clientul vede tot ce vinzi și descoperă mai multe produse."
-- „Am adăugat «produse similare» și «vizualizate recent» pe pagina de produs pentru că o pagină fără «unde merg mai departe» pierde clientul — așa crește coșul mediu (cross-sell-ul aduce 10-30% din venit)."
-- „Am pus «mai ai X lei până la transport gratuit» pentru că 80% din clienți mai adaugă un produs ca să prindă pragul — crește direct valoarea comenzii."
+Pentru magazine specializate, categorii precum ocazie, aplicație sau vârstă pot ajuta dacă produsele au atribute validate. La produsele pentru copii, nu deduce limitele de vârstă sau conformitatea din fotografie.
+
+## Coș, checkout și formulare
+
+- Fă vizibilă opțiunea de cumpărare fără cont atunci când este disponibilă; crearea contului nu trebuie să pară obligatorie dacă nu este. [Baymard: guest checkout](https://baymard.com/blog/make-guest-checkout-prominent).
+- Marchează clar ce câmpuri sunt obligatorii/opționale, explică cererile neobișnuite de date și păstrează inputul la o eroare recuperabilă. [Baymard: câmpuri de formular](https://baymard.com/blog/required-optional-form-fields).
+- Prezintă costul livrării, taxele, intervalul și totalul înainte de confirmare. Pentru un prag de transport gratuit, arată suma rămasă numai când regula se aplică efectiv coșului și adresei; verifică profitabilitatea subvenției.
+- Diferențiază „se trimite”, eroare și confirmare. Retrimiterea nu trebuie să dubleze comanda sau leadul. Confirmarea unei cereri nu este confirmarea unei plăți.
+- Refuzul trackingului nu blochează formularul sau cumpărarea. Acordul pentru newsletter rămâne separat de tratarea solicitării.
+
+## Viteză, accesibilitate și efecte vizuale
+
+Folosește animațiile pentru orientare, demonstrarea produsului sau feedback. Acțiunea principală trebuie să rămână clară fără animație, cu tastatură și pe mobil. Respectă preferința de mișcare redusă. Încarcă imaginile potrivit dimensiunii afișate și amână resursele din afara zonei vizibile; rezervă spațiul lor pentru a evita salturile de pagină.
+
+Core Web Vitals urmăresc încărcarea, răspunsul la interacțiuni și stabilitatea vizuală. Pragurile „good” sunt LCP ≤2,5 s, INP ≤200 ms și CLS ≤0,1 la percentila 75; sunt repere de experiență, nu promisiuni de creștere a vânzărilor. Un test local nu înlocuiește datele reale ale vizitatorilor. [Metodologia Google](https://web.dev/articles/defining-core-web-vitals-thresholds).
+
+Prefetch, skeleton și actualizarea optimistă sunt alegeri de implementare. Verifică traficul suplimentar, cititoarele de ecran, erorile și starea finală; nu afișa succes comercial înainte de confirmarea serverului.
+
+## Cum explici și măsori
+
+Formulare utilă: „Am făcut vizibil costul livrării înainte de plată, deoarece un total surpriză poate întrerupe cumpărarea. Verificăm finalizarea checkoutului și contribuția după transport, comparativ cu perioada sau varianta de control.”
+
+Pentru fiecare schimbare, notează observația, ipoteza, metrica principală, intervalul și criteriul de decizie. Separă o eroare funcțională demonstrată, care trebuie reparată, de un experiment comercial. Nu aplica automat procente de creștere, praguri ROAS sau împărțiri de buget; vezi [măsurare și atribuire](masurare-marketing-atribuire.md).
+
+Pentru restaurante, scopul poate fi comanda plătită sau rezervarea onorată. Pentru fabrici, publică specificațiile aprobate direct în pagină și oferă PDF opțional; urmărește calificarea cererii și rezultatul comercial, fără a dezvălui informații interne. [Nielsen Norman Group: specificații B2B](https://www.nngroup.com/articles/b2b-specs/).

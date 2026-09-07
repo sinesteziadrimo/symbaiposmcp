@@ -5,8 +5,13 @@ description: Creează, programează, modifică, aprobă și publică postări pe
 
 # Programează o postare social media
 
+Pentru postări cu link către orice pagină, citește `knowledge/marketing-impact.md`. Configurează UTM pe draft prin `configure_social_post_tracking`, verifică `preview_social_post_tracking` și limitele textului/primului comentariu, apoi urmează publicarea autorizată obișnuită. Pentru bio sau publicare manuală creează un link final cu `create_marketing_tracking_link`; nu distribui tokenul de preview. Rezultatele se citesc prin `get_marketing_impact_report`, separat de reach/engagement.
+
+Pentru TikTok citește `knowledge/tiktok-publicare.md`: conectare OAuth, video/foto, opțiuni reale ale contului și verificarea rezultatului. Creează întâi ciorna; `configure_tiktok_post` pregătește opțiunile, iar utilizatorul verifică materialul și confirmă TikTok în editor înainte de publicare/programare. Confirmarea aceasta nu este înlocuită de aprobarea editorială sau de un acord transmis în chat. `pending:true` înseamnă procesare: urmărește `get_tiktok_post_status`, fără retrimitere.
+
 1. Vezi ce conturi sunt conectate: `list_social_accounts` (opțional pe `brandId`). Dacă nu există niciun cont activ pe platforma cerută, conectează-l rapid prin MCP:
    - `genereaza_link_conectare(platforma)` — `platforma` ∈ `facebook`/`tiktok`/`youtube`/`linkedin`/`google_business` (opțional `brandId`). Întoarce un link de conectare (OAuth) pe care utilizatorul îl deschide în browserul LUI, logat în contul care administrează pagina; linkul expiră în ~10 minute, deci să-l deschidă imediat — conectarea se finalizează automat și în siguranță. După ce confirmă, verifică cu `verifica_integrare`.
+   - Pentru TikTok linkul conduce la Integrări: utilizatorul apasă conectarea din pagina autentificată, apoi continuă OAuth în același browser. Nu îi cere chei de aplicație sau tokenuri. După conectare verifică și `get_tiktok_creator_info`.
    - Instagram NU are link separat: după ce Facebook e conectat, leagă-l cu `conecteaza_instagram_din_facebook` (opțional `brandId`). Cere pagina Facebook cu permisiuni Instagram + un cont IG Business/Creator asociat; la eroare transmite mesajul exact.
    - Alternativ, dă link la pagina de conturi cu `gaseste_in_aplicatie("conturi social media")`.
 2. Compune textul postării împreună cu utilizatorul (sau propune 2-3 variante dacă ți-o cere). Ține cont de brand și de ce vrea să promoveze.
@@ -20,13 +25,13 @@ description: Creează, programează, modifică, aprobă și publică postări pe
 
 ## Aprobare și publicare
 
-- **Aprobă / respinge:** `approve_social_post(postId, approvalStatus: "approved" | "rejected", approvalNote?)`. `approved` → postarea devine eligibilă și se publică la ora programată. `rejected` → nu se va publica. Confirmă cu utilizatorul înainte de a aproba în numele lui.
+- **Aprobă / respinge:** `approve_social_post(postId, approvalStatus: "approved" | "rejected", approvalNote?)`. `approved` → postarea devine eligibilă și se publică la ora programată. `rejected` → nu se va publica. Este necesar acordul utilizatorului pentru aprobarea în numele lui; folosește acordul deja dat în sesiune dacă acoperă postarea concretă.
 - **Ce așteaptă aprobare:** `list_social_posts(approvalStatus: "pending")` — dacă o postare programată „nu s-a publicat", de cele mai multe ori e pentru că așteaptă aprobare aici.
-- **Postează ACUM** (fără să aștepte ora): `publish_social_post(postId, confirm: true)`. Postarea trebuie să fie aprobată întâi. ⚠ Publicare publică ireversibilă — confirmă cu utilizatorul, apoi trimite `confirm: true`. Util și înainte de a promova o postare (boost-ul cere o postare deja publicată — vezi skill-ul `gestioneaza-reclame`).
+- **Postează ACUM** (fără să aștepte ora): `publish_social_post(postId, confirm: true)`. Postarea trebuie să fie aprobată întâi. Trimite `confirm:true` numai dacă utilizatorul a autorizat publicarea materialului pe conturile selectate; nu cere din nou același acord deja acordat în sesiune. Util și înainte de a promova o postare (boost-ul cere o postare deja publicată — vezi skill-ul `gestioneaza-reclame`).
 
 ## Reguli
 
-- Întotdeauna confirmă data/ora + platformele înainte de programare; și niciodată nu aproba/publici fără acordul utilizatorului.
+- Verifică data/ora și platformele din cerere; clarifică doar ce lipsește. Nu aproba/publica fără acordul utilizatorului.
 - Dacă utilizatorul dă o oră fără fus, presupune Europe/Bucharest și spune ce ai presupus.
 - **Modifică o postare existentă:** `update_social_post(postId, ...)` cu DOAR câmpurile de schimbat (`content`/`scheduledAt`/`platforms`/`postType`/`firstComment`/`mediaUrls`/`altText`). `scheduledAt: null` o face ciornă. NU șterge și recrea (recrearea îi schimbă ID-ul). Doar postări nepublicate.
 - **Duplică o postare:** `duplicate_social_post(postId, platforms?, scheduledAt?)` — „fă aceeași postare și pe Instagram" / „repostează săptămâna viitoare". Copia e tot în așteptare aprobare.
@@ -34,11 +39,11 @@ description: Creează, programează, modifică, aprobă și publică postări pe
 - **Diversitatea conținutului (avertisment la programare):** la programare (și una câte una, și în masă), sistemul compară postarea cu cele deja programate/publicate în zilele apropiate. Dacă tema se repetă prea des sau frazele sunt aproape identice cu postări recente, răspunsul vine cu un AVERTISMENT — postarea se creează totuși (nu blochează). Spune-i utilizatorului ce a semnalat și propune o variație de temă/formulare; poate continua așa, dar în cunoștință de cauză.
 - **Îngroșarea textului:** Facebook și Instagram nu au text formatat — îngroșarea se obține doar cu caractere speciale. Scrie cifrele NORMAL (10:00, 0722 123 456) și marchează cu `**text**` ce vrei îngroșat; conversia o face sistemul, determinist. **Diacriticele (ă â î ș ț) se îngroașă și ele** — scrie-le normal în cuvânt și marchează cuvântul întreg, restul e treaba sistemului. Nu compune tu literele îngroșate caracter cu caracter: acolo se corup orele și numerele de telefon, de aceea cifrele rămân mereu normale. Dacă utilizatorul vrea un accent și mai puternic, propune-i scriere cu MAJUSCULE, un rând separat cu emoji, sau textul pus într-o imagine.
 - **Anulare / ștergere:** `cancel_social_post(postId)` o marchează anulată (rămâne în listă); `delete_social_post(postId)` o scoate definitiv din calendar. Doar postări nepublicate.
-- **Video / Reel / Story / Carusel:** pune URL-ul public al clipului în `mediaUrls` + `postType: "reel"` (sau `"story"` pentru story video). **Story video acceptă acum până la 60 de secunde** (nu 30). Videoclipurile mari se **comprimă automat** înainte de upload — publicarea nu mai pică pe fișiere mari. Carusel = mai multe imagini în `mediaUrls` + `postType: "carousel"`.
+- **Video / Reel / Story / Carusel Facebook/Instagram:** pune URL-ul public al clipului în `mediaUrls` + `postType: "reel"` (sau `"story"` pentru story video). Story video acceptă până la 60 de secunde. Videoclipurile mari se comprimă automat înainte de upload. Carusel = mai multe imagini în `mediaUrls` + `postType: "carousel"`. Pentru TikTok folosește fișierul final și limitele din ghidul dedicat; acest flux nu publică story TikTok.
 - **Imagine din material grafic propriu:** dacă vrei să atașezi un afiș/flyer creat în studio (skill `materiale-grafice`), exportă-l ca imagine din studio și încarc-o în Biblioteca Media; apoi folosește URL-ul ei în `mediaUrls`. Imaginile deja încărcate se găsesc cu `browse_brand_media`.
 - **Hashtag-uri reutilizabile:** `list_hashtag_groups`, `create_hashtag_group`, `update_hashtag_group`, `delete_hashtag_group` — seturi de hashtag-uri pe care le inserezi în `content`.
 - **Google Business:** pentru postări pe fișa Google (Maps/Search) folosește `gbp_create_post` (vezi skill-ul SEO/Maps) — confirmă conținutul, apare public.
 - Vezi ce e programat: `list_social_posts` (filtrabil pe `status`: scheduled/draft/published și pe `approvalStatus`: pending/approved/rejected).
-- Vezi ce a mers bine după publicare: `get_social_top_posts(metric: "engagement" | "reach" | "views", windowDays?, platform?)` pentru clasament și `get_social_post_performance(postId?)` pentru detaliu. Acestea citesc LIVE din Meta pentru Facebook/Instagram; dacă Meta nu întoarce insights, spune „indisponibil" cu motivul, nu zero.
+- Vezi ce a mers bine după publicare: `get_social_top_posts(metric: "engagement" | "reach" | "views", windowDays?, platform?)` pentru clasament și `get_social_post_performance(postId?)` pentru detaliu. Acestea citesc LIVE din Meta pentru Facebook/Instagram. Pentru TikTok folosește `get_tiktok_post_status(brandId,postId,includeInsights:true)` pentru metricile native disponibile. Dacă platforma nu întoarce insights, spune „indisponibil” cu motivul, nu zero.
 - Detalii concept în `knowledge/marketing-social.md`.
 - Necesită scriere pe modulul „Marketing & Social Media"; dacă lipsește, îndrumă spre portal Hub → Acces AI.

@@ -11,11 +11,13 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 ## Ai DOUĂ surse de adevăr — combină-le
 
+**Accounting fără POS sau împreună cu POS:** folosește [Symbai Connect pentru Accounting](../../knowledge/symbai-connect-accounting.md). Este același Connect, cu firme și autentificări separate. Instrucțiunile POS din această bibliotecă se aplică numai conexiunilor POS; pentru o firmă Accounting verifică `get_connection_identity` și folosește uneltele oferite de conexiunea contabilă. Nu cere angajat/brand POS, cont Hub ori instalarea unui al doilea Connect.
+
 **Chat privat din Symbai Staff cu Codex/Claude Code:** [chat-staff](../chat-staff/SKILL.md) — firma și contul vin automat din Staff, Connect execută cu conexiunea exactă, iar răspunsul revine pe telefon.
 
-**Emailuri personale și sarcini periodice:** mai multe adrese Google/Microsoft, acces separat de citire/trimitere și expeditor principal în [Emailurile mele](../../knowledge/emailuri-si-sarcini-personale.md). „Caută/adaugă zilnic facturile din email” → [monitorizeaza-facturi-email](../monitorizeaza-facturi-email/SKILL.md); „preia comenzile sau ofertele din email de la expeditorii acceptați” → [monitorizeaza-comenzi-oferte](../monitorizeaza-comenzi-oferte/SKILL.md); „anunță-mă când vine un email important” → [monitorizeaza-emailuri](../monitorizeaza-emailuri/SKILL.md); „trimite-mi periodic raportul pe WhatsApp/email” → [programeaza-rapoarte](../programeaza-rapoarte/SKILL.md). Programare persistentă prin Symbai Connect, cu Codex sau Claude Code și firma cumpărătoare verificată.
-
 **Asistenți personali numiți în grupurile echipei:** [gestioneaza-asistentii](../gestioneaza-asistentii/SKILL.md) — creează roluri AI proprii, configurează participările și accesul restrâns, citește activitatea și îmbunătățește instrucțiunile și memoria din feedback.
+
+**Emailuri personale și sarcini periodice:** mai multe adrese Google/Microsoft, acces separat de citire/trimitere și expeditor principal în [Emailurile mele](../../knowledge/emailuri-si-sarcini-personale.md). „Caută/adaugă zilnic facturile din email” → [monitorizeaza-facturi-email](../monitorizeaza-facturi-email/SKILL.md); „preia comenzile sau ofertele din email de la expeditorii acceptați” → [monitorizeaza-comenzi-oferte](../monitorizeaza-comenzi-oferte/SKILL.md); „anunță-mă când vine un email important” → [monitorizeaza-emailuri](../monitorizeaza-emailuri/SKILL.md); „trimite-mi periodic raportul pe WhatsApp/email” → [programeaza-rapoarte](../programeaza-rapoarte/SKILL.md). Programare persistentă prin Symbai Connect, cu Codex sau Claude Code și firma cumpărătoare verificată.
 
 **Fotografii generate pentru meniu în Codex/ChatGPT Desktop** („pune poze la preparate”, „completează pozele lipsă”, „refă fotografiile meniului”) → skill-ul [genereaza-poze-meniu](../genereaza-poze-meniu/SKILL.md): selecție și ingrediente prin MCP, inspectare vizuală, generare cu instrumentul nativ al gazdei, transfer și atașare pe articolul meniului. Generarea nu trece prin API-ul AI al site-ului.
 
@@ -34,6 +36,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 ## Hartă rapidă a cunoștințelor (folderul knowledge/)
 
 - **Creștere și campanii Wolt / Glovo / Bolt Food:** [condu-livrarile](../condu-livrarile/SKILL.md) — obiectiv pe locație, buget comun, promoții native, cereri prin email, publicare asistată, conversie, contribuție, finanțare din facturi și jurnal. Include monitorizare prin Connect și limitele reale ale rutinei programate.
+
+- **Website-uri de restaurant spectaculoase:** [website-restaurante-spectaculoase.md](../../knowledge/website-restaurante-spectaculoase.md) — zece teme cu identitate, preparate construite din ingrediente în meniul de comandă, cocktailuri din lumină, povești pe capitole, fotografii cu puncte interactive, comparații glisante, galerii și rezervări. Alegere prin catalogul live, exemple de configurare și verificare pe telefon/desktop.
 
 Orientare:
 - `stil-de-lucru.md` — **O PAGINĂ, cele 12 reguli care fac diferența** (citește înainte să scrii, verifică prin citire, banii cer acord, nu inventa cifre/cauze, tool-uri lipsă ≠ limită de sesiune, RON/TVA/ora locală, loturi cu previzualizare, ticket la fricțiune). Citește-l la prima acțiune din sesiune.
@@ -71,6 +75,7 @@ Module (fiecare cu: concepte, pagini, fluxuri pas-cu-pas, tool-uri utile, între
 - `finante-facturare-contabilitate.md` — registru de casă legal, închidere de zi, rapoarte Z, facturi & e-Factura ANAF, note contabile, contracte.
 - `livrari-comenzi-online.md` — Glovo/Wolt/Bolt/Tazz, flotă proprie & dispecerat, aplicația livratorului, magazin online (AWB, retururi). Catalogul magazinului (variante/colecții/feed-uri/coduri/eMAG): `ecommerce-magazin-online.md`.
 - `marketing-social.md` — postări social, email, ads, GBP, blog/SEO, website & portal public, coduri QR. Conversații 1-la-1: `comunicare-whatsapp.md`; recenzii: `recenzii.md`.
+- `website-marketing-crm.md` — marketing pe website: Meta/GA4/Google Ads, acord separat, taguri, cereri în CRM, calificare și conversii comerciale prin Data Manager, rapoarte și recomandări pe domeniu. Citește la „retargeting / tracking / leaduri de pe site / conversii Google / marketing website”.
 - `integrari-meta.md` — conceptele conectării Meta (pagină vs profil, Instagram Business, Business Manager, cont reclame, permisiuni, tokenuri expirate).
 - `echipamente-kds-imprimante.md` — PC-uri, ecrane KDS și Workstation Tablet, installer unic (Print Agent + Edge + Mesh Control), casă fiscală și rutare bonuri.
 - `cantare-catch-weight.md` — cantare legate de PC-ul cu Print Agent si produse vandute/valorizate la greutate variabila (catch-weight); skill dedicat: `cantare-catch-weight`.

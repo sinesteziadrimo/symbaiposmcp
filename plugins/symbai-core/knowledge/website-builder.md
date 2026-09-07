@@ -1,9 +1,17 @@
 # Website & magazin online — builder-ul de site (storefront)
 
+> **Marketing și cereri în CRM:** [website-marketing-crm.md](website-marketing-crm.md) — configurare Meta/GA4/Google Ads, consimțământ, evenimente comerciale, formulare către CRM, calificare, conversii Google și rapoarte cu recomandări pe domeniu.
+
+> **Magazine, hoteluri și parcuri:** [website-teme-editoriale.md](website-teme-editoriale.md) — nouă compoziții fotografice, capitole manuale, fonturi și spațiere configurabile, legături directe către secțiuni și personalizare prin MCP.
+
+> **Fabrici și personalizare avansată:** [website-fabrici-animatii-proprii.md](website-fabrici-animatii-proprii.md) — patru teme de producție, compoziții proprii create de Codex/Claude Code, transfer de imagini și pictograme comune de ingrediente pe website.
+
+> **Restaurante, cafenele, baruri și evenimente:** citește [website-restaurante-spectaculoase.md](website-restaurante-spectaculoase.md) înainte de alegerea temei. Include cele zece direcții vizuale, catalogul experiențelor, capitole/fotografii interactive/comparații glisante, prepararea animată în meniul de comandă, galerii, rezervări și exemple MCP verificate structural.
+
 > Pentru linkul exact către orice pagină folosește `gaseste_in_aplicatie` — el e sursa autoritară de navigare.
 > Acest ghid = **cum CONSTRUIEȘTI și CONFIGUREZI site-ul public** (paginile, componentele, aspectul, catalogul pe site). Pentru **comenzi online / eMAG / feed-uri / retururi** vezi `ecommerce-magazin-online.md`. Pentru **portalul clienților** (aplicația de la masă, prin QR — meniu/comenzi/rezervări) vezi `portal-config.md`. Sunt lucruri DIFERITE: portalul = app-ul pentru clienții din local; website-ul = site-ul public, indexat de Google, cu magazin.
 > 📌 Pentru **copiere/replicare fidelă a unui site existent** citește și `website-copy-intake.md` — crawl multi-page, URL map/SEO, dropdown-uri, hero slider, pagini-cheie, componente noi și verificare vizuală.
-> ⭐ **Pentru CALITATE (ce face un magazin să convertească) + cum explici clientului fiecare alegere, citește `website-best-practices-2026.md`** — best-practice moderne (header pe 2 rânduri cu bară de categorii dedicată, megamenu cu grupuri + hover lin, search proeminent, anti-dead-end pe pagina de produs, „shop by age/occasion", bară de transport gratuit), fiecare cu cifra de conversie de citat clientului.
+> ⭐ **Pentru calitatea traseului de cumpărare și explicarea alegerilor, citește `website-best-practices-2026.md`** — navigare, căutare, pagini de produs, checkout și performanță, cu surse și criterii de verificare. Alegerea se adaptează catalogului și brandului; nu promite un procent de creștere a conversiei fără datele unui test relevant.
 > 🛍️ **Pentru PAGINA DE PRODUS completă (galerie, descriere lungă, specificații, preț redus, garanție, FAQ, accesorii, pachete, video) citește `website-builder-pdp.md`** — rețetă cu listă de bife + ce tool completează fiecare lucru pe pagină.
 
 ## Pe scurt — ce e și ce poate face

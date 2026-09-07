@@ -5,6 +5,16 @@ description: Configurează sau repară conexiunea MCP la instanța Symbai Accoun
 
 # Conectează / repară conexiunea Symbai Accounting (MCP)
 
+## Flux implicit: Symbai Connect și autentificare nominală
+
+Pentru Claude Code sau Codex folosește același Symbai Connect ca pentru POS. În firma activă din Accounting → Setări → Integrări → Symbai Connect descarcă pachetul personalizat și pornește instalarea; într-un Connect existent se adaugă Accounting fără pierderea conexiunilor POS, WhatsApp sau email. Clientul nu are nevoie de cont POS ori Hub.
+
+În Connect apasă Conectează pentru firma contabilă și asistentul ales. Autentificarea se face în browser cu contul Accounting și acordul pentru module. Păstrează adresa exactă a firmei afișată de Accounting (`/mcp/companies/<companyId>`), fără parametri POS. Verifică `get_connection_identity` și o citire pe firma respectivă înainte să declari succesul. `userId`/`companyId` din Accounting nu sunt `employeeId`/`brandId` POS. Fiecare firmă și produs își păstrează propria autentificare.
+
+La diagnostic citește `connection_status` din Connect. O activare Accounting retrasă și un acces AI la date retras sunt situații diferite. Nu solicita tokenuri în chat și nu trimite clientul în POS pentru repararea Accounting. Fluxul manual de mai jos rămâne pentru conexiuni existente cu token sau gazde care nu folosesc Connect.
+
+## Conexiuni manuale existente
+
 Scop: serverul MCP `symbai-accounting` să apară conectat în sesiunile Claude Code, cu tool-urile lui (`get_dashboard`, `list_invoices`, `post_journal_entry`, `list_tax_declarations` etc.).
 
 > **Important — diferit de Symbai POS**: tokenul de contabilitate se creează **DIN APLICAȚIA de contabilitate**, NU din portalul Hub. Un client de Symbai Accounting **nu are nevoie de cont Symbai Hub** — totul e local.

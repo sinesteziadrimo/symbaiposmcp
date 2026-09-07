@@ -9,6 +9,8 @@ Symbai POS are tool-uri MCP dedicate pentru reclame — promovezi o postare în 
 
 Pentru orice buget publicitar, citește și `knowledge/agent-operare-avansata.md`: verifici contul, explici costul, obții confirmare clară, rulezi tool-ul și verifici statusul după.
 
+Pentru impact real până la CRM/plată, citește `knowledge/marketing-impact.md`. Reclamele website pot folosi linkuri distincte; boost-ul aceleiași postări poate păstra linkul organic și apare organic/boost nediferențiat. Nu folosi fbclid ca dovadă că vizita este plătită și nu însuma conversiile Meta cu comenzile native.
+
 ## Fluxul de bază — promovează o postare (boost)
 
 1. **Verifică contul de reclame**: `list_ad_accounts` (opțional `brandId`). Dacă lista e goală → contul Meta Ads nu e conectat: folosește skill-ul `conecteaza-meta` (sau spune utilizatorului să-l lege din portal). Fără cont, nu poți face reclame.
@@ -110,3 +112,8 @@ Optimizarea o faci TU, din cifre — nu întreba asistentul Symbai „cum optimi
 > 3. Confirmi: „Promovez «Meniul de vară» pe Facebook, 30 RON/zi × 7 zile = ~210 RON, țintă Timișoara. Confirmi?" → utilizatorul: „da".
 > 4. `boost_post(postId:961, dailyBudgetRon:30, platform:"facebook", durationDays:7, locations:["Timișoara"], confirm:true)`.
 > 5. „✅ Gata — campania #502 e la verificare Meta (pending_review). O vezi în Campanii Publicitare." + link.
+
+
+## Website, marketing și CRM (2026-09)
+
+Pentru captarea cererilor, retargeting Meta/Google și măsurarea rezultatului comercial, citește `knowledge/website-marketing-crm.md`. Verifică tool-urile disponibile pe tenant. Folosește `get_website_marketing_playbook`, `get_website_marketing_setup`, `configure_website_marketing` și `get_website_marketing_report` cu brandId/websiteId exacte. `sync_website_marketing_leads` recuperează cererile păstrate în așteptare. Calificarea reală se înregistrează prin `qualify_website_marketing_lead`; exportul la Google are previzualizare locală, autorizare externă explicită și verificarea procesării. Nu dubla pixelii prin custom HTML și nu transforma automat cererile în abonați de marketing.

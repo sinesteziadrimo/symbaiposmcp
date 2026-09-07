@@ -12,7 +12,7 @@
       "name": "symbai-core",
       "source": "./plugins/symbai-core",
       "description": "Asistentul Symbai: ghiduri pas-cu-pas + cunoștințe despre modulele Symbai, aplicațiile native Expo și catalogul MCP live. Lucrează MCP-first cu confirmări sigure și verificare prin citire.",
-      "version": "0.45.19",
+      "version": "0.45.20",
       "author": {
         "name": "Symbai"
       },
@@ -24,7 +24,7 @@
       "name": "symbai-accounting",
       "source": "./plugins/symbai-accounting",
       "description": "Asistentul Symbai Accounting: ghiduri + cunoștințe RO (plan de conturi & monografii, TVA, declarații, salarizare, regimuri) + catalogul MCP live (rapoarte calculate, parteneri, stocuri, bancă). Conectare locală, fără cont Hub; MCP-first, cu confirmări pe acțiunile ireversibile.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "author": {
         "name": "Symbai"
       },
