@@ -14,7 +14,7 @@ Separă liniile produse în fabrică de cele din depozit central sau de la furni
 
 Verifică fluxul/rețeta sau lista de materiale, loturile și planificările existente, materialele eligibile, utilajele și oamenii disponibili. Ia în calcul calendarul comun, nu doar fiecare comandă izolată.
 
-Pentru date insuficiente, `get_advanced_planning_readiness` poate identifica lipsurile de configurare; verifică schema live și gestiunea. Un audit de pregătire nu este o simulare de fezabilitate. Folosește `get_production_schedule_feasibility` pentru simularea concretă disponibilă și `plan_b2b_order` pentru planul unei comenzi identificate.
+Descoperă separat `get_material_requirements` pentru necesarul de materiale și `get_production_schedule_feasibility` pentru fezabilitatea selecției concrete, după ce ai citit planul autoritar; folosește `plan_b2b_order` pentru planul unei comenzi identificate. Verifică schema live, aria și selecția suportată de fiecare unealtă înainte de apel; nu combina rezultate pentru fabrici sau intervale diferite. Pentru date insuficiente, `get_advanced_planning_readiness` poate identifica lipsurile de configurare. Un audit de pregătire nu este o simulare de fezabilitate, iar instrumentele `exec_start_batch` / `exec_resume_batch` nu sunt verificări ale capacității și nu se apelează pentru a pregăti raportul turei.
 
 Distinge:
 
