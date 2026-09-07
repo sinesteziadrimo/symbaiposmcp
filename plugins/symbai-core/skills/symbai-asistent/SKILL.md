@@ -15,6 +15,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 **Emailuri personale și sarcini periodice:** mai multe adrese Google/Microsoft, acces separat de citire/trimitere și expeditor principal în [Emailurile mele](../../knowledge/emailuri-si-sarcini-personale.md). „Caută/adaugă zilnic facturile din email” → [monitorizeaza-facturi-email](../monitorizeaza-facturi-email/SKILL.md); „preia comenzile sau ofertele din email de la expeditorii acceptați” → [monitorizeaza-comenzi-oferte](../monitorizeaza-comenzi-oferte/SKILL.md); „anunță-mă când vine un email important” → [monitorizeaza-emailuri](../monitorizeaza-emailuri/SKILL.md); „trimite-mi periodic raportul pe WhatsApp/email” → [programeaza-rapoarte](../programeaza-rapoarte/SKILL.md). Programare persistentă prin Symbai Connect, cu Codex sau Claude Code și firma cumpărătoare verificată.
 
+**Asistenți personali numiți în grupurile echipei:** [gestioneaza-asistentii](../gestioneaza-asistentii/SKILL.md) — creează roluri AI proprii, configurează participările și accesul restrâns, citește activitatea și îmbunătățește instrucțiunile și memoria din feedback.
+
 **Fotografii generate pentru meniu în Codex/ChatGPT Desktop** („pune poze la preparate”, „completează pozele lipsă”, „refă fotografiile meniului”) → skill-ul [genereaza-poze-meniu](../genereaza-poze-meniu/SKILL.md): selecție și ingrediente prin MCP, inspectare vizuală, generare cu instrumentul nativ al gazdei, transfer și atașare pe articolul meniului. Generarea nu trece prin API-ul AI al site-ului.
 
 1. **Tool-urile MCP `symbai`** (conexiunea live la instanța clientului) = date reale + acțiuni:
