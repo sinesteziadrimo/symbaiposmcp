@@ -35,6 +35,19 @@ Permisiunile efective sunt intersecția dintre accesul nominal POS/Hub, accesul 
 
 Moduri: `mention` la @mențiune, `always` după mesajele colegilor, `periodic` la intervalul ales sau `manual` la cererea proprietarului. Setează limitele orare/zilnice, intervalul, așteptarea mesajelor consecutive și eventual orele de liniște cu fusul orar. Asistenții nu se declanșează reciproc. Instrucțiunile grupului descriu sarcina locală; permisiunile pot fi doar restrânse aici.
 
+## Dă-i sarcini fără grup
+
+O sarcină independentă rulează fără niciun grup: raportul de dimineață la 08:00, marketingul între 09:00 și 21:00, urmărirea unui grup WhatsApp sau a unei adrese de email, preluarea facturilor din email, verificarea eFactura. Rulează pe același calculator Connect, cu identitatea și memoria asistentului, iar răspunsul final este livrabilul.
+
+1. Citește `asistenti_lista`: `taskTemplates` (șabloane cu declanșator, instrucțiuni și pachete de unelte) și `taskTargets` (adresa proprietarului, emailurile personale conectate, numerele WhatsApp partajate prin Connect cu conversațiile lor). Sursele și destinațiile se aleg NUMAI de acolo.
+2. Alege declanșatorul: `schedule` (oră fixă + zile), `interval` (la N minute, opțional într-o fereastră orară, de ex. 09:00–21:00), `monitor` (verifică surse noi la N minute: WhatsApp cel puțin la 2 minute, email cel puțin la 5) sau `manual`. Fusul orar implicit este Europe/Bucharest.
+3. Alege pachetele de unelte prin `envelope.capabilities`: `reports.read` (vânzări, P&L, casă, stocuri, echipă), `marketing.read`/`marketing.operate`, `team.read`/`team.operate`, `email.read`/`email.send`, `whatsapp.read`/`whatsapp.send`, `invoices.read`/`invoices.write`, plus `knowledge.read`, `learning.propose`, `sales.read`, `tasks.draft`. Pot fi doar mai puține decât ale asistentului; uneltele rulează cu drepturile proprietarului (rol + Acces AI), pe brandurile și unitățile bifate. Nu porni pachete de scriere fără cererea explicită a proprietarului.
+4. Scrie instrucțiuni pentru o singură rulare: ce verifică, ce criterii aplică, ce are voie să facă și cum arată răspunsul final. `[NO_REPLY]` înseamnă „nimic de raportat” și nu se livrează.
+5. Alege livrarea (`deliver`): push pe telefonul proprietarului, email (null = adresa lui), mesaj într-un grup de echipă administrat de el, WhatsApp prin numărul lui partajat (doar conversații cu notificări permise). Rezultatul rămâne oricum în Activitate.
+6. Salvează cu `asistent_sarcina` (taskId UUID stabil, `expectedRevision` null la creare). Monitoarele pornesc de la mesajele de după salvare. Reia/pune în pauză/șterge cu `asistent_comanda` (`resume-task`, `pause-task`, `delete-task`), pornește imediat cu `run-task`. Citește starea cu `asistent_citeste` (`sectiune: sarcini` sau `taskId`): următoarea rulare, ultima rulare, `lastError` și livrarea fiecărei rulări.
+
+Vechiul „marketing autonom” (obiectivele agentului de marketing) nu mai rulează: înlocuiește-l cu șablonul „Marketing de zi” pe un asistent numit.
+
 ## Îmbunătățește din dovezi
 
 La „învață-l să…” sau „îmbunătățește-l”:

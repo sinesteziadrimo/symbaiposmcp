@@ -93,7 +93,7 @@ Buton „**Wizard configurare rapidă**" (la prima deschidere: 3 pași cu ~20 ș
 - `get_sales_quote_summary(brandId?)` — număr și valori pe monedă/status. Numai oferta principală a deal-ului intră în pipeline/won, ca să nu dubleze forecastul.
 - `get_crm_funnel`, `get_sales_analytics`, `get_crm_settings`, `list_enterprise_crm_records` — funnel, performanță, configurare și obiecte enterprise auditate.
 
-**Scriere deal/pipeline/ofertă:** folosește UI-ul actual. `create_deal`, `advance_deal`, `log_deal_activity`, `create_pipeline_stage` și celelalte mutații legacy se folosesc numai dacă apar explicit în lista live a instanței; nu presupune disponibilitatea lor dintr-un ghid mai vechi.
+**Scriere deal/activitate/ofertă (cont nominal prin Symbai Connect):** `create_deal` și `advance_deal` folosesc același serviciu tranzacțional ca `/sales-crm` și Symbai Staff — cer `brandId` exact și un `operationId` (UUID) pe care îl păstrezi la reîncercarea aceleiași intenții (fără dubluri), `value` doar împreună cu `currency` ISO, client existent sau `newCustomer` dedublat pe telefon/email, responsabilul implicit = persoana conectată; valoarea unei oportunități cu ofertă principală e refuzată (409) — se schimbă din ofertă. `log_deal_activity` / `mark_deal_activity_done` pentru pași și interacțiuni (cu `source` = referința mesajului din email/WhatsApp), `create_sales_quote_draft` pentru ciorna de ofertă. Configurarea pipeline-ului (`create_pipeline_stage`, tipuri, reguli) rămâne în `/settings/sales-crm` sau în tool-urile ei dacă apar în lista live; nu presupune disponibilitatea dintr-un ghid mai vechi.
 
 > Permisiunea exactă a fiecărui tool e în `tools-mcp.md`. „Permisiune insuficientă" → modulul `marketing_crm` nu e pe token → portal Hub → Acces AI.
 
