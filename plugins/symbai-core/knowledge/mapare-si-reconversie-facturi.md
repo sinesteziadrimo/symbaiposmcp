@@ -138,7 +138,7 @@ Când asistentul nu găsește produsul în catalog, îl **propune** — nu îl c
 - **Se traduce singur, în aceeași familie**: masă cu masă (t, kg, g, mg), volum cu volum (hl, l, dl, cl, ml), lungime cu lungime, suprafață cu suprafață. Bucățile rămân bucăți.
 - **Codurile de pe e-Factură sunt recunoscute** — kilogram net, litru, cutie, bax, ladă, doză și celelalte coduri obișnuite. Nu trebuie să le traduci tu.
 - ⚠ **„ml" înseamnă mililitru**, niciodată metru liniar. Pentru metri liniari folosește o unitate proprie, altfel intri într-o familie greșită.
-- **Nu se traduce**: metrul cub și codurile exotice. Acolo sistemul cere explicit factorul.
+- **Când conversia nu este cunoscută**, inclusiv pentru coduri neidentificate, recepția folosește implicit 1:1, fără o întrebare suplimentară. Utilizatorul poate schimba valoarea. Conversiile cunoscute au prioritate; pentru masă și volum se păstrează scara unităților, iar densitatea lipsă înseamnă 1 kg/l. De exemplu, 600 ml devin 0,6 kg. Această valoare implicită nu se învață ca regulă a furnizorului și nu se prezintă ca o măsurătoare.
 - ⚠ **O linie fără unitate deloc intră 1:1, fără avertisment.** La documentele vechi sau importate, verifică unitatea pe linie înainte de a accepta.
 
 ## Operațiile pe linie

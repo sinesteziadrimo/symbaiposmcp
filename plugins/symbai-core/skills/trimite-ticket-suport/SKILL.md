@@ -38,4 +38,6 @@ După trimitere, anunță-l pe scurt pe utilizator: „Am trimis echipei Symbai 
 - NU confunda cu feedback-ul clienților restaurantului (recenzii) sau cu ticketele clienților proprii din CRM — `trimite_ticket_symbai` e DOAR pentru platforma Symbai în sine.
 - Pentru probleme și reclamații cere acordul utilizatorului înainte de trimitere; doar sugestiile (B) se trimit automat, dar îl anunți după.
 - Maxim o sugestie automată per idee per sesiune — folosește `dedupeKey` consecvent.
-- Tool-ul e mereu disponibil (nu cere permisiune de scriere pe vreun modul). Ticketele nu pot fi citite înapoi prin conexiune — răspunsul vine pe emailul lăsat.
+- Tool-ul nu cere permisiune de scriere pe un modul, dar cere o conexiune MCP Symbai autentificată și încărcată în sesiune. Licența validă din Connect nu dovedește că sesiunea MCP funcționează.
+- Dacă lipsește tot serverul Symbai, verifică o singură dată conexiunea. După autentificare, dacă uneltele încă lipsesc, reîncarcă serverul MCP sau repornește aplicația asistentului și reia conversația existentă; nu repeta căutarea în toate modulele și nici login-ul la nesfârșit. Păstrează descrierea tichetului ca draft, fără să pretinzi că a fost trimis. Dacă legătura nu poate fi restabilită, oferă draftul pentru support@symbai.app; trimiterea prin email cere acordul utilizatorului.
+- Tichetul este trimis numai când primești referința lui. Ticketele nu pot fi citite înapoi prin conexiune — răspunsul vine pe emailul lăsat.

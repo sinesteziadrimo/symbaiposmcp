@@ -113,6 +113,25 @@ try {
         Copy-Item (Join-Path $root "plugins\$($p.name)") (Join-Path $staging "plugins") -Recurse -Force
     }
 
+    # Connect updates this local marketplace itself. Its package must not run the
+    # Git-only Node updater at every Claude session (native Claude needs no Node).
+    # Keep other hooks and leave the Git-distributed plugin untouched.
+    $coreHooksPath = Join-Path $staging "plugins\symbai-core\hooks\hooks.json"
+    if (Test-Path -LiteralPath $coreHooksPath) {
+        $hookConfig = Get-Content -LiteralPath $coreHooksPath -Raw | ConvertFrom-Json
+        $sessionGroups = @()
+        foreach ($group in @($hookConfig.hooks.SessionStart)) {
+            if ($null -eq $group) { continue }
+            $group.hooks = @($group.hooks | Where-Object {
+                $_.command -ne 'node "${CLAUDE_PLUGIN_ROOT}/scripts/self-heal-marketplace.mjs"'
+            })
+            if ($group.hooks.Count -gt 0) { $sessionGroups += $group }
+        }
+        if ($sessionGroups.Count -gt 0) { $hookConfig.hooks.SessionStart = $sessionGroups }
+        else { $hookConfig.hooks.PSObject.Properties.Remove('SessionStart') }
+        [System.IO.File]::WriteAllText($coreHooksPath, ($hookConfig | ConvertTo-Json -Depth 40), [System.Text.UTF8Encoding]::new($false))
+    }
+
     if (Test-Path $Output) { Remove-Item $Output -Force }
     # Ambele: ZipArchiveMode traieste in System.IO.Compression, ZipFile in .FileSystem.
     Add-Type -AssemblyName System.IO.Compression
@@ -135,7 +154,13 @@ try {
         $zipOut.Dispose()
     }
 } finally {
-    Remove-Item $staging -Recurse -Force -ErrorAction SilentlyContinue
+    $resolvedStaging = [System.IO.Path]::GetFullPath($staging)
+    $resolvedTemp = [System.IO.Path]::GetFullPath($env:TEMP).TrimEnd('\') + '\'
+    if (-not $resolvedStaging.StartsWith($resolvedTemp, [System.StringComparison]::OrdinalIgnoreCase) -or
+        (Split-Path $resolvedStaging -Leaf) -notmatch '^symbai-plugin-[a-f0-9]{32}$') {
+        throw "Director temporar neasteptat: refuz curatarea."
+    }
+    Remove-Item -LiteralPath $resolvedStaging -Recurse -Force -ErrorAction SilentlyContinue
 }
 
 $info = Get-Item $Output

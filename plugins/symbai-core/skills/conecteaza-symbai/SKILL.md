@@ -116,7 +116,8 @@ Le folosești **după** ce ai citit `stare` și `explicatie`, ca să traduci —
 
 ## Alte situații
 
-- **401 după ce mergea:** cheamă `connect_repair` — de cele mai multe ori doar autentificarea a expirat.
+- **401 sau „conexiune expirată” după ce mergea:** verifică `connection_status`, apoi `connect_repair`. Mesajul clientului nu dovedește că accesul a expirat. Confirmă rezultatul printr-un apel `verifica_conexiune` în aceeași conexiune; dacă reușește, spune că accesul funcționează acum. Cere o autentificare nouă numai când diagnosticul o indică. Nu reinstala și nu șterge conexiuni pe baza avertizării singure.
+- **Server în actualizare / temporar indisponibil:** păstrează conexiunea existentă și reîncearcă după intervalul indicat. Explică indisponibilitatea temporară; nu o prezenta drept expirarea sau revocarea accesului.
 - **Angajat inactiv:** proprietarul reactivează contul POS, apoi acordă din nou accesul nominal.
 - **Calculator schimbat:** instalează Pachetul personalizat pe noul calculator; îl înlocuiește automat pe cel vechi.
 - **Configurație manuală veche detectată:** Symbai Connect indică intrarea veche `symbai`; elimină doar acea intrare din lista MCP, apoi reia conectarea. Nu afișa utilizatorului comenzi sau configurații.
