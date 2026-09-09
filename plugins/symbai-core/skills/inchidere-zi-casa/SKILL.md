@@ -1,72 +1,74 @@
 ---
 name: inchidere-zi-casa
-description: Închiderea legală a zilei de numerar (RO, OMFP 2634/2015) — mese deschise și predări de tură, numărarea banilor, consumul zilnic, reconcilierea raportului Z cu POS, sigilarea zilei, depuneri la bancă peste plafon. La „închide ziua", „registru de casă", „raportul Z nu bate cu POS", „plus/minus de casă", „ziua e închisă, nu pot scrie", „redeschide ziua".
+description: Închidere automată de zi configurabilă pe unitate, casa provizorie, auditul numerarului și corectarea zilelor deja închise. Pentru „închide ziua”, „verifică închiderile”, „modifică numărarea”, „raportul Z nu bate cu POS”, „predarea nu apare” sau „schimbă ora închiderii”.
 ---
 
-# Închiderea zilei în casierie — corect și legal
+# Închiderile de zi și controlul casei
 
-Ești asistentul Symbai al unui proprietar/manager de restaurant/hotel/retail — nu programator. Vorbește simplu, fără jargon. Citește întâi `knowledge/finante-facturare-contabilitate.md` (concepte cash-book, paginile modulului, capcanele) și secțiunea „⚠ De știut la scrieri prin MCP" + „⚠ Confirmare obligatorie" din `knowledge/tools-mcp.md`. Închiderea de zi e o procedură **legală și repetitivă**: dacă greșești, registrul fiscal și P&L-ul se afectează. Mare parte din muncă o face omul (numără banii, bifează, decide); tu verifici stările, explici diferențele și dai linkurile exacte.
+Vorbește simplu, ca asistent al proprietarului. Citește `knowledge/finante-facturare-contabilitate.md` pentru concepte și `knowledge/tools-mcp.md` pentru parametrii disponibili. Închiderea zilnică din POS este un raport editabil. Documentele fiscale și închiderea perioadei contabile au reguli distincte.
 
-## Când folosești
-- Userul vrea să închidă ziua de casă, total sau pe pași.
-- „Raportul Z nu bate cu POS", „am plus/minus de casă", „predarea de tură nu apare", „nu pot scrie în registru fiindcă ziua e închisă".
-- „Soldul depășește limita / depunere la bancă", „redeschide ziua de acum 2 zile", „consum zilnic nu s-a generat".
-- Cere un raport rapid de sfârșit de zi pentru contabil/proprietar.
+## Cum funcționează
 
-## Reguli de aur
-- **Context întâi:** `list_brands` + `list_locations`, apoi `list_cash_registers` (registerId-ul casieriei; `brandId`/`locationId` sunt filtre opționale, nu obligatorii). Aproape toate tool-urile de casă cer registerId. ID-uri, nu nume.
-- **Citește înainte, verifică prin citire după** — nu prin refresh de UI. Succes la tool = salvat.
-- **Sigilarea e o operațiune LEGALĂ DEFINITIVĂ.** `close_cash_book_day` are efect ireversibil (doar redeschidere auditată de admin/contabil). NU o apela niciodată din proprie inițiativă: arată-i userului ce se închide (ziua, casieria, soldul) → cere OK explicit → abia apoi apelează. La fel pentru `create_cash_book_entry` / `void_cash_book_entry` / `transfer_between_cash_registers` (bani reali în registru legal).
-- **Numărarea fizică a banilor și bifarea predărilor/tranzacțiilor o face omul** în wizardul `/finance/daily-close`. Tu nu poți număra în locul lui; îl conduci pas cu pas (`gaseste_in_aplicatie`).
-- **Stocul nu se mișcă decât la consumul zilnic generat;** banii nu intră în registrul sigilat decât după ce predările/tranzacțiile sunt „operate" în Pasul 1.
-- Toate scrierile de casă cer modulul `financiar` pe token; consumul zilnic cere modulul `inventar`. Lipsă → „permisiune insuficientă" → activare din portal Hub → Acces AI.
+- Ospătarii își închid turele. Numerarul predat este vizibil în casa provizorie a unității, până la preluarea în casierie.
+- **Închiderea automată este pornită implicit**, la ora de sfârșit a zilei de lucru. Din **Setări → Localizare** se poate opri sau se poate alege altă oră pentru fiecare unitate. Ora aleasă programează execuția după finalul intervalului fiscal; nu redefinește intervalul zilei.
+- Exemplu: ziua 7 septembrie, cu program 06:00–06:00, se termină pe 8 septembrie la 06:00, ora României. Dacă execuția este la 08:00, se închide același interval, la 08:00.
+- La execuție, sistemul preia sursele eligibile, închide ziua și urmărește pașii de finalizare. Zilele deja închise manual nu primesc o închidere automată duplicată. Sursele sosite târziu și pașii eșuați sunt recuperați.
+- Lipsa numărării fizice, turele active sau mișcările care cer verificare sunt semnalate. Nu inventa o sumă numărată și nu presupune că toate controalele sunt complete doar fiindcă ziua apare închisă.
+- Istoricul din **Finanțe → Închidere de zi** arată închiderile automate, corecțiile și avertismentele. Proveniența automată se păstrează după corectare.
 
-## Fluxul (pași numerotați cu tool-urile MCP)
-1. **Context + starea zilelor.** `list_brands` → `list_locations` → `list_cash_registers` (`brandId`/`locationId` opționale, ca filtre). Pe registru: `get_cash_register_balance(registerId)` (cât numerar e acum) + `get_cash_register_closure_status(registerId)` (ce zile sunt deschise/închise/lipsă — important dacă userul a sărit zile; se închid în ordine cronologică).
-2. **Dacă NU există casierii:** dacă userul știe exact ce casierie vrea, arată-i brandul, locația, numele și soldul inițial, cere OK explicit, apoi `create_cash_register(brandId, locationId, name, currency:"RON", openingBalance?)`. Tool-ul e idempotent pe același nume + brand + locație și nu postează bani în registru, doar creează entitatea legală. Dacă vrea generare în masă sau nu știe modelul de organizare, trimite-l la `/finance/cash-registers` cu `gaseste_in_aplicatie("configurare casierii")` → alege modul (firmă / locație / brand×locație) → „Regenerează casieriile".
-3. **Pasul 1 al închiderii — verificări** (`gaseste_in_aplicatie("închidere de zi")` → `/finance/daily-close`):
-   - **Mese deschise:** dacă apar, ziua NU se poate sigila. Trimite userul la lista de mese deschise (`gaseste_in_aplicatie("mese deschise")`); ospătarii încheie sau anulează comenzile.
-   - **Predări de tură + tranzacții cash neoperate:** `list_cash_pending_operations(registerId, businessDate)` îți arată ce e netrecut. În wizard userul le **bifează și apasă „Operează"** (predările NU intră singure; tranzacțiile cash trebuie operate explicit). Sigilarea e **blocantă** cât timp există predări neoperate, tranzacții cash neoperate, ture încă ACTIVE în fereastră sau predări în afara ferestrei — wizardul dă mesaje explicite; rezolvi cauza, nu forțezi (protecție contra unui plus fals de casă).
-   - **Numărare fizică:** OBLIGATORIE la sigilare — userul numără banii din sertar și introduce suma (0 = declară sertar gol) → sistemul afișează plus/minus față de soldul așteptat.
-   - **Consum zilnic:** bifa „Generează consum zilnic dacă lipsește". Verifici cu `get_daily_consumption_status(date)`; dacă lipsește, îl poți genera cu `generate_daily_consumption(date)` (cere modulul `inventar`).
-4. **Pasul 2 — sumar vânzări + reconciliere Z↔POS.** `get_end_of_day_report(date, locationId)` îți dă rezumatul consolidat (brut/TVA/reduceri/bacșiș/defalcare pe metode de plată, pe ospătar, comenzi anulate). Rapoartele **X/Z se scot direct din wizard-ul de închidere** — nu mai trimiți userul pe altă pagină. `/finance/fiscal-reports` rămâne pentru istoric, „Upload manual XML" și analiza detaliată: dacă Z ≠ POS, tabul **Reconciliere Z ↔ POS** explică diferența (bonuri neemise, Z parțial, vânzări nefiscalizate).
-5. **Pasul 3 — sigilare.** Doar după ce verificările sunt curate. Arată-i userului ce se închide, cere OK, apoi `close_cash_book_day(registerId, businessDate)` SAU îl lași să apese „Închide ziua" în wizard. (Înainte poți rula `close_cash_book_day(registerId, businessDate, preview: true)` — dry-run care arată soldul și operațiunile în așteptare FĂRĂ a închide ziua; numărarea fizică e OBLIGATORIE la sigilare — treci suma numărată prin `countedAmount` (0 = sertar gol declarat), cu `countNote` opțional.) Ziua primește filă + sigiliu SHA-256 (lanț cu ziua precedentă) și devine „Închisă/Sigilată". Foaia completă de închidere (PDF) se descarcă tot din Pasul 3.
-6. **Plafon depășit (RO 50.000 lei/zi sau 10.000 lei/partener).** Dacă soldul e peste limită, sistemul avertizează (și depășirea per partener BLOCHEAZĂ închiderea). Fă o depunere la bancă: arată suma → cere OK → `create_cash_book_entry(registerId, entryType: "depunere_banca", amount, description, clientRef)`, sau trimite userul la `/finance/cash-book` → „Depunere Bancă". Reverifică cu `get_cash_register_balance`.
-7. **Cheltuială mică cash în timpul zilei** (apă, reparație): arată suma → cere OK → `create_cash_book_entry(registerId, entryType: "plata", amount, description, clientRef)`, sau în `/finance/cash-book` → „Plată (DPÎ)". Pentru evidența P&L a unei cheltuieli generale: `create_expense(brandId, category, amount)`.
-8. **Ai greșit o operațiune:** nu se șterge — `void_cash_book_entry(entryId, reason)` creează rândul invers (rândul original rămâne, ca pe formularul legal). Pe ziua deja închisă, întâi redeschidere de admin/contabil.
-9. **Raport rapid de sfârșit de zi** (pentru contabil/proprietar): `raport_vanzari(perioada: "azi")` (încasări, bonuri, bon mediu, cash vs card, comparație cu ieri) + `performanta_ospatari(perioada: "azi")` per ospătar.
-10. **Audit / cine ce a făcut:** `jurnal_activitate(categorie: "FINANCE", cauta: "redeschis" / "stornare" / "anulare")` — util la investigarea unui plus/minus mare sau a unei redeschideri.
+## Verifică o zi
 
-## Capcane (spune-i userului)
-- **„Nu pot adăuga în registru" / ziua e închisă** → e sigilată; redeschiderea e doar admin/contabil și e auditată. „Permisiune insuficientă" la redeschidere = rolul lui nu e admin/contabil.
-- **Predarea de tură nu apare la închidere** → predările intră în ziua de business doar dacă fereastra zilei le prinde — implicit fereastra pornește de la **ora de start a organizației** și acoperă 24h (ex. 06:00 → 06:00 a doua zi); wizardul arată și predările din ±6h cu sugestii.
-- **Capcana ferestrei „00:00 → 06:00"** → asta înseamnă o fereastră de doar 6 ORE (00:00–06:00), NU „de la miezul nopții până a doua zi la 6". Predările de seară rămân pe dinafară. Dacă predările „dispar", verifică întâi fereastra zilei din setări.
-- **„Nu mă lasă să sigilez ziua"** → sigilarea e blocantă cât există predări de tură neoperate, tranzacții cash neoperate, ture încă ACTIVE în fereastră sau predări în afara ferestrei — mesajele din wizard spun exact ce lipsește; se rezolvă cauza, nu se forțează.
-- **Plus/minus de casă:** sub ~100 lei = de regulă eroare de numărare; mare → investighează (mese deschise neîncasate, vânzări neevidate, plăți duble, furt) cu `jurnal_activitate`.
-- **Z mai mare/mai mic decât POS** → Z parțial (casă repornită), bonuri emise în afara POS, bonuri anulate. Tabul Reconciliere Z ↔ POS în `/finance/fiscal-reports`.
-- **Zile neînchise consecutive** → se sigilează în ordine (ziua N depinde de N-1). Folosește `get_cash_register_closure_status` ca să-i arăți ce e de închis și butonul de închidere în lot.
-- **Consum zilnic generat dar stocul pare neschimbat** → UI cu delay / document de consum; reîmprospătează `/inventory`. Dacă produsele vândute n-au rețetă, consumul nu se poate expanda.
-- **Sigiliul SHA-256** e transparent pentru user — sistemul îl face automat; nu trebuie să facă nimic special. Important pentru conformitate (OMFP 2634/2015) și audit.
-- Perete real (ceva ce se poate doar din aplicație, sau un bug) → `trimite_ticket_symbai` (tip „bug"/„sugestie", cu `dedupeKey`).
+1. Identifică unitatea și moneda cu `list_cash_registers` și `get_cash_day_automation_settings`. Folosește ID-urile întoarse.
+2. Citește `list_cash_day_closures(registerId, from, to)` pentru istoric și `audit_cash_book_day(registerId, businessDate)` pentru controlul curent. Intervalul istoricului este de cel mult 366 zile.
+3. Urmărește soldurile, numerarul așteptat, numărarea fizică și diferența, mișcările neoperate/neconfirmate, turele active și rezultatul automatizării. Mișcările neverificate din zilele anterioare pot afecta sertarul de azi.
+4. `get_cash_provisional_drawers(locationId, businessDate)` arată predările încă nepreluate pe unitate și monedă. Predarea nu este un venit nou: nu dubla vânzările sau operațiunile înregistrate.
+5. Pentru controlul complet citește separat `get_end_of_day_report`, `get_daily_consumption_status` și `get_fiscal_z_register`, cu aceeași zi și unitate. Folosește intervalul istoric dacă diferă de programul curent. La Z, compară aceeași casă și perioadă; un Z comun mai multor branduri nu poate fi împărțit printr-un filtru de acces.
+6. Răspunsul trebuie să distingă verificările trecute, constatările actuale, avertismentele istorice și controalele indisponibile. `checks.fiscalZ=false` sau `checks.consumption=false` în auditul de casă înseamnă că acele controale se fac separat, nu că au trecut.
 
-## Rapoarte personalizate pe închideri
-Din **Setări → Rapoarte pe închideri** se configurează secțiunile care apar pe bonul de predare de tură și pe foaia de sfârșit de zi: grupări pe produs / categorie / etichetă / canal / oră etc., plus **defalcare per angajat**. Dacă userul vrea „să apară și X pe raportul de tură", acolo se setează — nu e o limitare a sistemului.
+## Interpretează notele și operațiunile de numerar
 
-## Borderoul de bacșiș
-**Finanțe → Bacșișuri**: raportul de bacșiș per ospătar pe zile și plata lui cu **borderou PDF cu semnături** (Legea 376/2022). Protecție anti-dublă-plată: aceeași perioadă nu se poate plăti de două ori. Ștergerea unui borderou **stornează automat** ieșirea din registrul de casă — nu rămân bani „pierduți" în registru.
+- `get_end_of_day_report`: `noteFinalizate` (alias vechi `bonuriFinalizate`) numără **note POS**, inclusiv `noteCuValoareZero`. Nu este numărul bonurilor fiscale. De exemplu, 14 note cu valoare și 2 note de zero înseamnă 16 note; numărul bonurilor emise se verifică separat în sursele fiscale.
+- Depunerile și retragerile (`CASH-IN` / `CASH-OUT`) sunt excluse din vânzări. Pot exista legitim fără produse și fără plăți de vânzare; asta nu le face „comenzi fantomă”.
+- Problemele depunerilor/retragerilor la casa de marcat apar separat în `audit.operatiuniNumerarCuProbleme`, `operatiuniNumerarNerezolvate` și `operatiuniNumerarDetalii`. Nu le interpreta automat ca vânzări lipsă de pe Z. Dacă versiunea conectată nu întoarce aceste câmpuri, absența lor nu înseamnă zero probleme: verifică detaliile disponibile.
+- Două operațiuni cu aceeași sumă nu dovedesc o dublură. Verifică sursa, orele, tura, registrul de casă și ce bani au fost efectiv depuși/retrași. O eroare de hârtie sau conexiune la aparat nu justifică înregistrarea banilor încă o dată. Verifică rezultatul la casa de marcat înainte de retrimitere.
 
-## De știut
-- **Z automat + email fiscal:** extragerea raportului Z se poate programa (auto-pull la oră fixă) și poți primi zilnic un email fiscal cu raportul — ambele din Setări.
-- **Bon individual:** în `/finance/fiscal-reports` există căutare de bon individual și **retipărire legală** — bonul retipărit e un bon fiscal nou care intră în memoria fiscală, de aceea cere confirmare.
-- **De pe telefon:** închiderea de zi, numărarea fizică și rapoartele X/Z se pot face și din aplicația **Symbai POS** pe mobil, ecranul „Închidere zi".
+## Corectează o zi deja închisă
 
-## Tool-uri folosite
-- Context/stări (citire): `list_brands`, `list_locations`, `list_cash_registers`, `get_cash_register_balance`, `get_cash_register_closure_status`, `get_cash_book_day`, `list_cash_pending_operations`, `list_cash_book_entries`, `get_daily_consumption_status`, `get_end_of_day_report`.
-- Rapoarte/audit (citire): `raport_vanzari`, `performanta_ospatari`, `jurnal_activitate`.
-- Navigare: `gaseste_in_aplicatie`. Suport: `trimite_ticket_symbai`.
-- Scriere `financiar` (cere OK explicit înainte de apel — bani reali în registru legal sau entități financiare; sigilarea e definitivă; aceste tool-uri nu au parametru `confirm`): `create_cash_register` (`brandId`, `locationId`, `name`; opțional `currency`, `openingBalance`), `close_cash_book_day` (`registerId`, `businessDate`, `countedAmount` — suma numărată fizic, obligatorie la sigilare, 0 = sertar gol; opțional `preview`, `countNote`), `create_cash_book_entry` (`registerId`, `entryType`, `amount`, `description`; opțional `clientRef` ca cheie de idempotență), `void_cash_book_entry` (`entryId`, `reason`), `transfer_between_cash_registers` (`fromRegisterId`, `toRegisterId`, `amount`; opțional `clientRef`), `create_expense`. Scriere `inventar`: `generate_daily_consumption`.
+Nu cere redeschidere doar pentru numărare, observație sau interval. Execută modificarea cerută ori autorizată în sarcină, păstrând restul raportului.
 
-## Legături (fișiere knowledge relevante)
-- `knowledge/finante-facturare-contabilitate.md` — conceptele cash-book, paginile (`/finance/daily-close`, `/finance/cash-book`, `/finance/cash-registers`, `/finance/fiscal-reports`, `/finance/cashflow`), fluxurile și capcanele complete.
-- `knowledge/tools-mcp.md` — lista exactă a tool-urilor + modulele de permisiune + regulile de confirmare.
-- `knowledge/harta-aplicatiei.md` — rutele paginilor. `knowledge/stocuri-inventar-furnizori.md` — context consum zilnic.
+1. Citește auditul și versiunea zilei.
+2. Apelează `correct_cash_book_day` cu `registerId`, `businessDate`, motivul în `reason` și numai câmpurile schimbate: `countedAmount`, `countNote`, `startHour`, `endHour`. Implicit este previzualizare, fără scriere.
+3. Câmpurile omise se păstrează. `countedAmount:null` elimină explicit numărarea; zero înseamnă sertar numărat și gol. O simplă observație nu schimbă diferența de casă. Pentru recalcularea unei zile istorice cu interval necunoscut, cere intervalul real.
+4. Salvează cu `preview:false` și `expectedVersion` din previzualizare. La conflict, recitește și reconstruiește modificarea.
+5. Recitește auditul și arată pe scurt înainte/după, motivul și problemele rămase. Modificarea nu retrimite comenzi către terminale sau casa fiscală.
+
+O cerere de verificare permite citirea. Nu alege în locul proprietarului o sumă sau o mișcare de bani. Dacă schimbarea este deja cerută clar, nu cere repetat același acord.
+
+## Corectează mișcările de bani
+
+- Pentru predări existente: `list_cash_pending_operations`, apoi `operate_cash_pending_operations` cu sursele exacte.
+- Pentru o operațiune nouă documentată: `create_cash_book_entry`, cu `clientRef` stabil la reîncercare.
+- Pentru anulare: `void_cash_book_entry(entryId, reason, confirm:true)`, în baza intenției autorizate; rămâne urma în istoric.
+- Pentru confirmare: `verify_cash_book_entry` numai pe baza documentului justificativ. Nu regla arbitrar soldul ca să dispară diferența.
+- `close_cash_book_day` închide o zi nouă; numărarea este opțională. Pentru corectarea unei zile închise folosește instrumentul de corecție.
+- `bulk_close_cash_days` închide cronologic zilele rămase deschise. Operarea banilor se face separat cu instrumentul dedicat; aici `operatePending:false`.
+- O închidere zilnică nu este motiv suficient să blochezi corecția. Documentele fiscale și perioadele contabile rămân tratate prin fluxurile lor proprii.
+
+## Drepturi și asistent financiar
+
+Citirea, corectarea raportului, operarea numerarului și configurarea programului sunt drepturi separate. Folosește dreptul nominal exact și unitățile acordate, fără a cere rol de administrator global.
+
+În **Asistenții mei**, pachetele sunt `cash.read`, `cash.close`, `cash.entries` și `cash.settings`. Șablonul „Verificarea închiderilor de zi” pornește cu citire. Adaugă scriere numai când proprietarul o cere. În grupuri, datele de casă sunt disponibile numai dacă publicul actual are acces la ele.
+
+Setările pot fi citite/scrise prin modulul `setari` sau `financiar`, cu dreptul de configurare. Verificarea consumului este disponibilă și prin modulul `financiar`; generarea/reprocesarea lui are drepturi distincte.
+
+## Alte pagini utile
+
+- `/finance/cash-book`: operațiuni, solduri și exporturi.
+- `/finance/cash-registers`: configurarea casieriilor și rutării numerarului.
+- `/finance/cash-verification`: mișcările care cer verificare.
+- `/finance/fiscal-reports`: istoricul X/Z și reconcilierea cu POS.
+- **Setări → Rapoarte pe închideri**: conținutul rapoartelor de tură și de zi.
+- **Finanțe → Bacșișuri**: borderourile de plată, distincte de vânzări și de totalul brut încasat.
+
+Pentru navigare, `gaseste_in_aplicatie` dă pagina exactă. Pentru o problemă demonstrată care nu poate fi rezolvată cu uneltele disponibile, explică ce lipsește și folosește fluxul de suport autorizat.

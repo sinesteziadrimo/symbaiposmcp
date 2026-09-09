@@ -23,6 +23,7 @@ Modulul de rapoarte acoperă tot ce ține de cifre: dashboard-ul de start, rapoa
 - **Menu engineering** — clasificarea felurilor după marjă și popularitate (ex. ponderea „vedetelor" în venit) — disponibil ca KPI.
 - **Snapshot P&L** — un P&L „înghețat" la un moment dat: datele rămân fixe pentru referință, indiferent ce se schimbă ulterior în datele live.
 - **Raport Z** — raportul fiscal de zi al casei de marcat; aplicația arată și diferența dintre totalul Z și totalul POS.
+- **Note finalizate** — în raportul de sfârșit de zi sunt note POS, inclusiv cele cu valoare zero; nu reprezintă numărul bonurilor fiscale. Depunerile/retragerile de numerar sunt excluse din vânzări, iar problemele lor la casa de marcat se verifică separat. Pentru interpretare și control vezi skill-ul `inchidere-zi-casa`.
 - **Zi de business** — ziua de raportare poate avea oră de tăiere personalizată (nu se termină obligatoriu la miezul nopții); raportul de sfârșit de zi respectă fereastra orară. Presetările calendaristice („azi”, „săptămâna aceasta”) includ integral ultima zi, dar un interval ales explicit cu ore — de exemplu 24 iulie 06:00 → 25 iulie 06:00 — este o limită exactă și nu primește încă o zi în plus. Conversia folosește fusul orar al organizației și respectă schimbarea de oră de vară/iarnă.
 - **Benchmark / praguri** — limitele verzi/galbene/roșii folosite în P&L, KPI-uri și comparații; se editează din Setări > Setări P&L.
 - **TVA România** — cote permise: **21%** (standard), **11%** (redusă), **0%**. Detalierea pe cote apare în raportul de zi și în P&L (tab TVA).

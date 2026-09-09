@@ -66,12 +66,12 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 
 ## Stocuri, furnizori & achiziții
 - **Tablou de Bord Stoc** `/inventory` — Dashboard FĂRĂ tab-uri: carduri KPI (valoare stoc, stoc redus, de plătit furnizori) + alerte + ultimele mișcări.
-· NU aici: stoc live/inventariere/zone → /inventory-check; mișcări/ieșiri → /stock-operations
+· NU aici: stoc live/inventariere → /inventory-check; magazii/zone/rafturi → /storage-designer; mișcări/ieșiri → /stock-operations
 - **Stoc Curent** `/inventory-check?tab=live-stock` — Cantități + valoare pe gestiuni în timp real, căutare/filtrare, alerte stoc minim.
 · NU aici: numărare fizică → /inventory-check?tab=stocktake
 - **Inventariere** `/inventory-check?tab=stocktake` — Numărare fizică pe gestiuni; după finalizare diferențele se ajustează în tab Raport Diferențe.
 · NU aici: diferențe/ajustări → /inventory-check?tab=variance
-- **Zone Depozitare** `/inventory-check?tab=zones` — Zone/rafturi/frigidere per gestiune (organizarea fizică a stocului).
+- **Magazii, zone și rafturi** `/storage-designer` — Configurare gestiuni, precizia stocului, zone, echipamente și poziții; plan vizual, import, numerotare, QR și conținut live. Rafturi inclusiv cu stoc global.
 · NU aici: creare/editare gestiuni (depozite) → /warehouse-products
 - **Operațiuni Gestiune** `/stock-operations` — 3 tab-uri: Mișcări Stoc, Documente, Rapoarte. Buton 'Document Nou' → dialog Recepție (NIR factură/aviz) / Ieșire (Consum/Pierdere/Furt/Transfer Locație) / Transfer Între Gestiuni; selectare magazii + produse + cantități.
 · NU aici: pentru recepție formală pe factură ANAF/OCR cu mapare → /stock-entries; pentru istoricul curat al mișcărilor → /stock-movements

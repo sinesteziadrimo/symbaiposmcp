@@ -18,23 +18,26 @@ description: Conectează contul Meta la Symbai pas cu pas (pagina Facebook, Inst
 
 ## Pasul 0 — diagnostic
 
-1. Dacă sunt mai multe branduri: `list_brands` → întreabă pentru care brand.
-2. `verifica_integrare("meta")` → citește checklist-ul și anunță utilizatorul scurt: ce e deja legat, ce urmează.
+1. Identifică brandul cerut prin `list_brands`; întreabă numai dacă acesta nu reiese din cerere. Identifică pagina dorită prin nume și ID; nu deduce asocierea din asemănarea numelor sau ordinea paginilor.
+2. `list_social_accounts(brandId)` → citește `platformAccountId` și numele paginii. `verifica_integrare(serviciu:"meta",brandId,expectedFacebookPageId)` compară pagina salvată și identitatea live cu ID-ul dorit. Dacă ID-ul dorit încă nu este cunoscut, diagnostichează fără el și clarifică pagina înainte de confirmarea conectării. Un token valid nu dovedește alegerea paginii corecte.
 
 ## Pasul 1 — pagina Facebook
 
 - **Precondiții pe partea Meta** (verbal, înainte de link): utilizatorul are nevoie de un cont Facebook personal care e **administrator al paginii** restaurantului. Dacă restaurantul nu are pagină → o creează întâi (facebook.com/pages/create) — pagină de business, nu profil personal.
-- `genereaza_link_conectare("facebook")` → dă-i link-ul din `data.url` și spune-i EXACT:
-  1. deschide link-ul în browserul unde e logat în contul care administrează pagina;
-  2. în dialogul Meta, selectează **pagina restaurantului** (nu profilul personal; dacă are mai multe pagini, pe cea corectă);
-  3. **bifează TOATE permisiunile** — orice debifare înseamnă postări eșuate mai târziu.
-- Link-ul expiră după câteva minute — dacă utilizatorul a întârziat, generează altul fără să comentezi.
-- Când zice că a terminat: `verifica_integrare("meta")`. Dacă tokenul e valid → confirmă și treci mai departe.
+- `genereaza_link_conectare(platforma:"facebook",brandId)` → linkul stabil din `data.url` deschide **Conturi Social Media** pentru brand. Nu îl prezenta ca URL OAuth temporar și nu-l reconstrui. Ghidează în acești pași:
+  1. deschide linkul autentificat în Symbai, verifică brandul și apasă **Conectează Facebook**;
+  2. în dialogul Meta, acordă acces paginii dorite și **păstrează accesul paginilor folosite de celelalte branduri**, împreună cu permisiunile cerute;
+  3. după revenirea în Symbai, **alege explicit pagina acestui brand** după nume și ID și confirmă alegerea.
+- Dacă autorizarea ori alegerea expiră, repornește conectarea din Conturi Social Media. La un link deteriorat, folosește aceeași pagină; nu repara manual parametrul de autorizare și nu cere tokenuri prin chat.
+- Dacă este legată pagina greșită: apasă **Schimbă pagina** pe cardul Facebook al brandului și alege pagina dorită. **Deconectează** din Symbai elimină numai asocierea locală a acelui cont; revocarea aplicației din Meta poate afecta și alte branduri. Nu recomanda revocarea comună pentru corectarea unei singure pagini.
+- Dacă versiunea instalată nu oferă selectorul, nu promite că asocierea s-a reparat; raportează limita prin suport. Nu debifa paginile celorlalte branduri ca ocolire.
+- După salvare: `verifica_integrare(serviciu:"meta",brandId,expectedFacebookPageId)` → confirmă doar dacă ID-ul dorit, ID-ul salvat și identitatea live corespund. Simpla aprobare Meta nu încheie conectarea.
 
 ## Pasul 2 — Instagram Business
 
 - **Precondiții**: contul Instagram trebuie să fie de tip **Business sau Creator** și **legat de pagina Facebook** (aplicația Instagram → Setări → Centrul de conturi; sau pagina FB → Setări → Conturi conectate). Dacă e cont personal, ghidează-l întâi să-l convertească (gratuit, 1 minut, din aplicația Instagram).
-- Rulează `conecteaza_instagram_din_facebook` — legarea se execută direct pe server, fără link OAuth separat.
+- După confirmarea paginii Facebook corecte, rulează `conecteaza_instagram_din_facebook(brandId,expectedFacebookPageId)` — legarea se execută direct pe server, fără link OAuth separat. Nu copia automat ID-ul paginii greșite doar ca să treci verificarea.
+- După schimbarea paginii Facebook verifică și Instagram: vechea conexiune poate avea încă un token valid, dar poate aparține paginii anterioare. Diagnosticul compară pagina asociată și ID-ul Instagram live; nu modifica automat alte branduri.
 - La eroare, mesajul spune exact ce lipsește (cont negăsit pe pagină / permisiuni lipsă pe token). Tradu-l în pași concreți pentru utilizator; după ce rezolvă, rulează tool-ul din nou.
 
 ## Pasul 3 — contul de reclame (opțional)
@@ -45,7 +48,7 @@ description: Conectează contul Meta la Symbai pas cu pas (pagina Facebook, Inst
 
 ## Final
 
-- `verifica_integrare("meta")` o ultimă dată → raportează checklist-ul complet verde + un test util: propune-i o primă postare cu skill-ul `programeaza-postare`.
+- `verifica_integrare(serviciu:"meta",brandId,expectedFacebookPageId)` o ultimă dată → raportează pagina confirmată și starea reală a funcțiilor cerute. Nu afirma că totul este verde dacă mai există lipsuri. Dacă utilizatorul dorește, propune o primă postare cu skill-ul `programeaza-postare`.
 
 ## Capcane frecvente (spune-le PREVENTIV, nu după eșec)
 

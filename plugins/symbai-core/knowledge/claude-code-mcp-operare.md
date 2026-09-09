@@ -1,5 +1,7 @@
 # Claude Code + MCP Symbai — Model De Operare
 
+Pentru modificarea sau anularea recepțiilor, citește [Corectarea recepțiilor prin MCP](corectare-receptii-mcp.md). Același ghid se aplică ChatGPT, Codex și Claude Code; folosește acordul existent și verifică factura, cantitățile fizice și contabilitatea.
+
 Acest fisier este ghidul transversal pentru agentii care folosesc pluginul Symbai in Claude Code. Scopul este simplu: raspunsuri corecte, actiuni sigure si rezultate verificate pe datele reale ale clientului.
 
 Pentru lucrari complexe (onboarding, importuri, productie, stocuri, website, campanii, financiar, investigatii sau configurari multi-modul), citeste si `agent-operare-avansata.md`. Acolo este standardul de lucru „consultant + inginer + QA": citire reala, decizie, confirmare, executie idempotenta, verificare si dovada.

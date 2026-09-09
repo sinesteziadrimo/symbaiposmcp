@@ -1,4 +1,6 @@
-# Gestiuni (magazii) și zone de depozitare
+# Gestiuni, zone de depozitare, rafturi și poziții
+
+Pentru organizare ghidată, migrare, amplasare și tipărire prin asistent vezi `organizare-depozitare-ai.md`. Verifică disponibilitatea uneltelor pe instanța conectată; documentația nu înlocuiește catalogul live.
 
 > Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie` — el e sursa autoritară de navigare.
 > Acest fișier completează `stocuri-inventar-furnizori.md` (privirea de ansamblu pe stoc), `intrari-marfa-receptie.md` (cum intră marfa), `consum-zilnic-cost-marfa.md` (cum iese marfa la vânzare) și `plan-fabrica-2d.md` (harta halei, rafturi și etichete QR). Aici tratăm DOAR structura: ce e o gestiune, ce e o zonă, unde stă cantitatea și cum muți sau închizi o gestiune fără să strici stocul.
@@ -7,7 +9,7 @@
 
 O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucătărie, Depozit, Cămară. Fiecare gestiune aparține **obligatoriu unei locații** — nu poate fi împărțită între două restaurante — și, opțional, unuia sau mai multor branduri. Dacă nu îi pui niciun brand, gestiunea e comună tuturor brandurilor din acea locație (tipic: magazia de materii prime pe care o folosesc și restaurantul, și cafeneaua de la aceeași adresă).
 
-În interiorul unei gestiuni poți defini **zone de depozitare**: frigidere, rafturi, camere de frig, chiar poziții individuale pe raft. Implicit, zonele sunt doar organizare pentru numărat. Cantitatea reală și banii stau la nivel de gestiune.
+În interiorul unei gestiuni definești **zone de depozitare**, în care poți pune **rafturi sau echipamente** (frigider, congelator, dulap), apoi **poziții scanabile**. Structura există și cu stoc global. În global amplasările produselor sunt recomandări fără cantități locale; cu urmărire, cantitățile se citesc pe zone/poziții. Valoarea și costul mediu rămân pe gestiune.
 
 ## Concepte
 
@@ -23,8 +25,8 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 
 ## Paginile modulului
 
-- **Magazii & Produse** (`/warehouse-products`) — creezi, editezi și dezactivezi gestiuni și zone; vezi ce produse are fiecare.
-- **Verificări Stoc** (`/inventory-check`) — tabul **Stoc Live** (stocul curent) și tabul **Zone & Amplasare** (unde stă fiecare produs, transfer între zone).
+- **Magazii, zone și rafturi** (`/storage-designer`) — configurezi gestiunile, precizia stocului, zonele și echipamentele; plan, numerotare, import, etichete QR și conținut live. **Magazii & Produse** (`/warehouse-products`) rămâne pentru catalogul produselor.
+- **Verificări Stoc** (`/inventory-check`) — tabul **Stoc Live** (stocul curent) și inventarele. Configurarea depozitării este în pagina dedicată.
 - **Plan Fabrică 2D** (`/factory-floor-plan`) — selectezi o gestiune sau o zonă pe hartă și intri în **Vezi depozitul**: taburi Stoc, Zone, Mișcări, Intrări, Ieșiri, Loturi, plus butoanele **Raft** (generează rafturi cu niveluri și poziții) și **Etichete QR**.
 - **Operațiuni Stoc** (`/stock-operations`) — de aici faci transferul între gestiuni.
 - **Panou Inventar** (`/inventory`) — valoarea totală a stocului, alerte, mișcări recente.
@@ -36,7 +38,7 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 - **Banii (costul mediu) se calculează întotdeauna la nivel de gestiune**, chiar și când cantitatea e urmărită pe zone. Nu există „cost mediu al frigiderului".
 - Când urmărirea pe zone e **oprită**, cantitatea trăiește doar la nivel de gestiune; zonele rămân utile la numărat.
 - Un produs poate fi amplasat în **mai multe zone deodată** (același produs în două frigidere). Asta e pentru numărat și organizare — **stocul rămâne unul singur pe gestiune**, nu se împarte.
-- ⚠ Scoaterea unui produs dintr-o zonă (butonul `X` din Zone & Amplasare) **nu mișcă stocul** și nu șterge produsul: doar îl scoate din amplasare, iar el reapare la „produse fără zonă". Mutarea fizică se face cu document, nu cu acest buton.
+- ⚠ Scoaterea unui produs dintr-o zonă (eliminarea din amplasările recomandate) **nu mișcă stocul** și nu șterge produsul: doar îl scoate din amplasare, iar el reapare la „produse fără zonă". Mutarea fizică se face cu document, nu cu acest buton.
 
 ## Cum citești corect stocul
 
@@ -44,7 +46,7 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 2. **Vizual, cu zone și mișcări** — Plan Fabrică 2D → **Vezi depozitul** → taburile Stoc și Zone.
 3. **Valoric** — `generate_report` cu tipul `stock_value` (valoarea stocului la cost și la preț de vânzare).
 4. **Pe loturi (termene de valabilitate)** — `list_lots`, filtrat pe gestiune și/sau produs.
-5. **Pe zonă** — doar din aplicație (tabul Zone sau scanarea etichetei QR). Nu există tool de citire a cantității per zonă.
+5. **Pe zonă/raft/poziție** — `get_storage_place_contents` cu `warehouseId` și `placeId`; citește precizia și paginarea. Global arată recomandări fără sold local. Cu urmărire, răspunsul include descendenții, dacă nu ceri `direct:true`. Containerele sunt o vedere separată, nu cantități suplimentare peste registru.
 
 ⚠ **Ecranul principal de Stocuri arată TOTALUL pe toate gestiunile**, grupat sub gestiunea de casă a produsului. Nu e o greșeală de date, dar nu răspunde la „câtă brânză am în Bar" — pentru asta folosește punctul 1.
 ⚠ Într-un restaurant stocul **poate deveni negativ**: sistemul te lasă să lucrezi și îți semnalează problema, pentru că de cele mai multe ori înseamnă doar o recepție neînregistrată încă. Într-o fabrică regulile sunt mai stricte și operația se blochează.
@@ -57,10 +59,10 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 - Transferul e **instantaneu și integral**: în secunda confirmării marfa dispare din sursă și apare în destinație. Nu există starea „marfa e pe drum". Dacă vrei să vezi transportul, fă-ți o gestiune numită „În tranzit" și două transferuri.
 - Sistemul mută **loturile reale**, cu termen de valabilitate, lot de furnizor și proveniență. De aceea un transfer poate fi refuzat: marfa e rezervată pentru o comandă sau pentru producție, lotul e în carantină de calitate, e expirat, sau altcineva tocmai a mișcat același stoc. Nu se mișcă nimic pe jumătate — ori tot, ori nimic.
 - ⚠ **Transferul se face în interiorul aceleiași locații.** Prin conexiune, un transfer care atinge gestiuni din locații diferite e refuzat ca ambiguu contabil (fie pentru că locația nu poate fi dedusă, fie pentru că nu se potrivește cu toate gestiunile documentului). Marfa care chiar circulă între orașe se înregistrează ca ieșire dintr-o parte și intrare în cealaltă, pe documente.
-- ⚠ Un transfer confirmat greșit **nu se șterge, se anulează** — și doar din aplicație. Anularea e blocată dacă marfa a fost între timp consumată, vândută sau prinsă în consumul zilnic, dacă e într-un inventar în curs, sau dacă luna a fost închisă contabil (atunci se redeschide întâi din Finanțe).
+- Un transfer confirmat greșit **nu se șterge, se anulează** din aplicație sau prin `void_inventory_document`. Citește întâi diagnosticul fără `confirm:true`; execută anularea autorizată cu documentul și motivul exacte. Respectă refuzurile privind consumul ulterior, inventarul sau perioada contabilă. Verifică și corecțiile deja postate, ca să nu inversezi aceeași mișcare de două ori. O diferență între antetul NIR-ului și gestiunea unui produs nu dovedește un transfer necesar: vezi `intrari-marfa-receptie.md`.
 - ⚠ Gestiunile de vehicul nu se încarcă și nu se descarcă prin transfer manual — doar din cursa de distribuție.
 
-**Transfer între zone ale ACELEIAȘI gestiuni** — se face **doar din aplicație** (Verificări Stoc → Zone & Amplasare). Mută amplasarea, nu valoarea: cantitatea totală pe gestiune și costul rămân neschimbate. Cere ca gestiunea să aibă urmărirea pe zone pornită și verifică soldul zonei sursă înainte de a accepta.
+**Transfer între zone ale ACELEIAȘI gestiuni** — se face **doar din aplicație** (Magazii, zone și rafturi → transfer între locuri). Mută amplasarea, nu valoarea: cantitatea totală pe gestiune și costul rămân neschimbate. Cere ca gestiunea să aibă urmărirea pe zone pornită și verifică soldul zonei sursă înainte de a accepta.
 
 ## Deschiderea, redenumirea și închiderea unei gestiuni
 
@@ -75,12 +77,13 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 
 ## Zone, rafturi și etichete QR
 
-- **Creare** — `create_storage_zone` (o zonă) sau `bulk_create_storage_zones` (mai multe deodată, ex. toate frigiderele bucătăriei); modificare cu `update_storage_zone`. Spre deosebire de gestiuni, **numele zonei e unic în interiorul unei gestiuni**, iar o gestiune are o singură zonă implicită.
-- **Curățenie** — `scan_storage_zone_issues` îți arată nume cu spații, duplicate și zone goale; apoi `rename_storage_zone`, `merge_storage_zones` 🔒 (unifică două zone și mută toate referințele) sau `delete_empty_storage_zone`.
-- **Amplasarea produselor** — `assign_product_storage_zones` (un produs în una sau mai multe zone), `assign_unzoned_products` (în masă), iar `scan_unzoned_products` îți arată ce se vinde fără zonă alocată.
-- **Rafturi și bin-uri** — se generează din Plan Fabrică 2D → Vezi depozitul → butonul **Raft** (alegi câte niveluri și câte poziții).
-- **Etichete QR** — tot de acolo, butonul **Etichete QR**. Le lipești pe raft; scanarea de pe telefon deschide zona cu stocul ei live și poate fi folosită și la inventariere.
-- **Praguri de temperatură / HACCP pe zonă** (frigider, congelator, cameră rece, interval de grade) — se setează din aplicație.
+Folosește `list_storage_warehouses` și `get_storage_workspace`, apoi uneltele din `organizare-depozitare-ai.md`. Poți crea zone, echipamente și poziții cu stoc global, zonal sau pe poziții. Codul lizibil se poate modifica; QR-ul locului rămâne stabil.
+
+Pagina dedicată oferă configurare, plan, conținut live, import tabelar și etichete A4. Asistentul poate crea raftul cu etichete de nivel și poziție personalizate, poate importa adresele exacte și poate aplica un plan previzualizat. Pentru tipărire ZPL folosește pregătirea lotului și identificatorul stabil al comenzii; la retry nu crea o altă comandă.
+
+Pragurile de temperatură și monitorizarea HACCP se setează din cerințele reale ale produselor. O denumire de tip „Frigider” nu dovedește că spațiul respectă automat acele condiții.
+
+Schimbarea global ↔ zonal se face din configurarea magaziei. Revenirea la global șterge atribuirea zonală inclusiv din istoricul mișcărilor; cere autorizarea explicită a acestui efect. Soldul total și structura fizică sunt păstrate. Alegerea preciziei pe poziție nu distribuie automat marfa veche în rafturi.
 
 ## Fluxuri frecvente
 
@@ -104,7 +107,7 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 1. `scan_storage_zone_issues` — duplicate, nume murdare, zone goale.
 2. `rename_storage_zone` / `merge_storage_zones` 🔒 / `delete_empty_storage_zone`, în această ordine.
 3. `scan_unzoned_products` → `assign_unzoned_products` pentru ce se vinde fără zonă.
-4. Generează etichetele QR din Plan Fabrică 2D și lipește-le pe rafturi.
+4. Pregătește etichetele QR din pagina de depozitare sau prin asistent, verifică-le și lipește-le pe locurile corespunzătoare.
 
 **5. „Pune toate produsele în gestiunea corespunzătoare"**
 1. `describe_warehouse_topology` — confirmi ce e fiecare gestiune.

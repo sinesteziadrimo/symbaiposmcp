@@ -15,7 +15,8 @@ Ghid de CONCEPTE pentru conectarea Meta la Symbai. Pașii concreți de lucru sun
 - Conexiunea e **OAuth**: utilizatorul deschide un link, se loghează LA META (nu în Symbai), aprobă o listă de permisiuni, iar Meta trimite un token de acces **direct serverului Symbai**. Tokenul nu trece prin chat, nu îl vede nimeni, e stocat pe instanța clientului.
 - De aceea: nimeni (nici asistentul AI) nu are nevoie de parola de Facebook a utilizatorului. Cine cere parola greșește.
 - **Două conexiuni separate**: (1) pagina FB + Instagram = postări organice, mesaje, comentarii; (2) contul de reclame = campanii plătite. Fiecare cu link-ul ei de conectare.
-- Revocare: utilizatorul poate oricând să taie accesul din Facebook (Setări → Integrări de business) sau să reconecteze din Symbai.
+- După autorizarea Facebook, utilizatorul alege explicit în Symbai pagina care aparține brandului. Paginile altor branduri pot rămâne autorizate în același dialog Meta; nu trebuie debifate pentru a alege pagina acestui brand.
+- **Schimbă pagina** de pe cardul Facebook schimbă asocierea brandului. **Deconectează** din Symbai elimină numai asocierea locală a contului; nu revocă permisiunile Meta comune. Revocarea aplicației din Facebook (Setări → Integrări de business) este o operație diferită și poate afecta toate brandurile care folosesc aceeași autorizare.
 
 ## Permisiunile cerute (de ce toate bifele)
 
@@ -37,6 +38,8 @@ Ghid de CONCEPTE pentru conectarea Meta la Symbai. Pașii concreți de lucru sun
 | Simptom | Cauza probabilă | Rezolvarea |
 |---|---|---|
 | „Nu văd pagina mea în dialogul Meta" | Omul logat nu e admin pe pagină / pagina e în alt Business Manager | Logare cu contul admin sau cerere de rol de la deținător |
+| Pagina conectată este a altui brand | Asocierea brand–pagină nu corespunde identității dorite | Compară numele și ID-ul, apoi folosește **Schimbă pagina** pe brandul cerut; păstrează accesul celorlalte pagini |
+| Link de conectare deteriorat sau expirat | Autorizarea nu mai poate fi folosită | Deschide Conturi Social Media pe brand și repornește conectarea; nu copia tokenuri prin chat |
 | „Instagram nu se conectează" | Cont IG personal sau nelegat de pagină | Convertit la Business + legat în Centrul de conturi |
 | „Token expirat" la verificare | Parolă schimbată / security checkup | Reconectare pagină (link nou) |
 | Postare FB ok, IG eșuată | Permisiuni Instagram debifate la conectare | Reconectare cu toate bifele |
@@ -44,4 +47,4 @@ Ghid de CONCEPTE pentru conectarea Meta la Symbai. Pașii concreți de lucru sun
 
 ## Verificarea (sursa de adevăr)
 
-`verifica_integrare("meta")` întoarce un checklist live: credențiale aplicație → pagină conectată → token valid (testat pe API-ul Meta în acel moment) → permisiuni → Instagram → cont reclame. După ORICE pas de conectare, re-rularea lui e singura confirmare reală.
+`verifica_integrare(serviciu:"meta",brandId,expectedFacebookPageId)` întoarce un checklist live și identitatea paginii Facebook: ID-ul și numele salvate, ID-ul și numele primite de la Meta, plus potrivirea cu pagina dorită. ID-ul așteptat provine din pagina identificată cu utilizatorul, nu dintr-o presupunere după numele brandului. Fără el, un token valid confirmă accesul tehnic, nu alegerea paginii corecte. După fiecare pas de conectare verifică din nou; leagă Instagram numai după confirmarea paginii Facebook.

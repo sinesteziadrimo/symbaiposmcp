@@ -27,6 +27,8 @@ Regula de aur: NU conchide „Symbai nu poate" și NU conchide „e o limită a 
 
 ## Recepție, facturi de intrare, contabilitate primară
 
+Modificări, anulări și refaceri: citește [Corectarea recepțiilor prin MCP](corectare-receptii-mcp.md). Pentru un NIR consumat, folosește previzualizarea/anularea sau corecția nominală; nu recomanda automat reprocesarea consumului zilnic.
+
 | Simptom | Întâi | Apoi |
 |---|---|---|
 | „Factura nu intră pe stoc", „NIR-ul lipsește" | `get_primary_accounting_status(luna)` — câte facturi au NIR și câte nu | integritatea facturilor: `diagnose_incoming_invoice_integrity`; facturi înțepenite după stornare: `repair_stuck_invoices` 🔒 |

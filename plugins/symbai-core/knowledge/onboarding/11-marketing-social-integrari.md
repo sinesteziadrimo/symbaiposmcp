@@ -36,13 +36,13 @@ Nu întreba de email marketing decât la final și doar ca ofertă („vrei să-
 **Pas 1 — Conectează Meta (Facebook + Instagram + opțional reclame).** Workflow-ul complet, pas cu pas, cu precondiții și capcane, e în skill-ul **`conecteaza-meta`** — încarcă-l și urmează-l; nu-l reinventa aici. Pe scurt, schema lui:
 ```
 verifica_integrare(serviciu="meta")                  → diagnostic
-genereaza_link_conectare(platforma="facebook")       → userul deschide linkul în browserul LUI
-verifica_integrare(serviciu="meta")                  → confirmă pagina + token
-conecteaza_instagram_din_facebook()                  → leagă IG Business direct (fără link separat)
+genereaza_link_conectare(platforma="facebook",brandId) → Conturi Social Media pe brand; autorizare în browser, apoi alegere explicită a paginii
+verifica_integrare(serviciu="meta",brandId,expectedFacebookPageId) → confirmă ID-ul dorit, pagina salvată și identitatea live
+conecteaza_instagram_din_facebook(brandId,expectedFacebookPageId) → leagă IG Business din pagina confirmată
 genereaza_link_conectare(platforma="meta_ads")       → DOAR dacă vrea reclame
 verifica_integrare(serviciu="meta")                  → checklist final
 ```
-Aceeași schemă pentru celelalte platforme: `verifica_integrare("tiktok"|"youtube"|"linkedin"|"google_business")` → `genereaza_link_conectare(platforma=...)` → re-verifică. Idempotență: rulează ÎNTÂI `verifica_integrare` și lucrează doar pe ce lipsește — reconectarea unei pagini deja valide e inutilă.
+Păstrează accesul Meta la paginile folosite de celelalte branduri. Dacă pagina legată este greșită, folosește **Schimbă pagina**; un token valid nu dovedește identitatea dorită. Pentru celelalte platforme: `verifica_integrare("tiktok"|"youtube"|"linkedin"|"google_business")` → `genereaza_link_conectare(platforma=...)` → re-verifică. Reconectarea unei pagini deja valide și corect asociate este inutilă.
 
 **Pas 2 — Prima postare (opțional, dar e cel mai bun test).** Folosește skill-ul **`programeaza-postare`**. Apelul de bază:
 ```

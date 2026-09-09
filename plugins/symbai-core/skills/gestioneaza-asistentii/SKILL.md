@@ -31,6 +31,8 @@ Permisiunile efective sunt intersecția dintre accesul nominal POS/Hub, accesul 
 
 ## Adaugă în grup
 
+Pentru asistentul financiar există pachete distincte: `cash.read` pentru auditul casei și închiderilor, `cash.close` pentru închidere/corectarea raportului, `cash.entries` pentru mișcări de numerar și `cash.settings` pentru programul automat pe unitate. Șablonul „Verificarea închiderilor de zi” pornește cu citire. Corecțiile cer motiv și verificarea versiunii, păstrează proveniența automată și nu repetă închiderea fizică a terminalelor. Numărarea nu se inventează. Adaugă numai scrierile cerute de proprietar; închiderea nu acordă implicit dreptul de operare a banilor. În grupuri, publicul actual trebuie să aibă acces la datele și unitățile respective. Detalii în skill-ul `inchidere-zi-casa`.
+
 `asistent_grup` cere asistentul, grupul, bindingId UUID stabil și expectedRevision (`null` numai la creare). Proprietarul trebuie să fie membru și să aibă drept de administrare. Identificatorul trebuie să fie unic între asistenții grupului.
 
 Moduri: `mention` la @mențiune, `always` după mesajele colegilor, `periodic` la intervalul ales sau `manual` la cererea proprietarului. Setează limitele orare/zilnice, intervalul, așteptarea mesajelor consecutive și eventual orele de liniște cu fusul orar. Asistenții nu se declanșează reciproc. Instrucțiunile grupului descriu sarcina locală; permisiunile pot fi doar restrânse aici.

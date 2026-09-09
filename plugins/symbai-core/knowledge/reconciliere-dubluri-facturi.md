@@ -11,7 +11,7 @@ Aceeași livrare poate ajunge în sistem pe **trei căi diferite**, adesea toate
 2. **avizul șoferului**, înregistrat ca recepție ca să intre marfa pe stoc înainte de factură;
 3. **e-Factura oficială**, descărcată automat din SPV / ANAF, uneori peste câteva zile.
 
-Toate trei descriu aceeași marfă și aceiași bani. Reconcilierea le unește într-**un singur document**, ca să nu plătești de două ori și să nu intre stocul de două ori. O parte din muncă o face sistemul singur la importul e-Facturii; restul se leagă manual, din tabul **Reconciliere**.
+Toate trei descriu aceeași marfă și aceiași bani. Reconcilierea le unește într-**un singur document**, ca să nu plătești de două ori și să nu intre stocul de două ori. O parte din muncă o face sistemul singur la importul e-Facturii; restul se leagă după verificare, prin MCP sau din tabul **Reconciliere**.
 
 ## Concepte
 
@@ -22,7 +22,7 @@ Toate trei descriu aceeași marfă și aceiași bani. Reconcilierea le unește �
 - **Atașare** — când marfa a intrat deja pe stoc pe baza pozei, factura oficială nu creează un document nou: identitatea ei fiscală se lipește pe documentul existent.
 - **Toleranța de sumă** — diferența acceptată între poză și factura oficială ca să fie considerate același document: **1 leu sau 0,5% din total, cât e mai mare**.
 - **Verificare fizică** — marcajul „conformă" / „cu diferențe" (+ notă) pus de cel care a primit marfa. E informație pentru echipă și contabil.
-- **Legare (Leagă)** — acțiunea prin care spui sistemului că două documente sunt de fapt unul singur. **Nu se poate desface prin conexiune.**
+- **Legare (Leagă)** — acțiunea prin care spui sistemului că două documente sunt de fapt unul singur. Pentru o factură deja contabilizată pe recepție există retragere controlată prin MCP; vezi [ghidul corecțiilor](corectare-receptii-mcp.md).
 - **Numărul facturii = cheia** — potrivirea automată se face pe furnizor (după CUI) + numărul facturii. Spațiile în plus se ignoră, dar restul caracterelor contează. Un număr tastat aproximativ face geamănul invizibil.
 - **Recepție (NIR)** — documentul care chiar mișcă stocul. Poza, ciorna, avizul și factura sunt hârtii; **doar recepția postată bagă marfa pe stoc**. Marfa intră de două ori doar dacă există două recepții postate.
 
@@ -51,28 +51,21 @@ Regula de aur: **un singur document oficial pe livrare, o singură recepție pe 
 4. ⚠ **Sumele diferă peste toleranță** → sistemul **nu alege singur și nu importă factura oficială deloc**: o sare, cu avertisment, și rămâne doar documentul tău din poză. E intenționat — o diferență de sumă înseamnă marfă lipsă, o reducere neaplicată sau un preț schimbat, adică o decizie de om. Factura rămâne disponibilă în SPV; după ce lămurești diferența (corectezi poza sau ceri furnizorului o corecție), o reimporți.
 5. ⚠ **Dacă singurul document geamăn e un AVIZ**, factura oficială intră ca document nou — avizul și factura sunt lucruri diferite. Legarea lor o faci tu, în tabul Reconciliere.
 
-### 2. Legarea manuală în tabul Reconciliere
-1. Deschizi **Intrări Marfă → Reconciliere**. Pe stânga: documentele care așteaptă o factură. Pe dreapta: facturile candidate ale aceluiași furnizor.
-2. ⚠ **Deschiderea tabului nu e o simplă privire**: la deschidere/reîmprospătare sistemul leagă singur ciornele **tastate manual** pentru care găsește **exact un** candidat cu **exact același număr** de factură (spațiile și majusculele se ignoră). Dacă sunt doi candidați cu același număr, nu face nimic. Deschide-l când ești pregătit să confirmi, nu „ca să te uiți". Ciornele din poză nu se leagă automat aici — pe ele le rezolvă importul e-Facturii sau le legi tu.
-3. Înainte de „Leagă", verifică **cu ochii tăi**: numărul facturii, totalul, data, furnizorul și unitatea.
-4. Apeși **Leagă**. Documentul devine unul singur; recepția fizică se lipește de factură.
+### 2. Legarea prin MCP sau din tabul Reconciliere
 
-⚠ **Ce NU verifică „Leagă"**: numărul facturii, suma, data, tipul documentului (un aviz poate fi legat ca și cum ar fi factură) și starea recepției (un document anulat, stornat sau rămas ciornă poate fi legat). Două facturi diferite ale aceluiași furnizor pot fi legate greșit fără niciun mesaj.
-⚠ **Bifa verde de „potrivire" din listă e orientativă** — spune doar că totalurile diferă cu mai puțin de 1 leu, atât. Nu ține cont de număr, dată sau linii. Nu te baza pe ea; citește numărul facturii.
-⚠ Lista de candidați poate conține și facturi din **altă unitate** a firmei. Confirmă brandul/locația înainte de a lega.
-⚠ **După o legare manuală, plasa de siguranță slăbește**: documentul unit păstrează numărul vechi ca cheie internă de căutare, așa că gardul care oprește a doua recepție pe aceeași factură poate să nu mai recunoască geamănul. Cu atât mai mult, verifică tu înainte de „Leagă".
+Citește documentul fotografiat, factura fiscală și NIR-ul existent. Verifică numărul, furnizorul, data, unitatea, liniile și diferențele de cantitate. Folosește `preview_received_invoice_link`, apoi `link_received_invoice_to_reception` cu aceleași decizii pe linii și acordul existent. `id` este factura fotografiată, iar `invoiceId` factura fiscală. Continuă cu `finalize_received_invoice` și verifică rezultatul contabil. Nu crea un al doilea NIR pentru aceeași livrare.
 
-### 3. Ce blochează legarea (și de ce e bine)
-- **Recepția are deja legături contabile pe „marfă primită nefacturată"** — fie soldul e încă deschis, fie a fost deja închis printr-o decontare postată. În ambele cazuri legarea rapidă se refuză și se rezolvă prin contabilitate, ca registrele să rămână exacte.
-- **Facturile împinse din contabilitate** au identitatea înghețată — nu se mai promovează prin reconciliere.
-- **Factura are deja recepție** → nu se mai poate crea a doua pe același document.
-Toate trei sunt protecții, nu defecțiuni. Dacă te blochează, întrebarea corectă e „ce document a fost deja înregistrat?", nu „cum forțez".
+Tabul **Intrări Marfă → Reconciliere** este alternativa din aplicație. O sugestie de potrivire nu înlocuiește verificarea documentelor; numai rezultatul operației canonice confirmă asocierea.
+
+### 3. Legături contabile existente
+
+O stingere 408 deja postată trebuie retrasă înainte de schimbarea documentelor pe care le justifică. `preview_received_invoice_retraction` identifică nota, iar `retract_received_invoice` face stornoul și retrage evaluarea asociată în aceeași operație, păstrând recepția fizică și istoricul. Cere conexiune nominală fără PIN, dreptul `settings_access` și acces la toate recepțiile implicate. Recitește apoi factura și urmează [ghidul corecțiilor](corectare-receptii-mcp.md).
+
+Documentele provenite din Accounting, facturile cu plăți înregistrate, perioadele închise și recepțiile deja asociate altei facturi au protecții proprii. Citește motivul exact și rezolvă documentul care îl produce; nu forța legarea și nu ascunde diferența prin stoc fictiv.
 
 ### 4. Verificarea fizică a mărfii
-La primire marchezi recepția **„conformă"** sau **„cu diferențe"** + o notă obligatorie (ce lipsea, ce era deteriorat). E o informație pentru echipă și pentru contabil.
-- **Nu blochează** legarea în Reconciliere — deci un document marcat „cu diferențe" poate fi legat fără avertisment. Spune-i explicit celui care leagă.
-- **Blochează** doar marcarea recepției ca verificată, până rezolvi nota de diferență.
-- Se face **doar din aplicație / din aplicația mobilă**, la recepție. Nu există tool pentru asta prin conexiune.
+
+`confirm_physical_reception` transmite numărătoarea reală, inclusiv zero, și excepțiile fizice observate, apoi postează recepția eligibilă. Nu folosi cantitatea facturată în locul celei numărate. Pentru o recepție deja postată folosește corecția explicită a cantităților fizice, nu o a doua confirmare de intrare. Cazurile de lipsă, deteriorare, înlocuire și surplus se urmăresc prin instrumentele de cazuri de recepție; simpla observație nu rezolvă automat diferența contabilă.
 
 ### 5. Cum previi dublurile
 - **Ține furnizorii curați**: CUI completat corect. Potrivirea automată se face pe furnizor + număr de factură; fără CUI, geamănul nu se găsește.
@@ -84,10 +77,10 @@ La primire marchezi recepția **„conformă"** sau **„cu diferențe"** + o no
 ### 6. Dacă marfa chiar a intrat de două ori
 1. **Recunoști** situația: aceeași factură (același număr, același furnizor) apare pe **două recepții postate**, iar produsele ei au stoc dublu față de realitate.
 2. **Verifici** cu `list_goods_receipts(supplierId, dateFrom)` și `list_received_efactura(supplierId)` — compară numărul, data și totalul.
-3. **Diagnostichezi reversarea înainte de orice scriere** cu `diagnose_inventory_document_reversal(documentId)`, apoi verifici loturile și mișcările din aval. Verdictul de preview este orientativ, nu autorizație de anulare: validarea tranzacțională finală poate opri perioada închisă, alocări apărute între timp, genealogia loturilor, containere sau alte dependențe. Dacă din loturile recepției s-a consumat, transferat sau produs deja ceva, nu presupune că anularea poate retrage „exact loturile": reversarea poate fi blocată ori poate cere întâi refacerea documentelor dependente.
-4. **Repari numai cu acord explicit și în ordine cronologică.** Când există dependențe, oprești operațiunile, delimitezi intervalul, refaci/reversezi întâi consumurile dependente prin fluxul lor controlat, verifici soldurile, apoi stornezi recepția greșită. După aceea creezi NIR-ul din factura oficială existentă; nu creezi încă o recepție manuală. Dacă documentul greșit conținea și linii care nu apar pe factură (de exemplu echipamente), recreezi numai acele linii după dovada documentară, nu întregul document.
+3. Citește `preview_inventory_document_cancellation` și verifică factura, consumurile și perioada. Preview-ul este orientativ; toate condițiile se repetă în tranzacția finală.
+4. Anulează recepția greșită cu `cancel_inventory_document`, pe baza cererii și acordului informat existente. La restaurant consumul anterior nu cere automat refacerea vânzărilor sau a consumului zilnic: cantitățile și costurile se regularizează prin recepțiile corecte. Dacă există o stingere 408, retrage întâi factura eligibilă prin fluxul de mai sus. Recitește factura redeschisă, corecteaz-o și recreează NIR-ul legat de ea numai dacă marfa trebuie să rămână în stoc; anularea unei dubluri nu cere încă o intrare.
 5. ⚠ **NU corecta printr-o ajustare de inventar.** Ajustarea scade cantitatea, dar lasă recepția și factura în evidență — pierzi urma banilor și rămâi cu o factură „recepționată" de două ori în contabilitate.
-6. Dacă recepția greșită a fost deja decontată în contabilitate, perioada este închisă sau dependențele nu pot fi demonstrate complet, oprește-te și rezolvă cu contabilul/echipa tehnică. Nu forța SQL și nu declara cazul închis doar fiindcă totalul stocului pare corect.
+6. Dacă o protecție contabilă sau o dependență este refuzată, urmează motivul și pasul concret oferite de sistem. Nu forța SQL și nu declara cazul închis doar fiindcă totalul stocului pare corect.
 
 ## Furnizorul se potrivește pe COD FISCAL, nu pe nume
 
@@ -127,12 +120,12 @@ Cum faci curat, în ordinea asta:
 **Scriere (modul `inventar` = „Stocuri & Recepție"):**
 - `import_efactura` — descarcă și importă facturile din SPV. Toate regulile de mai sus (înlocuire / atașare / toleranță) se aplică identic și pe această cale.
 - `process_new_efactura` — verifică SPV → importă → creează recepția acolo unde totul e sigur. Folosește-l doar după ce ai explicat proprietarului ce face.
-- `create_nir_from_invoice` 🔒 — creează recepția **legată** de o factură existentă. ⚠ Nu folosi `create_inventory_document` pentru o factură care e deja în sistem: ar crea o recepție separată, iar marfa ar intra de două ori.
+- `create_received_invoice_reception` 🔒 — creează recepția **legată** de o factură existentă. ⚠ Nu folosi `create_inventory_document` pentru o factură care e deja în sistem: ar crea o recepție separată, iar marfa ar intra de două ori.
 
 **Scriere (modul `financiar` = „Financiar & Contabilitate"):**
 - `mark_reception_reviewed` — bifează o recepție din poză ca verificată, după ce ai confirmat că e corectă.
 
-⚠ **Nu există tool de reconciliere.** Legarea aviz ↔ factură și ciornă ↔ e-Factura se face **doar din tabul Reconciliere**. Dacă proprietarul o cere prin chat: dă-i linkul (`gaseste_in_aplicatie("reconciliere")`) și lista exactă a documentelor de legat, obținută din citiri (număr, dată, total, furnizor) — el apasă butonul. La fel: desfacerea unei legături greșite și verificarea fizică a mărfii se fac din aplicație. Dacă lipsa unui tool îl blochează, poate cere unul cu `trimite_ticket_symbai`, tip „sugestie".
+Asocierea, retragerea facturii, anularea recepției și corecțiile sunt disponibile prin operațiile nominale din [corectare-receptii-mcp.md](corectare-receptii-mcp.md). Verifică lista live înainte să spui că o acțiune se face numai din aplicație.
 
 ## Întrebări frecvente și capcane
 
@@ -140,8 +133,8 @@ Cum faci curat, în ordinea asta:
 - **De ce văd în Reconciliere un document pe care l-am legat deja?** Tabul nu ascunde documentele deja legate sau înlocuite. Verifică întâi în „Facturi Furnizori" dacă factura are deja recepție (`list_received_efactura` cu filtrul de recepție). Dacă are, **nu o lega din nou** — a doua legare mută recepția pe alt document. Dacă nu are, e într-adevăr nelegată.
 - **De ce nu apare e-Factura mea în listă?** Trei cauze, în ordine: (1) a înlocuit deja o ciornă și acum e documentul acela — caută după numărul facturii în „Facturi Furnizori"; (2) importul a sărit-o cu avertisment pentru că sumele nu se potriveau cu geamănul, deci nu a intrat în sistem; (3) e pe altă unitate (brand/locație) decât cea în care te uiți.
 - **Sistemul îmi spune că factura e duplicat, dar pe cea veche am anulat-o.** Numărul rămâne ocupat și după anulare. Nu reintroduce factura — corectează documentul existent. Dacă chiar e nevoie de trecerea peste verificare, o face un responsabil care are dreptul de a o suprascrie, o singură dată, în cunoștință de cauză — dar atunci trece și un duplicat real.
-- **Am legat greșit două facturi diferite.** Legarea nu se desface prin conexiune. Oprește-te înainte de a crea recepția, deschide documentul în aplicație și cere ajutorul contabilului. Dacă recepția a fost deja postată, nu apăsa direct „Anulează": rulează diagnosticul, verifică dependențele și perioada, obține acordul explicit, apoi urmează fluxul controlat din secțiunea „Dacă marfa chiar a intrat de două ori". De aceea regula e „verifică numărul și suma înainte de Leagă".
-- **Butonul Leagă îmi cere să trec prin contabilitate.** Recepția a fost deja decontată contabil (marfă primită nefacturată închisă). Nu e o eroare — legarea rapidă ar dezalinia registrele.
+- **Am legat greșit două facturi diferite.** Citește ambele documente și NIR-ul. Dacă factura este contabilizată pe recepție, folosește previzualizarea și retragerea dedicată, apoi recitește legăturile și asociază factura corectă. Dacă nu există stingere activă ori sistemul refuză operația, identifică starea și calea oferită în aplicație; nu anula fizic marfa doar ca să schimbi o legătură fiscală.
+- **Butonul Leagă îmi cere să trec prin contabilitate.** Verifică stingerea deja postată și retragerea dedicată înainte de corecție. Un refuz de drepturi sau perioadă nu se ocolește printr-o a doua recepție.
 - **Am marcat recepția „cu diferențe" și totuși s-a legat de factură.** Verificarea fizică e informativă pentru reconciliere. Blochează doar marcarea recepției ca verificată. Rezolvă nota de diferență cu furnizorul (stornare, factură de corecție) și abia apoi bifează.
 - **Am legat tot corect și marfa tot a intrat de două ori.** Cel mai frecvent motiv: pe lângă recepția legată de factură s-a mai făcut una separată (pe aviz, sau o recepție directă fără factură), iar cele două n-au fost unite. Caută în „Recepții (NIR)" după furnizor + interval de dată: două recepții cu aceleași produse și cantități, la câteva zile distanță. Confirmă documentul greșit și urmează diagnosticul + ordinea sigură din secțiunea 6; nu alege recepția de anulat doar după asemănarea totalurilor.
 - **Furnizorul mi-a trimis aceeași marfă pe aviz și pe factură, cu numere diferite.** Sunt două documente diferite pentru o singură livrare. Le legi manual în Reconciliere (avizul pe stânga, factura pe dreapta) — automat nu se potrivesc, pentru că potrivirea merge pe numărul facturii.

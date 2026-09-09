@@ -1,5 +1,7 @@
 # Codex + MCP Symbai - Model de operare
 
+Pentru modificarea sau anularea recepțiilor, citește [Corectarea recepțiilor prin MCP](corectare-receptii-mcp.md). Același ghid se aplică ChatGPT, Codex și Claude Code; folosește acordul existent și verifică factura, cantitățile fizice și contabilitatea.
+
 Acest fisier adapteaza pluginul `symbai-core` pentru Codex. Pluginul a fost construit initial pentru Claude Code, dar principiul ramane acelasi: skill -> knowledge -> MCP live -> verificare prin citire.
 
 ## Surse de adevar
