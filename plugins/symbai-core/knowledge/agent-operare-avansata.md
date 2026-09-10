@@ -51,6 +51,22 @@ SQL este fallback read-only pentru intrebari analitice fara tool dedicat sau pen
 - coloane explicite, `WHERE`, `LIMIT`, fara `SELECT *`;
 - doar SELECT; nu propune update/delete/insert SQL.
 
+Pentru un administrator cu acces la întreaga firmă, conexiunea nominală poate oferi deja această citire. Nu cere un token OPS sau exporturi manuale înainte să verifici instrumentele disponibile. Investighează singur în limita drepturilor acordate: identifică documentul, urmărește legăturile, verifică rezultatul și continuă cererea autorizată.
+
+**Read all** este o bifă separată la acordarea accesului, prestabilit activă pentru administrator, manager și director financiar. Proprietarul o poate debifa. Când `verifica_conexiune` confirmă că este activă, SQL citește datele operaționale din toate unitățile firmei, inclusiv furnizori, personal, dispozitive și audit. Nu extinde drepturile de modificare. Folosește această cale când un tool obișnuit este limitat la o unitate. Accesul vechi nu se lărgește automat.
+
+Pe versiunile care oferă `citeste_instructiuni_agent`, citește ghidul complet la începutul conversației. Păstrează obiectivul, acordurile existente, ID-urile, rezultatul verificat și ce mai rămâne; caută singur informațiile înainte de a cere utilizatorului să le adune.
+
+`describe_database_table` poate întoarce `primaryKey` și `foreignKeys`: sunt relațiile declarate în baza live, cu ordinea coloanelor păstrată inclusiv pentru chei compuse. Absența unei chei străine nu dovedește că nu există o legătură de business; verific-o în tool-ul dedicat. Nu inventa coloane după convenții de nume.
+
+`execute_sql_query` poate întoarce `readMode: json-fragment`. Continuă cu argumentele exacte din `nextArguments` până la `null`; concatenează `text`, apoi decodează JSON. Revizia verifică dacă datele s-au schimbat între citiri; la schimbare recitește de la început, cu filtre și ordonare stabile. `truncated` în rezultatul reconstruit indică separat plafonul de rânduri: pentru totaluri agregă în SQL, pentru detalii continuă după o cheie stabilă. Un fragment nu dovedește absența informației din restul documentului.
+
+Pentru un singur câmp, `read_database_field` acceptă `tableName`, `columnName`, `keyColumn` (implicit `id`) și `recordId`, cu aceeași continuare prin `nextArguments`. Pe o versiune veche care scurtează câmpurile SQL, repetarea aceluiași SELECT nu înlătură scurtarea; caută citirea dedicată.
+
+Cu Read all, `read_diagnostic_logs` oferă surse distincte: `ai` pentru apeluri AI, `device` pentru dump-uri PA/Edge deja încărcate, `system` pentru jurnalul recent, `errors` pentru avertismente/erori păstrate până la 24 de ore și `requests` pentru cereri lente/eșuate recente. La `ai`/`device` listează întâi, apoi cere ID-ul relevant pentru textul complet disponibil. Continuă fragmentele prin `nextArguments`; filtrează erorile/cererile cu intervalul și `requestId`. Citește `coverage` și indicatorii de acoperire înainte să concluzionezi că nu a existat eroarea: conversațiile locale Claude Code/Codex nu sunt înregistrate automat, iar unele surse se golesc la restart. Secretele și atașamentele binare sunt mascate.
+
+Citește integral numai documentele relevante cererii. Pentru navigare în multe documente, folosește întâi ID-uri, stări, sume și filtre; păstrează aceste repere în context, fără să reîncarci toate XML-urile la fiecare pas. Pe versiuni fără reader folosește citirea paginată dedicată documentului, dacă există în catalog; nu pretinde că ai citit textul complet.
+
 ## Ticket/sugestie automata
 
 Daca o sarcina a devenit grea din cauza unei limite Symbai, lipseste un tool, lipseste un shortcut sau ai gasit un bug real:
