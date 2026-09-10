@@ -11,6 +11,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 ## Ai DOUĂ surse de adevăr — combină-le
 
+**Modificarea unei facturi/recepții existente**, inclusiv după consum → [corectare-receptii-mcp.md](../../knowledge/corectare-receptii-mcp.md) și [receptie-factura-furnizor](../receptie-factura-furnizor/SKILL.md). Folosește documentul și acordul existente. Data intrării/prețul se corectează fără storno inutil; verifică separat salvarea, recalcularea costurilor în fundal și sincronizarea contabilă. Nu crea o factură nouă și nu regenera consumul doar pentru aceste corecții; verifică disponibilitatea tool-urilor în conexiunea live.
+
 **Accounting fără POS sau împreună cu POS:** folosește [Symbai Connect pentru Accounting](../../knowledge/symbai-connect-accounting.md). Este același Connect, cu firme și autentificări separate. Instrucțiunile POS din această bibliotecă se aplică numai conexiunilor POS; pentru o firmă Accounting verifică `get_connection_identity` și folosește uneltele oferite de conexiunea contabilă. Nu cere angajat/brand POS, cont Hub ori instalarea unui al doilea Connect.
 
 **Chat privat din Symbai Staff cu Codex/Claude Code:** [chat-staff](../chat-staff/SKILL.md) — firma și contul vin automat din Staff, Connect execută cu conexiunea exactă, iar răspunsul revine pe telefon.

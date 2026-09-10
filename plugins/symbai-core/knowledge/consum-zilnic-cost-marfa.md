@@ -6,7 +6,7 @@ Fișiere-frate care completează acest ghid: `stocuri-inventar-furnizori.md` (ma
 
 ## Pe scurt
 
-Vânzarea **nu** scade stocul în secunda în care încasezi. O dată pe zi, automat, sistemul ia notele **închise** din zilele deja încheiate, desface fiecare produs vândut în ingredientele din rețeta lui, scade cantitățile din gestiunea potrivită și scoate marfa din loturile reale — întâi cel care **expiră primul**. Costul realizat vine din loturile recepționate cât timp ele acoperă cantitatea; partea neacoperită (recepție lipsă/stoc negativ) folosește costul mediu al gestiunii și trebuie investigată.
+Vânzarea **nu** scade stocul în secunda în care încasezi. O dată pe zi, automat, sistemul ia notele **închise** din zilele deja încheiate, desface fiecare produs vândut în ingredientele din rețeta lui și scade cantitățile din gestiunea și loturile potrivite. La restaurante, costul financiar FIFO se actualizează separat după corectarea unei recepții, păstrând cantitățile și trasabilitatea fizică. O valoare estimată la cost mediu pentru marfa neacoperită nu dovedește costul definitiv: sursele/prețurile lipsă pot rămâne în așteptare. Regenerarea consumului schimbă cantități după corecții de rețete/reguli; nu o porni pentru simpla schimbare a datei sau prețului recepției.
 
 Două excepții de reținut din prima: **comenzile de livrare (Glovo/Wolt/Bolt/Tazz) scad stocul imediat ce comanda e livrată**, iar **ziua de azi se procesează abia mâine**.
 
@@ -15,11 +15,11 @@ Două excepții de reținut din prima: **comenzile de livrare (Glovo/Wolt/Bolt/T
 - **Consum zilnic** — scăderea automată a materiei prime din vânzări. Rulează o dată pe zi, pe zilele **încheiate**. Zilele sărite (server oprit, zi blocată) se recuperează singure în rulările din următoarele câteva zile.
 - **Stoc live** — ce vezi pe ecran în timpul zilei: stocul de pe documente **minus** consumul estimat al zilei curente, calculat din liniile deja **trimise la bucătărie**. E o estimare, nu o mișcare de stoc; ce se vinde fără trimitere la bucătărie (bar, retail) nu intră în estimare și apare abia la rularea de a doua zi.
 - **Bon de consum** — documentul rezultat: câte unul pe fiecare gestiune, pe zi. Se deschide și se verifică linie cu linie.
-- **Cost realizat** — costul luat din loturile chiar consumate, la prețurile lor de intrare. E cel folosit în P&L și în raportul de sfârșit de zi.
+- **Cost realizat** — valoarea financiară a consumului înregistrat, folosită în P&L și raportul de sfârșit de zi. La restaurant, FIFO financiar o actualizează după corectarea recepțiilor, fără schimbarea cantităților sau a loturilor fizice istorice.
 - **Cost teoretic** — costul calculat din rețetă și din prețurile de achiziție. Se folosește pentru analiză/previziune și ca rezervă acolo unde nu există încă un consum realizat.
 - **Scădere automată din stoc** — comutatorul general din Setări → Stocuri. Oprit = **nu se generează și nu se recalculează niciun consum**, oricâte vânzări ai avea, și nu primești nicio eroare.
 - **Lună închisă contabil** — după închiderea unei luni, consumul acelei perioade nu se mai poate genera și nici recalcula. Se redeschide din Finanțe, apoi se reînchide.
-- **Reprocesare (recalculare)** — anularea consumului deja făcut și refacerea lui cu datele corecte de azi.
+- **Reprocesare consum** — refacerea cantităților consumate după o corecție autorizată de rețete/reguli. Este distinctă de recalcularea financiară FIFO în fundal, care actualizează costurile după corecția unei recepții. Restricțiile regenerării consumului nu se aplică automat schimbării datei operaționale.
 
 ## Paginile modulului
 
@@ -69,9 +69,9 @@ Se decide **pentru fiecare ingredient în parte** (nu pentru rețetă), în func
 
 ## Din ce lot scade și cât costă
 
-- Ordinea de descărcare este mereu **„expiră primul"**; la termene egale sau fără termen, iese primul cel **intrat primul**.
+- Alegerea fizică a loturilor poate prioritiza **„expiră primul”**; la termene egale sau fără termen, cel **intrat primul**. La restaurante, evaluarea financiară FIFO urmărește separat cronologia intrărilor și ieșirilor, păstrând trasabilitatea loturilor fizice.
 - ⚠ „Metoda de evaluare" din Setări → Stocuri (FIFO / LIFO / medie) **nu schimbă din ce lot iese marfa** — ea influențează doar costul estimativ afișat înainte de a exista consum real.
-- Cantitatea neacoperită de loturi (stoc negativ, recepție lipsă) se valorizează la **costul mediu al gestiunii**.
+- Pentru cantitatea neacoperită de loturi se poate afișa o estimare la costul mediu al gestiunii. Nu o prezenta drept cost financiar definitiv: în FIFO financiar, sursele sau prețurile nedovedite pot rămâne în așteptare până sunt completate datele reale.
 - ⚠ **Un lot recepționat cu cost 0 consumă „gratuit"**: acoperă cantitatea, contribuie 0 la cost și trage food cost-ul în jos fără nicio eroare vizibilă. Îl găsești cu `scan_suspect_reception_costs` și `get_product_reception_history`.
 - Consumul zilei se înregistrează în registru la **sfârșitul zilei de business**. O numărare de inventar închisă la ora 14:00 nu include consumul acelei zile.
 
@@ -104,7 +104,7 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 
 ## Recalcularea consumului (reprocesare)
 
-**Când o faci:** ai corectat o rețetă, ai corectat un preț de intrare pe o factură veche, ai schimbat tipul unui produs, ai legat o rețetă lipsă. Corectura **nu rescrie trecutul** de una singură.
+**Când o faci:** ai corectat o rețetă, ai schimbat tipul unui produs sau ai legat o rețetă lipsă și trebuie refăcute cantitățile istorice. Pentru data ori prețul unei recepții vechi folosește [corecția documentului existent](corectare-receptii-mcp.md) și urmărește FIFO financiar; nu regenera consumul doar pentru acea corecție.
 
 **Cele două forme:**
 - **Pe perioadă** — din `/daily-consumption` → „Reprocesare Vânzări", cu preseturi (30 zile / 3 luni / 6 luni) sau interval liber. Rulează ca job pe fundal, cu progres. Poți alege rețetele „de atunci" (istoric fidel) sau cele de azi (corectură retroactivă).
@@ -116,13 +116,13 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 
 ⚠ **După recalculare verifică soldurile pe gestiuni.** Recalcularea folosește aceeași cascadă canonică de rutare ca generarea inițială, inclusiv gestiunea produsului din locația vânzării. Totuși, folosește configurația de **azi**; dacă ai schimbat între timp o asignare sau un override, rezultatul istoric se poate muta legitim.
 ⚠ **Un job poate termina `completed_with_errors`.** Dacă eroarea este pe o zi de consum, starea zilnică veche a întregului interval este restaurată. Dacă eroarea este doar pe o livrare, zilele pot fi refăcute, iar livrarea veche rămâne păstrată prin swap-ul sigur. Nu trata rezultatul ca succes complet: citește problemele structurate (zi, comandă, produs, motiv), repară-le și reia numai după corectarea cauzei.
-⚠ Recalcularea rulează **după** ce ai corectat cauza (prețul de recepție sau rețeta), nu înainte.
+⚠ Regenerarea consumului rulează **după** corectarea rețetei sau regulii care produce cantități greșite. Corectarea prețului/data intrării are propriul flux de actualizare a costurilor.
 
 ## Costul mărfii vândute (COGS) în rapoarte
 
-- P&L, sfârșitul de zi și KPI-urile folosesc costul **realizat**, din loturile chiar consumate.
+- P&L, sfârșitul de zi și KPI-urile folosesc costul **realizat** al consumului înregistrat. La restaurante, corecția datei sau prețului unei recepții actualizează în fundal costurile financiare FIFO afectate, inclusiv în trecut; nu reface numărătoarea sau rețetele istorice. Citește starea înainte să declari rapoartele actualizate.
 - Diferența față de costul din rețetă e normală și e chiar un indicator: vine din porționare, risipă și prețuri diferite pe loturi.
-- **Livrările finalizate** au cost realizat din loturile descărcate imediat — vezi mai sus.
+- **Livrările finalizate** descarcă marfa imediat; costul lor realizat poate fi și el reevaluat după corectarea recepțiilor.
 - **Produsele oferite/protocol** consumă stoc fără să aducă venit, deci urcă procentul de food cost fără nicio greșeală de date. Verifică-le volumul înainte de a căuta o problemă.
 - Valoarea afișată în lista rulărilor de consum e o estimare pe cost mediu; cifra autoritară e cea din rapoarte.
 
@@ -134,7 +134,7 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 - `audit_consumption_chain` — verifică lanțul vânzare → consum → stoc → notă contabilă pe un interval și spune **unde s-a rupt**: zile cu note închise dar fără consum, documente rămase ciornă (stocul nu a scăzut), documente fără notă contabilă, consum fără cost și **stoc negativ** în gestiunile atinse. Rulează-l ca verificare finală după orice recalculare sau schimbare de gestiuni.
 - `scan_recipe_consumption_gaps` — ce **blochează** consumul din partea rețetelor: ingrediente fără produs legat sau cu produsul șters (astea opresc generarea pentru ziua întreagă, nu consumă parțial), rețete cu același nume, randamente citite greșit.
 - `diagnose_consumption_warehouse_routing` — simulează produsul într-un brand+locație și arată, ingredient cu ingredient, gestiunea aleasă, sursa alegerii și orice abatere către altă locație.
-- `get_reprocess_job_status` — progresul unui job de recalculare (citire `inventar`).
+- `get_reprocess_job_status` — progresul unui job de regenerare a consumului (citire `inventar`). Pentru recalcularea financiară după corectarea unei recepții folosește `get_reception_cost_recalculation({id: ID_FACTURA})`; verifică separat `get_reception_accounting_status({id: ID_NIR})`.
 - `get_stock_levels` — stocul curent, cu defalcare pe gestiuni; cu `warehouseId` doar gestiunea aleasă.
 - `list_lots` / `get_lot_details` — loturile din care se scade (cantitate rămasă, cost, expirare).
 - `scan_zero_cost_sold` — produse vândute cu cost 0 (fără rețetă sau cu ingrediente necostate).
@@ -148,7 +148,7 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 **Scriere (cer modulul de permisiune pe token):**
 - `generate_daily_consumption` 🔒 (modul `inventar`) — generează consumul unei zile.
 - `reprocess_daily_consumption` 🔒 (modul `financiar`) — recalcularea pe perioadă; progresul se citește cu `get_reprocess_job_status`.
-- `fix_reception_costs` 🔒 (modul `financiar`) — corectează costul unor loturi intrate greșit; după el, recalcularea e obligatorie.
+- Pentru preț greșit pe o factură existentă: `update_incoming_invoice_line` → `correct_confirmed_reception`; pentru data intrării: `set_reception_operational_date`. Urmează [ghidul de corecții](corectare-receptii-mcp.md), păstrează cantitățile și verifică FIFO separat. Nu porni reprocesarea consumului doar pentru aceste corecții. `fix_reception_costs` 🔒 (modul `financiar`) este o unealtă de reparare a costului loturilor dovedite, nu primul pas al editării unei facturi și nu impune singură refacerea consumului.
 - `fix_recipe_ingredient` 🔒, `update_recipe`, `set_ingredient_purchase_prices` 🔒, `set_product_manual_cost` 🔒, `set_standard_costs` — reparațiile de rețetă și de cost.
 - `associate_recipe_to_product` 🔒, `link_recipe_products`, `change_product_type` 🔒, `move_product_to_served_meal` 🔒 — rezolvarea Consumului Temporar.
 - `assign_product_warehouses`, `update_product` — fixarea gestiunii din care se scade.
@@ -191,14 +191,13 @@ Aproape întotdeauna una din trei: unitate imposibilă în rețetă (grame pe un
 *Repari:* `fix_recipe_ingredient` 🔒 sau editare din pagina de rețete; Setări → Reparații → „Corectează unități neconvertibile"; `set_ingredient_purchase_prices` 🔒 / `set_standard_costs`; abia apoi **recalculezi** perioada afectată.
 
 **4. „De ce diferă costul din P&L de cel din rețetă?"**
-E normal și e chiar un indicator. Rețeta dă costul teoretic; P&L folosește costul realizat, din loturile chiar consumate — inclusiv loturile descărcate imediat pentru livrări finalizate. Diferența vine din porționare, risipă și prețuri diferite pe loturi. **Produsele oferite/protocol** consumă fără venit și pot ridica procentul fără ca datele să fie greșite.
+Rețeta dă costul teoretic; P&L folosește costul realizat al consumului, inclusiv al livrărilor finalizate. La restaurant, verifică și starea reevaluării financiare FIFO după o recepție corectată; loturile fizice păstrează trasabilitatea și nu demonstrează singure costul final. Diferența poate veni din porționare, risipă și prețuri diferite de intrare. **Produsele oferite/protocol** consumă fără venit și pot ridica procentul fără ca datele să fie greșite.
 *Verifici:* `generate_report` (`food_cost`) față de `analyze_food_costs`; `list_lots` pe 1-2 ingrediente; volumul produselor oferite în raportul de sfârșit de zi.
 *Repari:* nimic, dacă diferența e mică. Dacă e mare, caută loturi cu cost 0 sau absurd (`scan_suspect_reception_costs`).
 
 **5. „Am corectat rețeta / prețul de pe factură și rapoartele arată la fel."**
-Corectura **nu rescrie trecutul**. Consumul deja făcut rămâne cu cifrele vechi până îl recalculezi.
-*Verifici:* ce perioadă e afectată; luna e deschisă contabil?
-*Repari:* pentru toate produsele → „Reprocesare Vânzări" pe interval, sau `reprocess_daily_consumption` 🔒 + `get_reprocess_job_status`. Pentru un singur produs (și pentru **livrări**) → „Reprocesează acest produs". ⚠ După recalculare verifică soldurile pe gestiuni.
+Separă cele două cauze. **Preț/data recepției:** recitește factura și NIR-ul, apoi `get_reception_cost_recalculation({id: ID_FACTURA})`; corecția trebuie aplicată, iar costurile afectate ajung în rapoarte după finalizarea lucrării. `pending/retry/waiting/attention` nu este finalizare; `null` nu o demonstrează. Verifică separat sincronizarea contabilă. Nu anula NIR-ul și nu reprocesa consumul.
+**Rețeta/regulile de consum:** dacă trebuie refăcute cantitățile istorice, verifică perioada și luna contabilă, apoi regenerarea autorizată pe interval (`reprocess_daily_consumption` + `get_reprocess_job_status`) sau pe produs din aplicație. După regenerare verifică soldurile pe gestiuni.
 
 **6. „Am stoc negativ" / „consumul e blocat cu «loturi insuficiente»."**
 La restaurant stocul negativ e permis intenționat — e semnalul că lipsește o recepție sau că unitatea din rețetă e greșită. La fabrică sistemul **oprește** consumul în loc să meargă pe minus.

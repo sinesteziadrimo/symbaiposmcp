@@ -55,7 +55,7 @@ Ce înseamnă asta pentru tine:
 
 Fiecare linie primește unul din trei răspunsuri — aceleași trei ca la furnizor (vezi `intrari-marfa-receptie.md`, capitolul „De unde știe sistemul CINE e furnizorul"):
 
-- **VERDE — produs confirmat.** Legătura vine dintr-o sursă sigură: cod de bare identic, codul de articol al furnizorului, o regulă pe care ai confirmat-o tu data trecută, sau alegerea ta manuală. Doar verdele se poate aplica singur. ⚠ Și el se oprește dacă mai lipsește ceva pe linie — contul sau traducerea unității: **cine e produsul** și **cât intră pe stoc** sunt două întrebări diferite, iar a doua tot te așteaptă.
+- **VERDE — produs confirmat.** Legătura vine dintr-o sursă sigură: cod de bare identic, codul de articol al furnizorului, o regulă confirmată anterior sau alegerea manuală. Identitatea produsului și cantitatea sunt verificări separate. Lipsa conversiei folosește implicit 1:1, cu prioritate pentru conversiile cunoscute și scara SI; un factor explicit contradictoriu trebuie corectat, iar contul trebuie rezolvat din tipul produsului.
 - **GALBEN — produs nou.** Nu există nimic asemănător în catalog. Ți se propune crearea produsului, cu denumirea de pe document. Informativ, fără avertisment — e pur și simplu o marfă pe care o primești prima oară.
 - **ROȘU — alege tu.** Propunerea vine din **asemănarea denumirii**, nu dintr-o dovadă. Ți se arată candidații (cel mult cinci, cei mai buni), dar linia rămâne nelegată până apeși tu. Tot roșu primești când două produse sunt aproape la fel de bune — o diferență prea mică între ele nu e o alegere, e o monedă aruncată — sau când sunt prea multe denumiri asemănătoare ca să se poată decide.
 
@@ -96,7 +96,7 @@ Aceasta e distincția cea mai importantă din tot fișierul.
 
 Contul de pe linie decide nota contabilă doar la **liniile de cheltuială** (servicii, utilități, transport, chirii) și la facturile pur contabile, fără intrare pe stoc.
 
-**Exemplu.** O abonare de mentenanță ajunge mapată pe un produs marcat greșit ca marfă. Nota iese pe cont de stoc (371) în loc de cheltuială (628). Dacă schimbi doar contul pe linie, nota rămâne la fel. Corectura reală: **schimbi tipul produsului** în „serviciu" (`change_product_type` 🔒 sau din fișa produsului), apoi aplici corecția prin `correct_confirmed_reception` și verifici nota contabilă.
+**Exemplu.** O factură de mentenanță a fost legată greșit de un produs stocabil. Citește naturile disponibile cu `list_expense_destination_types` și remapează linia pe natura de cheltuială potrivită, apoi finalizează sau corectează recepția existentă prin fluxul nominal. Verifică nota contabilă. Nu modifica tipul produsului comun pentru o singură mapare greșită; schimbarea globală se face doar dacă produsul însuși este clasificat greșit și acesta este scopul cerut.
 
 Și încă un motiv să repari la sursă: o regulă greșită se reaplică automat la următoarele facturi ale **aceluiași furnizor** cu aceeași descriere. Pentru marfa stocabilă, repară și tipul produsului când nota contabilă este greșită; contul de mapare al liniei nu rescrie singur contul de stoc.
 
@@ -121,9 +121,9 @@ Când asistentul nu găsește produsul în catalog, îl **propune** — nu îl c
 
 ⚠ **Ghicitul nu-ți suprascrie niciodată o decizie.** Odată ce ai confirmat un factor pentru o descriere, propunerea automată nu mai intervine pe ea.
 
-**Când se oprește și te întreabă.** La unități care nu se pot traduce singure (bax → kg, cutie → bucată) sistemul se oprește și îți pune **o singură întrebare clară**: „1 bax = câte kg?". Nu e o eroare — e protecția care ține stocul corect. Fără răspuns, linia nu se acceptă.
+**Când conversia lipsește.** Recepția continuă implicit 1:1, fără întrebare suplimentară; conversiile cunoscute și scara SI au prioritate. Densitatea lipsă înseamnă 1 kg/l, deci 600 ml devin 0,6 kg. Lasă factorul explicit necompletat: această presupunere nu se învață ca regulă și nu este o măsurătoare fizică. Un factor explicit greșit din dimensiuni sau din numărarea dublă a ambalajului se corectează separat.
 
-**„Păstrez pachetul"** (nu desfac baxul, îl țin ca atare) e permis **doar dacă produsul e ținut chiar în acea unitate** de stoc. Dacă produsul e la bucată, nu poți primi baxuri fără să spui câte bucăți are.
+**„Păstrez pachetul"** înseamnă stoc în baxuri dacă produsul este configurat în baxuri. Dacă produsul este în altă unitate și conversia lipsește, se aplică regula implicită de mai sus; userul poate modifica ulterior cantitatea. Nu confunda fallback-ul cu o confirmare a numărului de bucăți din bax.
 
 **Cum corectezi un factor învățat greșit.** Reguli de Mapare (`/inventory/mapping-rules`) → regula furnizorului pentru acea descriere → editezi factorul și unitățile. ⚠ **Cât timp regula rămâne greșită, se reaplică la fiecare factură nouă** — nu are rost să remapezi linia la nesfârșit fără să repari regula.
 
@@ -143,14 +143,14 @@ Când asistentul nu găsește produsul în catalog, îl **propune** — nu îl c
 
 ## Operațiile pe linie
 
-Pe lângă mapare, o linie de factură se poate lucra în patru feluri, toate **din pagină**:
+Pe lângă mapare, poți lucra liniile din aplicație sau prin tool-urile nominale din [corectare-receptii-mcp.md](corectare-receptii-mcp.md):
 
 - **Spargere linie** — o linie se împarte în mai multe sub-linii, pe cantități (același rând conține două produse reale, sau marfa merge în locuri diferite). Sumele se împart automat; se poate anula.
 - **Absorbție linie** — costul unei linii (transport, ambalaj, taxă) se repartizează peste liniile de marfă: egal, proporțional cu valoarea, sau pe o singură linie. **Se mută doar valoarea, nu cantitatea** — așa transportul intră în costul mărfii.
-- **Împărțire pe gestiuni** — o linie se poate primi în mai multe depozite (40 kg la Magazie, 60 kg la Bucătărie). ⚠ **Se stabilește doar în ecranul de recepție și se pierde dacă reîncarci pagina** — creează NIR-ul în aceeași sesiune.
+- **Împărțire pe gestiuni** — o linie se poate primi în mai multe depozite (40 kg la Magazie, 60 kg la Bucătărie). Folosește operația dedicată din ghidul de corecții și recitește alocările salvate înainte de recepție; nu te baza numai pe starea ecranului.
 - **Recepție pe loturi** — aceeași linie împărțită pe mai multe loturi de furnizor, cu termene și origini diferite (`set_reception_lot_allocations`). Detalii în `intrari-marfa-receptie.md`.
 
-⚠ **După ce ai spart sau absorbit o linie, NIR-ul se creează doar din pagină** — `create_nir_from_invoice` refuză facturile cu linii sparte sau absorbite. Spune-i asta utilizatorului înainte să înceapă operația prin conexiune.
+După spargere sau absorbție, recitește factura și folosește `create_received_invoice_reception` pentru NIR. Pentru un NIR deja confirmat, pregătește modificările prin tool-urile nominale și aplică `correct_confirmed_reception`. Nu trimite userul în pagină din cauza limitărilor tool-ului vechi `create_nir_from_invoice`.
 
 ## Tool-uri MCP utile
 
@@ -203,7 +203,7 @@ Pe lângă mapare, o linie de factură se poate lucra în patru feluri, toate **
 - **Am corectat o linie, am rulat din nou asistentul AI și corectura a dispărut.** Rularea din nou reia de la zero liniile **neacceptate**. Ordinea corectă: accepți întâi ce ai corectat, apoi rulezi asistentul pentru restul.
 - **Aceeași descriere îmi duce marfa când la un produs, când la altul.** Ai două reguli care se contrazic (una a furnizorului și una generală, sau două ale aceluiași furnizor). Deschide lista de conflicte din Reguli de Mapare și păstrează una singură. Regula furnizorului bate întotdeauna una generală.
 - **Am legat catalogul furnizorului și tot nu se mapează singur.** Recunoașterea după codul de articol funcționează dacă furnizorul chiar trimite codul pe factură. Când nu-l trimite, rămâne recunoașterea după descriere — confirmă o dată și se învață.
-- **Vreau să nu mai desfac baxurile.** Se poate doar dacă ții produsul chiar în unitatea aceea (stoc în „bax"). Dacă produsul e la bucată, sistemul are nevoie de numărul de bucăți din pachet.
+- **Vreau să nu mai desfac baxurile.** Stocul rămâne în baxuri dacă produsul este configurat în baxuri. Dacă unitățile diferă și conversia lipsește, se folosește regula implicită 1:1, fără întrebare suplimentară; valoarea poate fi corectată ulterior și nu se învață ca o conversie măsurată.
 
 ## Pentru acces SQL
 

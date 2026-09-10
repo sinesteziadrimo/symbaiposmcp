@@ -45,7 +45,7 @@ Ghid complet: skills/inchidere-zi-casa/SKILL.md. Pentru delegare: cash.read, cas
 
 ## Corectarea recepțiilor din ChatGPT, Codex și Claude Code
 
-Ghid comun: [corectare-receptii-mcp.md](corectare-receptii-mcp.md). Corecțiile nominale acoperă liniile, maparea, gestiunile, cantitățile fizice, loturile, anularea, ciornele și asocierea facturii. Pentru factura deja contabilizată pe recepție: preview_received_invoice_retraction → retract_received_invoice, cu dreptul settings_access și conexiune fără PIN; apoi recitire, corecție și finalizare. Anularea păstrează istoricul, iar cantitatea facturată nu înlocuiește numărătoarea fizică. Acordul deja dat acoperă operația cerută; nu cere repetat aceeași confirmare.
+Ghid comun: [corectare-receptii-mcp.md](corectare-receptii-mcp.md). **Document existent: data intrării → `set_reception_operational_date`; prețul de achiziție → `update_incoming_invoice_line` + `correct_confirmed_reception`.** Pentru aceste corecții nu anula NIR-ul, nu retrage factura și nu cere confirmarea consumului ori activarea stocului negativ. Citește apoi `get_reception_cost_recalculation` pe ID-ul facturii, separat de `get_reception_accounting_status` pe ID-ul NIR-ului. Cantitatea facturată nu înlocuiește numărătoarea fizică. Retragerea facturii (`preview_received_invoice_retraction` → `retract_received_invoice`) privește numai o retragere fiscală necesară și autorizată, cu drepturile ei; nu este pasul implicit pentru orice factură contabilizată. Acordul deja dat acoperă operația cerută.
 
 ## ⚠ De știut la scrieri prin MCP (gotcha-uri confirmate)
 

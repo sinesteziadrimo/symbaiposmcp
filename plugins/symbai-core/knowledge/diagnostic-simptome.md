@@ -27,7 +27,7 @@ Regula de aur: NU conchide „Symbai nu poate" și NU conchide „e o limită a 
 
 ## Recepție, facturi de intrare, contabilitate primară
 
-Modificări, anulări și refaceri: citește [Corectarea recepțiilor prin MCP](corectare-receptii-mcp.md). Pentru un NIR consumat, folosește previzualizarea/anularea sau corecția nominală; nu recomanda automat reprocesarea consumului zilnic.
+Modificări, anulări și refaceri: citește [Corectarea recepțiilor prin MCP](corectare-receptii-mcp.md). Pentru data unui NIR consumat folosește `set_reception_operational_date`; pentru preț, corecția nominală a liniei și `correct_confirmed_reception`. Nu recomanda storno ori reprocesarea consumului pentru aceste schimbări. Citește `get_reception_cost_recalculation` pe ID-ul facturii; costurile în așteptare nu blochează editarea documentului.
 
 | Simptom | Întâi | Apoi |
 |---|---|---|

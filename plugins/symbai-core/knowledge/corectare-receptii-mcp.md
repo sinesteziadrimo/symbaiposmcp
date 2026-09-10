@@ -2,6 +2,22 @@
 
 Folosește acest ghid la modificarea sau anularea unui NIR, a cantității primite, produsului, prețului, ambalajului, gestiunii ori facturii legate. Lucrează până la verificarea rezultatului, în limitele drepturilor persoanei și ale documentelor. Nu afirma că o operație este disponibilă numai în aplicație înainte de `cauta_tool` și verificarea conexiunii.
 
+## Corecție pe documentul existent, fără storno inutil
+
+**Data intrării și prețul de achiziție se corectează pe documentele existente.** Nu crea o factură nouă, nu anula NIR-ul și nu retrage factura doar fiindcă marfa a fost consumată. Cererea utilizatorului pentru această corecție este acordul necesar; `confirm:true` nu impune o a doua întrebare.
+
+Verifică sursa și starea facturii: un câmp fiscal protejat poate avea alt flux de corecție. Nu promite aceeași editare pentru orice proveniență și orice câmp; citește rezultatul operației. Existența unui NIR sau a consumului nu justifică singură o anulare.
+
+Pentru factura generată din propriul NIR deja postat și evaluat, corecția exclusiv economică (preț/valoare/TVA) păstrează NIR-ul când liniile sunt legate individual și verificabil. Acest flux cere să nu existe finalizare separată pe aviz/provizorat, preluare externă în Accounting, document ANAF sau altă protecție fiscală aplicabilă. Nu schimba marfa fizică prin această factură generată și nu modifica prețul de vânzare ori gestiunea ca efect secundar. Citește eligibilitatea returnată de sistem.
+
+- **Data reală a intrării:** `set_reception_operational_date({id: ID_FACTURA, receiptDate: "AAAA-LL-ZZ", confirm: true})`. ID-ul este al facturii. Data oficială `invoiceDate` și data înregistrării `registrationDate` se păstrează. Nu le substitui pentru a muta recepția. Această salvare este suficientă pentru dată; nu apela și corecția NIR-ului dacă nu ai pregătit separat schimbări de linii.
+- **Prețul de achiziție introdus greșit:** citește linia și documentul-sursă, folosește `update_incoming_invoice_line` cu `invoiceId`, `lineId` și valorile corectate verificate; apoi `correct_confirmed_reception` cu `id: ID_FACTURA`, `expectedOldNirId` citit și o `idempotencyKey` stabilă. Omite cantitățile fizice, `physicalVerificationConfirmed` și `acknowledgeConsumedLots` dacă numărătoarea nu se schimbă. Nu activa stocul negativ pentru această corecție. Câmpul `receptionPrice` desemnează prețul de vânzare/raft în fluxul respectiv; nu îl confunda cu prețul de achiziție al facturii.
+- **Ambele:** salvează separat data operațională și liniile, prin operațiile de mai sus, apoi verifică rezultatul. Nu trimite data recepției ca dată fiscală.
+
+La restaurante, costurile FIFO se recalculează în fundal, inclusiv pentru consumuri deja acoperite, semipreparate și transferuri. Se schimbă costul atribuit și marja; cantitățile istorice, rețetele deja folosite și prețul plătit de client se păstrează. Nu șterge și nu reprocesa consumul zilnic pentru o asemenea corecție.
+
+Verifică existența tool-urilor în conexiunea live. Dacă versiunea instalată nu le oferă, caută operația și pagina canonică; nu reveni automat la anulare/recreare și nu pretinde că noul comportament este deja disponibil.
+
 ## Mai întâi identifică documentele și intenția
 
 1. Verifică firma/conexiunea, factura și NIR-ul curent. `get_incoming_invoice_workflow_details` citește factura; `get_physical_reception_document` citește NIR-ul; `get_physical_reception_lines` citește liniile, cu `limit:25` și continuare până la `nextAfterId:null`.
@@ -15,7 +31,8 @@ Folosește acest ghid la modificarea sau anularea unui NIR, a cantității primi
 |---|---|
 | Corectează cantitatea facturată, prețul, TVA sau descrierea | `update_incoming_invoice_line`; pe recepție postată verifică starea și continuă cu `correct_confirmed_reception`. |
 | Schimbă produsul, contul sau conversia de ambalaj | `correct_invoice_line_mapping`; citește schema, păstrează câmpurile existente cerute și confirmă factorul fizic numai dacă a fost verificat. Apoi aplică recepția corectată. |
-| Corectează antetul, furnizorul, datele sau totalurile | `update_incoming_invoice_context`, numai câmpurile schimbate. Respectă blocajele documentului oficial/contabilizat; corectarea unei linii nu deblochează automat antetul. |
+| Corectează data efectivă a intrării | `set_reception_operational_date`, apoi citirea facturii și a stării FIFO; fără storno, chiar dacă marfa este consumată. |
+| Corectează antetul fiscal, furnizorul sau totalurile | `update_incoming_invoice_context`, numai câmpurile schimbate. Data facturii și data înregistrării au propriile protecții; nu le confunda cu data intrării. Un refuz nu autorizează automat storno. |
 | Corectează marfa efectiv primită, inclusiv nimic primit | `correct_confirmed_reception` cu cantitățile fizice verificate și `physicalVerificationConfirmed:true`. Zero este o cantitate validă, nu câmp omis. |
 | Schimbă gestiunea sau împarte o linie pe gestiuni | `set_invoice_line_reception_warehouse`; citește și păstrează distribuția completă. Pe NIR postat finalizează corecția și verifică mișcările pe fiecare gestiune. |
 | Corectează lotul furnizorului sau expirarea | `set_invoice_line_expiry`; `null` golește explicit câmpul. Verifică propagarea în trasabilitate. |
@@ -47,7 +64,7 @@ La `correct_confirmed_reception`, `id` este ID-ul facturii, iar `expectedOldNirI
 
 ## Recepție deja consumată sau încă fără preț
 
-La restaurante, consumul anterior nu impune automat ștergerea vânzărilor, producției sau consumului. `acknowledgeConsumedLots:true` exprimă acordul informat pentru corecția unei recepții consumate. Dacă utilizatorul a cerut deja exact această corecție și a acceptat efectul, nu cere o a doua confirmare formală. Dacă efectul este nou, explică faptul că lipsa poate rămâne temporar până la recepția corectă și cere numai decizia necesară.
+La restaurante, consumul anterior nu impune ștergerea vânzărilor, producției sau consumului. **Corecția NIR autorizată nu cere `acknowledgeConsumedLots` sau activarea stocului negativ**, inclusiv când se corectează cantitatea, produsul ori gestiunea. Pentru schimbarea fizică folosește numărătoarea verificată și citește NIR-ul rezultat: sistemul poate înlocui atomic recepția, păstrează consumurile și înregistrează eventuala cantitate rămasă neacoperită. Aceasta trebuie explicată și verificată, nu ascunsă printr-o recepție fictivă. Fabrica păstrează protecțiile producției dependente. Anularea explicită a documentului este o operație distinctă, cu schema și efectele ei; nu o folosi ca pas suplimentar pentru corecție. Folosește acordul existent și clarifică numai date lipsă sau efecte suplimentare neautorizate.
 
 Acoperirea consumurilor și diferențele de cost se regularizează prin fluxul recepției. **Nu reprocesa consumul zilnic doar fiindcă ai corectat sau anulat un NIR.** Reprocesarea este pentru schimbări de rețetă/reguli de consum ori un diagnostic care o cere separat.
 
@@ -65,8 +82,26 @@ Trimite aceleași decizii la previzualizare și asociere. Nu schimba factura ofi
 
 ## Verificare și protecții
 
-Recitește factura și NIR-ul activ, cantitățile pe fiecare produs/gestiune și notele contabile. Pentru predarea contabilă folosește `get_reception_accounting_status`; `pending` sau `processing` nu înseamnă finalizare confirmată. La o eroare de sincronizare eligibilă folosește `retry_reception_accounting_sync`, apoi citește iar starea.
+Recitește factura cu `get_incoming_invoice_workflow_details({invoiceId: ID_FACTURA})`: verifică `nirDocumentId`, `receiptDate`, datele fiscale și liniile. La revizie economică, `correctionMode:economic_revision` confirmă păstrarea NIR-ului; nu descrie rezultatul ca storno/repostare. Cantitățile rămân cele citite anterior dacă nu ai cerut schimbarea lor.
 
-Istoricul inițial se păstrează, cu storno și diferențe valorice separate. Lunile închise, documentele fiscale oficiale, operațiile deja preluate de contabilitate și documentele de producție cu flux propriu au protecții reale. Explică motivul exact și calea oferită de sistem; nu redeschide automat luni și nu modifica direct datele financiare.
+Urmărește `get_reception_cost_recalculation({id: ID_FACTURA})`:
+
+| Stare | Ce spui și ce faci |
+|---|---|
+| `pending` / `retry` | Corecția este salvată, costurile se actualizează în fundal; utilizatorul poate continua lucrul. Recitește starea, fără repetarea scrierii. |
+| `resolved` | Costurile afectate au fost actualizate. Sincronizarea contabilă se verifică separat. |
+| `waiting` | Sunt încă surse sau prețuri lipsă; partea cunoscută este actualizată. Completează numai datele reale autorizate. |
+| `attention` | Comunică problema concretă și identificatorii returnați; editarea rămâne posibilă. Nu inventa costuri sau ajustări ca să dispară mesajul. |
+| rezultat `null` | Nu există o lucrare cunoscută; nu este dovada finalizării FIFO. Verifică documentul și funcțiile oferite de versiunea live. |
+
+Pentru predarea contabilă folosește **separat** `get_reception_accounting_status({id: ID_NIR})`; `pending` sau `processing` nu înseamnă finalizare confirmată. La o eroare de sincronizare eligibilă folosește `retry_reception_accounting_sync`, apoi citește iar starea. O citire reușită nu transformă o lucrare în așteptare într-una terminată.
+
+După schimbarea unității sau gestiunii, recitește factura și `nirDocumentId`: corecția poate să fi înlocuit deja NIR-ul. Folosește ID-ul curent pentru verificare și pentru o eventuală corecție nouă; la reluarea aceleiași operații păstrează însă identificatorii și cheia cererii inițiale. Dacă NIR-ul actualizat ajunge înaintea liniilor facturii, lasă să se sincronizeze și factura, apoi reverifică. Nu recrea documentele ca să schimbi ordinea livrării.
+
+O modificare exclusivă a datei intrării nu cere redeschiderea lunii fiscale pentru o factură deja sincronizată, neschimbată și verificată. Pentru o modificare fiscală reală refuzată într-o lună închisă, contabilul poate decide redeschiderea: în conexiunea **Accounting**, descoperă `list_period_closings` și `reopen_period`; dacă și luna POS este blocată, folosește `unlock_month_everywhere`, care respectă ordinea de deblocare. Urmează decizia autorizată a contabilului, apoi reia sincronizarea și verifică rezultatul. Nu prezenta perioada închisă drept un blocaj fără ieșire.
+
+Pentru livrări oprite după încercări eșuate, în setările de contabilitate POS există **„Reia facturile furnizor / NIR oprite”**. După rezolvarea cauzei, această acțiune reia etapa necesară inclusiv când o versiune mai nouă așteaptă după ea. Nu repeta modificarea facturii ca să repornești livrarea. Costul încă necunoscut cere date reale de stoc/preț; o reluare nu poate înlocui aceste date și nu justifică prețuri inventate.
+
+Istoricul inițial se păstrează prin revizii și diferențe valorice; storno privește operațiile care îl cer efectiv. Data operațională nu rescrie luna fiscală închisă. Documentele fiscale oficiale, operațiile preluate de contabilitate și producția cu flux propriu păstrează protecțiile lor. Dacă o schimbare fiscală este refuzată, explică motivul exact și calea oferită de sistem; nu redeschide automat luni, nu retrage factura din proprie inițiativă și nu modifica direct datele financiare. Nu promite modificarea oricărui câmp al oricărei facturi fără o corecție fiscală.
 
 Conexiunile nominale folosesc tool-urile din acest ghid. Tool-ul `create_nir_from_invoice` rămâne limitat pentru linii împărțite/reunite; în acest caz folosește operația nominală de creare de mai sus. Tool-urile mai vechi `correct_reception_line`, `update_nir_from_invoice`, `void_inventory_document`, `abandon_nir_update`, `link_reception_to_invoice`, `finalize_reception_invoice` pot exista pe conexiuni organizaționale; nu presupune că un refuz de scope la ele înseamnă că lipsește operația nominală. Verifică lista live. Dacă versiunea instalată nu oferă încă tool-ul necesar, spune concret ce lipsește și folosește pagina canonică accesibilă, fără a simula succesul.
