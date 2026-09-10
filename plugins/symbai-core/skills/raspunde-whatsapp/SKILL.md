@@ -135,7 +135,9 @@ Dacă linia lipsește, nu presupune că mesajul se referă la ultimul din fir: p
 
 ⛔ **Confuzia ireversibilă:** `send_whatsapp_message`, `send_whatsapp_media` și `reply_to_conversation` **NU** sunt tool-urile acestui skill. Ele aparțin canalului oficial de WhatsApp Business și trimit **de pe numărul firmei, către clienți**, cu alte reguli. Dacă în sesiune apar ambele seturi, verifică prefixul serverului înainte de fiecare trimitere. Un mesaj scris în stilul personal al ownerului, plecat pe canalul oficial de clienți, nu se poate retrage.
 
-Dacă tool-urile punții nu apar în sesiune, puntea nu e pornită sau nu e logată: spui asta și te oprești. Nu substitui cu celălalt canal, nu cauți rute alternative. **Lista live de tool-uri câștigă în fața oricărui catalog.**
+`connect_whatsapp_canale` inventariază canalele partajate cu firma; nici această listă, nici `list_whatsapp_accounts` nu confirmă dacă WhatsApp-ul personal este conectat. Pentru acesta verifică `connection_status` din serverul local al numărului ales.
+
+Dacă tool-urile punții nu apar, urmează [alege-conexiunea.md](../../knowledge/alege-conexiunea.md): caută serverele locale în aplicația gazdă, verifică asistentul configurat efectiv și reîncarcă legăturile după conectare. Nu declara că puntea este oprită sau delogată fără o verificare live. Nu substitui numărul personal cu alt canal. **Lista live de tool-uri câștigă în fața oricărui catalog.**
 
 ## Tabelul de calibrare
 

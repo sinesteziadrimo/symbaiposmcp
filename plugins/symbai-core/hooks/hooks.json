@@ -2,6 +2,15 @@
   "hooks": {
     "SessionStart": [
       {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/session-connections.mjs\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
         "matcher": "startup|resume",
         "hooks": [
           {

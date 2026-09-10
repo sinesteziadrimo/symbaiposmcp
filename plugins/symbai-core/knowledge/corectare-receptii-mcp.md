@@ -20,7 +20,7 @@ Verifică existența tool-urilor în conexiunea live. Dacă versiunea instalată
 
 ## Mai întâi identifică documentele și intenția
 
-1. Verifică firma/conexiunea, factura și NIR-ul curent. `get_incoming_invoice_workflow_details` citește factura; `get_physical_reception_document` citește NIR-ul; `get_physical_reception_lines` citește liniile, cu `limit:25` și continuare până la `nextAfterId:null`.
+1. Verifică firma/conexiunea, factura și NIR-ul curent. `get_incoming_invoice_workflow_details` citește factura în pagini (implicit 10 linii, maximum 25); continuă cu argumentele complete din `pagination.nextArguments` până la `null`. `expectedRevision` este obligatoriu după prima pagină; dacă documentul s-a schimbat, recitește de la început. Câmpurile extinse oferă `readArguments`: continuă cu `detail.nextArguments`, păstrând `detailRevision`, concatenează `detail.text` și apoi decodează JSON. Nu considera descriptorul unui câmp drept valoarea lui. `get_physical_reception_document` citește NIR-ul cu `id: ID_NIR`; `get_physical_reception_lines` citește liniile, cu `limit:25` și continuare până la `nextAfterId:null`.
 2. Separă cantitatea de pe factură de cantitatea numărată fizic. Identifică liniile prin ID și verifică produsul, unitatea, gestiunea și lotul, nu numai denumirea.
 3. Cererea explicită a utilizatorului autorizează schimbarea cerută. Folosește acordul deja dat și trimite `confirm:true` unde schema îl cere. Nu solicita încă un „OK” pentru aceeași operație verificată. Întreabă numai despre date lipsă, alegeri ambigue sau efecte suplimentare neautorizate.
 4. Citește previzualizarea unde există. Înaintea anulării, folosește `preview_inventory_document_cancellation`. Un refuz explică pasul necesar; nu este un motiv să inventezi o ajustare compensatoare.
@@ -32,6 +32,7 @@ Verifică existența tool-urilor în conexiunea live. Dacă versiunea instalată
 | Corectează cantitatea facturată, prețul, TVA sau descrierea | `update_incoming_invoice_line`; pe recepție postată verifică starea și continuă cu `correct_confirmed_reception`. |
 | Schimbă produsul, contul sau conversia de ambalaj | `correct_invoice_line_mapping`; citește schema, păstrează câmpurile existente cerute și confirmă factorul fizic numai dacă a fost verificat. Apoi aplică recepția corectată. |
 | Corectează data efectivă a intrării | `set_reception_operational_date`, apoi citirea facturii și a stării FIFO; fără storno, chiar dacă marfa este consumată. |
+| Corectează prețul de vânzare al mărfii recepționate | `correct_confirmed_reception` cu `lineSellingPrices`: ID linie factură → preț de raft unitar CU TVA, în unitatea de stoc. Se acceptă și text cu virgulă zecimală. Liniile omise își păstrează baza istorică; nu copia prețul actual din catalog. Aceeași mapă este disponibilă la `create_received_invoice_reception`. |
 | Corectează antetul fiscal, furnizorul sau totalurile | `update_incoming_invoice_context`, numai câmpurile schimbate. Data facturii și data înregistrării au propriile protecții; nu le confunda cu data intrării. Un refuz nu autorizează automat storno. |
 | Corectează marfa efectiv primită, inclusiv nimic primit | `correct_confirmed_reception` cu cantitățile fizice verificate și `physicalVerificationConfirmed:true`. Zero este o cantitate validă, nu câmp omis. |
 | Schimbă gestiunea sau împarte o linie pe gestiuni | `set_invoice_line_reception_warehouse`; citește și păstrează distribuția completă. Pe NIR postat finalizează corecția și verifică mișcările pe fiecare gestiune. |
@@ -53,6 +54,14 @@ La retragere, folosește `clearingId` și `journalEntryId` din preview drept `ex
 
 ## Cantitatea fizică și reluările sigure
 
+**Returul la furnizor poate avea surse în gestiuni diferite.** Verifică schema live: `create_received_invoice_reception` și `correct_confirmed_reception` oferă `lineWarehouses` (ID linie factură → `{warehouseId, splits?}`). Trimite numai liniile schimbate; cele omise își păstrează alegerea. Poți folosi și `set_invoice_line_reception_warehouse`, apoi aplicarea canonică. Verifică gestiunea și lotul real al fiecărui produs; configurarea actuală a produsului pentru intrări nu mută automat sursa unui retur. Un transfer între gestiuni este o operație fizică distinctă, nu un pas obligatoriu pentru finalizarea returului. O restricție întâlnită pe o versiune veche se notează cu versiunea și eroarea, nu ca regulă permanentă pentru toate retururile. Documentele provenite din Accounting își păstrează propriul flux.
+
+La `confirm_physical_reception`, cantitățile `receivedItems` sunt pentru liniile de **intrare**. Pentru un document de retur cu numai ieșiri, citește și verifică mai întâi cantitățile documentului, apoi folosește `receivedItems:[]` dacă schema live îl permite: cantitățile returului rămân cele documentate. Nu transforma ieșirile în cantități primite. Pentru o recepție normală, confirmă fiecare linie de intrare, inclusiv zero; lista goală nu înlocuiește numărătoarea.
+
+Factura finalizată separat pe o recepție provizorie poate oferi în aplicație **„Redeschide factura pentru corecție”**, în bannerul facturii. Este același flux de retragere contabilă, cu autentificare prin parolă și drepturile contabilului. Verifică nota și data propuse; dacă perioada inițială este închisă, contabilul decide data permisă. După succes și o eventuală eroare de reîncărcare, folosește **„Reîncarcă factura”**: nu retrage contabilizarea încă o dată.
+
+Păstrează distincte data facturii, data efectivă a recepției și data stornării. La recrearea unui NIR sau introducerea unei facturi vechi, verifică explicit datele rezultate; data de azi nu înlocuiește implicit data istorică verificată.
+
 La `correct_confirmed_reception`, `id` este ID-ul facturii, iar `expectedOldNirId` este ID-ul NIR-ului verificat. Creează o `idempotencyKey` pentru această corecție și păstrează **aceeași cheie, același NIR inițial și aceleași valori** la retry. O operație nouă primește o cheie nouă.
 
 - `physicalQuantities`: mapă **ID linie factură → cantitate în unitatea de stoc**.
@@ -60,6 +69,7 @@ La `correct_confirmed_reception`, `id` este ID-ul facturii, iar `expectedOldNirI
 - Nu trimite ambele forme pentru aceeași linie fiscală. Cantitățile acceptă maximum trei zecimale, inclusiv zero.
 - Dacă ai corectat numai factura sau prețul, omite cantitățile fizice: numărătoarea anterioară se păstrează. Facturat 12 și primit 10 nu înseamnă că au sosit încă două bucăți.
 - Dacă s-au schimbat unitatea, loturile sau distribuția și sistemul cere noua alocare fizică, obține numărătoarea reală; nu o deduce automat din factură.
+- La corectarea unei conversii, stabilește dacă utilizatorul schimbă și cantitatea efectiv primită sau doar exprimarea facturii. Transmite cantitatea fizică verificată dacă aceasta se schimbă. Câmpurile fiscale originale rămân intacte, inclusiv valorile lipsă din documentele vechi; nu inventa o unitate originală pentru a trece validarea.
 - Un timeout înseamnă rezultat necunoscut. Recitește factura, NIR-ul și istoricul înainte de retry; nu genera altă cheie ca să „treacă”.
 
 ## Recepție deja consumată sau încă fără preț

@@ -14,8 +14,8 @@ Reclame, refunduri, email/push/WhatsApp în masă, ștergeri de perioadă, anoni
 ## 4. Nu inventa cifre și nu inventa cauze
 Un număr vine dintr-un tool sau nu există. O cauză vine dintr-un tool de diagnostic (`diagnostic-simptome.md`) sau e o ipoteză spusă ca ipoteză. „Probabil e de la setări" nu ajută pe nimeni.
 
-## 5. Tool-uri lipsă ≠ limită de sesiune
-Catalogul are peste 1600 de tool-uri. Dacă nu găsești unul, `cauta_tool(«ce vrei să faci»)`. Dacă lipsesc module întregi, `verifica_conexiune` îți spune de ce (arie de angajat, rol, profil, grant). Nu declara „Symbai nu poate" înainte de aceste două verificări.
+## 5. Verifică conexiunea și catalogul potrivite
+Pentru unelte POS, folosește `cauta_tool(«ce vrei să faci»)` și `verifica_conexiune` (identitate, arie, rol, profil, grant). Pentru WhatsApp/email local, caută serverul local în aplicația asistentului: `cauta_tool` din POS nu îl inventariază. Urmează [alege-conexiunea.md](alege-conexiunea.md). Dacă serverul tocmai a fost conectat, poate fi nevoie de reîncărcarea legăturilor din conversație; absența uneltelor nu dovedește că acel cont este deconectat. Nu declara „Symbai nu poate” înainte de verificarea potrivită.
 
 ## 6. Preferă tool-ul dedicat, nu SQL
 Vânzări → `raport_vanzari`, top → `top_produse`, ore de vârf → `vanzari_in_timp`, ospătari → `performanta_ospatari`, profit → `get_pnl`, „ce s-a întâmplat" → `jurnal_activitate`, masă → `get_table_status`. SQL-ul e pentru corelări pe care niciun tool nu le face și doar dacă tokenul îl are.

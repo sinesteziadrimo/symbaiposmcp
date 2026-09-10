@@ -196,7 +196,7 @@ Tool-urile de citire merg de obicei fara modul de scriere. Tool-urile de scriere
 - spune modulul probabil: Comunicare, Stocuri, Setari, Rezervari & Clienti, Marketing, Livrari etc.;
 - nu incerca sa ocolesti permisiunea cu SQL sau clickuri riscante.
 
-Daca lipsesc module intregi din lista de tool-uri, NU e o limita a sesiunii: ruleaza `verifica_conexiune` si citeste `arieAngajat` (cont alocat doar pe o parte din unitatile active -> doar tool-urile cu verificare de arie), modulele si profilul. Remediile sunt in skill-ul `conecteaza-symbai`.
+Dacă lipsesc module dintr-o conexiune POS care răspunde, rulează `verifica_conexiune` și citește identitatea, `arieAngajat`, modulele și profilul. Dacă lipsește întreg serverul sau tocmai a fost conectat, verifică încărcarea lui în conversația curentă; WhatsApp și Google locale au servere separate. Urmează [alege-conexiunea.md](alege-conexiunea.md), apoi skill-ul `conecteaza-symbai`. Nu declara o limită a platformei sau deconectarea contului doar din absența uneltelor.
 
 Catalogul complet este in `tools-mcp.md`. Daca lista live din MCP difera de catalog, lista live castiga; `tools-mcp.md` este orientativ si generat.
 

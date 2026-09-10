@@ -11,6 +11,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 ## Ai DOUĂ surse de adevăr — combină-le
 
+**Alege conexiunea înainte de lucru**, în special la WhatsApp/email sau unelte lipsă: [alege-conexiunea.md](../../knowledge/alege-conexiunea.md). WhatsApp-ul personal folosește `connection_status` și `send_message` din serverul local `symbai-whatsapp-<nume>`, Gmail/Drive local folosește `google_accounts` din `symbai-google`, iar datele firmei au conexiuni separate. `cauta_tool` din POS nu caută în serverele locale. Lipsa unei unelte din conversație nu dovedește că numărul ori adresa sunt deconectate.
+
 **Modificarea unei facturi/recepții existente**, inclusiv după consum → [corectare-receptii-mcp.md](../../knowledge/corectare-receptii-mcp.md) și [receptie-factura-furnizor](../receptie-factura-furnizor/SKILL.md). Folosește documentul și acordul existente. Data intrării/prețul se corectează fără storno inutil; verifică separat salvarea, recalcularea costurilor în fundal și sincronizarea contabilă. Nu crea o factură nouă și nu regenera consumul doar pentru aceste corecții; verifică disponibilitatea tool-urilor în conexiunea live.
 
 **Accounting fără POS sau împreună cu POS:** folosește [Symbai Connect pentru Accounting](../../knowledge/symbai-connect-accounting.md). Este același Connect, cu firme și autentificări separate. Instrucțiunile POS din această bibliotecă se aplică numai conexiunilor POS; pentru o firmă Accounting verifică `get_connection_identity` și folosește uneltele oferite de conexiunea contabilă. Nu cere angajat/brand POS, cont Hub ori instalarea unui al doilea Connect.

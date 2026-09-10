@@ -6,6 +6,8 @@ Conexiunile personale aparțin utilizatorului nominal din tenant. Nici colegii, 
 
 ## Unelte live
 
+Verifică întâi [ce conexiune de email a fost folosită](alege-conexiunea.md). Gmail/Drive conectat local în Symbai Connect se verifică prin `google_accounts` din `symbai-google`; `connect_email_status` inventariază adresele personale din firma POS, nu conturile locale. Un rezultat gol dintr-o listă nu dovedește că adresa lipsește din cealaltă conexiune. Folosește contul și permisiunile autorizate pentru asistentul curent.
+
 În tenantul Symbai, descoperă uneltele cu `cauta_tool` și folosește schema returnată. În versiunile cu această funcție:
 
 | Unealtă | Utilizare |

@@ -11,7 +11,7 @@ Când clientul spune că ceva NU merge, nu ghici cauza și nu trimite omul „s�
 5. **Verifică prin citire** că simptomul a dispărut. Interfața poate arăta din cache.
 6. **Nu există tool pentru cazul lui?** `trimite_ticket_symbai` cu ce ai găsit (ce ai rulat, ce a răspuns), nu cu „nu merge X".
 
-Regula de aur: NU conchide „Symbai nu poate" și NU conchide „e o limită a sesiunii". Dacă nu găsești tool-ul, `cauta_tool(«ce vrei să faci»)`; dacă lipsesc module întregi, `verifica_conexiune`.
+Regula de aur: nu conchide „Symbai nu poate” dintr-o unealtă lipsă. Urmează [alege-conexiunea.md](alege-conexiunea.md): pentru catalogul POS folosește `cauta_tool` și `verifica_conexiune`; pentru WhatsApp/email local verifică serverul local din aplicația asistentului. Dacă tocmai s-a conectat, reîncarcă legăturile și verifică live. Lipsa uneltelor din conversație nu dovedește deconectarea contului.
 
 ## Stoc, consum, cost
 
