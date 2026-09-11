@@ -161,7 +161,9 @@ Pagina de administrare: **Meniul Zilei** (folosește `gaseste_in_aplicatie("meni
 - `scan_suspect_recipe_costs` — rețetele cu cost pe porție absurd față de prețul de vânzare (cantități aiurea, randament greșit).
 - `list_product_types`, `get_product_type_details` — tipurile de produs cu proprietăți și conturi.
 - `list_vat_rates`, `list_tags`, `list_untagged_products` — cote TVA, etichete, produse fără etichetă.
-- `top_produse` — cele mai vândute produse pe perioadă.
+- `search_products_db` — catalog paginat, nume/SKU/cod de bare, active și inactive; nu cere brandId.
+- `vanzari_produse` — vânzările produselor cerute, inclusiv cele din afara top 50.
+- `top_produse` — clasament pe perioadă. Absența din top nu înseamnă zero vânzări. Vezi [căutare produse și vânzări](cautare-produse-si-vanzari.md).
 - `gaseste_in_aplicatie` — link direct către orice pagină.
 
 **Scriere (cer modulul de permisiune `produse_meniu` pe token):**

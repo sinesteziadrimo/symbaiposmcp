@@ -11,11 +11,12 @@ Când întrebarea nu e despre raport, ci despre **de unde vin cifrele de cost** 
 
 ## Cum răspunzi la cifre
 
-Folosește ÎNTÂI tool-urile dedicate de raport (funcționează FĂRĂ acces SQL, sunt rapide, sigure și compară automat cu perioada anterioară). Toate acceptă `perioada` (azi, ieri, saptamana_aceasta, luna_aceasta, ultimele_7_zile, ultimele_30_zile, custom + startDate/endDate) și opțional `brandId`/`locationId`:
+Folosește ÎNTÂI tool-urile dedicate de raport (funcționează FĂRĂ acces SQL). Comparația cu perioada anterioară este disponibilă unde o oferă schema și numai pentru perioade comparabile. Rapoartele de mai jos acceptă `perioada` (azi, ieri, saptamana_aceasta, luna_aceasta, ultimele_7_zile, ultimele_30_zile, custom + startDate/endDate) și opțional `brandId`/`locationId`:
 
 Pentru intervalele din interfață, separă două intenții: presetările calendaristice includ integral ultima zi; un interval personalizat care afișează și ora are limite exacte (capăt final exclusiv) și nu se extinde automat cu încă o zi. Folosește fusul orar al organizației, inclusiv la trecerile vară/iarnă. La „Vânzări Angajați”, explică numai comenzile închise în acea fereastră exactă; nu atribui după data turei dacă raportul nu face asta.
 
 - „cât am vândut / cum merg vânzările / cash vs card / cresc sau scad" → **`raport_vanzari`** (total, bon mediu, bacșiș, reduceri, pe metodă de plată + % vs perioada anterioară).
+- „cât s-a vândut din produsul X / vânzări Haribo / vânzări după SKU sau cod de bare" → **`vanzari_produse`** (`cauta` sau `productId`/`productIds`, perioadă și locație). Filtrează toate vânzările înainte de paginare, inclusiv produsele din afara top 50. Vezi [căutare produse și vânzări](../../knowledge/cautare-produse-si-vanzari.md) pentru identitate, paginare, permisiuni și diferența față de încasări/profit.
 - „ce se vinde cel mai bine / top produse / best sellers" → **`top_produse`** (cantitate, venituri, pondere; `ordine: venituri|cantitate`).
 - „când am cei mai mulți clienți / la ce oră e vârf / ce zi merge" → **`vanzari_in_timp`** (`grupare: zi|ora|zi_saptamana`).
 - „cum merg ospătarii / cine vinde cel mai mult / cine a luat cel mai mult bacșiș" → **`performanta_ospatari`**.

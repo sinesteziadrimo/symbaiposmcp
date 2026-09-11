@@ -36,6 +36,7 @@ Daca accesul a expirat ori a fost revocat, proprietarul il acorda din nou in Hub
 
 - Read tools apar numai pentru modulele de citire acordate, cu exceptia contextului minim al conexiunii.
 - La angajat, accesul efectiv este intersectia dintre grantul ownerului, consimtamantul OAuth, rolul POS live si brandurile/locatiile live alocate; asta plafoneaza citirile, scrierile si SQL-ul.
+- Catalogul se caută cu `search_products_db(query)`; vânzările unui produs cu `vanzari_produse(cauta sau productId/productIds, perioada, locationId)`. Verifică schema live și continuarea paginării; absența din top 50 nu înseamnă zero. Vezi [căutare produse și vânzări](cautare-produse-si-vanzari.md). Nu cer SQL sau `read_all`, ci citirea modulului potrivit și drepturile rolului.
 - SQL este doar fallback read-only cand nu exista tool semantic; pentru un angajat cu arie live de brand/locatie restransa, SQL ad-hoc este dezactivat fail-closed.
 - Actiunile externe sau cu impact real cer confirmare explicita: bani, email/WhatsApp/push, ANAF, eMAG, refund, GDPR, stergeri, modificari in masa.
 - Dupa write, verifica prin read tool si inchide cu dovada.

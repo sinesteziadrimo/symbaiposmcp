@@ -32,6 +32,8 @@ Cand userul cere „fa tu", agentul trebuie sa duca treaba pana la capat, nu doa
 
 Cand exista tool dedicat, foloseste tool-ul dedicat, nu SQL si nu click manual:
 
+- catalog: `search_products_db`, cu verificarea `pagination.total/hasMore` și continuare prin `nextArguments`;
+- vânzări pentru orice produs: `vanzari_produse(cauta sau productId/productIds, perioadă, locationId)`; nu căuta produsul într-un top limitat și nu interpreta absența ca zero;
 - rapoarte: `raport_vanzari`, `top_produse`, `vanzari_in_timp`, `performanta_ospatari`;
 - audit: `jurnal_activitate`;
 - navigare: `gaseste_in_aplicatie`;

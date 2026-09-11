@@ -99,7 +99,8 @@ Modulul de rapoarte acoperă tot ce ține de cifre: dashboard-ul de start, rapoa
 
 **Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `raport_vanzari` — vânzări pe perioadă cu comparație automată vs perioada anterioară; primul reflex la „cât am vândut".
-- `top_produse` — best sellers după venituri sau cantitate (exclude anulate/returnate).
+- `vanzari_produse` — caută direct după nume, ID-uri, SKU sau cod de bare în toate vânzările perioadei/unității, înainte de paginare; totalurile sunt complete.
+- `top_produse` — clasament după valoarea liniilor sau cantitate; prima pagină nu reprezintă toate produsele. Ponderea se raportează la toate potrivirile. Vezi [căutare produse și vânzări](cautare-produse-si-vanzari.md) pentru definiții și disponibilitatea live.
 - `vanzari_in_timp` — tipare și ore/zile de vârf (grupare pe zi / oră / zi a săptămânii).
 - `performanta_ospatari` — vânzări, bonuri, bon mediu și bacșiș per angajat.
 - `jurnal_activitate` — cine a făcut ce și când (anulări, discounturi, modificări de preț).

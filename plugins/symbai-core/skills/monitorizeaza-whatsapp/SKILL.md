@@ -7,7 +7,7 @@ description: Pune o conversație sau un grup de WhatsApp sub urmărire automată
 
 Omul spune o singură dată ce vrea („urmărește grupul Management și adaugă produsele pe care le cer"). De aici încolo **nu mai întreabă nimeni nimic**: Symbai Connect primește mesajul în clipa în care sosește, așteaptă să se termine rafala, pornește asistentul ales — **Claude Code sau ChatGPT Codex** — în fundal, cu obiectivul, mesajele noi și tot ce se știe despre oameni, iar acela acționează în Symbai, răspunde pe WhatsApp și lasă un rezumat. Fără interogări periodice, fără „mai verifică o dată": evenimentul vine din cod.
 
-Tu, asistentul interactiv, ai trei treburi: **să pornești corect monitorizarea** (obiectiv bun, mod bun, oameni descriși), **să verifici că poate rula** (asistentul ales este instalat și autentificat pe calculatorul clientului) și **să raportezi ce a făcut** când omul întreabă.
+Tu, asistentul interactiv, pornești monitorizarea cu scop și destinatari clari, verifici că executorul poate accesa firma de pe calculatorul potrivit și urmărești prima rulare până la rezultat. Când utilizatorul a cerut continuitate, un răspuns primit urmat de o eroare cere recuperare, nu așteptarea unei noi întrebări de la utilizator.
 
 ## Uneltele (serverul MCP `symbai-whatsapp…` al numărului)
 
@@ -73,13 +73,19 @@ Răspunsul are `pregatire` și `urmatoriiPasi` pentru executorul ales. `list_wat
 - **Claude Code nu e autentificat** (contul desktop nu e același cu CLI-ul). Spune-i omului exact: „Deschide panoul Symbai Connect (pictograma din bara de jos sau `http://127.0.0.1:5196`), secțiunea *Monitorizări WhatsApp*, apasă **Autentifică Claude Code** și loghează-te în browserul care se deschide. O singură dată." Până atunci monitorizarea există, dar la primul mesaj se oprește singură cu acest motiv; după login, reia cu `update_watch {active: true}`.
 - **Claude Code nu e instalat** — se instalează din panou, secțiunea *Unelte*.
 
-Când e totul verde, spune-i omului ce se va întâmpla la următorul mesaj, cu cuvintele modului ales, și cum verifică („întreabă-mă *ce a făcut asistentul pe grup*").
+**Loginul AI și accesul la firmă sunt verificări diferite.** `loggedIn: true`, licența Connect validă și monitorizarea activă nu dovedesc că firma acceptă conexiunea MCP. Verifică separat Connect → Firme → acces Codex pentru firmele folosite de executor. Dacă versiunea expune `connectionsVerified` și `connections`, cere rezultat verificat pentru toate conexiunile necesare; `checking`, `unverified` sau câmp lipsă nu reprezintă succes. La refuzul unei firme repară acea conexiune prin fluxul oficial, păstrând loginul ChatGPT valid. Nu copia tokenuri și nu folosi alt tenant pentru a evita refuzul.
+
+Verifică prima rulare reală cu `watch_activity` înainte să declari continuitatea confirmată. Până atunci spune „configurată, prima rulare încă neverificată”. O verificare read-only a identității firmei în același executor este o dovadă mai bună decât starea din altă conversație. Nu trimite mesaje artificiale către contact pentru test. Pentru o intervenție cu așteptare, folosește supravegherea autorizată a taskului operatorului, dacă este disponibilă, ca o eroare să fie observată fără o nouă solicitare a utilizatorului.
 
 Calculatorul trebuie să rămână pornit, cu utilizatorul conectat și internet; fereastra Codex nu trebuie să stea deschisă. Alegerea asistentului se poate schimba din panou sau prin `update_watch dispatch` doar între rulări: notițele, obiectivul și istoricul rămân, sesiunea internă și modelul se resetează. Nu există trecere automată între furnizori la erori ori limite de cont. În Codex, `max_turns` limitează apelurile de unelte; există și plafon de timp. Nu promite paritate pentru orice atașament: dacă un fișier nu poate fi citit de uneltele disponibile, raportează și cere o formă accesibilă, fără să inventezi conținutul.
 
 ## Când omul întreabă „ce s-a întâmplat"
 
-`watch_activity` pe conversație: fiecare rulare are ora, ce a declanșat-o, câte mesaje a primit, **rezumatul lăsat de asistent** („am adăugat Limonada la 18 lei în Băuturi; Andrei a cerut și un tort, am transmis proprietarului") și erorile. Spune-i omului rezumatele, nu structura. Dacă o rulare a eșuat de trei ori la rând, monitorizarea s-a oprit singură cu motivul în `motivOprire` — citește-l, repară cauza, reia.
+`watch_activity` pe conversație: fiecare rulare are ora, ce a declanșat-o, câte mesaje a primit, **rezumatul lăsat de asistent** („am adăugat Limonada la 18 lei în Băuturi; Andrei a cerut și un tort, am transmis proprietarului”) și erorile. Spune-i omului rezumatele, nu structura. Dacă o rulare a eșuat de trei ori la rând, monitorizarea s-a oprit singură cu motivul în `motivOprire` — citește-l, repară cauza, reia.
+
+Nu aștepta trei eșecuri când prima eroare cere autentificare. Citește motivul exact, distinge loginul AI de autorizarea firmei și de limita abonamentului, repară prin Connect și verifică rezultatul. Înainte să răspunzi manual pune pe pauză monitorizarea. Citește mesajul declanșator după ID; dacă este stocat sub un alias `@lid`, `get_message_context` cu `before: 0, after: 0` îl găsește, iar `reply_to_message` fără `recipient` păstrează firul corect. Salvează în note mesajele deja tratate și răspunsurile livrate înainte de reluare. `active: true` și `check_now` pot procesa mesaje acumulate; nu le porni orbește și nu repeta operații cu rezultat incert.
+
+Executorul WhatsApp are numai uneltele expuse în acea rulare. Nu îi promite acces Mesh/browser/shell doar fiindcă taskul interactiv le are; pașii care cer aceste unelte trebuie preluați de taskul operatorului printr-un mecanism autorizat de continuare.
 
 Dacă asistentul automat a luat-o pe un drum greșit (răspunde altfel decât vrea omul), ai trei pârghii, în ordinea asta: corectezi **obiectivul** (`update_watch objective`), completezi **profilul omului** (`remember_contact notes`), iar dacă a rămas cu o idee fixă din conversațiile anterioare, `update_watch {clear_session: true}` îl face să pornească de la zero cu obiectivul nou.
 

@@ -30,6 +30,8 @@ Claude Code are memoria lui locală (pe calculatorul și folderul omului) — nu
 
 ## Ce NU se memorează
 
+- Limitări presupuse ale platformei („nu există căutare pe produs”, „ce lipsește din top 50 nu s-a vândut”). Verifică schema live, aria și paginarea; o limită de versiune sau permisiune se datează și se reverifică. Ghidul de utilizare stă în knowledge, nu într-o notă despre firmă.
+- Concluzii din citiri incomplete, erori transformate în zero sau ipoteze prezentate ca fapte. Pentru o observație durabilă păstrează sursa, data verificării, perioada și unitatea. Corectează aceeași cheie când dovada se schimbă; nu adăuga o a doua notă contradictorie.
 - Cifre de zi (vânzări, stoc) — se citesc oricând din tool-uri și se învechesc. Excepție: reperele pe care userul le consideră „normale" pentru el („40 % reduceri de personal e normal la noi") — asta e `business`.
 - Secrete: CNP, IBAN, carduri, parole, coduri — tool-ul le refuză; spune-i userului că ele stau în aplicație, în câmpuri mascate.
 - Aprecieri despre caracterul cuiva. Memorezi fapte și preferințe de lucru („preferă mesaje scurte dimineața", „nu răspunde după 20:00"), nu etichete („e leneș").

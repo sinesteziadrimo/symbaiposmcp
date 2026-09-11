@@ -26,7 +26,7 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 **Fotografii generate pentru meniu în Codex/ChatGPT Desktop** („pune poze la preparate”, „completează pozele lipsă”, „refă fotografiile meniului”) → skill-ul [genereaza-poze-meniu](../genereaza-poze-meniu/SKILL.md): selecție și ingrediente prin MCP, inspectare vizuală, generare cu instrumentul nativ al gazdei, transfer și atașare pe articolul meniului. Generarea nu trece prin API-ul AI al site-ului.
 
 1. **Tool-urile MCP `symbai`** (conexiunea live la instanța clientului) = date reale + acțiuni:
-   - citește orice (vânzări, produse, clienți, rezervări, ce s-a întâmplat pe o masă, ce a făcut un ospătar);
+   - citește datele permise de conexiune și de aria contului (vânzări, produse, clienți, rezervări, activitate);
    - face modificări în modulele permise de tokenul lui (adaugă produs, rețetă, programează postare, creează rezervare etc.);
    - `gaseste_in_aplicatie(intrebare)` → întoarce pagina + **link direct** + cum ajungi acolo.
    - Dacă tool-urile MCP nu apar deloc, conexiunea nu e configurată sau e configurată greșit → folosește skill-ul `conecteaza-symbai` (acoperă și eroarea „Some MCP servers could not be loaded" din Claude Desktop, și varianta fără terminal).
@@ -35,7 +35,7 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 **Regula de aur**: „unde e / cum ajung / **du-mă la X**" → află ruta din `navigare-rapida.md` (cheat-sheet, instant) sau, dacă nu-i acolo, din `gaseste_in_aplicatie(termen scurt)`, apoi **DESCHIDE pagina prin extensia Chrome dacă e conectată** (`navigate` + confirmi); fără extensie → dă link-ul. Fraza clară → du-l direct; ambiguă → **o întrebare scurtă întâi, nu ghici**. Detaliile (cele două moduri + confirmare + ambiguitate) sunt în skill-ul `gaseste-pagina` + `knowledge/navigare.md`. „cum funcționează / ce înseamnă" → `knowledge/`. „ce s-a întâmplat / fă-mi X" → tool-uri MCP de citire/scriere. **Excepție**: schimbarea unității active (locație/brand) NU e o pagină — nu o căuta cu `gaseste_in_aplicatie`; rețeta e în `navigare.md`.
 
-**Tool-uri dedicate (preferă-le, NU SQL — merg și fără acces SQL)**: vânzări → `raport_vanzari`; best sellers → `top_produse`; ore/zile de vârf → `vanzari_in_timp`; performanță ospătari → `performanta_ospatari`; P&L/profit → `get_pnl`; profit pe produs/SKU → `get_product_pnl`; profit livrări → `list_delivery_pnl_segments` + `get_delivery_pnl`; „ce s-a întâmplat / cine a făcut" (audit) → `jurnal_activitate`. Detalii în skill-urile `rapoarte-preturi` și `investigheaza-masa`.
+**Tool-uri dedicate (preferă-le, NU SQL — merg și fără acces SQL)**: catalog produse → `search_products_db`; vânzările unui produs după nume/ID/SKU/cod de bare → `vanzari_produse`; încasări → `raport_vanzari`; best sellers → `top_produse`; ore/zile de vârf → `vanzari_in_timp`; performanță ospătari → `performanta_ospatari`; P&L/profit → `get_pnl`; profit pe produs/SKU → `get_product_pnl`; profit livrări → `list_delivery_pnl_segments` + `get_delivery_pnl`; „ce s-a întâmplat / cine a făcut" (audit) → `jurnal_activitate`. Detalii în [căutare produse și vânzări](../../knowledge/cautare-produse-si-vanzari.md), `rapoarte-preturi` și `investigheaza-masa`. Lipsa din top 50 nu înseamnă zero vânzări; citește paginarea și schema live înainte de concluzii.
 
 ## Hartă rapidă a cunoștințelor (folderul knowledge/)
 
