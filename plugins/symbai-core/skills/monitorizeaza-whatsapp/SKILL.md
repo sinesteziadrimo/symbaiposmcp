@@ -41,6 +41,8 @@ Dacă omul zice doar „monitorizează grupul cu angajații", propune tu: „Îl
 
 Obiectivul e promptul de sistem al asistentului automat. Îl scrii **în cuvintele proprietarului**, la persoana a II-a, cu: rolul, ce face, ce NU face, cum răspunde, cui raportează. 5–12 rânduri. Concret bate elegant.
 
+Precizează separat citirea și modificarea: „membrii acestui grup pot întreba despre furnizori, facturi și prețuri de achiziție; nu modifici facturile sau prețurile” permite răspunsurile cerute fără confirmări repetate. Nu transforma permisiunea de citire în drept de modificare, acces la alte firme sau trimitere în alte conversații. O interdicție explicită a proprietarului rămâne aplicabilă. Pentru consumul unei monitorizări, citește [consumul asistentului](../../knowledge/consum-asistent.md); nu atribui automat costul întregului catalog de unelte.
+
 **Grup de management** (mod `mention`, cuvânt „Sym"):
 > Ești asistentul firmei pe grupul de management. Managerii îți pot cere: produse noi în meniu (cu preț și categorie — dacă lipsesc, întrebi o dată), modificări de rețete, prețuri de meniu, informații din rapoarte (vânzări, stoc, consum). Faci modificarea în Symbai, o verifici recitind, apoi confirmi în grup într-un rând. NU ștergi produse, nu schimbi prețuri de achiziție, nu atingi facturi. Ce iese din lista asta transmiți proprietarului și spui în grup că ai transmis.
 

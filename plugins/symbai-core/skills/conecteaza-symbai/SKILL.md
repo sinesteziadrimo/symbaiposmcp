@@ -111,6 +111,7 @@ Le folosești **după** ce ai citit `stare` și `explicatie`, ca să traduci —
 
 ## Alte situații
 
+- **Consum mare / limita de 5 ore / „prea multe unelte”:** urmează [consumul asistentului](../../knowledge/consum-asistent.md). Separă catalogul disponibil de definițiile încărcate, istoricul lung și monitorizările simultane. Păstrează modelul și contextul util; nu cere reconectarea Symbai pentru o limită a furnizorului AI.
 - **401 sau „conexiune expirată” după ce mergea:** verifică `connection_status`, apoi `connect_repair`. Mesajul clientului nu dovedește că accesul a expirat. Confirmă rezultatul printr-un apel `verifica_conexiune` în aceeași conexiune; dacă reușește, spune că accesul funcționează acum. Cere o autentificare nouă numai când diagnosticul o indică. Nu reinstala și nu șterge conexiuni pe baza avertizării singure.
 - **Server în actualizare / temporar indisponibil:** păstrează conexiunea existentă și reîncearcă după intervalul indicat. Explică indisponibilitatea temporară; nu o prezenta drept expirarea sau revocarea accesului.
 - **Angajat inactiv:** proprietarul reactivează contul POS, apoi acordă din nou accesul nominal.
