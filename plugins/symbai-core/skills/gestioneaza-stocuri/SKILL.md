@@ -23,8 +23,11 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 - Vrea cost provizoriu pentru food cost înainte de prima recepție/factură, fără să miște stoc.
 
 ## Reguli de aur
+
+Pentru „cât stoc de X am”, `get_stock_levels` caută după nume/SKU/cod de bare sau `productId`, cu `warehouseId` pentru o gestiune. Urmează `data.pagination.nextArguments`. [Căutare și citire completă](../../knowledge/cautare-si-citire-completa.md) explică limitele și diferența față de catalogul produselor.
+
 1. **Limbaj de manager, zero jargon** — "depozit/gestiune", "numărare fizică", "marfă care expiră", nu termeni tehnici.
-2. **Citire mereu, scriere doar cu modul** — tool-urile de citire merg oricând; scrierea (`set_initial_stock`, `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`, `set_standard_costs`) cere modulul potrivit pe token. Dacă lipsește, spune-i clientului să-l activeze din Hub → Acces AI.
+2. **Citire și scriere cu drepturile potrivite** — datele de stoc cer citire `inventar`, în aria și rolul contului. Scrierile cer și modulul de scriere potrivit. `read_all` și SQL nu sunt necesare când citirea dedicată este permisă. La refuz, verifică `verifica_conexiune` și permisiunea exactă.
 3. **Întâi contextul** — `list_brands` + `list_locations` pentru brand/locație, apoi `list_warehouses_full` pentru gestiuni.
 4. **Linkuri reale** — pentru pagina exactă folosește `gaseste_in_aplicatie`. Centrul de comandă e **Tablou de Bord Stoc** (`/inventory`), cu taburi precum Stoc Curent, Inventariere, Zone, Diferențe, Niveluri, Mișcări; mai sunt **Consum Zilnic** (`/daily-consumption`), **Operațiuni Gestiune** (`/stock-operations`) și **Verificări Stoc** (`/inventory-check`).
 5. **Transferurile și ieșirile de stoc se fac prin MCP** — `create_inventory_document` e motorul canonic de stoc: ieșiri cu `docType` CONSUMPTION/WASTE/THEFT/ADJUSTMENT_MINUS/RETURN_OUT/SALE_ISSUE (dă `warehouseFromId`), transfer cu `warehouseFromId`+`warehouseToId`. Obligatoriu și `docType`, `docNo`, `docDate` (YYYY-MM-DD) + `lines` (fiecare linie cere `productId`+`qty`). Cu `autoPost:true`+`confirm:true` mișcă stocul real ireversibil (confirmă întâi cu clientul), altfel rămâne DRAFT și îl postezi cu `post_inventory_document`. Ștergerea de entități întregi rămâne doar din aplicație. Verifică mereu rezultatul cu tool-urile de citire.

@@ -11,6 +11,8 @@ Scopul: marfa de la furnizor să intre pe stoc ȘI în contabilitate, corect. Ci
 
 ## Pasul 0 — verifică documentul disponibil (citește asta întâi)
 
+Pentru un document existent, caută direct cu `list_invoices(query: număr, furnizor sau CUI)` și date/brand/locație când sunt cunoscute. Furnizorul se identifică prin `list_suppliers`; factura emisă către client prin `list_fiscal_invoices`. Citește paginarea și deosebește ID-ul documentului de numărul facturii, respectiv plata de procesare. Vezi [căutare și citire completă](../../knowledge/cautare-si-citire-completa.md).
+
 **Dacă factura/recepția există și userul cere să o modifice**, citește întâi [Corectarea recepțiilor prin MCP](../../knowledge/corectare-receptii-mcp.md). Data efectivă a intrării → `set_reception_operational_date` (ID factură); prețul de achiziție → `update_incoming_invoice_line`, apoi `correct_confirmed_reception`, păstrând cantitățile și cheia la retry. Nu crea altă factură, nu storna NIR-ul, nu retrage factura, nu cere `acknowledgeConsumedLots` și nu activa stocul negativ pentru o corecție exclusivă de dată/preț. Citește `get_reception_cost_recalculation` (ID factură) și separat `get_reception_accounting_status` (ID NIR). `pending/waiting/attention` nu înseamnă terminat și nu interzic editarea. Folosește acordul deja dat; nu cere o confirmare formală suplimentară.
 
 Regula care nu se negociază: **marfa intră pe stoc prin FACTURĂ → RECEPȚIE.** În ordinea asta. Recepția

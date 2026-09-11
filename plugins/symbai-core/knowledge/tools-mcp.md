@@ -2,6 +2,8 @@
 
 **Produse și vânzări:** [ghidul de căutare completă](cautare-produse-si-vanzari.md). `search_products_db` identifică produsele; `vanzari_produse` măsoară vânzările cerute fără limita top 50. Ambele au paginare și funcționează cu modulele de citire potrivite, fără SQL/read_all. Verifică schema live înainte de parametri noi.
 
+**Furnizori, facturi, comenzi, stoc, rețete și persoane:** [alegerea uneltei și citirea tuturor paginilor](cautare-si-citire-completa.md). Caută întâi cu unealta de citire a entității; verifică identitatea, filtrele, paginarea și starea completă a răspunsului.
+
 > Catalogul tool-urilor disponibile prin conexiunea MCP `symbai` (token `symbai_mcp_*` din portalul Hub → Acces AI). Lista live o vezi la conectare; fișierul ajută la orientare. **Generat determinist din registry — NU edita manual; regenerează cu `_gen_tools_catalog.ts`.**
 
 Modelul de permisiuni al tokenului:
@@ -17,8 +19,8 @@ Modelul de permisiuni al tokenului:
 - **Plafoane (limite) = opționale, per token** — vezi mai jos.
 
 Legendă marcaje: 🔒 = cere `confirm: true` (acțiune periculoasă/ireversibilă) · 🌐 = atinge un serviciu EXTERN (cost / trimitere reală: Meta, ANAF, eMAG, curieri, email, WhatsApp, push).
-Catalogul e un INDEX compact: numele tool-urilor, grupate pe modulul care le deblochează. Descrierea și parametrii îi ai deja în lista live a sesiunii; nu-i repetăm aici. Pentru „există un tool care face X?" folosește `cauta_tool(«ce vrei să faci»)` — caută semantic în tot catalogul, inclusiv în ce nu vezi. Pentru „de ce nu văd tool-ul Y?" folosește `verifica_conexiune`.
-Fiecare apel e înregistrat în jurnalul de activitate (auditabil de proprietar). Rezultatele lungi sunt trunchiate la 80.000 caractere. Parametrii din „necesită:" sunt obligatorii.
+Catalogul este un index al uneltelor; schema exactă vine din conexiunea live. `cauta_tool(intrebare: "ce vrei să faci", tip: "citire")` caută în catalogul permis acum, inclusiv unelte absente din lista compactă. `tip` poate fi `citire`, `scriere` sau `toate` (implicit). Primești schema și efectele declarate în `annotations`; continuă sugestiile cu `pagination.nextArguments`. La drepturi lipsă folosește `verifica_conexiune`, iar pentru executare `ruleaza_tool(nume, argumente)`.
+Apelurile de business sunt auditabile. Transportul MCP are un buget de 80.000 de caractere; dacă răspunsul este incomplet, urmează `recovery` și recitește aceeași pagină cu limită mai mică înainte de continuare. Nu repeta o scriere pentru a recupera detalii omise. Parametrii din „necesită:” sunt obligatorii.
 
 ## Magazii, zone, rafturi și etichete de loc
 

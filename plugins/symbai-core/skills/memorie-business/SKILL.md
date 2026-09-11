@@ -30,6 +30,8 @@ Claude Code are memoria lui locală (pe calculatorul și folderul omului) — nu
 
 ## Ce NU se memorează
 
+Schema live și [ghidul de căutare și citire completă](../../knowledge/cautare-si-citire-completa.md) au prioritate față de o notă veche despre unelte, permisiuni sau limite. O căutare epuizată în aria A nu dovedește absența în întreaga firmă. Păstrează separat ce ai verificat și ce a rămas inaccesibil; nu transforma `dataSummary` sau `complete: false` într-o concluzie definitivă.
+
 - Limitări presupuse ale platformei („nu există căutare pe produs”, „ce lipsește din top 50 nu s-a vândut”). Verifică schema live, aria și paginarea; o limită de versiune sau permisiune se datează și se reverifică. Ghidul de utilizare stă în knowledge, nu într-o notă despre firmă.
 - Concluzii din citiri incomplete, erori transformate în zero sau ipoteze prezentate ca fapte. Pentru o observație durabilă păstrează sursa, data verificării, perioada și unitatea. Corectează aceeași cheie când dovada se schimbă; nu adăuga o a doua notă contradictorie.
 - Cifre de zi (vânzări, stoc) — se citesc oricând din tool-uri și se învechesc. Excepție: reperele pe care userul le consideră „normale" pentru el („40 % reduceri de personal e normal la noi") — asta e `business`.

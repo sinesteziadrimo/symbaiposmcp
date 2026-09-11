@@ -18,6 +18,9 @@ Un număr vine dintr-un tool sau nu există. O cauză vine dintr-un tool de diag
 Pentru unelte POS, folosește `cauta_tool(«ce vrei să faci»)` și `verifica_conexiune` (identitate, arie, rol, profil, grant). Pentru WhatsApp/email local, caută serverul local în aplicația asistentului: `cauta_tool` din POS nu îl inventariază. Urmează [alege-conexiunea.md](alege-conexiunea.md). Dacă serverul tocmai a fost conectat, poate fi nevoie de reîncărcarea legăturilor din conversație; absența uneltelor nu dovedește că acel cont este deconectat. Nu declara „Symbai nu poate” înainte de verificarea potrivită.
 
 ## 6. Preferă tool-ul dedicat, nu SQL
+
+Pentru căutări după nume/CUI/cod, urmează [căutare și citire completă](cautare-si-citire-completa.md). `cauta_tool` descoperă unelte, nu datele firmei. Un top, o primă pagină sau un răspuns scurtat nu dovedesc absența datelor; păstrează filtrele și urmează paginarea uneltei.
+
 Vânzări → `raport_vanzari`, top → `top_produse`, ore de vârf → `vanzari_in_timp`, ospătari → `performanta_ospatari`, profit → `get_pnl`, „ce s-a întâmplat" → `jurnal_activitate`, masă → `get_table_status`. SQL-ul e pentru corelări pe care niciun tool nu le face și doar dacă tokenul îl are.
 
 ## 7. Spune ce ai făcut și unde se vede

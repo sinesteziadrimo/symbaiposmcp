@@ -213,6 +213,8 @@ Cand un tool poate returna multe rezultate:
 
 Unele raspunsuri MCP sunt **slim intentionat** ca sa ramana sub limita de payload si sa nu cada tot raspunsul:
 
+Pentru căutarea oricărei entități și continuarea listelor, vezi [cautare-si-citire-completa.md](cautare-si-citire-completa.md). `total` privește toate potrivirile, nu doar rândurile paginii. La `complete: false` sau `dataSummary`, recitește aceeași pagină cu limită mai mică ori filtrul exact; nu avansa peste rânduri nevăzute. La o scriere scurtată verifică prin citire, fără să repeți mutația.
+
 - produse: pot lipsi campurile grele (campuri personalizate detaliate, variante complete, metadata de imagini); datele operationale usoare raman;
 - cereri de aprobare / timeline comanda: `cartSnapshot` si `items` nu sunt contract de output pentru cererile de aprobare; raspunsul le omite intentionat si pastreaza `itemSummary` pentru produse/valoare;
 - campanii/template-uri/secvente email: HTML-ul complet, design JSON si pasii mari pot fi omise din raspunsurile de write/listare.

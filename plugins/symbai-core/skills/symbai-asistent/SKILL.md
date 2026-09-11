@@ -39,6 +39,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 ## Hartă rapidă a cunoștințelor (folderul knowledge/)
 
+- **Căutare și liste complete:** [cautare-si-citire-completa.md](../../knowledge/cautare-si-citire-completa.md) — furnizori, facturi primite/emise, note, stoc, rețete, clienți și personal; alegerea citirii, identificarea corectă, permisiuni, paginare și recuperarea unui răspuns incomplet.
+
 - **Creștere și campanii Wolt / Glovo / Bolt Food:** [condu-livrarile](../condu-livrarile/SKILL.md) — obiectiv pe locație, buget comun, promoții native, cereri prin email, publicare asistată, conversie, contribuție, finanțare din facturi și jurnal. Include monitorizare prin Connect și limitele reale ale rutinei programate.
 
 - **Website-uri de restaurant spectaculoase:** [website-restaurante-spectaculoase.md](../../knowledge/website-restaurante-spectaculoase.md) — zece teme cu identitate, preparate construite din ingrediente în meniul de comandă, cocktailuri din lumină, povești pe capitole, fotografii cu puncte interactive, comparații glisante, galerii și rezervări. Alegere prin catalogul live, exemple de configurare și verificare pe telefon/desktop.
