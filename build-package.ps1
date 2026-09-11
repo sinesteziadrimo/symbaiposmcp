@@ -38,12 +38,16 @@
 .EXAMPLE
     .\build-package.ps1
     .\build-package.ps1 -Publish
+    .\build-package.ps1 -Publish -SourceRef v0.45.28
     .\build-package.ps1 -Publish -SkipHub          # doar samanta, fara livrare
     .\build-package.ps1 -Publish -HubUrl https://hub-test.symbai.app
 #>
 param(
     [string]$Output = "",
     [switch]$Publish,
+    # Publicarea citeste un commit imuabil (HEAD implicit), nu worktree-ul comun.
+    # Fara -Publish, lipsa acestui parametru pastreaza preview-ul modificarilor locale.
+    [string]$SourceRef = "",
     [string]$HubUrl = "https://hub.symbai.app",
     [switch]$SkipHub,
     # Trece peste refuzul de a publica un numar de versiune pe care Hub-ul il are
@@ -55,6 +59,26 @@ param(
 $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
 $nexus = Join-Path (Split-Path $root -Parent) "nexuspos"
+$defaultOutput = Join-Path $PSScriptRoot "publish\symbai-plugin.zip"
+$sourceSnapshot = $null
+
+try {
+if ($Publish -or -not [string]::IsNullOrWhiteSpace($SourceRef)) {
+    if ([string]::IsNullOrWhiteSpace($SourceRef)) { $SourceRef = 'HEAD' }
+    $sourceCommit = & git -C $PSScriptRoot rev-parse --verify --end-of-options ($SourceRef + '^{commit}')
+    if ($LASTEXITCODE -ne 0 -or [string]$sourceCommit -notmatch '^[a-f0-9]{40}$') {
+        throw 'Referinta de publicare nu identifica un commit Git.'
+    }
+    $sourceSnapshot = Join-Path $env:TEMP ('symbai-plugin-source-' + [Guid]::NewGuid().ToString('N'))
+    New-Item -ItemType Directory -Path $sourceSnapshot | Out-Null
+    $sourceArchive = Join-Path $sourceSnapshot 'source.zip'
+    & git -C $PSScriptRoot archive --format=zip --output=$sourceArchive $sourceCommit -- .claude-plugin plugins
+    if ($LASTEXITCODE -ne 0) { throw 'Nu am putut extrage commitul de publicare.' }
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $root = Join-Path $sourceSnapshot 'content'
+    [IO.Compression.ZipFile]::ExtractToDirectory($sourceArchive, $root)
+    Write-Host "Sursa fixa: $sourceCommit ($SourceRef); modificarile locale necomise nu intra in pachet." -ForegroundColor Cyan
+}
 
 $marketplaceJson = Join-Path $root ".claude-plugin\marketplace.json"
 if (-not (Test-Path $marketplaceJson)) { throw "Nu gasesc $marketplaceJson" }
@@ -67,7 +91,7 @@ if (-not $core) { throw "marketplace.json nu contine symbai-core" }
 $Version = [string]$core.version
 if ($Version -notmatch '^\d+\.\d+\.\d+$') { throw "Versiune symbai-core invalida: '$Version'" }
 
-if ([string]::IsNullOrWhiteSpace($Output)) { $Output = Join-Path $root "publish\symbai-plugin.zip" }
+if ([string]::IsNullOrWhiteSpace($Output)) { $Output = $defaultOutput }
 $outDir = Split-Path $Output -Parent
 if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force $outDir | Out-Null }
 
@@ -366,3 +390,14 @@ if ($Publish) {
 
 Write-Host ""
 Write-Host "Gata." -ForegroundColor Green
+} finally {
+    if ($sourceSnapshot) {
+        $resolvedSource = [IO.Path]::GetFullPath($sourceSnapshot)
+        $resolvedSourceTemp = [IO.Path]::GetFullPath($env:TEMP).TrimEnd('\') + '\'
+        if (-not $resolvedSource.StartsWith($resolvedSourceTemp, [StringComparison]::OrdinalIgnoreCase) -or
+            (Split-Path $resolvedSource -Leaf) -notmatch '^symbai-plugin-source-[a-f0-9]{32}$') {
+            throw 'Director sursa temporar neasteptat; refuz curatarea.'
+        }
+        if (Test-Path -LiteralPath $resolvedSource) { Remove-Item -LiteralPath $resolvedSource -Recurse -Force }
+    }
+}
