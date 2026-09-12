@@ -30,7 +30,7 @@ Cand userul cere „fa tu", agentul trebuie sa duca treaba pana la capat, nu doa
 
 ## Regula MCP-First
 
-Cand exista tool dedicat, foloseste tool-ul dedicat, nu SQL si nu click manual:
+Pentru scrieri, rapoarte calculate și detaliul unui singur obiect, preferă tool-ul dedicat față de SQL sau click manual:
 
 - catalog: `search_products_db`, cu verificarea `pagination.total/hasMore` și continuare prin `nextArguments`;
 - vânzări pentru orice produs: `vanzari_produse(cauta sau productId/productIds, perioadă, locationId)`; nu căuta produsul într-un top limitat și nu interpreta absența ca zero;
@@ -40,7 +40,7 @@ Cand exista tool dedicat, foloseste tool-ul dedicat, nu SQL si nu click manual:
 - comunicare: tool-urile de email/WhatsApp/push;
 - produse/stoc/personal/CRM/portal: tool-urile modulului respectiv.
 
-SQL read-only este fallback pentru intrebari punctuale fara tool dedicat. Nu folosi SQL ca prima optiune cand exista un tool semantic.
+SQL read-only autorizat este o cale directă pentru investigații pe seturi și corelări: un JOIN/IN poate înlocui multe detalii individuale. Reutilizează schema verificată și încarcă numai tabelele necunoscute. Pentru vânzări nete, FIFO și profit păstrează rapoartele dedicate, iar pentru modificări folosește operațiile semantice.
 
 ## Forecast MPS De Fabrică — Context Comercial Dat Agentului
 

@@ -15,7 +15,7 @@ Gandeste ca o echipa mica:
 
 1. **Orienteaza**: identifica brandul, locatia, modulul, rolul userului si daca cererea e citire, configurare, actiune externa sau investigatie.
 2. **Citeste realitatea**: foloseste MCP read tools (`list_*`, `get_*`, rapoarte, audit) si knowledge-ul relevant. Nu intreba ce poti citi.
-3. **Alege calea cea mai sigura**: tool dedicat > workflow din skill > UI ghidat > SQL read-only > ticket/sugestie. Nu sari la SQL daca exista tool semantic.
+3. **Alege citirea potrivită scopului**: pentru o înregistrare folosește căutarea/detaliul dedicat; pentru seturi și corelări, SQL read-only autorizat cu JOIN/IN poate evita zeci de citiri individuale. Rapoartele calculate și scrierile folosesc uneltele semantice. UI este pentru pașii fără cale MCP sau pentru verificare vizuală, nu o condiție înainte de SQL.
 4. **Pre-vizualizeaza**: pentru actiuni cu volum, bani, trimiteri sau efect contabil, fa dry-run/preview/audit cand exista.
 5. **Verifica autorizarea**: pentru bani, trimiteri externe, documente contabile/fiscale, stergeri/anonimizari, postari publice si modificari in masa, foloseste acordul deja dat pentru aceeasi operatie, tinta si intindere. `confirm:true` transmite acel acord tool-ului, nu impune singur o noua intrebare. Daca lipseste autorizarea sau previzualizarea arata alte efecte decat cele cerute, prezinta rezultatul concret si cere numai acordul lipsa.
 6. **Executa idempotent**: cauta inainte de creare, foloseste chei stabile unde exista, nu repeta scrierea doar pentru ca UI-ul are cache.
@@ -32,7 +32,7 @@ Gandeste ca o echipa mica:
 - **Lista live de tool-uri difera de `tools-mcp.md`**: lista live castiga; catalogul este orientativ si generat.
 - **Date lipsa**: nu inventa preturi, gramaje, alergeni, conturi contabile, cantitati, reduceri sau conditii legale.
 - **Actiuni externe**: Meta, email, WhatsApp, push, curieri, ANAF, eMAG, refund card si publicari sociale cer confirmare clara.
-- **Investigatii**: porneste de la timeline/audit (`jurnal_activitate`, tool-uri dedicate, apoi SQL read-only daca e disponibil). Raspunsul final trebuie sa fie cronologic si cu probe.
+- **Investigatii**: citește timeline/audit prin `jurnal_activitate` pentru un caz punctual sau SQL read-only pentru corelări/seturi. Alege direct calea care răspunde complet cu mai puține citiri, în drepturile conexiunii. Răspunsul trebuie să distingă dovezile de ipoteze.
 - **Lucrari mari**: imparte in checkpoint-uri verificabile si pastreaza progres local cand skill-ul o cere (ex. onboarding/import).
 
 ## Cand folosesti Chrome
@@ -46,16 +46,17 @@ Chrome este pentru vizual, wizard-uri si actiuni fara API. Inainte de click:
 
 ## Cand folosesti SQL
 
-SQL este fallback read-only pentru intrebari analitice fara tool dedicat sau pentru corelari complexe. Foloseste:
-- `list_database_tables` -> `describe_database_table` -> `execute_sql_query`;
-- coloane explicite, `WHERE`, `LIMIT`, fara `SELECT *`;
+SQL este o cale directă de citire pentru investigații și corelări între multe înregistrări, în drepturile conexiunii. Pentru un set de produse/rețete/documente, preferă un `JOIN`/`IN` față de zeci de detalii individuale. Pentru o înregistrare, căutarea filtrată și detaliul dedicat pot fi mai simple. Vânzările nete, costurile FIFO și profitul se citesc din rapoartele dedicate. Folosește:
+- schema deja verificată în sarcină; `list_database_tables(filter)` numai dacă nu știi numele tabelelor;
+- `describe_database_table(tableNames:[...])` pentru până la 8 tabele împreună dacă schema live acceptă parametrul; pe versiunile vechi folosește `tableName`. Recitește schema când se schimbă sau la eroare de coloană/tabel;
+- `execute_sql_query` cu coloane explicite, `WHERE`, `ORDER BY` stabil și `LIMIT`, fără `SELECT *`;
 - doar SELECT; nu propune update/delete/insert SQL.
 
 Pentru un administrator cu acces la întreaga firmă, conexiunea nominală poate oferi deja această citire. Nu cere un token OPS sau exporturi manuale înainte să verifici instrumentele disponibile. Investighează singur în limita drepturilor acordate: identifică documentul, urmărește legăturile, verifică rezultatul și continuă cererea autorizată.
 
 **Read all** este o bifă separată la acordarea accesului, prestabilit activă pentru administrator, manager și director financiar. Proprietarul o poate debifa. Când `verifica_conexiune` confirmă că este activă, SQL citește datele operaționale din toate unitățile firmei, inclusiv furnizori, personal, dispozitive și audit. Nu extinde drepturile de modificare. Folosește această cale când un tool obișnuit este limitat la o unitate. Accesul vechi nu se lărgește automat.
 
-Pe versiunile care oferă `citeste_instructiuni_agent`, citește ghidul complet la începutul conversației. Păstrează obiectivul, acordurile existente, ID-urile, rezultatul verificat și ce mai rămâne; caută singur informațiile înainte de a cere utilizatorului să le adune.
+Pe versiunile care oferă `citeste_instructiuni_agent(subiect)`, încarcă numai tema necesară unui flux nou/neclar: `citire`, `produse_retete`, `receptii_stocuri`, `rapoarte`, `productie`, `marketing`, `constructii` sau `operare`. Implicit primești orientarea; `complet` este întregul manual. Nu reciti un ghid deja prezent în context. Pe versiunile vechi fără parametrul `subiect`, citește ghidul o singură dată. Păstrează obiectivul, acordurile existente, ID-urile, rezultatul verificat și ce mai rămâne; caută singur informațiile înainte de a cere utilizatorului să le adune.
 
 `describe_database_table` poate întoarce `primaryKey` și `foreignKeys`: sunt relațiile declarate în baza live, cu ordinea coloanelor păstrată inclusiv pentru chei compuse. Absența unei chei străine nu dovedește că nu există o legătură de business; verific-o în tool-ul dedicat. Nu inventa coloane după convenții de nume.
 
