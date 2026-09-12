@@ -4,6 +4,8 @@ Consultă doar secțiunea relevantă sarcinii. Nu încărca acest index întreg 
 
 ## Hartă rapidă a cunoștințelor (folderul knowledge/)
 
+- **Picking, rafturi și schimbul fabricii:** [picking-optimizat.md](./picking-optimizat.md) — FEFO/FIFO/rapid, traseu producție/B2B/online, stivuitor, rânduri și configurație; [schimb-si-mentenanta.md](./schimb-si-mentenanta.md) — caietul schimbului, predare/preluare, scadențe pe calendar/contor și intervenții.
+
 - **Complex, hotel și săli 3D pentru evenimente/buyeri:** [event-studio-3d.md](./event-studio-3d.md) și [event-studio-3d](../skills/event-studio-3d/SKILL.md) — construcție la scară, variante după invitați, mobilier, meniu, program, CRM și prezentare. Ghidurile de geometrie, design și buyer se citesc separat, numai la nevoie.
 
 - **Căutare și liste complete:** [cautare-si-citire-completa.md](./cautare-si-citire-completa.md) — furnizori, facturi primite/emise, note, stoc, rețete, clienți și personal; alegerea citirii, identificarea corectă, permisiuni, paginare și recuperarea unui răspuns incomplet.

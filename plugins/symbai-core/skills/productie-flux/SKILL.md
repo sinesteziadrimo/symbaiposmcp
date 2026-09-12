@@ -25,6 +25,8 @@ Pentru configurări de fabrică, loturi multiple, recall, MPS sau situații cu r
 
 ## Regula de rutare
 
+Pentru picking în ordinea rafturilor, FEFO și stivuitor citește `knowledge/picking-optimizat.md`. Pentru caietul schimbului, predare/preluare, revizii preventive și contoare citește `knowledge/schimb-si-mentenanta.md`; citește registrul înainte de acțiune și confirmă numai verificările fizice raportate de operator.
+
 | Clientul e… | Trimite-l pe traseul… | Citește knowledge-ul |
 |---|---|---|
 | Restaurant, bucătărie centrală, catering, evenimente (mod simplu / restaurant & evenimente) | **Restaurant** — un lot = un pas: `exec_complete_batch` finalizează + consumă + creează produsul finit | `knowledge/productie-restaurant.md` |

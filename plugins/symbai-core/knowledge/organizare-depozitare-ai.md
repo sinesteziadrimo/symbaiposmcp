@@ -1,5 +1,7 @@
 # Organizarea depozitării cu asistentul
 
+Pentru regulile FEFO/FIFO/rapid, accesul manual/stivuitor și ordinea culegerii unei comenzi reale citește [picking-optimizat.md](./picking-optimizat.md). Configurarea traseului este separată de mutarea geometriei raftului.
+
 Pagina **Magazii, zone și rafturi** (`/storage-designer`) reunește configurarea, planul, conținutul live, importul și etichetele de loc. Verifică uneltele disponibile pe instanța conectată cu `cauta_tool`; un server neactualizat poate avea încă fluxurile anterioare. Familia de depozitare cere acces nominal, modulul Stocuri și drepturile/aria operatorului. Nu ocoli un refuz prin SQL sau prin altă identitate.
 
 ## Patru concepte distincte

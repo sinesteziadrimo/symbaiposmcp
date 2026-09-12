@@ -1,5 +1,7 @@
 # Producție — Mod Fabrică (fabrică alimentară industrială)
 
+Pentru ordinea culegerii materialelor, rafturi și stivuitor citește [picking-optimizat.md](./picking-optimizat.md). Pentru caietul schimbului, predarea către coleg și revizii preventive citește [schimb-si-mentenanta.md](./schimb-si-mentenanta.md).
+
 > Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie` — el e sursa autoritară de navigare.
 > Acest fișier acoperă **modul fabrică** (producție industrială complexă: fluxuri tehnologice pe stații, shop-floor, MPS/MRP, B2B, QC/HACCP, KPI fabrică). Pentru producția simplă de restaurant / bucătărie centrală (loturi de semipreparate, fără fluxuri pe stații) vezi `productie-restaurant.md`.
 > Pentru **fabrică de înghețată / produse aerate** (overrun = aer, densitate kg↔L, net vs brut, randament cu câștig de volum, conformitate ℮) vezi `productie-inghetata.md`.
