@@ -4,6 +4,8 @@ Consultă doar secțiunea relevantă sarcinii. Nu încărca acest index întreg 
 
 ## Hartă rapidă a cunoștințelor (folderul knowledge/)
 
+- **Complex, hotel și săli 3D pentru evenimente/buyeri:** [event-studio-3d.md](./event-studio-3d.md) și [event-studio-3d](../skills/event-studio-3d/SKILL.md) — construcție la scară, variante după invitați, mobilier, meniu, program, CRM și prezentare. Ghidurile de geometrie, design și buyer se citesc separat, numai la nevoie.
+
 - **Căutare și liste complete:** [cautare-si-citire-completa.md](./cautare-si-citire-completa.md) — furnizori, facturi primite/emise, note, stoc, rețete, clienți și personal; alegerea citirii, identificarea corectă, permisiuni, paginare și recuperarea unui răspuns incomplet.
 
 - **Creștere și campanii Wolt / Glovo / Bolt Food:** [condu-livrarile](../skills/condu-livrarile/SKILL.md) — obiectiv pe locație, buget comun, promoții native, cereri prin email, publicare asistată, conversie, contribuție, finanțare din facturi și jurnal. Include monitorizare prin Connect și limitele reale ale rutinei programate.

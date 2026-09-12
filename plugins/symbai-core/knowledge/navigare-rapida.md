@@ -1,5 +1,7 @@
 # Navigare rapidă — ce e în fiecare pagină + unde te duce
 
+- **Event Studio 3D** `/event-studio` — complex/hotel/săli la scară, variante de amenajare, meniu, invitați, program și prezentare buyer. Din CRM: „Configurații 3D”. Folosește `editorUrl` pentru proiectul precis; linkul buyer `/event-visit` se generează separat. [Ghid și limite](event-studio-3d.md).
+
 > **Citește ÎNTÂI asta** la „du-mă la X / unde e Y”. Fiecare rând: **pagina** `ruta` — *ce vezi/faci acolo*. `· NU aici:` = capcana sibling (unde să mergi în schimb). Conținut verificat contra paginilor reale.
 > Dacă intenția nu e aici sau e ambiguă → `gaseste_in_aplicatie(termen scurt)`. Cum DESCHIZI pagina prin Chrome + cum SCHIMBI unitatea: `navigare.md`.
 > Rute relative la subdomeniul clientului. Ce nu vede userul = rol/modul lipsă (vezi `00-overview.md`).
