@@ -1,20 +1,17 @@
-# Lucru incremental, verificat, condus de user (protocol transversal)
+# Lucru incremental, verificat, până la rezultatul cerut
 
-Protocol reutilizabil pentru ORICE lucrare mare și pe pași (clonarea unui site, importul unui catalog, configurarea unui CRM, o campanie în mai multe etape). Skill-urile îl instanțiază concret; aici e regula generică.
+Protocol pentru lucrări în mai mulți pași: importuri, configurări, site-uri, campanii sau investigații. Pașii mici fac rezultatul verificabil; nu sunt o condiție ca utilizatorul să repete cererea după fiecare pas.
 
-> **De ce există:** lecția #1 dintr-o clonare reală de site — când faci prea mult într-un singur prompt NU verifici destul și scapi greșeli care „par gata" (poze lipsă, link-uri care pleacă de pe clonă, secțiuni nemapate). Verificarea temeinică CERE pași mici. Mai bine durează ore în pași verificați decât „pare gata" la 20%.
+## Execuția cererii curente
 
-## Modul IMPLICIT = incremental, condus de user
+1. **Păstrează obiectivul și acordul existent.** Identifică rezultatul cerut, destinația și limitele. Nu extinde importul, publicarea sau destinatarii din proprie inițiativă.
+2. **Descompune și păstrează progresul.** Pentru lucrări mari ține o listă durabilă în instrumentele disponibile: ID-uri, pași realizați și verificați, ce mai rămâne și eventualele decizii lipsă. Nu copia toate documentele în fiecare rezumat.
+3. **Execută în loturi mici.** Fiecare lot are o țintă și un rezultat verificabil. Continuă cu următorul pas necesar aceleiași cereri; nu opri lucrul doar pentru a cere „continuă”.
+4. **Verifică înainte să avansezi.** Recitește câmpurile scrise; pentru pagini verifică și rezultatul vizual. Un răspuns de succes al tool-ului nu dovedește singur rezultatul dorit. Dacă o scriere are rezultat incert, recitește înainte de retry ca să nu dublezi operația.
+5. **Comunică progresul.** Spune scurt ce s-a verificat și ce urmează când lucrarea durează. Dacă utilizatorul a cerut explicit câte un pas cu aprobare, oprește-te la acel checkpoint.
+6. **Cere numai decizia lipsă.** Caută întâi datele în conversație și în firmă. Oprește partea dependentă când lipsește o informație indispensabilă, autorizarea sau apar efecte suplimentare; continuă ce se poate face corect în scopul deja autorizat.
+7. **Închide cu rezultatul verificat.** Spune ce s-a finalizat și ce rămâne nevalidat. Un plafon de timp, context sau cost nu transformă munca rămasă în „gata”; salvează starea pentru reluare fără repetarea scrierilor.
 
-1. **Descompune.** Spargi lucrarea într-o **listă numerotată de sarcini mici, fiecare verificabilă singură**. Ține lista durabil (pe disc / task list), nu în cap — supraviețuiește compactării contextului.
-2. **O singură sarcină pe tură.** Faci EXACT o sarcină mică pe tură. Niciodată nu înlănțui mai multe sarcini în tăcere.
-3. **Verifică obiectiv, în aceeași tură.** Confirmi sarcina prin **CITIREA rezultatului real** (re-citești ce ai scris, nu „tool success") — și vizual unde se aplică (browser, screenshot, DOM). „Gata" la o sarcină ≠ „pare gata".
-4. **Explică în limbaj de business.** Scurt, pe înțeles: CE ai făcut la sarcina asta și de ce. Fără jargon, fără dump de cod.
-5. **Propune ÎNTOTDEAUNA următoarea sarcină și oprește-te.** Închei fiecare tură cu: (a) rezultatul + dovada verificării, (b) **o singură sarcină următoare concretă, propusă**. Apoi te OPREȘTI și aștepți „continuă / da / yes". Userul conduce ritmul.
-6. **Niciodată „gata" fără verificare.** „Gata" pe tot e definit de porți/criterii obiective, nu de impresie.
+## Rulări viitoare și monitorizare
 
-## Modul AUTONOM = OPT-IN
-
-Rulezi mai multe sarcini la rând, nesupravegheat (loop / agent programat / hook care nu te lasă să te oprești) **DOAR după ce userul cere explicit** „rulează tot / nu te opri / fă tot / las-o să meargă / închid laptopul". Până atunci toată mașinăria „nu te opri" stă OPRITĂ.
-
-Chiar și în modul autonom, fă **checkpoint**: după fiecare poartă care trece sau fiecare N pași, postezi o linie de progres + următoarea sarcină planificată, ca userul să poată interveni. Și în autonom: verifici fiecare pas (regula 3) — viteza nu scuză lipsa verificării.
+Finalizarea cererii curente nu autorizează singură o monitorizare permanentă, un agent programat, un `/loop` recurent sau un hook care repornește agentul. Configurează asemenea mecanisme numai când utilizatorul a delegat explicit continuarea în timp, cu obiectiv și limite clare. Folosește mecanismul disponibil al aplicației și verifică prima execuție reală. O notiță salvată nu dovedește că monitorizarea rulează.

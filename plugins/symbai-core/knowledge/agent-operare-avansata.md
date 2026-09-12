@@ -1,6 +1,6 @@
 # Operare avansata pentru agenti Symbai
 
-Acesta este standardul pentru Claude Code cand lucreaza cu Symbai ca un consultant tehnic + implementator + QA, nu ca un chatbot. Foloseste-l la task-uri complexe, cu impact real: onboarding, importuri, productie, stocuri, website, campanii, fiscal/financiar, investigatii, configurari multi-modul sau orice cerere de tip „fa tu cap-coada".
+Acesta este standardul pentru Claude Code, Codex și ChatGPT când execută cereri prin Symbai. Folosește secțiunile relevante la task-uri complexe: onboarding, importuri, producție, stocuri, website, campanii, investigații sau configurări multi-modul. Reutilizează ghidul deja citit.
 
 ## Modelul de lucru
 
@@ -22,16 +22,16 @@ Gandeste ca o echipa mica:
 7. **Verifica prin citire**: confirma cu tool de citire sau audit, nu doar cu raspunsul tool-ului de scriere si nu doar cu ecranul.
 8. **Inchide cu dovada**: spune ce ai facut, unde se vede, ce ai verificat si ce ramane nevalidat.
 
-**Lucrări mari, pe ore (clonare site, import catalog, configurare CRM, campanie multi-etapă):** lucrează INCREMENTAL și condus de user — o sarcină mică pe tură, verificată prin citire, explicată pe business, cu următoarea sarcină propusă la final; modul autonom „nu te opri" e OPT-IN. Protocolul complet: [`lucru-incremental-verificat.md`](lucru-incremental-verificat.md).
+**Lucrări mari (clonare site, import catalog, configurare CRM, campanie multi-etapă):** împarte lucrul în pași verificabili și continuă cererea deja autorizată, cu actualizări scurte de progres. Un checkpoint nu cere automat un nou „continuă”. Dacă userul cere explicit control pas cu pas, respectă acel ritm. Automatizările pentru rulări viitoare necesită delegare separată. Protocolul complet: [`lucru-incremental-verificat.md`](lucru-incremental-verificat.md).
 
 ## Reguli de decizie
 
 - **Userul cere „fa"**: actioneaza, nu ramane la plan. Pune intrebari doar pentru date care nu se pot citi si unde o presupunere ar produce paguba.
-- **Mai multe branduri/locatii**: daca userul nu a spus unitatea, citeste lista si intreaba sau cere confirmare inainte de write/raport filtrat.
+- **Mai multe branduri/locații**: reutilizează destinația verificată din discuție sau din documentul identificat. Citește lista doar dacă trebuie rezolvată aria. Pentru un raport general folosește aria autorizată și spune ce include; pentru o scriere cu mai multe destinații plauzibile întreabă numai alegerea încă lipsă. Nu alege prima unitate la întâmplare.
 - **Tool lipsa sau permisiune lipsa**: explica modulul necesar din Hub -> Acces AI. Nu ocoli permisiunea prin SQL sau click-uri riscante.
 - **Lista live de tool-uri difera de `tools-mcp.md`**: lista live castiga; catalogul este orientativ si generat.
 - **Date lipsa**: nu inventa preturi, gramaje, alergeni, conturi contabile, cantitati, reduceri sau conditii legale.
-- **Actiuni externe**: Meta, email, WhatsApp, push, curieri, ANAF, eMAG, refund card si publicari sociale cer confirmare clara.
+- **Acțiuni externe**: verifică acordul explicit pentru acțiune, destinatari și buget/întindere. Acordul deja dat pentru aceeași operație este valabil; cere numai autorizarea încă lipsă sau pentru efecte suplimentare.
 - **Investigatii**: citește timeline/audit prin `jurnal_activitate` pentru un caz punctual sau SQL read-only pentru corelări/seturi. Alege direct calea care răspunde complet cu mai puține citiri, în drepturile conexiunii. Răspunsul trebuie să distingă dovezile de ipoteze.
 - **Lucrari mari**: imparte in checkpoint-uri verificabile si pastreaza progres local cand skill-ul o cere (ex. onboarding/import).
 

@@ -16,7 +16,7 @@ Starea canonică a seed-ului este `clone_crawl_jobs.options.websiteImport`. Paro
 
 ## Cadență cu userul (mod IMPLICIT)
 Vezi protocolul generic în `../../../knowledge/lucru-incremental-verificat.md`; aici e instanțierea pentru clonare.
-Implicit, contractul pe tură e: **o sarcină mică → explică în business → execută → verifică prin read-back (+ vizual la pagini) → arată rezultatul → propune URMĂTOAREA sarcină → oprește-te** și aștepți „continuă/da". Cele trei straturi „Nu te opri" (`/loop` în sesiune, agentul programat, hook-ul Stop) sunt **ARMATE DOAR în modul autonom OPT-IN** — implicit stau OPRITE. Coada durabilă de mai jos e tally-ul tău; ea NU autorizează rularea non-stop fără ca userul s-o ceară.
+Contractul este: **un lot mic → execută → verifică prin read-back (+ vizual la pagini) → comunică progresul → continuă următorul pas autorizat**. Cere un nou „continuă” numai dacă utilizatorul a ales explicit aprobarea fiecărui pas. Cele trei mecanisme pentru rulări viitoare (`/loop`, agent programat, hook Stop) necesită delegare explicită; finalizarea cererii curente și coada durabilă nu autorizează singure repornirea nesupravegheată ori o monitorizare permanentă.
 
 ## Starea durabilă a agentului: `.symbai-clone/<host>/`
 

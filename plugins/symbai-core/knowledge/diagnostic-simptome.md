@@ -21,9 +21,13 @@ Regula de aur: nu conchide „Symbai nu poate” dintr-o unealtă lipsă. Urmeaz
 | „Nu s-a generat consumul azi" | `get_daily_consumption_status(date)` | consumul se generează prin jobul ZILNIC, nu la fiecare vânzare; rețete care rup consumul: `scan_recipe_consumption_gaps` |
 | „Cost 150%", „cost 0", „preț de recepție absurd" | `scan_suspect_recipe_costs`, `scan_zero_cost_sold`, `scan_suspect_reception_costs` | unități netraductibile (g pe produs în buc): `scan_recipe_unit_mismatches` → `fix_recipe_unit_mismatches` 🔒; costuri de recepție: `fix_reception_costs` 🔒 |
 | „Din ce gestiune scade ingredientul X?" | `diagnose_consumption_warehouse_routing(product, brand, location)` | gestiuni lipsă: `audit_product_warehouse_coverage`; produse fără zonă („Necategorizat" în P&L): `scan_unzoned_products` |
-| „Lotul arată mai mult decât gestiunea", „deficit fals" | `check_container_placement_drift` | `repara_loturi_peste_stoc` 🔒, `repair_container_placements` 🔒 |
+| „Lotul arată mai mult decât gestiunea", „deficit fals" | `check_stock_health` și previzualizarea `repara_loturi_peste_stoc` | Urmează motivul și documentele indicate; `check_container_placement_drift` verifică separat plasările în recipiente. Execută numai reparația confirmată de previzualizare. |
 | „Am corectat rețeta și rapoartele arată la fel" | rapoartele nu se recalculează singure | `reprocess_daily_consumption` 🔒 pe perioadă (verifică jobul cu `get_reprocess_job_status`) |
 | „Ingrediente pe care nu le-am cumpărat niciodată" | `scan_unpurchased_ingredients` | de regulă produs dublat sau rețetă legată greșit: `link_recipe_products` |
+
+O ieșire permisă fără acoperire pe lot poate lăsa o diferență între stocul net și marfa fizică încă prezentă, inclusiv în carantină. Citește documentele indicate și cantitatea rămasă fără acoperire: completează intrarea reală lipsă sau corectează documentul greșit prin fluxul lui. Diferența singură nu dovedește că marfa trebuie eliminată. Nu șterge loturi, nu modifica o numărătoare și nu elibera carantina pentru a egala două valori.
+
+Previzualizarea nu execută reparația, chiar dacă răspunde cu succes. Verifică rezultatul și pasul cerut. Pentru stocul pregătit sau promis altor lucrări, citește rezervările rămase; eliberează numai rezervările care nu mai sunt actuale. Repararea plasărilor în recipiente nu elimină marfă care coincide deja cu cantitatea lotului.
 
 ## Recepție, facturi de intrare, contabilitate primară
 

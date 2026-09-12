@@ -46,20 +46,15 @@ Crawl-ul greu rulează pe **server** (owner-ul poate închide laptopul) — tu d
 - **`clone_redirect_map(jobId, brandId, apply?)`** — continuitate SEO (Faza 4, 9f): dry-run, apoi `apply:true` scrie 301-uri din URL-urile vechi produs/categorie spre URL-urile Symbai. Rulează ÎNTÂI dry-run, separat după PASS.
 - Pentru **paginile de prezentare** (non-produs): conținutul se scrie cu uneltele din `construieste-website` (`set_website_theme` → `update_website_navigation` → `set_website_page_content`/`set_website_pages`/`set_website_legal_page`) și se verifică prin `get_website_page` înainte de browser — vezi Faza 4b. Foloseste `set_website_pages` cand imporți multe pagini odata.
 
-## Cum lucrezi cu userul — INCREMENTAL, una câte una (mod IMPLICIT)
+## Cum lucrezi cu userul — pași mici, verificați, până la rezultat
 
-**Implicit, lucrezi user-driven, NU autonom pe ore.** Modul „rulează ore, nu te opri" (Faza 5 + `harness.md` §Nu-te-opri: `/loop`, agentul programat, hook-ul Stop) este **OPT-IN** — îl pornești DOAR după ce userul îți cere explicit „rulează tot / nu te opri / las-o să meargă / închid laptopul". Până atunci toată mașinăria „nu te opri" stă OPRITĂ.
+Urmează `knowledge/lucru-incremental-verificat.md`: împarte lucrarea în loturi verificabile și continuă scopul autorizat. Nu cere un nou „continuă” după fiecare lot, decât dacă utilizatorul a cerut explicit control pas cu pas.
 
-> De ce: lecția #1 dintr-o clonare reală — când faci prea mult într-un singur prompt NU verifici destul și scapi greșeli (poze lipsă, link-uri care pleacă de pe clonă, componente nemapate). Verificarea temeinică CERE pași mici. Mai bine durează ore în pași verificați decât „pare gata" la 20%.
-
-**Reguli ale cadenței (non-negociabile):**
-1. **Descompune.** Orice lucrare mare (clonarea unui site) o spargi într-o **listă numerotată de sarcini mici, fiecare verificabilă singură** (ex.: „confirmă numitorul", „mapează ACEASTĂ categorie de ~20 produse", „importă pagina Despre și arat-o", „localizează link-urile din blog"). Ține lista pe disc — catalogul în `progress.json`, paginile de prezentare în `design-plan.json` (pe secțiuni) — nu în cap. Userul îți poate cere oricând „arată-mi planul" sau îți poate da el planul: îl scrii pe disc și îl urmezi bucată cu bucată.
-2. **O singură sarcină pe tură.** Faci EXACT o sarcină mică pe tură. Niciodată nu înlănțui mai multe sarcini în tăcere.
-3. **Verifică obiectiv, în aceeași tură.** Înainte să mergi mai departe, confirmi sarcina prin **CITIREA câmpurilor scrise** (re-citești din Symbai ce ai scris) — și, pentru pagini, **vizual în browser** — nu prin „tool success". „Gata" la o sarcină mică ≠ „pare gata".
-4. **Explică în limbaj de business.** Spui userului, scurt și pe înțeles, CE ai făcut la sarcina asta și de ce — nu jargon, nu dump de cod.
-5. **Propune ÎNTOTDEAUNA următoarea sarcină și oprește-te.** Închei fiecare tură cu: (a) rezultatul sarcinii curente + dovada verificării, (b) **o singură sarcină următoare concretă, propusă**. Apoi te OPREȘTI și aștepți ca userul să zică „continuă / da / yes". Userul conduce ritmul.
-6. **Niciodată „gata" fără verificare** și niciodată întreg catalogul/site-ul într-o singură tură. „Gata" pe tot rămâne definit de porțile obiective (Regula 1 de mai jos) — porțile rulează doar după ce userul a aprobat parcurgerea.
-7. **Chiar și în modul autonom (opt-in), fă checkpoint:** după fiecare poartă care trece sau fiecare N loturi, postezi o linie de progres + următoarea sarcină planificată, ca userul să poată interveni.
+1. Păstrează lista de sarcini în `progress.json`, iar paginile de prezentare în `design-plan.json`; supraviețuiește compactării contextului.
+2. Execută un lot mic, recitește câmpurile scrise și verifică vizual paginile înainte de a avansa. Nu confunda răspunsul tool-ului cu dovada că site-ul este complet.
+3. Comunică scurt progresul și continuă următorul pas necesar. Cere numai datele sau autorizarea încă lipsă; o neclaritate la o pagină nu oprește lucrul independent la celelalte.
+4. Porțile de verificare rămân obligatorii; nu declara „gata” până nu trec. Acordul pentru copiere nu autorizează implicit publicarea, schimbarea site-ului activ sau alte efecte necerute.
+5. Mecanismele pentru rulări viitoare (`/loop`, agent programat, hook Stop) necesită delegare explicită. Coada durabilă și cererea curentă nu autorizează singure monitorizarea permanentă.
 
 ## ⚠ Reguli NON-NEGOCIABILE (din ele vine corectitudinea)
 1. **„Gata" NU înseamnă „pare copiat".** „Gata" = `clone_audit_all(...).data.pass === true` (porțile dure trec + advisory nu blochează) sau, dacă rulezi manual, TOATE porțile dure `pass:true` — `clone_parity_diff` (0 produse lipsă, numitor sigur) ȘI `clone_fidelity_audit` (câmpurile produselor transferate, inclusiv galerie când sursa are 2+ poze) ȘI `clone_coverage_audit` (categorii/blog/pagini legale migrate) — PLUS **Poarta 4 (fidelitate de design, Faza 4b): paginile de prezentare arată ca originalul, verificat vizual** — PLUS `audit_shop_health` fără `error`. Niciodată pe baza impresiei tale.
@@ -157,11 +152,11 @@ Inainte sa marchezi o sectiune ca necesitand `custom-html`, verifica aceste opti
 
 Acestea trebuie bifate in Poarta 4 de design: screenshot desktop + mobil pentru hero diagonal, text-image diagonal si reveal la scroll, read-back pentru footer/navbar/tema si comparatie vizuala cu originalul.
 
-### Faza 5 — Nu te opri până nu e gata (mod AUTONOM, OPT-IN)
-> Aceasta e modul AUTONOM — pornește-l DOAR după ce userul cere explicit „rulează tot / nu te opri / las-o să meargă". În modul IMPLICIT (vezi „Cum lucrezi cu userul"), după FIECARE sarcină mică verificată te oprești și propui următoarea. În modul autonom, fă checkpoint: după fiecare poartă care trece sau fiecare N loturi, postează o linie de progres + următoarea sarcină planificată, ca userul să poată interveni.
+### Faza 5 — Finalizare verificată și reluare
+> Continuă cererea curentă în loturi verificate și comunică progresul, fără o nouă aprobare după fiecare lot. Respectă opririle cerute explicit de utilizator și deciziile încă lipsă. Programarea reluărilor nesupravegheate este separată și necesită delegare explicită.
 
 10. Buclă până: coada goală (0 pending în `list_clone_crawl_pages`) ȘI `clone_audit_all(...).data.pass === true` (sau cele 3 porți produs `pass:true` — `clone_parity_diff` + `clone_fidelity_audit` + `clone_coverage_audit` — + advisory rezolvat/N-A) ȘI **Poarta 4 design (Faza 4b) trecută vizual, cu `design-plan.json` complet `verified`** ȘI `audit_shop_health` fără `error`. Fiecare trezire a buclei procesează O bucată din plan (Regula 11) — nu „cât mai mult".
-11. **Pentru rulare pe ore, nesupravegheat** (owner-ul a plecat): instalează un agent programat care reia skill-ul cât timp mai există pending (vezi `references/harness.md` §Nu-te-opri + skill-ul `schedule`). Hook-ul Stop (dacă e instalat) e podeaua dură. `/loop` e bucla din sesiune.
+11. **Pentru rulare pe ore, nesupravegheat**, numai dacă proprietarul a delegat-o explicit: configurează mecanismul disponibil de reluare cât timp mai există pending (vezi `references/harness.md` §Nu-te-opri). Verifică instrumentele reale ale executorului; nu presupune că există un skill `schedule`, un hook Stop sau `/loop` în fiecare aplicație.
 12. Re-citește `progress.json` la fiecare reluare; revendică rândurile `in_progress` rămase blocate înapoi la `pending`.
 
 ## Raport onest (la final)

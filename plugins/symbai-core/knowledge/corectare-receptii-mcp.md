@@ -106,6 +106,8 @@ La tool-urile de asociere, `id` identifică **factura fotografiată**, iar `invo
 
 Trimite aceleași decizii la previzualizare și asociere. Nu schimba factura oficială și nu crește fictiv cantitatea primită pentru a face sumele să coincidă. Asocierea și finalizarea sunt pași diferiți; verifică ambele rezultate. Pentru valută, cursul, data și sursa sunt verificate înainte de asociere și aprobare. La un refuz, completează snapshotul valutar oficial prin fluxul facturii și reia operația; nu inventa un curs și nu folosi sursa identity pentru valută.
 
+O asociere sau conversie corectată poate coincide cu marfa și valoarea deja postate. În acest caz se păstrează și evaluarea existentă a loturilor; diferența față de prețul vechi al furnizorului poate proveni dintr-o evaluare ulterioară a gestiunii. Nu cere resetarea costurilor ori reprocesarea producției doar pentru repararea legăturii facturii. Dacă apare un refuz despre alocări istorice, păstrează identificatorii și verifică rezultatul tranzacției înainte de retry; un refuz nu dovedește salvarea.
+
 ## Verificare și protecții
 
 Recitește factura cu `get_incoming_invoice_workflow_details({invoiceId: ID_FACTURA})`: verifică `nirDocumentId`, `receiptDate`, datele fiscale și liniile. La revizie economică, `correctionMode:economic_revision` confirmă păstrarea NIR-ului; nu descrie rezultatul ca storno/repostare. Cantitățile rămân cele citite anterior dacă nu ai cerut schimbarea lor.
