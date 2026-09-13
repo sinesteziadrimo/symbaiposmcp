@@ -7,6 +7,8 @@ description: Planul de sală și codurile QR prin MCP + link direct + screenshot
 
 Planul de sală (`/plan-sala`) e cel mai click-greu ecran din Symbai: zeci de mese trase cu mouse-ul, grupate în raioane, fiecare zonă rutată la imprimante. Tu NU tragi nimic cu mouse-ul — faci munca prin **tool-uri MCP** (muți/aranjezi/rutezi/programezi din apeluri), NAVIGHEZI cu link direct și ARĂȚI rezultatul cu screenshot. Click pe pixeli = ultima soluție, nu prima.
 
+Pentru amenajare **3D a aceluiași restaurant**, citește numai atunci [restaurantul 2D/3D unificat](../event-studio-3d/references/restaurante.md). Descoperă `get_floor_venue` / `edit_floor_venue` la cerere. Mesele, configurațiile, raioanele și QR-urile existente rămân sursa operațională; deschiderea în 3D nu le recreează.
+
 ## Înainte de orice
 1. Citește **`knowledge/condu-chrome.md`** (doctrina „click-rarely": tool MCP → deep-link → click pe element; screenshot = livrabilul; refresh resetează starea; confirmă-prin-citire) și, pentru context conceptual + onboarding-ul de sală, **`knowledge/onboarding/06-sala-qr.md`** (ierarhia Zonă→Masă→Configurație→Program→Raion, capcanele de ordine, jargonul de evitat) + **`knowledge/plan-sala-qr.md`** (geometrie pe canvas, dubla scriere, sistemele de QR, cum arăți userului).
 2. **Context**: `list_brands` + `list_locations` → `brandId`/`locationId`. Apoi `list_floor_zones` (ce zone există) și ia `configId`-ul configurației de sală cu **`list_floor_configs`** (id + nume + locație pentru fiecare configurație; fallback `list_entities {entityType:"floor_configs"}`). `configId` = cheia pentru aproape tot ce ține de geometrie/raioane.
