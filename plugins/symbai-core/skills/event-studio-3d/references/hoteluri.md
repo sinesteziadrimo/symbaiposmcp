@@ -20,6 +20,12 @@ Pentru parcuri de activități există spații playground, party, laserTag și v
 
 ## Turul clientului
 
+Pentru alegerea sălilor și trecerilor, descoperă la cerere `get_event_studio_navigation`, cu `projectId` și `scenarioId` verificate. `section="spaces"` caută spații după nume sau nivel; `section="doorways"`, cu cele două ID-uri și lățimea în metri, propune poziții pe pereții comuni. Urmează paginarea și refolosește ID-urile, peretele și poziția întoarse. Verifică disponibilitatea instrumentului în instanța conectată înainte de utilizare.
+
+`connect_event_studio_spaces` creează legătura și golurile din ambii pereți într-o singură modificare. Trimite proiectul, revizia, ID-ul stabil al legăturii și cele două săli; verifică `preview=true`, apoi salvează cu `preview=false`. O ușă sau un pasaj cer pereți comuni și puncte libere în fiecare configurație afectată. Un gol existent se refolosește numai la același tip și aceleași dimensiuni, cu prag zero; citește geometria lui înainte de a solicita alte dimensiuni. Nu transforma automat un pasaj în ușă și nu micșora golurile din plan.
+
+Pentru camere separate sau etaje, alege explicit `teleport`, `stairs` sau `elevator`. Punctele opționale `from/to` sunt X/Z în metri, locale fiecărei încăperi; dacă le omiți, instrumentul caută puncte libere. O teleportare nu decupează pereți și nu dovedește existența unei treceri fizice. Selectorul permanent de săli permite vizitarea încăperilor chiar dacă nu au încă legături; verifică separat traseele fizice și turul.
+
 `update_event_studio_navigation` definește legăturile și opririle. `from/to` au spațiu, X/Z local și direcția privirii. Ușile/pasajele/aleile între spații adiacente cer acces fizic liber pentru mers continuu. `stairs/elevator` leagă etaje și permit alegerea destinației în plimbare. `bidirectional` controlează sensurile.
 
 `tour` este ordonat: exterior → intrare/recepție → restaurante/activități → camere → sală și variante. Fiecare oprire are nume, spațiu, punct, yaw/pitch și descriere. Yaw 0 privește spre -Z. Testează fiecare punct să fie liber și fiecare legătură să ducă în spațiul corect. Nu marca un traseu accesibil doar fiindcă ai adăugat un ascensor în desen.

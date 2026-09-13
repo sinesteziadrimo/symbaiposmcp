@@ -17,6 +17,7 @@ Disponibilitatea se verifică în catalogul MCP al instanței. Ghidul public nu 
 | Mobilier, construcție și modele | `edit_event_studio_objects` |
 | Contururi, pereți și goluri reale | `edit_event_studio_architecture` |
 | Camere hotel amenajate la scară | `furnish_event_studio_room` |
+| Alegerea sălilor și treceri prin pereți comuni | `get_event_studio_navigation`, `connect_event_studio_spaces` |
 | Trasee între încăperi și tururi | `update_event_studio_navigation` |
 | Proveniența cotelor și calibrare salvată | `update_event_studio_sources` |
 | Plan PDF/imagine/ISU, încărcare în fragmente | `start_event_studio_plan`, `upload_event_studio_plan_chunk` |
