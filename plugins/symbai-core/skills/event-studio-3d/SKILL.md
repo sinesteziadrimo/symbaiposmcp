@@ -13,6 +13,8 @@ Verifică disponibilitatea instrumentelor în instanța conectată. Un ghid disp
 
 Pentru un restaurant care are mese și configurații în `/plan-sala`, folosește [sala restaurantului 2D/3D](references/restaurante.md). Este aceeași amenajare operațională, cu detalii 3D suplimentare. Nu crea un proiect separat doar pentru a-i arăta mesele în 3D.
 
+Pentru configuratorul de pe website, mobilierul pe care îl poate muta vânzătorul sau predarea către șeful de sală, citește numai atunci [website și vânzări](references/website-vanzari.md).
+
 ## Flux
 
 1. Identifică brandul, locația și, când cererea pornește din CRM, dealul exact. `get_event_studio_context` citește contextul și meniurile; `list_event_studio_projects` găsește biblioteca unității sau proiectele dealului. Refolosește identificatorii deja verificați.

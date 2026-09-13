@@ -19,6 +19,8 @@ Pentru restaurante, cafenele, baruri, pizzerii și evenimente citește mai înt�
 3. **Permisiune** pe token: `setari` (scrierile de site/footer/legale/promoții) + `produse_meniu` (categorii/produse/atribuiri). Fără modul → scrierea întoarce „permisiune insuficientă" → userul bifează modulul în Hub → Acces AI.
 
 ## Regula pentru componente
+Pentru tururi de hotel și configurarea unei săli în 3D, folosește componenta standard `venue-3d` cu `publicationId`. Încarcă la cerere [website și vânzări 3D](../event-studio-3d/references/website-vanzari.md); publicarea modelului, restricțiile mobilierului și cererea în CRM sunt explicate acolo. Nu încărca ghidurile 3D pentru alte site-uri.
+
 1. Încearcă întâi componentele existente din catalog și combinații între ele (`hero-slider`, `static-menu-board`, `feature-cards`, `product-grid`, `faq`, `cta-banner`, `gallery`, `trust-badges`, etc.).
 2. Folosește `custom-html` doar dacă cerința chiar nu se exprimă bine cu componentele standard sau userul cere explicit ceva foarte diferit/fidel unei surse.
 3. Când folosești custom, scrie HTML semantic + CSS în câmpul `css`; evită script, handler-e inline, `style=""`, submit extern, URL-uri `javascript:`/`data:`/`blob:`, at-rule-uri CSS (`@media`/`@import`/`@supports`) și iframe-uri neconfirmate.
