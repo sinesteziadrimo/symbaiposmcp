@@ -8,7 +8,9 @@ Construiește o compoziție coerentă: două materiale dominante, o culoare de a
 
 `generate_event_studio_layout` are șase formate: `banquet`, `theatre`, `classroom`, `cabaret`, `boardroom`, `cocktail`. Primește `guests` și lățimea culoarului `aisle`. Respectă obstacolele fixe și raportează lipsa locurilor. La consiliu, masa continuă are maximum 30 locuri; pentru o cerere mai mare propune un format potrivit după verificare.
 
-Generatorul **înlocuiește mobilierul variantei**, inclusiv decorul mobil. Aplică-l înainte de decorul final sau într-o copie nouă. Implicit produce numai previzualizare; verifică raportul și apoi aplică același apel cu `preview:false`. Nu modifică elementele fixe. Obiectele blocate și invitații deja așezați cer o decizie explicită prin `allowLocked`, respectiv `clearAssignments`; preferă o variantă nouă dacă trebuie păstrată configurația actuală.
+Generatorul înlocuiește mesele și scaunele generate și păstrează scena, decorul și celelalte obiecte. Florile, textilele și regulile meselor se preiau de pe mesele înlocuite de același tip; dacă schimbi tipul meselor, verifică și reaplică legăturile necesare. Un aranjament floral prea mare pentru masa nouă este refuzat. Implicit produce numai previzualizare; verifică raportul și apoi aplică același apel cu `preview:false`. Obiectele blocate și invitații deja așezați cer o decizie explicită prin `allowLocked`, respectiv `clearAssignments`; preferă o variantă nouă dacă trebuie păstrată configurația actuală.
+
+Pentru alternative de flori, textile, colț foto și accesorii oferite clientului, urmează [colecțiile de decor](decor.md). O paletă de atmosferă nu înlocuiește catalogul de opțiuni aprobat de locație.
 
 ## Atmosferă
 

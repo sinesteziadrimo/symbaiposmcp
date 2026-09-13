@@ -6,7 +6,7 @@ Disponibilitatea se verifică în catalogul MCP al instanței. Ghidul public nu 
 
 ## Instrumente la cerere
 
-Începe cu `cauta_tool` pentru „event studio 3d” și acțiunea necesară. Toolurile nu trebuie încărcate toate în contextul inițial. `get_event_studio_guide` livrează numai tema selectată: `start`, `geometry`, `objects`, `design`, `operations`, `buyer`, `plans`, `navigation` sau `rooms`.
+Începe cu `cauta_tool` pentru „event studio 3d” și acțiunea necesară. Toolurile nu trebuie încărcate toate în contextul inițial. `get_event_studio_guide` livrează numai tema selectată: `start`, `geometry`, `objects`, `design`, `decor`, `operations`, `buyer`, `plans`, `navigation`, `rooms` sau `website`. Pentru flori, textile și colț foto, citește la nevoie [colecțiile de decor](../skills/event-studio-3d/references/decor.md).
 
 | Nevoie | Instrumente |
 |---|---|
@@ -23,6 +23,7 @@ Disponibilitatea se verifică în catalogul MCP al instanței. Ghidul public nu 
 | Pagini, text și detalii mărite din plan | `read_event_studio_plan` |
 | Calibrare și închiderea sursei temporare | `calibrate_event_studio_plan`, `close_event_studio_plan` |
 | Generare după invitați și atmosferă | `generate_event_studio_layout`, `style_event_studio_scenario` |
+| Colecții și alegeri de decor | `get_event_studio_decor`, `upsert_event_studio_decor`, `bind_event_studio_decor`, `select_event_studio_decor` |
 | Ofertă, nominal și program | `update_event_studio_menu`, `update_event_studio_guests`, `update_event_studio_agenda` |
 | Verificare și inventar | `validate_event_studio_project` |
 | Copie către CRM | `clone_event_studio_project` |

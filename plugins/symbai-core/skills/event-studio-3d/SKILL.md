@@ -15,6 +15,8 @@ Pentru un restaurant care are mese și configurații în `/plan-sala`, foloseșt
 
 Pentru configuratorul de pe website, mobilierul pe care îl poate muta vânzătorul sau predarea către șeful de sală, citește numai atunci [website și vânzări](references/website-vanzari.md).
 
+Pentru flori, colț foto, fețe de masă și accesorii dintre care clientul poate alege, citește [colecții de decor](references/decor.md). Se configurează oferta locației, apoi se aleg opțiunile în propunerea clientului.
+
 ## Flux
 
 1. Identifică brandul, locația și, când cererea pornește din CRM, dealul exact. `get_event_studio_context` citește contextul și meniurile; `list_event_studio_projects` găsește biblioteca unității sau proiectele dealului. Refolosește identificatorii deja verificați.
