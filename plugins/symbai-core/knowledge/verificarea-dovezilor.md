@@ -26,9 +26,17 @@ Un NIR `POSTED` confirmă înregistrarea recepției. Nu explică singur o eroare
 
 Gestiunea din antet nu identifică automat destinația tuturor liniilor. Citește repartizarea efectivă din registru și loturi; un câmp de gestiune sau lot nul pe linie nu dovedește că mișcarea lipsește. Când documentul este deja înregistrat, continuă diagnosticul sau corecția existentă; nu relansa recepția pentru a reproduce eroarea.
 
+Pentru „ce recepții sunt pe gestiunea greșită”, verifică mai întâi metoda pe un document cu repartizare cunoscută, apoi aplic-o listei. Magazia de casă a produsului descrie configurația actuală; nu dovedește destinația istorică sau utilizarea exclusivă la bar/bucătărie. O nepotrivire este candidat de verificat, iar valoarea intrărilor nu este automat pierdere. Separă materiile prime de semipreparate când cererea le distinge. O rețetă se confirmă din fișa și precizările proprietarului, nu din existența ingredientului într-o gestiune.
+
+Pentru „cine a schimbat”, jurnalul filtrat și o pagină recentă nu acoperă automat tot istoricul. Urmează paginarea declarată de versiunea live sau restrânge la entitatea și perioada relevante; consemnează limitele de retenție/acces necunoscute. Zero la un cuvânt și o categorie înseamnă zero potriviri pentru acele filtre. Starea de azi a unei politici nu dovedește că nu a fost schimbată niciodată.
+
+`get_invoice_reception_warehouse_plan` recalculează alegerile din configurarea actuală, inclusiv pentru o factură deja recepționată. `source` și `sourceLabel` explică acest plan, nu alegerile istorice ale operatorului. Compară planul cu intrările reale pentru o constatare; pentru cauză caută dovezile de la data recepției. Nu declara că „nimeni nu a greșit” sau că o alocare viitoare este garantat greșită doar din planul curent.
+
 ## Corectează memoria, apoi încheie verificarea
 
 Când o dovadă contrazice un răspuns anterior, spune concret ce se corectează și înlocuiește nota greșită. Păstrează separat: fapte confirmate cu sursă și dată, ipoteze încă neconfirmate, decizii ale proprietarului și pași rămași. Un rezultat nou nu modifică singur autorizarea.
+
+Corectează și rezumatul din index, instrucțiunea locală sau raportul care reutilizează concluzia invalidată. Nu adăuga doar o rectificare la final lăsând vechea cauză sigură în titlu sau la început. La reluarea unui task vechi, citește ghidul relevant actualizat și nota curentă înainte să continui diagnosticul; instalarea unui plugin nu rescrie istoricul deja încărcat.
 
 În răspuns spune ce ai verificat, ce rezultă și ce rămâne necunoscut. Nu recita toate citirile. Odată ce identitatea, aria și rezultatul cerut sunt susținute, oprește investigațiile colaterale. Un mesaj care doar confirmă aceeași concluzie nu cere un nou diagnostic sau încă o explicație identică.
 

@@ -25,6 +25,8 @@ Pentru configurări de fabrică, loturi multiple, recall, MPS sau situații cu r
 
 ## Regula de rutare
 
+Pentru reconstrucție retroactivă, vânzările indică o cerere, nu dovedesc singure cât și când s-a produs. Separă cantitățile și randamentele confirmate de estimările acceptate explicit; verifică documentele existente, transferurile, consumul și inventarele înainte să propui loturi. Soldul de azi nu este totalul recepțiilor istorice, iar un minus calculat nu dovedește recepții lipsă. Dacă lotul este refuzat pentru brand/locație, verifică identitatea rețetei, gestiunii și contextului; nu elimina filtrul ca încercare și nu declara că acel refuz de azi explică întreaga lipsă a producției din trecut.
+
 Pentru picking în ordinea rafturilor, FEFO și stivuitor citește `knowledge/picking-optimizat.md`. Pentru caietul schimbului, predare/preluare, revizii preventive și contoare citește `knowledge/schimb-si-mentenanta.md`; citește registrul înainte de acțiune și confirmă numai verificările fizice raportate de operator.
 
 | Clientul e… | Trimite-l pe traseul… | Citește knowledge-ul |

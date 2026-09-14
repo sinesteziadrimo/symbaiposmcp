@@ -35,6 +35,8 @@ La un minus de stoc sau „am folosit alt ingredient câteva ore”, verifică �
 
 ## Fluxul
 
+La `find_consumption_gap_days`, citește clasificarea rândurilor înainte de total: `consumedWithoutRun` înseamnă consum deja POSTAT cu evidență de rulare incompletă și nu se regenerează; `ambiguous` cere verificarea domeniului. Numai `missingScopes` pot fi candidate în simulare, iar `would_attempt` nu promite recuperare. Unele versiuni vechi includ greșit toate aceste categorii în rezumatul „fără consum”; dacă mesajul contrazice rândurile, explică diferența. Valoarea vânzărilor nu este cost de stoc sau pierdere confirmată. Separă ziua curentă și, la meniul zilei, părintele cu preț de componentele care consumă ingrediente.
+
 **A. „Nu mi-a scăzut stocul"**
 1. `get_daily_consumption_status` pe **ziua încheiată** (ieri), nu pe azi.
 2. Dacă nu s-a generat: verific cu clientul comutatorul **Setări → Stocuri → „Scădere automată din stoc"** și dacă luna e închisă contabil. ⚠ Cu comutatorul oprit, rularea automată se raportează liniștit ca terminată — deci „a rulat" nu înseamnă „a scăzut". Apoi propun `generate_daily_consumption` cu `date` (+ `locationId` dacă are mai multe unități), 🔒 după confirmare.
