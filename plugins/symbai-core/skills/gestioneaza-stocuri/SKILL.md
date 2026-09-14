@@ -13,6 +13,8 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 
 ## Lipsă temporară de materie primă
 
+Pentru loturi provizorii, datorii de recepție și costuri încă necunoscute, citește [loturile provizorii](../../knowledge/loturi-provizorii.md). Verifică documentele existente și capabilitatea disponibilă înainte să promiți stingerea datoriei.
+
 Dacă bucătăria a folosit alte ingrediente, citește [înlocuirile temporare](../../knowledge/inlocuiri-temporare-ingrediente.md) și folosește skill-ul `inlocuieste-ingredient-temporar`. Caută registrul înainte să propui ajustări; un minus singur nu dovedește cauza. Identifică perioada, proporția, gestiunile și excepțiile reale și verifică separat salvarea, recalcularea și soldurile.
 
 

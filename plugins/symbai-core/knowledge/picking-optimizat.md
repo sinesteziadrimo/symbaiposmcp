@@ -43,6 +43,12 @@ Verifică numărul problemelor, lipsurile și `blockedForActor`. Lipsa rutei sau
 
 Aceste tool-uri citesc recomandarea. Scanarea, confirmarea, rezervarea, consumul și expedierea sunt pași separați în fluxul comenzii. Pentru B2B continuă, când este autorizat, cu `get_b2b_picking_plan`, `allocate_b2b_lot`, `confirm_b2b_picking`; pentru probleme în producție folosește `exec_diagnose_material_picking`. Verifică rezultatul după fiecare operație.
 
+## Loturi nou intrate și datorii de recepție
+
+O cerere deja deschisă poate primi loturi eligibile noi. În Staff, dacă este disponibilă acțiunea „Actualizează loturile”, folosește-o înainte să declari că lipsesc sursele. Verifică lotul și cantitatea selectate după actualizare; o sursă dispărută nu trebuie înlocuită automat cu alt lot. Nu anula și nu recrea cererea numai pentru a reîncărca lista.
+
+Pentru cost necunoscut, lipsă de intrare sau stingerea unui lot provizoriu, citește [loturile provizorii](loturi-provizorii.md). Stocul fizic, datoria de recepție și valoarea contabilă sunt verificări distincte.
+
 ## Rafturi 3D
 
 Pentru poziționarea rafturilor folosește tool-urile existente: `get_storage_workspace`, `update_storage_place`, `preview_storage_layout` și `apply_storage_layout`. Previzualizează mutarea și aplică la revizia citită. Mutarea desenului nu transferă marfa și nu schimbă singură regulile operaționale de picking.
