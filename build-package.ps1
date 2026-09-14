@@ -149,6 +149,23 @@ try {
             $group.hooks = @($group.hooks | Where-Object {
                 $_.command -ne 'node "${CLAUDE_PLUGIN_ROOT}/scripts/self-heal-marketplace.mjs"'
             })
+            # Connect is the Windows installer. Native Claude needs neither Node
+            # nor Git Bash; keep orientation on startup AND after compaction.
+            foreach ($hook in $group.hooks) {
+                if ($hook.command -eq 'node "${CLAUDE_PLUGIN_ROOT}/scripts/session-connections.mjs"') {
+                    $hook | Add-Member -NotePropertyName shell -NotePropertyValue 'powershell' -Force
+                    $hook.command = @'
+# session-connections: local read-only context, no runtime dependency
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+try {
+    $guide = [IO.File]::ReadAllText((Join-Path $env:CLAUDE_PLUGIN_ROOT 'knowledge/alege-conexiunea.md'), [Text.Encoding]::UTF8)
+    @{ hookSpecificOutput = @{ hookEventName = 'SessionStart'; additionalContext = $guide } } | ConvertTo-Json -Depth 4 -Compress
+} catch {
+    '{"continue":true}'
+}
+'@
+                }
+            }
             if ($group.hooks.Count -gt 0) { $sessionGroups += $group }
         }
         if ($sessionGroups.Count -gt 0) { $hookConfig.hooks.SessionStart = $sessionGroups }

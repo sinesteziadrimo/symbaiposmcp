@@ -12,11 +12,11 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - **Articol de meniu** — lucrul vandabil, cu preț de vânzare. Trăiește într-un meniu, într-o categorie. Același produs poate fi în mai multe meniuri, cu nume și preț propriu în fiecare — așa se fac prețuri diferite per platformă.
 - **Meniu** — colecție de articole cu prețuri. Un brand poate avea mai multe meniuri (unul prestabilit + ciorne); se pot duplica ca să lucrezi pe o copie fără să atingi meniul servit.
 - **Categorie de meniu** — ierarhie pe până la 6 niveluri (ex. Bar > Bere > Artizanală); clic pe o categorie părinte arată și produsele subcategoriilor.
-- **Rețetă** — lista de ingrediente + cantități a unui preparat. Dă costul real și determină consumul de stoc la vânzare. Unitățile contează: 200 g ≠ 200 kg — o greșeală de unitate strică food cost-ul (poate ieși ×1000) și stocul; conversiile g↔kg, ml↔l se fac automat în aceeași familie. ⚠ Între familii diferite (grame pe un produs ținut la bucată, litri pe un produs ținut la kg) traducerea **nu se poate face** și cantitatea se ia ca atare: «25 g muștar» devine 25 de borcane. Sistemul te avertizează la salvarea rețetei, dar nu te oprește. Verificare în masă prin conversație: `scan_recipe_unit_mismatches` (îți arată ce e reparabil automat și ce cere decizie umană); reparare în masă: `fix_recipe_unit_mismatches` sau Setări → Reparații → „Corectează unități neconvertibile".
+- **Rețetă** — lista de ingrediente și cantități a unui preparat. Costul și consumul depind de perechea cantitate–unitate și de randament: 200 g ≠ 200 kg. Conversiile din aceeași familie și conversiile configurate trebuie păstrate. Pentru masă↔volum și unități necunoscute, urmează convenția și verificarea din skill-ul `adauga-produs-reteta`; nu afirma că toate versiunile consumă cifra brută și nu inventa greutatea unei bucăți. Verifică rezultatul salvat și diagnosticul. Pentru audit în masă există `scan_recipe_unit_mismatches` și `fix_recipe_unit_mismatches`, cu schema și condițiile versiunii live.
 - **Randament (cât iese din rețetă)** — numărul din câmpul „Randament" **împarte** toate cantitățile din rețetă. Randament 10 înseamnă că rețeta e scrisă pentru 10 porții și, la o vânzare, se scade a zecea parte din fiecare ingredient. Reguli:
   - lasă-l gol sau pe 1 dacă rețeta e scrisă **pentru o porție** (cazul obișnuit la restaurant);
-  - **contează doar cifra, nu unitatea**: „5 kg" se citește ca „împarte la 5", chiar dacă produsul se vinde la bucată;
-  - scrie **punct**, nu virgulă: „2,5" se citește ca 2.
+  - păstrează unitatea rezultatului: producția și planificarea pot normaliza randamentul în unitatea de stoc. Nu presupune că eticheta unității este ignorată în toate calculele;
+  - scrie **punct** pentru compatibilitate cu cititorii vechi; unele fluxuri acceptă și virgulă, deci verifică valoarea interpretată în operația folosită.
   Un randament pus din greșeală e a doua cauză, ca frecvență, pentru „stocul nu scade cât ar trebui" și „food cost prea mic".
 - **Semipreparat** — subproducție internă (ex. sos) cu randament (cantitate rezultată); poate fi ingredient în alte rețete (rețete pe mai multe niveluri), costul se calculează recursiv. ⚠ La **vânzare**, scăderea din stoc merge **un singur nivel**: dacă un preparat are ca ingredient un semipreparat, se scade semipreparatul ca atare, nu ingredientele lui. Semipreparatul trebuie deci **produs** (din modulul Producție) ca să existe pe stoc; altfel intră pe minus. Costul, în schimb, se calculează pe toate nivelurile.
 - **Tip de produs** — materie primă, marfă, semipreparat, produs finit, consumabil, ambalaj, serviciu etc. (30+ tipuri). Controlează comportamentul (are stoc? are rețetă? se vinde?) și conturile contabile asociate.
@@ -192,12 +192,12 @@ Pagina de administrare: **Meniul Zilei** (folosește `gaseste_in_aplicatie("meni
 - `list_offers` — ofertele active ale brandului. `list_offer_suggestions` — propuneri sigure pe marjă de la Sym (din datele reale). `get_offer_scorecard` — verdictul „Păstrează / Oprește" pentru o ofertă, în lei.
 - Codurile de reducere pentru magazinul online: `create_discount_code`, `update_discount_code`, `list_discount_codes`.
 
-Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (ștergerile se fac doar din aplicație — la oferte folosește `update_offer active=false`). Autopilot / Win-Back Radar / Surprize din pagina Oferte se folosesc tot din aplicație.
+Pentru eliminare, caută operația exactă în catalogul live și citește schema și dependențele. Există operații MCP de ștergere a produselor, dar disponibilitatea unei operații nu dovedește existența tuturor variantelor de ștergere pentru meniuri/oferte. La oprirea unei oferte folosește `update_offer active=false`. Autopilot / Win-Back Radar / Surprize din pagina Oferte se folosesc din aplicație.
 
 **Ce înseamnă fiecare acțiune de eliminare:**
 - **Scoate din meniu** elimină doar articolul vandabil din meniul respectiv; produsul, rețeta și istoricul rămân.
 - **„86" / Indisponibil** este temporar și reversibil; folosește-l când produsul revine.
-- **Dezactivează produsul** este alegerea sigură pentru un produs cu vânzări, stoc sau documente istorice.
+- **Dezactivează produsul** când utilizatorul cere retragerea lui: păstrează istoricul, dar poate opri vânzarea în meniuri. Nu este un pas al corectării rețetei unui produs care trebuie să rămână disponibil.
 - **Șterge rețeta** elimină formula de consum, nu produsul și nu istoricul vânzărilor.
 - **Șterge definitiv** numai după verificarea stocului, loturilor, vânzărilor, rețetelor și celorlalte dependențe. Pentru duplicate folosește **Unifică Duplicate**, nu ștergere manuală.
 
@@ -205,7 +205,7 @@ Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (șter
 
 **⚠ Ce rămâne DOAR din aplicație (nu prin MCP):**
 - **Pozele în masă cu potrivire automată**: dacă ai zeci de poze fără să știi exact ce produs e fiecare, pagina Poze Bulk Meniu (`/menu/pricing/bulk-photos`) le potrivește cu AI. Prin MCP pui poza pe un produs anume cu `set_product_image` (când ai URL-ul și produsul).
-- **Ștergerile de entități** (produse, meniuri, oferte) + **Autopilot / Win-Back Radar / Surprize** din pagina Oferte: din aplicație. (Crearea/editarea ofertelor merge prin MCP — vezi `create_offer` / `update_offer` mai sus.)
+- **Autopilot / Win-Back Radar / Surprize** din pagina Oferte: din aplicație. Pentru ștergeri verifică operația exactă în catalogul live; nu generaliza o limită veche la toate entitățile.
 
 **⚠ Capcane de tool-uri:**
 - `add_menu_item` e UPSERT: dacă produsul e deja în meniu, câmpurile trimise se aplică pe item-ul existent (nu mai e „există deja, ignorat"). Numele afișat ia implicit numele produsului dacă nu trimiți `name`.
@@ -213,7 +213,7 @@ Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (șter
 - `set_product_image`: URL-ul trebuie PUBLIC (http/https, nu IP intern); imaginea se descarcă și se optimizează — dacă URL-ul pică, dă eroare clară, nu poză moartă.
 - Dedupe silențios cu success: `create_product` (nume exact), `create_menu`, `create_tag`, `create_allergen`, `create_menu_category` (nume+brand) întorc entitatea existentă FĂRĂ a aplica parametrii trimiși — caută înainte, citește răspunsul.
 - `create_recipe`: dă MEREU `productId` explicit (altfel match parțial pe nume sau auto-creează produs nou). `add_recipe_ingredients`: folosește `productId`, nu `productName` (typo = produs raw_material auto-creat).
-- Randamentul e un **divizor**, nu o etichetă: pune-l 1 (sau lasă-l gol) când rețeta e scrisă pentru o porție. Contează doar cifra, nu unitatea de lângă ea, iar zecimalele se scriu cu punct. Înainte de a adăuga ingredientele, verifică unitatea fiecăruia pe fișa produsului (`get_product_details`): prin conversație nu primești avertismentul din pagină, deci perechea imposibilă trece tăcut și se consumă cantitatea brută.
+- Randamentul e un **divizor**: pentru o porție păstrează 1, pentru un lot folosește cantitatea și unitatea reală a rezultatului. Verifică unitățile ingredientelor din detaliile rețetei sau produsului; nu presupune că avertismentele și conversiile sunt identice în fiecare versiune ori suprafață. Recitește cantitatea, unitatea și randamentul după salvare.
 - `set_product_allergens` ÎNLOCUIEȘTE tot setul de alergeni al produsului. Alergenii din rețetă se moștenesc automat.
 - `auto_create_menu_from_products` pe un cont cu date reale = toate produsele nemeniuite intră cu preț 0 într-un meniu activ. `bulk_update_menu_item_prices` fără `brandId` = match pe nume în tot sistemul.
 - Schimbarea gestiunii (`warehouseId`) pe un produs cu stoc declanșează transfer contabil automat (document + note).
@@ -221,6 +221,7 @@ Notă: nu există tool-uri MCP de **ștergere** de produse/meniuri/oferte (șter
 
 ## Întrebări frecvente și capcane
 
+- **Același preparat în mai multe locații:** [produs comun, rețetă comună și consum local](produse-comune-consum-local.md). Păstrează produsul existent și verifică rutarea în contextul comenzilor fiecărei locații înainte de a propune clonare sau transferuri.
 - **De ce nu scade stocul când vând un preparat?** Rețeta nu e legată corect de produs (tipic după o redenumire) sau produsul n-are rețetă. Verifică la /ai-recipes, apoi Setări → Reparații → „Leagă rețetele de produse".
 - **Food cost-ul e absurd (ex. 150% sau 3%) sau stocul a luat-o razna.** Trei cauze, în ordinea frecvenței: (1) o unitate de măsură greșită sau **netraductibilă** în rețetă (kg în loc de g, l în loc de ml, grame pe un produs ținut la bucată) — verifici cu `scan_recipe_unit_mismatches` și `scan_suspect_recipe_costs`; (2) **randamentul** pus greșit, care împarte toate cantitățile (vezi conceptul de mai sus — „5 kg" înseamnă „împarte la 5"); (3) ingrediente fără preț sau fără produs legat (ingredientul fără produs în spate e sărit tăcut la consum, deci nu scade nimic și nu costă nimic). Corectează rețeta, apoi reprocesează consumul pe perioada afectată. Diagnostic pas cu pas: `consum-zilnic-cost-marfa.md` și skill-ul `verifica-consumul`.
 - **Am pus 5% pierdere pe un ingredient și nu se schimbă nimic.** Procentele de pierdere/rebut și randamentul cu câștig de volum (overrun) se aplică la **producție** (loturi, fabrică), nu la scăderea din vânzări. Dacă vrei ca pierderea să se vadă la vânzare, pune cantitatea reală în rețetă; pentru pierderi punctuale folosește o fișă de ieșire de tip pierdere/casare.

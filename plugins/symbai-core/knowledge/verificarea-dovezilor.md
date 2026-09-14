@@ -8,11 +8,19 @@ Un număr copiat dintr-o notiță sau citit prin OCR poate avea o cifră greșit
 
 O căutare goală dovedește numai lipsa potrivirilor pentru filtrele folosite. Înainte de o concluzie de absență verifică aria, perioada, starea și dacă lista este completă. Pentru o întrebare despre un singur document restrânge căutarea; nu parcurge toate facturile dacă ai deja furnizorul, suma și data. Pentru „toate”, continuă paginarea necesară și urmărește ID-urile fără dubluri.
 
+La o listă importată, verifică acoperirea element cu element. Un JOIN poate întoarce două rețete pentru un produs și zero pentru altul, deși totalul rândurilor coincide cu totalul din fișier. Construiește potrivirea pe ID și separă potrivirile confirmate, multiple și lipsă. „Nu sunt duplicate” cere și verificarea variantelor de scriere și a legăturilor de rețetă; o egalitate de nume normalizat nu acoperă greșelile de ortografie. Un raport nu poate spune „toate sunt în ambele meniuri” dacă propriile excepții enumeră poziții lipsă.
+
 ## Verifică sensul filtrului, nu numai coloana
 
 `describe_database_table` descrie coloane, tipuri și relații. O coloană text numită `status` nu dovedește ce valori folosește entitatea. Reutilizează stările confirmate de schema uneltei sau de date; dacă lipsesc, citește o singură distribuție `GROUP BY status` pentru entitatea și aria vizate. Nu inventa o stare comună precum `active` doar fiindcă există la alte entități.
 
 Un rezultat zero ori `SUM` nul după un filtru presupus nu dovedește că lipsesc loturile sau documentele. Dacă registrul și soldul există, dar interogarea loturilor este goală, verifică întâi filtrul și legătura. După confirmare păstrează schema și stările în context; nu le reciti la fiecare produs.
+
+După prima eroare de coloană necunoscută, citește schema tabelului relevant și corectează interogarea; nu încerca alte nume presupuse. Pentru rapoarte pe locație folosește locația comenzilor/meniurilor, nu gestiunea principală a produsului. Include variantele și componentele relevante înainte de „nu s-a mai vândut după data X” și separă vânzările finalizate de retururi/anulări.
+
+Fișa produsului arată ce este înregistrat, nu dovedește singură ce se prepară efectiv în bucătărie. Spune „rețeta salvată conține...” când aceasta este singura dovadă. Precizarea utilizatorului despre produsul servit poate identifica o fișă greșită; nu o respinge doar pentru că numele sau rețeta salvată diferă.
+
+Un refuz al aplicației gazdă, precum clasificatorul modului automat Claude, este distinct de drepturile MCP Symbai. Păstrează motivul exact și operația refuzată; nu relansa o acțiune echivalentă prin altă unealtă și nu schimba permisiunile ca soluție. Continuă citirile și partea independentă autorizată.
 
 ## Separă soldul, loturile și disponibilul
 

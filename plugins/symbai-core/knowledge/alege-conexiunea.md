@@ -2,6 +2,8 @@
 
 Symbai Connect poate oferi mai multe conexiuni aceleiași aplicații. Licența calculatorului, contul WhatsApp/email conectat, configurația asistentului, autentificarea firmei și uneltele încărcate în conversația curentă sunt verificări distincte. Un indicator verde nu le confirmă pe toate.
 
+Pentru operații POS citește skill-ul relevant, nu doar descrierea lui din listă. La reluare sau după compactare recuperează o singură dată deciziile și nota operației; apoi reutilizează schema și dovezile neschimbate. Pentru produse/rețete folosește `adauga-produs-reteta`; dacă același preparat se vinde în mai multe locații, consultă `knowledge/produse-comune-consum-local.md` înainte să propui duplicate sau să explici gestiunea consumată. Numele fișierelor de aici sunt relative la pluginul Symbai curent.
+
 | Cererea utilizatorului | Conexiunea și verificarea potrivită |
 |---|---|
 | WhatsApp-ul meu / numărul personal | Serverul local `symbai-whatsapp` sau `symbai-whatsapp-<nume>`. Începe cu `connection_status`: verifică numărul, titularul și `whatsapp.conectat`. Apoi `search_contacts`/`list_chats`, `send_message`/`reply_to_message` din ACELAȘI server. Urmează skill-ul `raspunde-whatsapp`. |
