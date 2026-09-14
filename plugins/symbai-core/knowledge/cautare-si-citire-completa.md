@@ -38,4 +38,6 @@ Datele sunt zile calendaristice `YYYY-MM-DD`, inclusiv capetele intervalului. Tr
 
 ## Ce reții în memorie
 
+**Căutare fără rezultat:** un număr din memorie/OCR se verifică în documentul original și prin furnizor, dată, sumă înainte să declari absența facturii. Numele coloanei `status` nu descrie valorile posibile: verifică stările entității o singură dată, apoi reutilizează-le. Procedura completă este în [verificarea dovezilor](verificarea-dovezilor.md).
+
 Ghidurile descriu platforma; memoria de business păstrează preferințe, decizii și fapte durabile. Nu memora „nu există unealta”, „nu avem furnizorul” sau „produsul nu s-a vândut” pe baza unei liste parțiale. O limită confirmată de versiune/acces se datează și se reverifică. Pentru observații păstrează sursa, aria, perioada și starea verificării; actualizează aceeași cheie dacă dovada se schimbă.

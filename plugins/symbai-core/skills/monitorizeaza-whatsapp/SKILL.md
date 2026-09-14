@@ -89,7 +89,9 @@ Nu aștepta trei eșecuri când prima eroare cere autentificare. Citește motivu
 
 Executorul WhatsApp are numai uneltele expuse în acea rulare. Nu îi promite acces Mesh/browser/shell doar fiindcă taskul interactiv le are; pașii care cer aceste unelte trebuie preluați de taskul operatorului printr-un mecanism autorizat de continuare.
 
-Dacă asistentul automat a luat-o pe un drum greșit (răspunde altfel decât vrea omul), ai trei pârghii, în ordinea asta: corectezi **obiectivul** (`update_watch objective`), completezi **profilul omului** (`remember_contact notes`), iar dacă a rămas cu o idee fixă din conversațiile anterioare, `update_watch {clear_session: true}` îl face să pornească de la zero cu obiectivul nou.
+Dacă asistentul răspunde greșit, citește întâi mesajele și dovezile pe care le-a avut. Corectează notițele factuale prin `note_watch`/`update_watch notes`; schimbă obiectivul numai dacă delegarea este neclară și proprietarul a autorizat schimbarea. Un răspuns greșit nu justifică modificarea încrederii contactului. Pentru istoric foarte lung preferă compactarea furnizorului, păstrând deciziile, ID-urile, mesajele tratate și operațiile incerte. `clear_session:true` este ultima soluție autorizată, după salvarea continuității și verificarea rulării în curs; nu garantează un răspuns mai corect.
+
+**Aprobări care ajung la executor:** înainte să promiți „scrie da și pornesc”, verifică `includeOwnerMessages`/`include_owner_messages`, modul și `trigger_words`. În always/silent, mesajele obișnuite ale proprietarului pornesc monitorizarea numai dacă opțiunea este activă; un cuvânt declanșator configurat poate porni și mesajele lui. Notificarea în conversația cu sine nu creează automat monitorizarea acelui fir. Indică același chat și mecanismul efectiv disponibil sau continuarea din asistentul proprietarului. Leagă răspunsul de operația concretă și verifică autorul; nu transforma relatarea interlocutorului sau tăcerea în aprobare. Nu activa automat opțiunea și nu extinde persoanele de încredere fără autorizarea configurării.
 
 ## Urmărire live din sesiunea asta (fără asistent automat)
 

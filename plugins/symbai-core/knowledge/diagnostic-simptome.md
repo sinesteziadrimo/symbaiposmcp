@@ -4,6 +4,8 @@ Când clientul spune că ceva NU merge, nu ghici cauza și nu trimite omul „s�
 
 ## Protocolul (mereu același)
 
+Înainte să atribui o cauză, aplică [verificarea dovezilor](verificarea-dovezilor.md): filtrele și stările reale, identificarea documentului din sursă, aria și paginarea completă. Un NIR POSTED nu explică o eroare Accounting; gestiunea din antet nu dovedește repartizarea tuturor liniilor. O ipoteză rămâne ipoteză până la corelarea cu diagnosticul sau jurnalul incidentului.
+
 1. **Reproduce cu date**, nu cu presupuneri: un tool de citire pe entitatea reclamată (masa, factura, lotul, postarea).
 2. **Rulează tool-ul de diagnostic** din tabelul de mai jos. Răspunsul lui conține de regulă cauza și pasul următor.
 3. **Spune cauza doar dacă o ai dovedită** de un răspuns. „Probabil e de la…" nu e un diagnostic; e o ipoteză și o marchezi ca atare.

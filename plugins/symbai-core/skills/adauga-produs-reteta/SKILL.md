@@ -5,6 +5,11 @@ description: Adaugă sau corectează produse, rețete și meniuri (tip produs, T
 
 # Produse și rețete — corectează sau adaugă în scopul cerut
 
+## Înlocuire doar pentru o perioadă
+
+Pentru „a lipsit siropul câteva ore și am folosit lămâi” folosește `inlocuieste-ingredient-temporar` și [registrul din Bucătăria Azi](../../knowledge/inlocuiri-temporare-ingrediente.md). Păstrează rețeta permanentă, cere proporțiile și perioada confirmate și verifică impactul pe vânzări.
+
+
 ## Corecție punctuală
 
 Pentru „pune 130 g de zahăr”, „schimbă prețul la 12 lei” sau o modificare a produsului existent:

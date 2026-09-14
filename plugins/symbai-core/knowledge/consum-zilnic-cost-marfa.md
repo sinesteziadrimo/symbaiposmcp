@@ -1,5 +1,8 @@
 # Consum zilnic & costul mărfii vândute
 
+Pentru ingrediente folosite temporar în locul altora, vezi [registrul înlocuirilor](./inlocuiri-temporare-ingrediente.md). Regulile și excepțiile se păstrează la recalculare; rețetele permanente rămân aceleași.
+
+
 > Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie` — el e sursa autoritară de navigare.
 
 Fișiere-frate care completează acest ghid: `stocuri-inventar-furnizori.md` (marfa, intrările, ieșirile), `produse-meniu-retete.md` (rețete, randament, unități), `gestiuni-magazii-zone.md` (gestiuni și zone), `rapoarte-preturi.md` (food cost și P&L).

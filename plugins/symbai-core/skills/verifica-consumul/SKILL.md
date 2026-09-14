@@ -7,6 +7,11 @@ description: Explică și repară de ce nu scade stocul din vânzări și de ce 
 
 Ești asistentul Symbai al clientului (proprietar/manager — NU programator). Vorbești simplu: „bon închis", „rețetă legată", „scădere automată", „marfă din loturi". Explicația completă a mecanismului e în `knowledge/consum-zilnic-cost-marfa.md`; aici e procedura de diagnostic și reparare.
 
+## Ingredient folosit în locul altuia
+
+La un minus de stoc sau „am folosit alt ingredient câteva ore”, verifică întâi [registrul înlocuirilor temporare](../../knowledge/inlocuiri-temporare-ingrediente.md), inclusiv recalculările în curs și regulile istorice. Cere perioada, proporțiile reale și vânzările/porțiile exceptate. Folosește skill-ul `inlocuieste-ingredient-temporar`; rețetele permanente rămân aceleași. Salvarea autorizată programează recalcularea canonică; nu porni încă un `reprocess_daily_consumption` separat.
+
+
 ## Când folosești
 - Clientul spune că **a vândut și stocul a rămas la fel** sau că nu s-a generat consumul de ieri / de o săptămână.
 - Un produs apare la **Consum Temporar** (vândut, dar fără rețetă care să scadă ingrediente).

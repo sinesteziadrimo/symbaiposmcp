@@ -9,6 +9,13 @@ Asistenții personali sunt identități AI distincte, deținute de angajatul con
 
 Acest skill este pentru chatul proprietarului care administrează asistenți. Într-o rulare de grup există numai uneltele `assistant_runtime`; folosește identitatea și permisiunile primite de acolo, fără să cauți uneltele personale de administrare.
 
+## Contabilitate primară și ingrediente lipsă
+
+[Procedura înlocuirilor temporare](../../knowledge/inlocuiri-temporare-ingrediente.md) leagă alerta de stoc de răspunsul bucătăriei și registrul din Bucătăria Azi. Ghidul live este `consumption_substitutions`. `stock.read` permite citirea/simularea, iar `stock.operate`, modul `operate` și drepturile nominale permit corecțiile autorizate. Instrucțiunile nu acordă singure acces.
+
+Configurează participarea în grup care răspunde mesajelor umane (`always`) separat de livrarea sarcinii periodice. Păstrează sarcina de alerte în pauză până la validarea stocului și configurarea pragurilor/grupului. La răspunsul „am folosit lămâi”, asistentul leagă cazul existent, cere numai perioada, proporțiile și porțiile neclare, apoi aplică în mandatul acordat și verifică recalcularea. Nu transforma o participare de raportare în operare fără cererea proprietarului. Nu modifica profilurile deja configurate din alte firme pentru a activa această procedură.
+
+
 ## Identifică înainte să modifici
 
 Folosește `asistenti_lista` pe conexiunea nominală a firmei cerute. Lista oferă asistenții proprii, calculatoarele, modelele disponibile, grupurile și plafonul de acces. Nu selecta primul brand sau prima unitate. Același nume în altă firmă nu este același asistent.

@@ -1,5 +1,8 @@
 # Index de ghiduri și exemple pe domenii
 
+- **Ingrediente lipsă temporar, minus de stoc și Bucătăria Azi:** [inlocuiri-temporare-ingrediente.md](./inlocuiri-temporare-ingrediente.md) și [inlocuieste-ingredient-temporar](../skills/inlocuieste-ingredient-temporar/SKILL.md) — proporții, perioadă, excepții pe vânzări, asistenți și verificarea recalculării.
+
+
 Consultă doar secțiunea relevantă sarcinii. Nu încărca acest index întreg la fiecare conversație; orientarea și regulile comune sunt în skill-ul symbai-asistent. Schemele live și drepturile conexiunii au prioritate față de numele din exemple.
 
 ## Hartă rapidă a cunoștințelor (folderul knowledge/)

@@ -11,6 +11,9 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 **Citire eficientă:** reutilizează identitatea, ghidurile, schema și ID-urile deja verificate în sarcină. Cu Read all, citește seturi prin SQL filtrat: câmpurile cerute plus ID/arie/unitate pentru dezambiguizare. Pentru nume+ID+cod nu cere toate proprietățile. Dacă schema live permite, folosește `describe_database_table(tableNames,format:compact)` și `get_stock_levels(productIds,warehouseId)` pentru citiri împreună. Pentru vânzări nete, FIFO și profit păstrează rapoartele dedicate. Încarcă doar tema relevantă prin `citeste_instructiuni_agent(subiect)`. Detalii: [consum-asistent.md](../../knowledge/consum-asistent.md) și [agent-operare-avansata.md](../../knowledge/agent-operare-avansata.md).
 
+
+**Ingredient lipsă câteva ore/zi sau folosit altul în schimb** → [inlocuieste-ingredient-temporar](../inlocuieste-ingredient-temporar/SKILL.md). Registrul din Bucătăria Azi păstrează intervalul, proporțiile și excepțiile; citește-l înainte de corecții permanente de rețetă sau ajustări pentru un minus.
+
 ## Ai DOUĂ surse de adevăr — combină-le
 
 **Activități potrivite:** dacă `verifica_conexiune` oferă `activitatiTooluri`, acestea explică selecția catalogului. Caută doar instrumentele cererii curente; nu încărca ghiduri de fabrică ori construcții pentru un restaurant. Producția simplă de semipreparate rămâne distinctă de fluxurile industriale. La firme mixte, folosește activitatea unității vizate. Read all permite citirea întregii firme, fără să transforme profilul ei într-unul industrial. Pentru o activitate reală care lipsește, verifică mai întâi Branduri/Locații și drepturile existente; nu cere automat reconectare sau acces suplimentar.
@@ -44,6 +47,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 Pentru fabrici, începe raportul de producție cu `get_daily_production_summary` și `get_factory_dashboard`, dacă sunt disponibile. Aprofundează numai loturile sau abaterile relevante. Raportul de vânzări POS pe angajat nu măsoară munca operatorului în producție; verifică loturile, pontajele operațiilor și auditul pentru acea întrebare. Bonurile POS și vânzările B2B/facturate sunt surse distincte. Nu încărca ghiduri despre servire sau plan de sală când unitatea este doar fabrică.
 
 ## Cum continui fără citiri inutile
+
+**La contradicții, rezultat zero sau incident:** urmează [verificarea dovezilor](../../knowledge/verificarea-dovezilor.md). Nu deduce stările posibile din numele coloanei, absența unei facturi dintr-un număr OCR/notat sau cauza unei erori din starea curentă a documentului. Verifică punctual informația lipsă și corectează nota veche, fără să reiei toate citirile.
 
 Citește memoria serverului o dată la începutul sesiunii, apoi doar notele relevante schimbate. Păstrează obiectivul, acordurile, ID-urile, rezultatele verificate, operațiile cu rezultat incert și pașii rămași. Memoria și răspunsurile vechi sunt piste de verificat, nu adevăruri permanente.
 
