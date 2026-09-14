@@ -7,6 +7,7 @@ Modulul B2B acoperă atât vânzarea en-gros către alte firme, cât și necesar
 
 ## Concepte
 - **Client B2B (firmă)** — persoană juridică cu nume firmă, CUI, persoană de contact, email, telefon, termen de plată în zile (implicit 30) și stare activ/inactiv. CUI-ul se poate completa automat de la ANAF cu tool-ul de căutare CUI.
+- **Identificatorul clientului** — folosește `clientId` din `list_b2b_clients`, verificat după nume și CUI, și în asocierile unei integrări de comenzi. Identificatorii istorici din exporturi pot fi diferiți. Dacă unealta întoarce `canonicalClientId`, acela este identificatorul de folosit în continuare. `depotId` se alege separat din `list_b2b_client_depots` și reprezintă punctul de livrare.
 - **Termen de plată (scadență)** — câte zile are clientul la dispoziție de la **data facturii** (nu de la livrare). Ex.: net 30 = plată în 30 de zile de la emiterea facturii. Se setează pe client (`paymentTermsDays`).
 - **Produs contractat (preț negociat)** — același produs poate avea preț diferit per client. Legi produsul de client cu un preț unitar negociat și, opțional, câte bucăți intră într-un bax, SKU-ul clientului și o etichetă de brand pentru el. Fiecare client are catalogul lui de prețuri.
 - **Bax vs bucată** — comenzile B2B se pot da pe baxuri (`quantityBax`) sau pe bucăți (`quantityBuc`), iar raportul „bucăți per bax" se ține pe produsul contractat. Util pentru ambalaje en-gros.
