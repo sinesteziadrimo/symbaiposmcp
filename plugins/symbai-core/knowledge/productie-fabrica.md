@@ -108,7 +108,7 @@ Aceleași reguli se aplică pe **ecranele web de Producție** (tab-urile Execuț
 - `exec_list_operation_executions` (`batchId`, `status` pending/started/in_progress/completed/partial/cancelled/canceled/skipped/reversed).
 - `exec_list_handovers` (`batchId`, `flowOperationId`, `status`, `employeeId`, `containerId`, `limit`) — predările.
 - `exec_get_batch_stages` (`batchId`) — istoricul pe etape cu operator, timeline, evenimente.
-- `exec_list_shop_floor_events` (`batchId`, `operationExecutionId`, `limit`) — toate evenimentele (scanări, porniri/opriri, consum/output, predări).
+- `exec_list_shop_floor_events` (`warehouseId`, opțional perechea `brandId` + `locationId`, `batchId`, `operationExecutionId`, `limit`, `offset`) — evenimentele loturilor și execuțiilor din fabrica autorizată: scanări, porniri/opriri, consum/output și predări. Citește colecția `events` și continuă cu `pagination.nextArguments`; limita unei pagini nu reprezintă tot istoricul. Pentru numărătoare cere `limit:1` și folosește `summary.byEventType`. Evenimentele fără lot sau execuție verificabilă sunt excluse explicit din acest raport de fabrică (`unanchoredEventsExcluded`); raportul nu înlocuiește jurnalul utilajelor fără lot.
 
 **Idempotență**: `idempotencyKey` pe declare-consumption/output/complete previne dubla-postare la retry (tabletă cu rețea instabilă). Folosește un UUID per acțiune.
 
