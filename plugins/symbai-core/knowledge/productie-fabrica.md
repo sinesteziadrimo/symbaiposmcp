@@ -68,12 +68,12 @@ Stările unui lot: **planificat (planned) → pornit (started) → în lucru (in
 Regula de citire in planificare/dashboard: statusurile terminale sunt doar `completed` si `cancelled`; orice alt status de lot este tratat ca activ/neterminal (`planned`, `started`, `in_progress`, `paused`, `ready`, `quality_check`, statusuri de etapa etc.). Nu explica diferente intre Panou Fabrica, Gantt, Explorer sau dispatch ca "date diferite" pana nu verifici aceasta regula: suprafetele noi folosesc blacklist pe terminal, nu whitelist pe statusuri cunoscute.
 
 **Bucla de lucru standard pentru un lot:**
-1. **Citește** ce ai: `exec_list_batches` (filtre: `status`, `dateFrom`, `dateTo`, `recipeId`, `zoneId`, `limit`).
-2. **Creează**: `exec_create_batch` — obligatoriu `recipeId` + `plannedQty`; opțional `scheduledDate`, `assignedTo` (angajat), `zoneId`, `equipmentId`, `storageType` (refrigerat/congelat/cald/ambient), `notes`, `batchNumber`, `flowVersionId` (atașează flux tehnologic), `destinationWarehouseId` (gestiunea unde intră produsul finit).
-3. **Pornește**: `exec_start_batch` (`batchId`).
+1. **Citește** ce ai: `exec_list_batches` (`warehouseId` în fabrică; filtre `status`, `dateFrom`, `dateTo`, `recipeId`, `zoneId`, `limit`). Pentru numărătoare folosește `limit:1` și `summary`; pentru lista completă continuă cu `pagination.nextArguments` până la `null`.
+2. **Creează**: `exec_create_batch` — obligatoriu `recipeId` + `plannedQty`, iar în fabrică și `warehouseId`. Poți preciza `storageType`, `notes`, `batchNumber`, `flowVersionId` și `formulaVersionId`. În fabrică lotul se creează neprogramat: data și utilajul se stabilesc prin planificare, nu prin câmpurile de creare pentru producția simplă.
+3. **Pornește**: `exec_start_batch` (`batchId`) pentru producția simplă. Dacă lotul fabricii are flux tehnologic, folosește `exec_start_operation` pentru operația concretă.
 4. **(opțional) Pauză/reluare**: `exec_stop_batch` (`batchId`, `reason`) / `exec_resume_batch` (`batchId`).
 5. **Reprogramare**: `exec_reschedule_batch` (`batchId`, `newDate` YYYY-MM-DD, `reason`).
-6. **Actualizare câmpuri**: `exec_update_batch` (`batchId` + orice din: `status`, `plannedQty`, `actualQty`, `notes`, `assignedTo`, `zoneId`, `equipmentId`, `scheduledDate`, `qcStatus` pending/passed/failed/blocked).
+6. **Actualizare câmpuri**: `exec_update_batch` (`batchId`, `notes`, `plannedDeliveryDate`, `shelfLifeAnchor`). Data livrării este `YYYY-MM-DD`; ancora poate fi `production_start`, `last_operation_end` sau `delivery_date`. Cantitatea, programarea, operatorul, starea și deciziile de calitate se schimbă prin uneltele lor dedicate.
 7. **Finalizare** (motor simplu): `exec_complete_batch` (`batchId`, `actualQty`, `actualOutputQty` = randament real pentru cost, `storageType`) — consumă ingredientele + creează lotul de produs finit + genealogie. Blocat dacă lotul are flux (vezi Motor 1 → shop-floor).
 8. **Verifică**: `exec_get_batch_progress` (`batchId`) → toate operațiile, cantitățile, % completare, angajatul activ, pasul următor.
 
@@ -102,9 +102,10 @@ Aceleași reguli se aplică pe **ecranele web de Producție** (tab-urile Execuț
 7. **Oprire operație**: `exec_stop_operation` (`operationExecutionId`, `reason`) — readuce la pending.
 
 **Citire / monitorizare operații:**
+În fabrică, listele de loturi, operații și predări, precum și `exec_get_operation_required_materials`, primesc `warehouseId`. Pentru o gestiune comună fără brand propriu, precizează împreună `brandId` și `locationId` ale fabricii dorite. Nu atribui artificial un brand gestiunii doar pentru a o putea citi. Păstrează filtrele primite în `pagination.nextArguments`; `summary` de pe prima pagină numără toate potrivirile.
 - `exec_list_active_operations` (`batchId`) — operații în lucru, timp scurs, operator.
 - `exec_get_operation_detail` (`operationExecutionId`) — cerințe de material, ieșiri așteptate, stare.
-- `exec_list_operation_executions` (`batchId`, `status` pending/in_progress/completed/partial/reversed).
+- `exec_list_operation_executions` (`batchId`, `status` pending/started/in_progress/completed/partial/cancelled/canceled/skipped/reversed).
 - `exec_list_handovers` (`batchId`, `flowOperationId`, `status`, `employeeId`, `containerId`, `limit`) — predările.
 - `exec_get_batch_stages` (`batchId`) — istoricul pe etape cu operator, timeline, evenimente.
 - `exec_list_shop_floor_events` (`batchId`, `operationExecutionId`, `limit`) — toate evenimentele (scanări, porniri/opriri, consum/output, predări).
