@@ -12,6 +12,9 @@ Pentru „a lipsit siropul câteva ore și am folosit lămâi” folosește `inl
 
 ## Corecție punctuală
 
+- **Randament, consum și cost:** „marinada nu intră în greutatea finală” stabilește randamentul, nu elimină ingredientele folosite sau costul lor. Păstrează randamentul dictat și toate ingredientele consumate; nu propune ștergerea lor pentru a reduce costul afișat. Separă costul ingredientelor de marja calculată din prețul fără TVA.
+- **Subgramaje:** cantitatea se salvează împreună cu unitatea. Pentru 0,5 g folosește `quantity:0.5, unit:"g"`, chiar dacă produsul are stocul în kg; nu rotunji la 0,001 kg fiindcă un câmp are numai trei zecimale. Verifică suportul conversiei și recitește linia salvată; nu schimba unitatea produsului sau randamentul întregii rețete pentru această precizie.
+
 Pentru „pune 130 g de zahăr”, „schimbă prețul la 12 lei” sau o modificare a produsului existent:
 
 1. Identifică ținta și linia din conversație sau prin căutare filtrată. Reutilizează ID-urile verificate; citește rețeta/produsul/articolul de meniu actual. Dacă sunt mai multe ținte plauzibile, citește legăturile înainte să întrebi utilizatorul.
