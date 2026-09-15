@@ -158,7 +158,7 @@ try {
 # session-connections: local read-only context, no runtime dependency
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 try {
-    $guide = [IO.File]::ReadAllText((Join-Path $env:CLAUDE_PLUGIN_ROOT 'knowledge/alege-conexiunea.md'), [Text.Encoding]::UTF8)
+    $guide = [IO.File]::ReadAllText((Join-Path $env:CLAUDE_PLUGIN_ROOT 'knowledge/session-start.md'), [Text.Encoding]::UTF8)
     @{ hookSpecificOutput = @{ hookEventName = 'SessionStart'; additionalContext = $guide } } | ConvertTo-Json -Depth 4 -Compress
 } catch {
     '{"continue":true}'

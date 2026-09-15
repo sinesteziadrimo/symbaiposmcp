@@ -13,6 +13,7 @@ Pentru „a lipsit siropul câteva ore și am folosit lămâi” folosește `inl
 ## Corecție punctuală
 
 - **Randament, consum și cost:** „marinada nu intră în greutatea finală” stabilește randamentul, nu elimină ingredientele folosite sau costul lor. Păstrează randamentul dictat și toate ingredientele consumate; nu propune ștergerea lor pentru a reduce costul afișat. Separă costul ingredientelor de marja calculată din prețul fără TVA.
+- **Ce dovedește estimatorul:** loturile reale și `usesEstimatedFallback:false` descriu sursele prețurilor, nu validează fizic randamentul, densitatea sau porționarea din rețeta salvată. Spune „cost calculat din rețeta salvată și sursele de cost raportate de unealtă”, nu „zero estimări” dacă formula conține ipoteze. Păstrează estimările autorizate ca estimări; nu bloca lucrul și nu modifica formula doar fiindcă lipsesc măsurători. O marjă bazată numai pe materiale nu include automat manopera, ambalajele și comisioanele canalului.
 - **Subgramaje:** cantitatea se salvează împreună cu unitatea. Pentru 0,5 g folosește `quantity:0.5, unit:"g"`, chiar dacă produsul are stocul în kg; nu rotunji la 0,001 kg fiindcă un câmp are numai trei zecimale. Verifică suportul conversiei și recitește linia salvată; nu schimba unitatea produsului sau randamentul întregii rețete pentru această precizie.
 
 Pentru „pune 130 g de zahăr”, „schimbă prețul la 12 lei” sau o modificare a produsului existent:

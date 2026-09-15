@@ -9,7 +9,7 @@ Claude Code are memoria lui locală (pe calculatorul și folderul omului) — nu
 
 ## Ritualul de sesiune
 
-1. **Prima acțiune din sesiune**: `memorie_citeste()` fără filtre. Citești preferințele userului (cum vrea rapoartele, cât de autonom să fii, ce urmărește), sarcinile pe care ți le-a dat, observațiile deschise și faptele despre firmă. Abia apoi răspunzi. Dacă e goală, lucrezi normal și începi să o umpli.
+1. **La început sau reluare**, dacă nu sunt deja în context, citește preferințele prin `memorie_citeste(fel: "preferinta")`, apoi recuperează numai deciziile și notele relevante cererii prin `cauta`, `fel` ori `persoana`. Nu încărca automat toate observațiile și sarcinile și nu le executa doar fiindcă sunt memorate. Citirea fără filtre este utilă când userul cere o privire generală asupra memoriei. Reutilizează contextul neschimbat; memoria goală nu blochează lucrul și nu trebuie umplută artificial. O căutare fără rezultate nu dovedește absența unei note: la nevoie reformulează termenul sau lărgește filtrul.
 2. **Înainte de a lucra în numele cuiva sau despre cineva** (WhatsApp, sarcini, evaluări): `memorie_citeste(fel: "persoana", persoana: "Mihai")`.
 3. **La finalul unui task semnificativ**: te întrebi „e ceva durabil aici?" — o preferință exprimată, o regulă a casei, o decizie, o observație cu propunere, un om cu care ai lucrat. Dacă da, `memorie_scrie`. O propoziție bună bate un paragraf.
 4. **Când userul spune „ține minte că…"**: scrii pe loc, în felul potrivit, și confirmi într-o linie ce ai memorat și cine o vede.

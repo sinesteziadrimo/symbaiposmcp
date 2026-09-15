@@ -3,7 +3,7 @@
 import { readFileSync } from "node:fs";
 
 try {
-  const guide = readFileSync(new URL("../knowledge/alege-conexiunea.md", import.meta.url), "utf8");
+  const guide = readFileSync(new URL("../knowledge/session-start.md", import.meta.url), "utf8");
   process.stdout.write(JSON.stringify({
     hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: guide },
   }));

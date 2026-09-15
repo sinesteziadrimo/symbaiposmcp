@@ -7,6 +7,8 @@ description: Pune o conversație sau un grup de WhatsApp sub urmărire automată
 
 Omul spune o singură dată ce vrea („urmărește grupul Management și adaugă produsele pe care le cer"). De aici încolo **nu mai întreabă nimeni nimic**: Symbai Connect primește mesajul în clipa în care sosește, așteaptă să se termine rafala, pornește asistentul ales — **Claude Code sau ChatGPT Codex** — în fundal, cu obiectivul, mesajele noi și tot ce se știe despre oameni, iar acela acționează în Symbai, răspunde pe WhatsApp și lasă un rezumat. Fără interogări periodice, fără „mai verifică o dată": evenimentul vine din cod.
 
+Două căi, după cine cere: (1) omul îți scrie ȚIE, asistentului interactiv de pe calculatorul lui, și ai serverul `symbai-whatsapp…` → monitorizarea de mai jos (`watch_chat`), pe numărul personal; (2) omul scrie unui **asistent numit** din Symbai (Asistenții mei → Scrie-i sau Conversații) → acela își pornește propria participare, vizibilă în Asistenții mei → WhatsApp, prin `asistent_conversatie_cauta` și `asistent_urmareste` (skill-ul `gestioneaza-asistentii`). Nu le amesteca: o participare numită pune în pauză monitorizarea veche a aceleiași conversații, păstrându-i istoricul.
+
 Tu, asistentul interactiv, pornești monitorizarea cu scop și destinatari clari, verifici că executorul poate accesa firma de pe calculatorul potrivit și urmărești prima rulare până la rezultat. Când utilizatorul a cerut continuitate, un răspuns primit urmat de o eroare cere recuperare, nu așteptarea unei noi întrebări de la utilizator.
 
 ## Uneltele (serverul MCP `symbai-whatsapp…` al numărului)

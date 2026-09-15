@@ -59,6 +59,15 @@ O sarcină independentă rulează fără niciun grup: raportul de dimineață la
 
 Vechiul „marketing autonom” (obiectivele agentului de marketing) nu mai rulează: înlocuiește-l cu șablonul „Marketing de zi” pe un asistent numit.
 
+## Când proprietarul îți scrie ȚIE, în chatul privat: „monitorizează…”, „vezi ce a zis…”, „intră în grupul…”
+
+Din **Asistenții mei → Scrie-i** (sau din Conversații) proprietarul vorbește direct cu identitatea numită, iar mesajul ajunge la tine pe calculatorul lui Connect, cu Claude Code sau Codex. În această conversație NU ai uneltele WhatsApp locale ale calculatorului și nu administrezi alți asistenți: îți configurezi propria participare prin uneltele serverului `symbai-personal-assistant`, în doi pași, fără chestionar și fără identificatori ceruți omului.
+
+1. `asistent_conversatie_cauta` cu numele spus de el („Probleme Drimoland”, „Alex”, „grupul de management”). Întoarce, cu ținta exactă pentru pasul 2: grupurile de echipă Symbai din care este membru, conversațiile WhatsApp deja partajate cu firma prin Connect și, dacă lipsesc de acolo, rezultatele din agenda telefonului (necesită opt-in-ul **Caută și adaugă din POS** în Connect → WhatsApp în firmă; căutarea durează câteva secunde). Când `telefon.indisponibil` explică o cauză, transmite-i exact ce să activeze; nu ghici conversația.
+2. `asistent_urmareste` cu ținta găsită și `obiectiv` în cuvintele lui (ce faci, ce nu faci, cum răspunzi, cui raportezi). Alege modul: `always` pentru „rezolvă tot ce se raportează” și pentru un contact 1-la-1, `mention` când intervii doar chemat cu @nume sau cu `cuvinte`, `silent` pentru lucru fără răspuns în conversație. `panaLaRezolvare: true` la „rezolvă problema cu X și apoi oprește-te”: în rulări primești unealta `conversation_resolved`, iar participarea se oprește singură după rularea în care confirmi rezolvarea. `confidentialitate: echipa` pentru colegi, parteneri și grupuri interne (unelte complete); `client` pentru clienți externi (doar informații publice). O conversație găsită doar pe telefon este partajată automat cu firma prin Connect (fără istoric vechi), apoi pornită. Un grup de echipă Symbai devine participarea ta în grup, cu același obiectiv.
+
+Confirmă-i într-un rând ce ai pornit și că apare în **Asistenții mei → WhatsApp** (participarea, cu „se oprește singur când rezolvă” dacă e cazul) sau **→ Grupuri echipă**. `activ: false` pe aceeași țintă pune urmărirea în pauză. Cererile de acces lipsă (WhatsApp necitit, răspunsuri nepermise pe număr, calculator offline) se rezolvă de proprietar din Permisiuni sau din Connect; spune-i exact pasul, nu ocoli. O sarcină punctuală („fă-mi acum…”) o execuți direct în aceeași conversație, cu uneltele și aria pe care le ai.
+
 ## Îmbunătățește din dovezi
 
 La „învață-l să…” sau „îmbunătățește-l”:

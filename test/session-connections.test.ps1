@@ -24,9 +24,10 @@ try {
         $env:CLAUDE_PLUGIN_ROOT = $plugin
         $actual = & $ps -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $driver | ConvertFrom-Json
         if ($LASTEXITCODE -ne 0) { throw 'Hook failed without Node' }
-        $expected = [IO.File]::ReadAllText((Join-Path $plugin 'knowledge\alege-conexiunea.md'), [Text.Encoding]::UTF8)
+        $expected = [IO.File]::ReadAllText((Join-Path $plugin 'knowledge\session-start.md'), [Text.Encoding]::UTF8)
+        if ($expected.Length -gt 2600) { throw 'Startup orientation must stay compact; detailed guidance belongs in on-demand files' }
         if ($actual.hookSpecificOutput.hookEventName -ne 'SessionStart' -or $actual.hookSpecificOutput.additionalContext -cne $expected) { throw 'Orientation context was corrupted or missing' }
-        Remove-Item -LiteralPath (Join-Path $plugin 'knowledge\alege-conexiunea.md')
+        Remove-Item -LiteralPath (Join-Path $plugin 'knowledge\session-start.md')
         $missing = & $ps -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $driver | ConvertFrom-Json
         if ($LASTEXITCODE -ne 0 -or $missing.continue -ne $true) { throw 'Missing guide should not break session startup' }
         Write-Host 'PASS: packaged native hook, no Node/Git, UTF-8 and quoted path, missing guide.'
