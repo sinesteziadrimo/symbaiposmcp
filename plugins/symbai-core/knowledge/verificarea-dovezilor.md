@@ -10,6 +10,14 @@ O căutare goală dovedește numai lipsa potrivirilor pentru filtrele folosite. 
 
 La o listă importată, verifică acoperirea element cu element. Un JOIN poate întoarce două rețete pentru un produs și zero pentru altul, deși totalul rândurilor coincide cu totalul din fișier. Construiește potrivirea pe ID și separă potrivirile confirmate, multiple și lipsă. „Nu sunt duplicate” cere și verificarea variantelor de scriere și a legăturilor de rețetă; o egalitate de nume normalizat nu acoperă greșelile de ortografie. Un raport nu poate spune „toate sunt în ambele meniuri” dacă propriile excepții enumeră poziții lipsă.
 
+## Rânduri șterse, inactive și statusuri: sensul înainte de concluzie
+
+Catalogul păstrează rândurile șterse logic: `products.deleted_at` și `recipes.deleted_at` NOT NULL înseamnă ȘTERS, chiar dacă `active = true` și numele arată ca al unui produs viu (`active` și `deleted_at` sunt independente; ștergerea se citește numai din `deleted_at`). Dublurile din importuri vechi trăiesc exact așa. Orice concluzie despre catalog („e încadrat ca marfă”, „nu are rețetă”, „nu s-a folosit niciodată”, „lipsește”) cere `deleted_at IS NULL` în interogare; `search_products_db` și `get_product_details` exclud sau marchează rândurile șterse și spun câte au ascuns. Inactiv (`active = false`, `menu_items.active = false`) înseamnă scos din uz, nu șters și nu „nevândut”: istoricul vânzărilor rămâne în `order_items`.
+
+Răspunsul `execute_sql_query` aduce `interpretationHints` și, când rândurile vin dintr-un tabel cu ștergere logică, `deletedRowsAudit` („N din M rânduri sunt ȘTERSE”). Sunt fapte verificate de platformă: citește-le înainte de rânduri. `describe_database_table` livrează blocul `semantics` (sens, coloane de ciclu de viață, valorile de status, capcane, șabloane). Pentru dicționarul complet și șabloanele SQL cu filtrele corecte: `citeste_instructiuni_agent(subiect: dictionar_date)`, o dată pe sarcină.
+
+Un negativ cere două surse: interogarea cu filtrele de sens și unealta dedicată a entității. O sumă brută pe `order_items` fără filtrul de status include liniile anulate, transferate și oferite de casă; cifra de vânzări vine din `vanzari_produse`/`raport_vanzari`, iar SQL-ul o explică. O medie a costurilor loturilor nu este cost FIFO și nici costul rețetei.
+
 ## Verifică sensul filtrului, nu numai coloana
 
 `describe_database_table` descrie coloane, tipuri și relații. O coloană text numită `status` nu dovedește ce valori folosește entitatea. Reutilizează stările confirmate de schema uneltei sau de date; dacă lipsesc, citește o singură distribuție `GROUP BY status` pentru entitatea și aria vizate. Nu inventa o stare comună precum `active` doar fiindcă există la alte entități.

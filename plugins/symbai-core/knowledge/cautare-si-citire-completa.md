@@ -36,6 +36,10 @@ Urmează `pagination.nextArguments` pentru alte sugestii. Catalogul acoperă num
 
 Datele sunt zile calendaristice `YYYY-MM-DD`, inclusiv capetele intervalului. Trimite ambele capete pentru o singură zi. Schema live are prioritate față de limitele sau parametrii dintr-un ghid mai nou ori mai vechi.
 
+## Rânduri șterse și sensul coloanelor
+
+`search_products_db` exclude implicit produsele șterse logic și spune în mesaj câte rânduri șterse se potrivesc; `includeDeleted: true` le arată marcate `deleted: true`. `get_product_details` pe un rând șters începe cu avertismentul „PRODUS ȘTERS”. În SQL, `products.deleted_at`/`recipes.deleted_at` NOT NULL = șters, indiferent de `active`. Când o citire SQL întoarce rânduri dintr-un astfel de tabel, răspunsul conține `deletedRowsAudit` cu numărul exact de rânduri șterse; `describe_database_table` adaugă blocul `semantics`, iar `citeste_instructiuni_agent(subiect: dictionar_date)` dă dicționarul de sens și șabloanele SQL de bază (catalog viu, dubluri șterse, rețeta unui produs, vânzări nete pe perioadă, sold pe gestiuni, mișcări, recepții, poziții de meniu, distribuția unui status). Folosește șabloanele în locul interogărilor improvizate; procedura completă este în [verificarea dovezilor](verificarea-dovezilor.md).
+
 ## Ce reții în memorie
 
 **Căutare fără rezultat:** un număr din memorie/OCR se verifică în documentul original și prin furnizor, dată, sumă înainte să declari absența facturii. Numele coloanei `status` nu descrie valorile posibile: verifică stările entității o singură dată, apoi reutilizează-le. Procedura completă este în [verificarea dovezilor](verificarea-dovezilor.md).
