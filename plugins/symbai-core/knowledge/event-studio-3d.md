@@ -71,6 +71,12 @@ Verificarea geometrică raportează problemele cunoscute; nu certifică evacuare
 
 Datele despre camere, meniu, mobilier și personal din propunere nu creează singure rezervări PMS, consum de stoc sau sarcini pentru echipă. Pentru execuție, continuă explicit în modulele respective.
 
+## Invitați și organizator fără cont
+
+Event Studio oferă linkuri pentru alegerea mesei de către invitați și pentru colaborarea cu organizatorul în 3D, cu parolă opțională. Formularul, eticheta de proveniență a clienților, variantele și limitele de editare sunt configurabile prin MCP. Organizatorul poate fi persoana dintr-un card CRM sau un contact direct. Propunerile ajung la agent pentru aprobare.
+
+Listele se pot distribui ca pagină HTML protejată ori PDF atașat, prin emailul firmei sau WhatsApp Business. Conexiunile personale se folosesc când utilizatorul cere expeditorul personal. Asistentul poate descărca și CSV pentru Excel. Parola paginii nu protejează copiile deja descărcate. Flux complet: [invitați, organizator și liste](../skills/event-studio-3d/references/colaborare.md), ghid live `get_event_studio_guide(topic=collaboration)`.
+
 ## Memorie și continuitate
 
 Proiectul salvat păstrează configurația operațională. Memoria firmei poate păstra preferințe durabile de design și proiecte de referință, când utilizatorul cere memorarea. Recitește revizia și disponibilitatea înainte de modificări viitoare. Nu pune tokenurile/linkurile buyer sau datele personale ale invitaților în memoria generală. Acest ghid public conține numai comportamentul platformei.

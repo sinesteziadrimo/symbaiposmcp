@@ -77,6 +77,16 @@ Ce rămâne, în mod normal, de rezolvat manual: plățile unde banca nu a trimi
 
 ## Fluxuri frecvente
 
+### Sincronizare lunară POS → Accounting
+
+Pe conexiunea **Accounting a firmei**, descoperă `get_platform_sync_config`, `upsert_platform_sync_config` și `get_platform_sync_health`. Nu folosi identitatea conexiunii POS ca dovadă că ești în firma contabilă corectă. Pentru conectare vezi [Symbai Connect pentru Accounting](symbai-connect-accounting.md).
+
+`syncMode:monthly`, cu `platform:pos`, importă strict luna precedentă. `monthlySyncDay` este 1–31 (29–31 se mută pe ultima zi a lunilor mai scurte), iar `monthlySyncHour` este 0–23, ora României. Valorile implicite sunt ziua 5, ora 03:00. Configurația se găsește și în **Setări → Sincronizare POS**. Trimite numai câmpurile cerute și păstrează modulele existente; pentru import contează modulele de recepție (`enableReceive`), nu doar cele de trimitere.
+
+Salvarea programării nu pornește și nu confirmă importul. Recitește configurația, sănătatea sincronizării și logul perioadei. Diagnosticul distinge lipsa rulării, eșecul preluării și lipsa preluării stricte a lunii. Pentru o lună omisă folosește acțiunea **Sincronizează o singură lună** cu luna exactă cerută, apoi verifică rezultatul și excepțiile. Nu raporta „sincronizat” din simpla existență a conexiunii.
+
+O factură deja importată poate necesita revizuire TVA dacă documentul sursă s-a schimbat. Citește excepția și dovada, apoi folosește fluxul de revizuire oferit de Accounting, cu un contabil eligibil. Nu duplica factura și nu modifica sumele ori cota TVA ca să dispară avertismentul. O aprobare a revizuirii și importul efectiv sunt rezultate distincte; verifică documentul după reluare.
+
 1. **Verifici închiderea automată**: `get_cash_day_automation_settings` → `list_cash_day_closures` → `audit_cash_book_day`; vezi sursele încă nepreluate cu `get_cash_provisional_drawers`. Verifică separat vânzările, consumul și Z-ul. Pentru numărare/observație/interval folosește `correct_cash_book_day`, cu previzualizare, motiv și versiune; citește după salvare.
 2. **Înregistrezi o cheltuială plătită cash**: /finance/cash-book → alege casieria și ziua → „Plată (DPÎ)" → completezi suma, descrierea și documentul → apare imediat în ieșirile zilei.
 3. **Ai greșit o operațiune de casă**: folosește sursa și instrumentul de corecție potrivit. Stornarea păstrează originalul și rândul compensator. Faptul că raportul zilei este închis nu impune singur o redeschidere; drepturile și regulile documentelor/perioadelor contabile rămân distincte.
@@ -176,6 +186,7 @@ Ce rămâne, în mod normal, de rezolvat manual: plățile unde banca nu a trimi
 - **De ce nu am nicio casierie?** Nu s-au generat încă. Dacă vrea una punctuală, o poți crea prin MCP cu `create_cash_register` după ce confirmă brandul, locația și numele. Dacă vrea schema completă (per firmă/per locație/per brand×locație), mergi la /finance/cash-registers, alege modul de organizare și apasă „Regenerează casieriile" (și după ce adaugi o locație nouă).
 - **Bon sau factură?** Bonul fiscal iese pe casa de marcat la plată; factura e document separat (pentru firme, evenimente, hotel) și doar ea intră în e-Factura.
 - **De ce am bonuri la Verificare manuală?** Casa de marcat nu a confirmat sigur rezultatul unui bon fiscal (deconectare, timeout, expirare 24h). Nu înseamnă automat că bonul nu s-a tipărit. Verifică fizic bonul/casa și rezolvă rândul înainte de reemitere, ca să eviți bon dublu.
+- **O verificare dintr-o zi fiscală închisă a dispărut din coadă.** Versiunile care oferă închiderea automată a verificărilor vechi păstrează explicația și dovezile în istoric. Închiderea întrebării nu dovedește singură că bonul s-a tipărit sau că nu s-a tipărit. Citește verdictul și dovezile; nu reemite astăzi bonul zilei închise pentru a curăța o incertitudine veche. Verificările zilei fiscale curente se tratează separat, pe rezultatul real al casei.
 - **Pot șterge o factură greșită?** Nu se șterge — anularea creează automat factura storno cu sume negative și anulează creanțele legate; reversarea anulării e posibilă.
 - **De ce nu merge exportul SmartBill / SAGA din Închiderea de Zi?** E anunțat „disponibil în curând" — conectorul se livrează într-o versiune următoare.
 - **De ce masa servită nu are cost?** E normal la început: statusul „Cost de stabilit" ține până legi o fișă de ieșire de tip consum sau un eveniment — costul NU vine dintr-o factură.

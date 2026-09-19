@@ -3,6 +3,8 @@
 > Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie` — el e sursa autoritară de navigare.
 
 ## Pe scurt
+
+Pentru mărire, cititor de ecran, dictare și ascultarea răspunsurilor, citește [accesibilitate și voce](accesibilitate-voce.md). Disponibilitatea microfonului și a transcrierii se verifică pe dispozitivul utilizatorului.
 Symbai are AI integrat peste tot: asistentul global **Sym** (butonul plutitor din dreapta-jos, disponibil pe orice pagină) răspunde la întrebări cu date reale, face acțiuni simple și te duce la pagina potrivită; o familie de **agenți specialiști** (marketing, rapoarte, contabilitate, producție, legal, prețuri etc.) acoperă cereri complexe pe domenii; iar pagini dedicate gestionează **memoriile agenților**, **importurile de date**, **logurile AI** și **onboarding-ul ghidat de AI**.
 
 ## Concepte

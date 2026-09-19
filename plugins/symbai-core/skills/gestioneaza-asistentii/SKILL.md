@@ -9,6 +9,10 @@ Asistenții personali sunt identități AI distincte, deținute de angajatul con
 
 Acest skill este pentru chatul proprietarului care administrează asistenți. Într-o rulare de grup există numai uneltele `assistant_runtime`; folosește identitatea și permisiunile primite de acolo, fără să cauți uneltele personale de administrare.
 
+## Trainingul agenților de vânzări
+
+La instruire, probe, prag de promovare, voce și cunoștințe de produs folosește Academia: [ghid CRM/calendar/training](../../knowledge/crm-configurare-calendar-training.md) și skill-ul [gestioneaza-crm](../gestioneaza-crm/SKILL.md). Nu crea un asistent personal de grup în locul configurației Academiei și nu considera dreptul de editare a agenților AI drept de administrare a oamenilor.
+
 ## Contabilitate primară și ingrediente lipsă
 
 [Procedura înlocuirilor temporare](../../knowledge/inlocuiri-temporare-ingrediente.md) leagă alerta de stoc de răspunsul bucătăriei și registrul din Bucătăria Azi. Ghidul live este `consumption_substitutions`. `stock.read` permite citirea/simularea, iar `stock.operate`, modul `operate` și drepturile nominale permit corecțiile autorizate. Instrucțiunile nu acordă singure acces.

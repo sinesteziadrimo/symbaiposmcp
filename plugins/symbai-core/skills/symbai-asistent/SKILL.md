@@ -46,6 +46,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 Pentru fabrici, începe raportul de producție cu `get_daily_production_summary` și `get_factory_dashboard`, dacă sunt disponibile. Aprofundează numai loturile sau abaterile relevante. Raportul de vânzări POS pe angajat nu măsoară munca operatorului în producție; verifică loturile, pontajele operațiilor și auditul pentru acea întrebare. Bonurile POS și vânzările B2B/facturate sunt surse distincte. Nu încărca ghiduri despre servire sau plan de sală când unitatea este doar fabrică.
 
+**CRM, Head of Sales/Team Leader, calendar stil Calendly, Symbai Meet, materiale și training:** [gestioneaza-crm](../gestioneaza-crm/SKILL.md) și [ghidul de configurare](../../knowledge/crm-configurare-calendar-training.md). Verifică instrumentele live; funcțiile comerciale nu acordă singure drepturi, iar Academia este distinctă de asistenții personali.
+
 ## Cum continui fără citiri inutile
 
 **La contradicții, rezultat zero sau incident:** urmează [verificarea dovezilor](../../knowledge/verificarea-dovezilor.md). Nu deduce stările posibile din numele coloanei, absența unei facturi dintr-un număr OCR/notat sau cauza unei erori din starea curentă a documentului. Verifică punctual informația lipsă și corectează nota veche, fără să reiei toate citirile.

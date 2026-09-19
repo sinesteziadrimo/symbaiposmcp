@@ -2,7 +2,11 @@
 
 > Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie` — el e sursa autoritară de navigare.
 
+Pentru planificarea simplă/asistată, modificarea operațiilor și anularea planurilor folosește [ghidul comun al asistenților](planificare-asistenti.md). Comanda B2B se propune prin `plan_b2b_order` și se salvează prin `apply_b2b_order_plan`, cu aceleași opțiuni și tokenul verificat. Stocul și personalul lipsă sunt avertismente; achizițiile și turele sunt decizii separate.
+
 ## Pe scurt
+
+Pentru pregătire, ambalare, ridicare din depozit și comenzi fără termen, citește și [depozit, colete și predare](depozit-colete-predare.md). Acest flux completează distribuția cu flotă proprie și are confirmări fizice distincte de planificarea producției.
 Modulul B2B acoperă atât vânzarea en-gros către alte firme, cât și necesarul unei rețele proprii de magazine. Același flux deservește o fabrică cu magazine proprii, francize și clienți B2B, dar și un restaurant/QSR/retailer cu multe puncte și un depozit central, fără producție. Fiecare produs este rezolvat automat din sursa configurată — fabrică, depozit central sau furnizor direct — apoi comanda trece prin picking, predare în mașină, livrare, recepție, aviz și factură, după caz. Producția primește numai cererea aferentă liniilor de fabrică; depozitul central și furnizorii rămân fluxuri de stoc/aprovizionare.
 
 ## Concepte

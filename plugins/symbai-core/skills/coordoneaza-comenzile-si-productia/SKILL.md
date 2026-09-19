@@ -42,6 +42,8 @@ Pentru fabrică, `get_factory_forecast_plan` este punctul de plecare. Comenzile 
 
 Folosește [gestioneaza-comenzi-b2b](../gestioneaza-comenzi-b2b/SKILL.md) pentru `plan_b2b_order` și ghidul de producție pentru fezabilitatea calendarului comun. Două comenzi fezabile separat pot concura pentru același utilaj, operator sau stoc. Înainte să promiți termenul întregului portofoliu, verifică încărcarea împreună și ține cont de planificările deja aplicate. Capacitatea ori rețetele neconfigurate înseamnă incertitudine, nu un verdict favorabil.
 
+Pentru planul zilei, modificări per operație și anulare folosește [planificarea pentru asistenți](../../knowledge/planificare-asistenti.md). Modul simplu este implicit; personalul/stocul incomplet nu opresc salvarea unui plan. Raportează lipsurile ca lucruri de pregătit înainte de execuție și păstrează termenul real.
+
 ## 4. Adu deciziile într-un singur tablou
 
 Prezintă, cu referințe reale și data verificării:
@@ -56,7 +58,7 @@ Ofertele din email sunt propuneri, nu prețuri contractate. Verifică `offerAnal
 
 ## 5. Aplică exact partea aprobată și recitește rezultatul
 
-`apply_b2b_order_plan` folosește același `orderId`, `warehouseId`, `approvalToken`, interval și selecție ca verificarea afișată. Trimite explicit `orderMaterials`, `addShift` și `allowPartial` conform deciziei omului; valorile implicite pot include acțiuni pe care acesta nu le-a ales. Pentru materiale, transmite și `procurementPreviewToken` când este cerut.
+`apply_b2b_order_plan` folosește același `orderId`, `warehouseId`, `approvalToken`, interval, selecție și `planningOptions` ca verificarea afișată. Trimite explicit `orderMaterials`, `addShift` și `allowPartial` conform deciziei omului; valorile implicite pot include acțiuni pe care acesta nu le-a ales. Pentru materiale, transmite și `procurementPreviewToken` când este cerut.
 
 Dacă aplicarea unei ture întoarce `necesitaReaprobare=true`, a fost pregătită numai tura. Arată planul recalculat și cere acordul pentru noua verificare înainte de loturi/achiziții; la continuare folosește noul token și `addShift:false`. Nu trata vechiul acord ca aprobare pentru un plan schimbat.
 

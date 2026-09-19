@@ -17,6 +17,8 @@ Pentru configuratorul de pe website, mobilierul pe care îl poate muta vânzăto
 
 Pentru flori, colț foto, fețe de masă și accesorii dintre care clientul poate alege, citește [colecții de decor](references/decor.md). Se configurează oferta locației, apoi se aleg opțiunile în propunerea clientului.
 
+Pentru invitați care își aleg masa, organizator fără cont, parole dictate, trimitere email/WhatsApp, listă HTML protejată sau PDF, citește [invitați, organizator și liste](references/colaborare.md) și `get_event_studio_guide({topic:"collaboration"})`. Configurarea, trimiterea și aprobarea au instrumente distincte; execută cererea deja autorizată fără confirmări repetate.
+
 ## Flux
 
 1. Identifică brandul, locația și, când cererea pornește din CRM, dealul exact. `get_event_studio_context` citește contextul și meniurile; `list_event_studio_projects` găsește biblioteca unității sau proiectele dealului. Refolosește identificatorii deja verificați.
