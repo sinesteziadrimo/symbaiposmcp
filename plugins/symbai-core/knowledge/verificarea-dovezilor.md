@@ -46,9 +46,21 @@ Pentru „ce recepții sunt pe gestiunea greșită”, verifică mai întâi met
 
 Pentru „cine a schimbat”, jurnalul filtrat și o pagină recentă nu acoperă automat tot istoricul. Urmează paginarea declarată de versiunea live sau restrânge la entitatea și perioada relevante; consemnează limitele de retenție/acces necunoscute. Zero la un cuvânt și o categorie înseamnă zero potriviri pentru acele filtre. Starea de azi a unei politici nu dovedește că nu a fost schimbată niciodată.
 
+Un motiv standard precum „Anulare manuală din Recepții” nu identifică singur persoana sau interfața care a trimis cererea. Nici absența unui apel MCP în minutul respectiv nu dovedește apăsarea unui buton: pot lipsi înregistrări ori pot exista alte surse. Dacă jurnalul unei ștergeri în masă nu enumeră ID-urile facturilor, corelarea cu perioada rămâne o ipoteză; păstrează această limită și în concluzie. Un timestamp de creare identic între două documente nu dovedește singur reemiterea sau renumerotarea.
+
+Randamentul unui lot poate fi mai mic decât suma ingredientelor din cauza pierderilor reale de proces. O fotografie cu avertismente, o cantitate neobișnuită sau un randament diferit este un motiv de verificare, nu permisiunea de a schimba formula ori de a scala cifra automat. Unitățile și procesul confirmat contează; existența unui ingredient pe stoc nu justifică substituirea lui într-o rețetă.
+
 `get_invoice_reception_warehouse_plan` recalculează alegerile din configurarea actuală, inclusiv pentru o factură deja recepționată. `source` și `sourceLabel` explică acest plan, nu alegerile istorice ale operatorului. Compară planul cu intrările reale pentru o constatare; pentru cauză caută dovezile de la data recepției. Nu declara că „nimeni nu a greșit” sau că o alocare viitoare este garantat greșită doar din planul curent.
 
 ## Corectează memoria, apoi încheie verificarea
+
+Un job eșuat descrie încercarea de la `startedAt`/`finishedAt`. După o actualizare sau o corecție a datelor, eroarea veche nu dovedește că aceeași perioadă este încă blocată. Nu prescrie împărțirea intervalului sau inventare compensatoare doar din acel mesaj. Nici o previzualizare a parametrilor nu dovedește succesul execuției complete; spune ce a fost verificat efectiv și ce rămâne de testat în operația autorizată.
+
+Conversiile de ambalaj păstrează și istoric. O regulă folosită des poate fi o eroare corectată ulterior; nu o prefera celei confirmate recent doar după numărul de utilizări. Verifică furnizorul, articolul, unitățile și dovada cantității. Masa brută a ambalajului nu este automat masa scursă sau masa netă servită.
+
+Un cost direct zero sau lipsa rețetei nu este automat o eroare la părintele unui meniu cu componente, al unui platou ori al unei taxe open-bar. Verifică rolul comercial și preparatele/băuturile care descarcă stocul. O alegere deja materializată ca preparat copil nu este încă un supliment; un supliment comandat separat poate fi chiar același produs și trebuie păstrat. Dovada dublării trebuie să lege alegerea, grupul și liniile efectiv consumate, nu doar două nume identice.
+
+Un tag nu garantează trimiterea comenzii într-o altă locație. Verifică aria și configurația ecranului sau imprimantei în contextul comenzii. Firma, brandul, locația și gestiunea sunt axe diferite; existența produsului în catalogul firmei nu dovedește că se vinde în toate meniurile.
 
 Când o dovadă contrazice un răspuns anterior, spune concret ce se corectează și înlocuiește nota greșită. Păstrează separat: fapte confirmate cu sursă și dată, ipoteze încă neconfirmate, decizii ale proprietarului și pași rămași. Un rezultat nou nu modifică singur autorizarea.
 

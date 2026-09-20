@@ -2,9 +2,21 @@
 
 Produsele sunt comune firmei. Un preparat cu aceeași formulă poate folosi același `productId` și aceeași rețetă în meniurile mai multor locații. Denumirea pentru client și prețul se pot stabili pe articolul fiecărui meniu. Diferența de locație, nume afișat sau preț nu cere singură un produs nou.
 
+## Produs, meniu și aplicarea rețetei
+
+Produsul nu are un brand sau o locație proprietar. Gestiunea implicită și alocările pe gestiuni descriu rutarea stocului; tagurile pot descrie imprimarea, KDS sau alte reguli configurate. Niciuna nu transformă produsul în proprietatea unui brand. Același produs poate avea mai multe poziții, în categorii și meniuri diferite. Verifică legăturile actuale din `get_product_details`, inclusiv paginarea; o singură categorie veche din catalog nu enumeră toate aparițiile în meniuri.
+
+Rețeta fără brand (`brandId:null`) este formula comună, aplicabilă tuturor brandurilor care nu au o variantă proprie. Pentru un brand, selecția curentă caută întâi varianta activă a acelui brand, apoi formula comună. Nu ia formula altui brand doar fiindcă are ID mai mare sau nume asemănător. Aceeași regulă se aplică ingredientelor care au la rândul lor rețete și reprocesării cu formulele curente; reconstituirea cu formule istorice originale este o opțiune distinctă.
+
+Adăugarea produsului cu formulă comună într-un alt meniu păstrează automat aceeași formulă. Separarea este o alegere explicită, numai când compoziția trebuie să difere. De exemplu, două branduri pot folosi același burger, dar sosuri cu formule diferite. Nu declara variantele duplicate fără să compari și ingredientele imbricate, randamentul și intenția utilizatorului.
+
+Pentru citire și editare descoperă `get_product_recipe_context` și `set_product_recipe_variant`, dacă sunt disponibile în versiunea live. Contextul arată formula comună, varianta exactă sau formula comună folosită în lipsa variantei. În editor, opțiunea „Rețetă diferită pe brand” și brandul selectat fac explicit ce se editează. Folosește reviziile returnate la citire; dacă altcineva schimbă formula, recitește înainte să aplici. Nu muta direct brandul unei rețete pentru a o face disponibilă în al doilea meniu și nu crea produse noi ca să ocolești o asociere greșită. Dacă versiunea nu oferă încă acest flux, raportează limita verificată, fără să pretinzi că l-ai aplicat.
+
 ## Corectează identitatea existentă
 
 La „corectează rețeta”, păstrează produsul, vânzările și pozițiile existente. Nu dezactiva produsul cu istoric și nu-l înlocui în meniu cu alt ID ca pas implicit. Identifică împreună produsele, rețetele active și legăturile din meniurile cerute; o rețetă veche poate fi rezolvată și prin asocierea existentă, nu doar printr-un filtru SQL pe `recipes.product_id`. Confirmă rezolvarea prin diagnosticul dedicat înainte să declari că lipsește rețeta.
+
+Distinge produsul șters de cel inactiv și de poziția indisponibilă într-un meniu. Un rând păstrat pentru istoric nu dovedește că produsul mai poate fi folosit. Rețetele șterse sau arhivate nu sunt formule curente, chiar dacă ingredientele lor sunt încă păstrate pentru trasabilitate. Un produs inactiv poate avea vânzări vechi de analizat; nu-l reactiva pentru a face un raport și nu prezenta ștergerea logică drept eliminare definitivă.
 
 Dacă există deja duplicate și utilizatorul cere unificare, stabilește supraviețuitorul după cererea sa și istoricul citit. `preview_finished_product_merge` arată dependențele și rezultatul asupra rețetelor/meniurilor; citește schema live și apoi folosește operația dedicată în scopul autorizat. O corecție de rețetă nu autorizează singură absorbirea altui produs.
 

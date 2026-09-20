@@ -1,11 +1,13 @@
 # Producție pentru restaurant & evenimente (flux simplu)
 
+Randamentul rețetei poate fi afișat împreună cu unitatea, de exemplu `17 porții`. Acest format nu este o eroare și nu înseamnă că lipsește randamentul cantitativ. O rețetă simplă poate avea un singur produs rezultat legat direct, fără o listă separată de produse la ieșire. Gramajul aproximativ din descriere rămâne o declarație, nu o măsurătoare fizică; lipsa loturilor înregistrate sau soldul negativ nu autorizează inventarea producțiilor.
+
 > Pentru linkul exact către orice pagină folosește tool-ul `gaseste_in_aplicatie` — el e sursa autoritară de navigare.
 >
 > Acest fișier acoperă producția **simplă**, pentru restaurante și catering: faci semipreparate (baze, sosuri, ciorbe, aluaturi, deserturi) și loturi pentru evenimente, dintr-o rețetă, cu un singur pas de finalizare. Dacă ai o fabrică reală cu stații de lucru, comenzi de lucru pe tabletă, planificare MPS/MRP, control calitate cu carantină și trasabilitate avansată → vezi `productie-fabrica.md`. Restaurantul **nu are nevoie** de toate astea.
 
 ## Pe scurt
-Producția simplă înseamnă: ai o **rețetă de semipreparat** (ce ingrediente intră, cât iese), creezi un **lot de producție** (planifici câte porții/șarje vrei), îl pornești când începi munca și îl **finalizezi** când e gata. La finalizare, sistemul face automat două lucruri: **scade ingredientele din stoc** (după regula „expiră primul") și **adaugă produsul finit pe stoc** ca lot nou, cu cost calculat. Atât — un singur buton de „Finalizează" și gata. Tot ce ține de restaurant se vede pe pagina **Producție** (`/productie-evenimente`).
+Producția simplă înseamnă: ai o **rețetă de producție** (ce ingrediente intră, cât iese), creezi un **lot de producție** (planifici cantitatea în kg, bucăți sau porții, în unitatea randamentului), îl pornești când începi munca și îl **finalizezi** când e gata. La finalizare, sistemul **scade ingredientele din stoc** (loturile alocate explicit, apoi automat FIFO — intrările cele mai vechi) și **adaugă produsul rezultat pe stoc** ca lot nou, cu cost calculat. Tot ce ține de restaurant se vede pe pagina **Producție** (`/productie-evenimente`).
 
 ## De ce ai nevoie de asta într-un restaurant
 - **Semipreparate (baze de bucătărie)** — faci o oală mare de ciorbă, un sos de bază, un aluat, o cremă, și le folosești apoi la mai multe preparate din meniu. Producția le scade ingredientele o singură dată și îți pune semipreparatul pe stoc.
@@ -34,10 +36,10 @@ Butoane: **„Adaugă Lot Producție"** (peste tot) și **„Adaugă Eveniment"*
 ## Concepte (limbaj de restaurant)
 - **Rețetă de semipreparat** — „fișa" produsului: ce ingrediente intră și cât iese (randamentul). Ex: „Ciorbă de burtă", randament 10 porții.
 - **Lot de producție (șarjă)** — o rundă concretă de gătit dintr-o rețetă, cu o cantitate planificată. Ciclu de viață: **planificat → în lucru → finalizat** (sau anulat).
-- **Randament (yield)** — cât scoate rețeta „o dată". Dacă planifici 5 (loturi) la o rețetă cu randament 10 porții, ies 50 de porții, iar ingredientele se înmulțesc ×5 automat.
+- **Randament (yield)** — cât scoate o formulă completă. Pentru o rețetă cu randament 10 porții, `plannedQty=50` planifică 50 de porții și ingredientele se înmulțesc ×5. `plannedQty=5` înseamnă 5 porții, nu 5 ture sau oale.
 - **Cantitate reală la ieșire** — cât a ieșit DE FAPT (poate fi mai puțin decât teoretic — ai pierderi la fierbere). Dacă o declari, ACEA cantitate intră pe stoc, iar costul/porție se împarte la ea.
 - **Tip de păstrare** — `refrigerat` / `congelat` / `cald` / `ambient`. La `congelat`, lotul finalizat e marcat ca înghețat (vezi cât e congelat vs decongelat).
-- **FEFO („expiră primul, iese primul")** — la finalizare, ingredientele se scad automat din loturile care expiră cel mai devreme. Nu trebuie să te ocupi de asta — sistemul alege singur.
+- **FIFO („primul intrat, primul ieșit")** — în producția simplă de restaurant, după loturile alocate explicit, ingredientele se scad automat din intrările cele mai vechi. Regulile FEFO ale execuției industriale sunt un traseu separat.
 - **Fișă de producție** — un checklist/instrucțiuni opționale pentru bucătar (pași, timpi), atașate rețetei.
 - **Conversia de unități** — rețeta poate fi în grame/ml, produsul în kg/l: conversia (g↔kg, ml↔l) se face **automat** la calculul costului rețetei. ⚠ Dar dacă pui unitatea greșită (ex. „kg" în loc de „g"), iese un food cost absurd, fără avertisment — verifică unitățile când scrii rețeta.
 
@@ -68,26 +70,34 @@ Butoane: **„Adaugă Lot Producție"** (peste tot) și **„Adaugă Eveniment"*
 - `run_bom_explosion` (params: `recipeId`*, `quantity`*) — îți calculează lista totală de materii prime pentru cantitatea dată. E doar o **previzualizare** (NU mișcă stoc) — bună ca listă de cumpărături înainte de un eveniment mare.
 - `get_stock_levels` (params: `productType` = raw_material|wip|finished_good|all, `warehouseId`, `onlyLowStock`, `productName`) — verifici că ai ingredientele pe stoc înainte să pornești.
 
+Estimarea de cost nu este verificare de disponibilitate: `usesEstimatedFallback:false` arată sursa prețului, nu că există suficient stoc pentru producția cerută. Compară separat necesarul fiecărui ingredient cu stocul disponibil din gestiunea efectivă. Lipsa unui flux tehnologic nu înseamnă că producția simplă este stricată; manopera și utilajul pot lipsi din estimare chiar dacă materialele sunt calculate.
+
+Randamentul și procentele din rețetă sunt valori declarate. Nu demonstra o eroare folosind deșeu presupus, însumând kg cu litri sau tratând lipsa loturilor salvate ca dovadă că preparatul nu s-a făcut niciodată. Pentru schimbare folosește cantitățile măsurate ori formula confirmată; un calcul condiționat rămâne estimare.
+
 ### 3. Creezi și execuți lotul
 **Acțiune — creezi lotul:**
-- `exec_create_batch` (params: `recipeId`*, `plannedQty`*, `scheduledDate`, `assignedTo` = angajat, `zoneId`, `equipmentId`, `storageType`, `notes`, `batchNumber`, `destinationWarehouseId`) — creezi lotul. Pentru restaurant îți ajunge `recipeId` + `plannedQty` (+ eventual `scheduledDate` și `notes` de tip „Comandă hotel X").
+- `exec_create_batch` (params: `recipeId`*, `plannedQty`*, `warehouseId` sau `destinationWarehouseId`, `brandId`, `scheduledDate`, `assignedTo` = angajat, `zoneId`, `equipmentId`, `storageType`, `notes`, `batchNumber`) — creezi lotul în gestiunea verificată. `plannedQty` este cantitatea în unitatea randamentului rețetei, nu numărul de ture. La o rețetă comună, indică brandul operațiunii dacă gestiunea nu îl stabilește univoc.
 
 **Acțiune — ciclul de viață** (poți face și totul din pagina `/productie-evenimente` cu butoanele „Începe acum" / „Finalizează"):
 - `exec_start_batch` (params: `batchId`) — pornești producția (status → început, marchează ora de start).
 - `exec_stop_batch` (params: `batchId`, `reason`) — pauză (status → pauză).
 - `exec_resume_batch` (params: `batchId`) — reiei din pauză.
-- `exec_complete_batch` (params: `batchId`*, `actualQty`, `actualOutputQty`, `storageType`) — **finalizează lotul ȘI postează inventarul**: consumă ingredientele (loturi alocate explicit + FEFO) și creează lotul de produs finit cu cost + genealogie. `actualQty` = cantitatea/turele reale; `actualOutputQty` = randamentul REAL (kg/buc produs finit) → costul se împarte la el (cost corect, nu pe nr. de ture). Vezi „Ce se întâmplă la finalizare" mai jos.
+- `exec_complete_batch` (params: `batchId`*, `actualQty`, `actualOutputQty`, `storageType`) — **finalizează lotul ȘI postează inventarul**: consumă ingredientele (loturi alocate explicit, apoi FIFO) și creează lotul rezultat cu cost + genealogie. `actualQty` stabilește cantitatea de rețetă pentru care s-au folosit ingredientele; `actualOutputQty` declară separat cât produs s-a obținut efectiv. Ambele sunt cantități, nu număr de ture. Nu micșora consumul doar fiindcă randamentul real a fost mai mic.
 - `exec_reschedule_batch` (params: `batchId`*, `newDate`*, `reason`) — muți lotul pe altă zi.
 - `exec_update_batch` (params: `batchId`*, plus `status`, `plannedQty`, `actualQty`, `notes`, `assignedTo`, `scheduledDate`…) — ajustezi orice câmp al lotului.
 
 **Ce se întâmplă la finalizare** (prin `exec_complete_batch` sau butonul „Finalizează" din pagină — ambele consumă ingredientele și creează produsul finit):
-1. Cantitatea reală se înregistrează (dacă o declari, ACEA cantitate; altfel cea planificată).
-2. Ingredientele se scad din stoc conform rețetei, scalate cu cantitatea produsă și luând în calcul unitățile rețetei vs. stocului.
-3. Scăderea merge automat după FEFO (loturile care expiră primul) — sau din lotul alocat explicit, dacă a fost scanat unul.
-4. Produsul finit intră pe stoc ca lot nou, cu cost/porție = cost total ingrediente / cantitate ieșită.
+1. Cantitatea pentru calculul ingredientelor este `actualQty`; dacă lipsește, se folosește cea salvată pe lot, altfel cea planificată.
+2. Ingredientele se scad conform rețetei, proporțional cu această cantitate raportată la randamentul rețetei, cu conversiile de unități necesare.
+3. Scăderea folosește întâi loturile alocate explicit, apoi intrările cele mai vechi (FIFO).
+4. `actualOutputQty` stabilește separat cantitatea efectiv intrată pe stoc. Costul unitar este cost total ingrediente / cantitate efectiv ieșită.
 5. Dacă tipul de păstrare e `congelat`, lotul finalizat e marcat ca înghețat.
 
 > 💡 Tot fluxul de restaurant merge prin conexiune: `exec_complete_batch` face consumul + lotul de produs finit dintr-un singur apel. Dacă lotul are un flux tehnologic atașat (`flowVersionId`), finalizarea simplă e blocată — atunci se folosește calea shop-floor (vezi `productie-fabrica.md`). Pentru un restaurant simplu, NU atașa flux.
+
+**Exemplu de pierdere de randament:** rețeta consumă 4,8 kg pentru 2,7 kg rezultat. S-au folosit toate cele 4,8 kg, dar au ieșit 2,55 kg. Finalizezi cu `actualQty=2.7` și `actualOutputQty=2.55`. Dacă ai reduce și `actualQty` la 2,55, ai reduce greșit ingredientele la 4,533333 kg.
+
+**Transformare între materii prime:** o rețetă de producție explicită poate transforma, de exemplu, carne cu os în carne dezosată, păstrând ambele produse ca materii prime. Verifică exact produsele de intrare și ieșire, rețeta și gestiunea. Nu uni produsele și nu schimba tipul produsului pentru a forța operațiunea. După finalizare verifică ambele mișcări, costul și genealogia; existența rețetei sau starea „finalizat” singură nu dovedește înregistrarea stocului.
 
 ### 4. Verifici rezultatul
 - `exec_get_batch_progress` (params: `batchId`*) — statusul lotului: pași, cantități, % completare, ingrediente consumate, output.
@@ -106,10 +116,10 @@ Semipreparatul finalizat e acum un produs pe stoc. Îl legi de un produs/prepara
 | „Adaugă/scoate un ingredient din rețeta X" | `get_recipe_details` (vezi ce e acum) → `add_recipe_ingredients` sau `remove_recipe_ingredient`. |
 | „Schimbă tot ce intră în rețeta X" | `bulk_replace_recipe_ingredients`. |
 | „Câte kg de carne/cartofi îmi trebuie pentru 200 de porții?" | `run_bom_explosion` (recipeId, quantity) — listă materii prime, fără să miști stoc. |
-| „Pune în producție 5 oale de ciorbă pentru mâine" | `exec_create_batch` (recipeId, plannedQty=5, scheduledDate). |
+| „Pune în producție 5 oale de ciorbă pentru mâine" | Citește randamentul și află câte kg/l/porții înseamnă o oală. Dacă oala are 10 porții, `exec_create_batch` cu `plannedQty=50`, rețeta, gestiunea și data. Nu presupune mărimea oalei. |
 | „Am început să gătesc lotul" | `exec_start_batch` (batchId). |
 | „Gata, am terminat lotul" | `exec_complete_batch` (batchId) → consumă ingredientele + intră semipreparatul pe stoc. Dă `actualOutputQty` pentru randamentul real (cost corect). |
-| „Au ieșit doar 45 de porții, nu 50" | `exec_complete_batch` cu `actualOutputQty=45` — randamentul real intră pe stoc și costul se împarte la 45. |
+| „Au ieșit doar 45 de porții, nu 50" | Dacă s-au folosit ingredientele pentru 50, `exec_complete_batch` cu `actualQty=50`, `actualOutputQty=45` — consum pentru 50, intrare de 45, cost împărțit la 45. |
 | „Pune lotul pe pauză / reia-l" | `exec_stop_batch` (cu reason) / `exec_resume_batch`. |
 | „Mută producția de mâine pe joi" | `exec_reschedule_batch` (batchId, newDate, reason). |
 | „Ce semipreparate am pe stoc acum?" | `get_semipreparate_stock`. |
@@ -130,7 +140,7 @@ Semipreparatul finalizat e acum un produs pe stoc. Îl legi de un produs/prepara
 - **De ce nu văd pagina „Producție"?** → Modul greșit. În Setări → General trebuie modul „simplu" sau „restaurant & evenimente". În modul „fabrică" pagina simplă e ascunsă intenționat (acolo lucrezi pe paginile de fabrică).
 - **Costul producției apare în rapoarte?** → Da — costul real al semipreparatelor intră în costul mărfii vândute (COGS) din P&L.
 - **Rețeta e în grame, produsul în kilograme — se încurcă?** → Nu — conversia (g/kg, ml/l) se face automat la calculul costului rețetei. Dar pune unitatea CORECTĂ în rețetă: unitate greșită = food cost absurd, fără avertisment.
-- **Am planificat 5, dar a ieșit altă cantitate. Ce intră pe stoc?** → Dacă declari cantitatea reală la finalizare (`actualQty`), ACEA cantitate intră pe stoc, iar costul/porție se împarte la ea. Dacă nu, intră cantitatea teoretică (randament × loturi).
+- **Am planificat 5, dar a ieșit altă cantitate. Ce intră pe stoc?** → `plannedQty=5` reprezintă 5 unități de randament, nu 5 ture. Declară cantitatea efectiv obținută în `actualOutputQty`. Păstrează în `actualQty` cantitatea de rețetă pentru care ai folosit ingredientele; o pierdere de randament nu trebuie să reducă ingredientele deja consumate.
 - **Pot anula un lot ca să-mi recuperez ingredientele?** → Nu — anularea/oprirea nu reface stocul deja consumat. Consumul se întâmplă la finalizare; ce nu ai finalizat încă nu a scăzut nimic.
-- **De ce a scăzut alt lot de marfă decât mă așteptam?** → Consumul merge automat după FEFO (loturile care expiră primul). Pentru un restaurant simplu, asta e comportamentul corect și dorit.
+- **De ce a scăzut alt lot de marfă decât mă așteptam?** → Verifică loturile alocate explicit și ordinea intrărilor. Producția simplă de restaurant alege automat FIFO pentru restul necesarului. Nu atribui alegerea datei expirării fără să verifici traseul folosit.
 - **Am nevoie de stații de lucru, scanare QR, planificare, control calitate.** → Acelea sunt funcții de **fabrică** — vezi `productie-fabrica.md`. Pentru un restaurant clasic nu sunt necesare și complică inutil.

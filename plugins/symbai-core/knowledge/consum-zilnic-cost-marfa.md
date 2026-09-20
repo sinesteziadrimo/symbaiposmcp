@@ -15,6 +15,12 @@ Două excepții de reținut din prima: **comenzile de livrare (Glovo/Wolt/Bolt/T
 
 ## Concepte
 
+### Citirea corectă a costurilor istorice
+
+Liniile originale pot păstra costuri și valori vechi, inclusiv zero, după o recalculare financiară. Verifică separat costul financiar recalculat pentru documentul, linia și gestiunea vizate, dacă mai este în așteptare, dacă reflectă ultima corecție și ajustările de evaluare active din registru și contabilitate. Costul financiar raportat reprezintă valoarea totală actualizată, nu o diferență de adunat din nou la valoarea originală. O valoare recalculată prezentă nu certifică singură întreaga istorie; o valoare în așteptare ori depășită nu este cost final zero.
+
+Nu concluziona „nu s-a recalculat niciodată” din costul original sau din loturile fizice nedepletate. Nu regenera cantitățile și nu muta data stocului inițial pentru această diferență. Verifică pozițiile problematice individual și separă un exemplu corect de un audit complet al perioadei.
+
 - **Consum zilnic** — scăderea automată a materiei prime din vânzări. Rulează o dată pe zi, pe zilele **încheiate**. Zilele sărite (server oprit, zi blocată) se recuperează singure în rulările din următoarele câteva zile.
 - **Stoc live** — ce vezi pe ecran în timpul zilei: stocul de pe documente **minus** consumul estimat al zilei curente, calculat din liniile deja **trimise la bucătărie**. E o estimare, nu o mișcare de stoc; ce se vinde fără trimitere la bucătărie (bar, retail) nu intră în estimare și apare abia la rularea de a doua zi.
 - **Bon de consum** — documentul rezultat: câte unul pe fiecare gestiune, pe zi. Se deschide și se verifică linie cu linie.
@@ -135,12 +141,12 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 - `get_daily_consumption_status` — s-a generat consumul pentru o dată? (citire `inventar`)
 - `get_consumption_breakdown` — **ce** s-a consumat efectiv într-un interval: pe zi, pe produs sau pe gestiune, cu cantitate și valoare. Semnalează separat liniile fără cost, care trag food cost-ul în jos fără să dispară din cantități.
 - `audit_consumption_chain` — verifică lanțul vânzare → consum → stoc → notă contabilă pe un interval și spune **unde s-a rupt**: zile cu note închise dar fără consum, documente rămase ciornă (stocul nu a scăzut), documente fără notă contabilă, consum fără cost și **stoc negativ** în gestiunile atinse. Rulează-l ca verificare finală după orice recalculare sau schimbare de gestiuni.
-- `scan_recipe_consumption_gaps` — ce **blochează** consumul din partea rețetelor: ingrediente fără produs legat sau cu produsul șters (astea opresc generarea pentru ziua întreagă, nu consumă parțial), rețete cu același nume, randamente citite greșit.
-- `diagnose_consumption_warehouse_routing` — simulează produsul într-un brand+locație și arată, ingredient cu ingredient, gestiunea aleasă, sursa alegerii și orice abatere către altă locație.
+- `scan_recipe_consumption_gaps` — verifică ingredientele rețetelor active și formula aplicabilă fiecărui brand din meniu. O formulă pe alt brand nu acoperă automat poziția; formula comună are brand gol. Variantele legitime pe brand nu sunt dubluri. Referințele șterse cer verificarea identității supraviețuitoare. O avertizare sau o poziție în meniu nu dovedește singură consum istoric greșit și nu justifică automat clonare ori reprocesare.
+- `diagnose_consumption_warehouse_routing` — simulează produsul într-un brand+locație și arată gestiunea aleasă. Pentru părintele unui meniu al zilei sau de eveniment, verifici componentele efectiv alese, inclusiv cele cu preț zero; părintele nu se descarcă pe el însuși. Fără selecții, diagnosticul nu certifică întregul meniu sau istoricul.
 - `get_reprocess_job_status` — progresul unui job de regenerare a consumului (citire `inventar`). Pentru recalcularea financiară după corectarea unei recepții folosește `get_reception_cost_recalculation({id: ID_FACTURA})`; verifică separat `get_reception_accounting_status({id: ID_NIR})`.
 - `get_stock_levels` — stocul curent, cu defalcare pe gestiuni; cu `warehouseId` doar gestiunea aleasă.
 - `list_lots` / `get_lot_details` — loturile din care se scade (cantitate rămasă, cost, expirare).
-- `scan_zero_cost_sold` — produse vândute cu cost 0 (fără rețetă sau cu ingrediente necostate).
+- `scan_zero_cost_sold` — produse vândute cu cost teoretic de rețetă zero (formulă aplicabilă lipsă sau ingrediente necostate). Nu dovedește lipsa consumului ori a costului financiar înregistrat. Carcasele `daily_menu` și liniile părinte se verifică prin componentele alese, inclusiv cele cu preț zero; nu le crea rețete sau cost fix pentru a elimina avertizarea. Într-o versiune mai veche care încă listează carcase, verifică tipul produsului și rolul liniei înainte de recomandare.
 - `scan_suspect_recipe_costs` — rețete cu cost absurd (cantități imposibile, randament greșit).
 - `scan_recipe_unit_mismatches` — ingredientele a căror unitate NU se poate traduce în unitatea produsului („25 g" pe un produs ținut la „buc"). Exact cazul în care cantitatea se folosește ca atare și scade 25 de borcane. Întoarce separat ce se poate corecta automat și ce cere decizie umană.
 - `scan_suspect_reception_costs` / `get_product_reception_history` — loturi intrate cu preț greșit.
@@ -166,7 +172,7 @@ Când muți produse între gestiuni sau repari rețete, recalcularea singură nu
 
 1. `audit_product_warehouse_coverage` — vezi câte produse n-au gestiune și care ar consuma din gestiunea greșită.
 2. `plan_material_warehouses` → `apply_material_warehouse_plan` 🔒 — pui produsele în gestiunile corecte.
-3. `scan_recipe_consumption_gaps` + `scan_recipe_unit_mismatches` — repari rețetele **înainte** de recalculare. Un ingredient nelegat oprește generarea zilei întregi, deci recalcularea ar eșua oricum.
+3. `scan_recipe_consumption_gaps` + `scan_recipe_unit_mismatches` — verifici formula efectiv aplicabilă produsului și brandului. Un ingredient nelegat poate opri generarea dacă formula lui este folosită; o formulă arhivată sau înlocuită de o variantă validă nu dovedește blocaj. Corectezi defectele demonstrate înainte de recalculare.
 4. `reprocess_daily_consumption` 🔒 pe perioada afectată.
 5. `get_reprocess_job_status` — **aștepți să se termine**. Cât rulează, documentele vechi sunt de-postate temporar, iar un audit făcut atunci arată probleme care nu există.
 6. `audit_consumption_chain` + `get_consumption_breakdown` — confirmi că stocurile au ieșit corecte.

@@ -14,6 +14,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 **Ingredient lipsă câteva ore/zi sau folosit altul în schimb** → [inlocuieste-ingredient-temporar](../inlocuieste-ingredient-temporar/SKILL.md). Registrul din Bucătăria Azi păstrează intervalul, proporțiile și excepțiile; citește-l înainte de corecții permanente de rețetă sau ajustări pentru un minus.
 
+**Brand, locație, meniu sau rețetă comună:** [produse comune și consum local](../../knowledge/produse-comune-consum-local.md). Produsul este comun firmei și poate apărea în mai multe meniuri/categorii. Brandul rețetei descrie aplicarea formulei, nu proprietatea produsului; fără brand, formula este comună. Read all nu schimbă acest model. Înainte de „nu are rețetă”, verifică formula efectivă pentru brandul vânzării, stările de ștergere și componentele unui pachet. Nu crea produse sau rețete când cererea este numai de diagnostic.
+
 ## Ai DOUĂ surse de adevăr — combină-le
 
 **Activități potrivite:** dacă `verifica_conexiune` oferă `activitatiTooluri`, acestea explică selecția catalogului. Caută doar instrumentele cererii curente; nu încărca ghiduri de fabrică ori construcții pentru un restaurant. Producția simplă de semipreparate rămâne distinctă de fluxurile industriale. La firme mixte, folosește activitatea unității vizate. Read all permite citirea întregii firme, fără să transforme profilul ei într-unul industrial. Pentru o activitate reală care lipsește, verifică mai întâi Branduri/Locații și drepturile existente; nu cere automat reconectare sau acces suplimentar.
