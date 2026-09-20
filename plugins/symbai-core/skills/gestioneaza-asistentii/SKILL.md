@@ -9,6 +9,8 @@ Asistenții personali sunt identități AI distincte, deținute de angajatul con
 
 Acest skill este pentru chatul proprietarului care administrează asistenți. Într-o rulare de grup există numai uneltele `assistant_runtime`; folosește identitatea și permisiunile primite de acolo, fără să cauți uneltele personale de administrare.
 
+**Asistenți numiți pentru grupuri WhatsApp**, inclusiv mai mulți creați într-o singură cerere → [configurare prin unelte](../../knowledge/asistenti-whatsapp-configurare.md). Ghidul leagă partajarea locală din Connect de aprobarea nominală POS și `asistent_whatsapp`, explică alegerea explicită `privacy:internal/customer` și limita „Read all”. Nu porni un watcher paralel și nu căuta în browser setări oferite de catalogul live.
+
 ## Trainingul agenților de vânzări
 
 La instruire, probe, prag de promovare, voce și cunoștințe de produs folosește Academia: [ghid CRM/calendar/training](../../knowledge/crm-configurare-calendar-training.md) și skill-ul [gestioneaza-crm](../gestioneaza-crm/SKILL.md). Nu crea un asistent personal de grup în locul configurației Academiei și nu considera dreptul de editare a agenților AI drept de administrare a oamenilor.

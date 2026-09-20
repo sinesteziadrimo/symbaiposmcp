@@ -4,6 +4,8 @@ Folosește schema oferită de conexiunea firmei. Descoperă uneltele cu `cauta_t
 
 ## Alege traseul după intenție
 
+Pentru o comandă B2B, stocul eligibil și producția deja asociată acoperă mai întâi necesarul. O comandă nouă nu devine confirmată sau predată doar pentru că există stoc. Dacă pleacă numai o parte, urmează [livrările în tranșe](b2b-livrari-partiale.md); restul nu cere dublarea producției dedicate. Planificarea simplificată, pickingul și predarea sunt pași separați.
+
 | Cererea omului | Unelte și verificare |
 |---|---|
 | Planifică o comandă B2B | `plan_b2b_order` → `apply_b2b_order_plan`; păstrează comanda și fabrica exactă. |

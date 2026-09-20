@@ -1,5 +1,7 @@
 # Index de ghiduri și exemple pe domenii
 
+- **B2B din stoc și livrări parțiale:** [b2b-livrari-partiale.md](b2b-livrari-partiale.md) — comenzi în tranșe, mai multe mașini/zile, aprobare nominală, rest deschis, QR și etichete pentru fiecare colet.
+
 - **Depozit, ambalare și predare B2B/online:** [depozit-colete-predare.md](depozit-colete-predare.md) — cozi, comenzi fără termen, ridicare, scanare și confirmări fizice.
 - **GLS, ParcelShop și locker:** [gls-magazin-online.md](gls-magazin-online.md) — conturi, checkout, colete, urmărire și ramburs.
 - **Meniu comun între restaurantele unei vitrine:** [meniu-partajat-livrari.md](meniu-partajat-livrari.md) — sursă explicită, sincronizare, unificare și mapări verificate; conexiunea platformei de livrare este distinctă de POS.

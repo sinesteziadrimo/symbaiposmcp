@@ -5,6 +5,8 @@ description: Etichete de producție pentru semipreparate, produse și containere
 
 # Etichete de producție — asistent pentru design + printare
 
+Pentru două sau mai multe colete ale unei comenzi B2B, urmează [etichetele de expediere](../../knowledge/b2b-livrari-partiale.md): un apel `get_b2b_packing_label` pentru fiecare colet și codul lui QR. Recuperează toate fragmentele înainte de tipărire; după împărțirea livrării recitește și reimprimă etichetele fiecărei tranșe.
+
 Userul vrea să pună etichete pe semipreparatele/produsele lui (vasele din frigider, recipientele, ambalajele) sau pe containerele fizice din fabrică (tăvi, navete, baxuri, paleți): cu denumire, lot, dată, **valabilitate** și **alergeni**, eventual cod de bare/QR. Tu îl ajuți să le DESENEZE o dată, să le LEGE (de rețetă, de operație, sau de tipul de container/magazie), și apoi să le PRINTEZE rapid — sau le printezi direct tu.
 
 ## Înainte de orice

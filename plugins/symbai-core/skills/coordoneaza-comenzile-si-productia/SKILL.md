@@ -5,6 +5,8 @@ description: Coordonează un flux complet de la comenzile și ofertele primite l
 
 # De la inbox, la o zi de lucru pregătită
 
+Pentru comenzi B2B acoperite din stoc și livrări în tranșe, citește [b2b-livrari-partiale](../../knowledge/b2b-livrari-partiale.md). Planifică numai necesarul neacoperit, păstrează producția dedicată și urmărește fiecare tranșă până la predare și recepție. Restul comenzii rămâne deschis după prima livrare.
+
 Omul îți dă un rezultat: ce comenzi să urmărești, pentru ce firmă și până când trebuie livrate. Tu legi pașii disponibili în Symbai și îi aduci un tablou clar: ce este pregătit, ce este blocat, ce lipsește și ce decizii poate lua. Nu prezenta un plan drept producție executată.
 
 ## Contextul de lucru

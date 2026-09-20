@@ -9,6 +9,7 @@ Fixează gestiunea fizică, data și intervalul turei. Citește recepțiile așt
 Stocul total pe firmă nu dovedește că marfa este în gestiunea de unde trebuie livrată. Un lot expirat, blocat de calitate sau deja rezervat nu este automat utilizabil. Respectă eligibilitatea și ordinea de consum ale fluxului real; nu elibera blocări pentru a completa cantitatea.
 
 Pentru fiecare lipsă arată produsul, cantitatea/unitatea, comanda afectată și momentul necesar. Nu transforma automat marfa în tranzit în stoc disponibil și nu calcula de două ori aceeași recepție așteptată.
+Pentru predarea numai a unei părți din comanda B2B, urmează [livrările în tranșe](../../../knowledge/b2b-livrari-partiale.md): previzualizează acum/rest, respectă politica de aprobare, păstrează restul deschis și pregătește eticheta fiecărui colet. Nu raporta întreaga comandă livrată după prima tranșă.
 
 ## Pregătește operațiunea potrivită
 

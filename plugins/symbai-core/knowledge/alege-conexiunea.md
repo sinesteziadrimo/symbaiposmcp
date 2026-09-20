@@ -8,6 +8,7 @@ Pentru operații POS citește skill-ul relevant, nu doar descrierea lui din list
 |---|---|
 | WhatsApp-ul meu / numărul personal | Serverul local `symbai-whatsapp` sau `symbai-whatsapp-<nume>`. Începe cu `connection_status`: verifică numărul, titularul și `whatsapp.conectat`. Apoi `search_contacts`/`list_chats`, `send_message`/`reply_to_message` din ACELAȘI server. Urmează skill-ul `raspunde-whatsapp`. |
 | WhatsApp partajat cu firma | `connect_whatsapp_canale` pe conexiunea POS nominală; folosește exclusiv canalul autorizat ales. Lista nu inventariază toate numerele personale. |
+| Partajează grupuri pentru asistenți numiți | Pe serverul local al numărului: `business_sharing_status` și, dacă există în versiunea live, `business_sharing_prepare`. Aprobarea continuă prin `connect_whatsapp_partajare_preview/confirma` pe MCP-ul nominal al firmei. [Pașii compleți](asistenti-whatsapp-configurare.md). |
 | WhatsApp Business al firmei | `list_whatsapp_accounts` inventariază conturi Business. Nu folosi aceste conturi ca înlocuitor pentru numărul personal. |
 | Gmail/Drive conectat local în Connect | Serverul `symbai-google`: `google_accounts` arată conturile și permisiunile oferite ACESTUI asistent; apoi folosește catalogul său live. |
 | Emailurile mele Google/Microsoft din firma POS | Conexiunea POS nominală, `connect_email_status`. Conturile personale și expeditorul principal sunt separate de emailul operațional al brandului. |

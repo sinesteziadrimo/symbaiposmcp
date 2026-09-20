@@ -4,6 +4,8 @@ Acest flux acoperă comenzile B2B și online. Descoperă uneltele prin `cauta_to
 
 ## Pregătire și predare sunt etape separate
 
+Pentru stoc integral/parțial, livrări în mai multe zile sau mașini, aprobări și eticheta fiecărui colet, urmează [comenzile B2B în tranșe](b2b-livrari-partiale.md). Instrumentele MCP de depozit cer `id`, `brandId`, `locationId` și `warehouseId` exacte. Citește toate paginile; un răspuns incomplet nu înseamnă că restul produselor lipsește.
+
 În depozit, operatorul culege produsele, verifică loturile și cantitățile, confirmă pregătirea, ambalează în colete și stabilește locul de așteptare. Predarea se confirmă când marfa este preluată efectiv. O comandă pregătită sau un AWB emis nu dovedește preluarea de către curier ori livrarea la client.
 
 Pentru online, pagina `/ecommerce/picking` include lucrul efectiv în depozit. `list_online_warehouse_orders` arată coada, `get_online_warehouse_pick_plan` oferă liniile și reviziile, iar `confirm_online_warehouse_preparation` confirmă produsele culese și produce ieșirea de stoc/documentele configurate. Citește toate paginile până când nu mai există `nextCursor`, inclusiv după o pagină goală. Pregătirea unei gestiuni poate aștepta pregătirea celorlalte gestiuni ale comenzii.
@@ -25,6 +27,7 @@ Eticheta poate conține QR intern și SSCC. QR-ul intern nu necesită inventarea
 Politica depozitului decide confirmarea manuală sau scanarea coletelor. La scanare folosește codurile citite fizic și tokenurile întoarse; nu fabrica dovada din datele comenzii.
 
 - B2B: `scan_b2b_warehouse_package` și `confirm_b2b_warehouse_pickup`, după citirea comenzii și a politicii.
+- După predarea B2B recitește `get_b2b_warehouse_pickup` și verifică `handedOver`. Dacă rămâne marfă de livrat, folosește tranșele legate; păstrează aceeași `requestKey` și aceleași argumente la reluarea unei cereri incerte.
 - Online: `list_online_handover_ready` → `scan_online_handover_package`, dacă este cerută scanarea → `confirm_online_handover`.
 - Pentru mai multe colete, verifică toate coletele exterioare cerute. Un singur AWB nu înlocuiește scanarea fiecărui colet.
 - După confirmare citește borderoul cu `get_online_handover` sau istoricul cu `list_online_handovers`. Păstrează același `attemptId` când răspunsul este incert; verifică rezultatul înainte să creezi o operație nouă.

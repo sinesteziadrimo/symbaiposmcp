@@ -1,5 +1,7 @@
 # Etichete de producție — design frumos + printare pe rețetă/lot (valabilitate, alergeni, cod de bare)
 
+Pentru coletele unei comenzi B2B folosește [etichetele de expediere și livrările în tranșe](b2b-livrari-partiale.md): `get_b2b_packing_label` separat pentru fiecare colet, QR propriu și număr colet/total. Recitește și reimprimă după împărțire. Citește toate fragmentele etichetei înainte de tipărire; generarea nu dovedește imprimarea sau scanarea fizică.
+
 > Cum pui etichete profesioniste pe semipreparatele și produsele tale: le DESENEZI o singură dată în Materiale Grafice (cu cod de bare și câmpuri care se completează automat — lot, dată, valabilitate, alergeni), le legi de o rețetă ca „implicite", și apoi le PRINTEZI dintr-un singur buton când lotul e gata — pe o imprimantă de etichete (Zebra/termică) sau ca PDF. Designul materialelor în general → `materiale-grafice.md`. Imprimante & configurarea lor → `echipamente-kds-imprimante.md`. Fluxul de producție (loturi) → `productie-restaurant.md`. Eticheta **containerului** (recipientul fizic cu QR) și regula care decide ce șablon iese la fiecare print → `eticheta-container-rutare.md`.
 
 ## ⚠ READ FIRST — eticheta = un material grafic „de tip Etichetă", legat de rețetă, printat la lot
