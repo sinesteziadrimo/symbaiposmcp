@@ -52,6 +52,8 @@ Pentru fabrici, începe raportul de producție cu `get_daily_production_summary`
 
 ## Cum continui fără citiri inutile
 
+Pentru produse și rețete, tagul sau categoria cu numele unui brand nu dovedește prezența într-un meniu: verifică pozițiile de meniu. Aceeași formulă poate fi comună mai multor branduri, cu gestiuni locale de consum diferite. Pentru cantități de producție, citește schema live a operației înainte să propui valori: cantitatea care scalează ingredientele și rezultatul fizic sunt câmpuri distincte. La verificarea unui lot, statusul „finalizat” sau intrarea rezultatului nu dovedesc singure consumul ingredientelor; citește documentul aferent sau precizează dovada lipsă.
+
 **La contradicții, rezultat zero sau incident:** urmează [verificarea dovezilor](../../knowledge/verificarea-dovezilor.md). Nu deduce stările posibile din numele coloanei, absența unei facturi dintr-un număr OCR/notat sau cauza unei erori din starea curentă a documentului. Verifică punctual informația lipsă și corectează nota veche, fără să reiei toate citirile.
 
 Citește selectiv preferințele și notele relevante cererii, conform [memorie-business](../memorie-business/SKILL.md); reutilizează ce ai citit deja în sesiune. Păstrează obiectivul, acordurile, ID-urile, rezultatele verificate, operațiile cu rezultat incert și pașii rămași. Memoria și răspunsurile vechi sunt piste de verificat, nu adevăruri permanente.
