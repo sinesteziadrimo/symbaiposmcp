@@ -18,6 +18,8 @@ La „corectează rețeta”, păstrează produsul, vânzările și pozițiile e
 
 Distinge produsul șters de cel inactiv și de poziția indisponibilă într-un meniu. Un rând păstrat pentru istoric nu dovedește că produsul mai poate fi folosit. Rețetele șterse sau arhivate nu sunt formule curente, chiar dacă ingredientele lor sunt încă păstrate pentru trasabilitate. Un produs inactiv poate avea vânzări vechi de analizat; nu-l reactiva pentru a face un raport și nu prezenta ștergerea logică drept eliminare definitivă.
 
+În `get_product_details`, `outputRecipes` sunt formulele care produc articolul, iar `usedInRecipes` sunt rețetele altor articole care îl folosesc drept ingredient. Nu selecta o formulă din a doua listă ca rețetă a produsului. Un nume precum `[UNIFICAT→#123]` este o referință istorică, nu validarea înlocuitorului: citește și ținta, verifică starea, tipul, unitatea și rolul cerut. Un produs finit în porții nu înlocuiește automat materia primă în kg.
+
 Dacă există deja duplicate și utilizatorul cere unificare, stabilește supraviețuitorul după cererea sa și istoricul citit. `preview_finished_product_merge` arată dependențele și rezultatul asupra rețetelor/meniurilor; citește schema live și apoi folosește operația dedicată în scopul autorizat. O corecție de rețetă nu autorizează singură absorbirea altui produs.
 
 ## Producția, transferul și consumul la vânzare sunt operații separate

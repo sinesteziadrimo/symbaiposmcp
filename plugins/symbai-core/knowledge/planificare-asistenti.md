@@ -6,6 +6,8 @@ Folosește schema oferită de conexiunea firmei. Descoperă uneltele cu `cauta_t
 
 Pentru o comandă B2B, stocul eligibil și producția deja asociată acoperă mai întâi necesarul. O comandă nouă nu devine confirmată sau predată doar pentru că există stoc. Dacă pleacă numai o parte, urmează [livrările în tranșe](b2b-livrari-partiale.md); restul nu cere dublarea producției dedicate. Planificarea simplificată, pickingul și predarea sunt pași separați.
 
+La „aceeași comandă în mai multe șarje, pe utilaje sau ore diferite”, verifică întâi lotul deja legat de comandă și operațiile lui prin `get_factory_planning_context(view:batch_flow)`. Caută explicit `split_production_operation`: împarte cantitatea operației în părți cu intervale proprii, păstrând lotul și legătura comercială. Citește unitatea operației și verifică suma părților; cantitatea unui semipreparat poate avea altă unitate decât produsul comandat. Nu reexecuta `apply_b2b_order_plan` de trei ori cu cantități reduse și nu anula planul întreg pentru această împărțire. `selection.qtyByProduct` din simulare nu creează șarje persistente. Părțile unei operații nu reprezintă automat loturi fizice distincte: dacă omul cere numere de lot și trasabilitate separate, verifică suportul acelui flux înainte să confirmi rezultatul.
+
 | Cererea omului | Unelte și verificare |
 |---|---|
 | Planifică o comandă B2B | `plan_b2b_order` → `apply_b2b_order_plan`; păstrează comanda și fabrica exactă. |

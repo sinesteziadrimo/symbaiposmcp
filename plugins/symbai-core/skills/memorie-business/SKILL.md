@@ -7,6 +7,8 @@ description: Memoria asistentului despre acest business, ținută pe server (mem
 
 Claude Code are memoria lui locală (pe calculatorul și folderul omului) — nu o dubla. Memoria de aici e altceva: stă pe serverul instanței, e a BUSINESSULUI și a persoanei conectate, o vezi la fel din Claude Code, din Codex și din asistentul din aplicație, și are vizibilitate după rol. Trei tool-uri: `memorie_citeste`, `memorie_scrie`, `memorie_sterge`. Nu cer niciun modul; fiecare conexiune își vede doar ce are voie.
 
+O notă locală nu înlocuiește citirea confirmărilor relevante din memoria comună. Pentru o întrebare despre o corecție sau decizie anterioară, citește `memorie_citeste(cauta: ...)` înainte de răspuns, inclusiv când utilizatorul cere numai verificare, fără modificări. Compară data și sursa notelor, apoi verifică punctual datele live; nu repeta o conversie, o ajustare sau o confirmare deja rezolvată doar fiindcă o etichetă istorică arată diferit. Nu spune „am verificat” pentru o citire pe care nu ai executat-o.
+
 ## Ritualul de sesiune
 
 1. **La început sau reluare**, dacă nu sunt deja în context, citește preferințele prin `memorie_citeste(fel: "preferinta")`, apoi recuperează numai deciziile și notele relevante cererii prin `cauta`, `fel` ori `persoana`. Nu încărca automat toate observațiile și sarcinile și nu le executa doar fiindcă sunt memorate. Citirea fără filtre este utilă când userul cere o privire generală asupra memoriei. Reutilizează contextul neschimbat; memoria goală nu blochează lucrul și nu trebuie umplută artificial. O căutare fără rezultate nu dovedește absența unei note: la nevoie reformulează termenul sau lărgește filtrul.
