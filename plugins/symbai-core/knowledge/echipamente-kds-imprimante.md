@@ -70,7 +70,7 @@ Scriere (cer modulul de permisiune indicat pe token):
 
 - `set_tag_routing` *(setari)* — leagă efectiv o etichetă de ecrane KDS și/sau o imprimantă, per zonă de sală (exact ce face pagina Rutare Taguri). Verifică întâi cu `list_tag_routing_rules` ce există.
 - `create_tag_routing_rule` / `delete_tag_routing` / `delete_tag_routing_rule` *(setari)* — regulă de rezervă la nivel de locație / ștergere rutare (cu confirmare).
-- `set_zone_routing` *(setari)* — rutarea de hardware a unei ZONE de sală (ce imprimante/ecrane primesc mesele din zonă).
+- `set_zone_routing` *(setari)* — rutarea de hardware a unei ZONE de sală (ce imprimante/ecrane primesc mesele din zonă). `billPrintDisabled: true` = în zonă nu se tipărește nota de plată, indiferent de ospătar (zonă doar cu bon fiscal).
 - `update_kds_screen` *(setari)* — actualizează un ecran KDS existent (locație, nume, tip, mod afișare, activ).
 
 Cu permisiunea SQL activă pe token poți investiga cu `list_database_tables` → `describe_database_table` → `execute_sql_query` (doar citire).

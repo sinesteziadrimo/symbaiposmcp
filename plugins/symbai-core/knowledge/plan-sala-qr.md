@@ -39,6 +39,8 @@ Asignarea meselor la raion: `move_tables_to_section(floorConfigId, sectionId, ta
 Fiecare ZONĂ poate avea o rutare de hardware: ce imprimantă fiscală / de notă / de închidere tură / de bucătărie / de bar și ce ecran KDS de bucătărie/bar primesc comenzile meselor din zonă. Cea mai frecventă cauză pentru „bonul nu iese la bar/bucătărie" = zona ne-rutată sau rutată greșit.
 - vezi configurația curentă: `list_zone_routing` (întoarce doar zonele rutate).
 - setează/corectează: `set_zone_routing(zoneId, …)` — face MERGE, trimite doar câmpurile pe care le schimbi. Id-urile de printer/ecran le iei cu `list_printers` / `list_kds_screens` (vezi `echipamente-kds-imprimante.md`).
+- **zonă fără notă de plată** („aici dăm doar bonul fiscal”, „nota nu trebuie să iasă la barul 2”): `set_zone_routing(zoneId, { billPrintDisabled: true })`. Câștigă peste imprimanta aleasă de ospătar la tură, pe POS-ul web și în aplicația Symbai POS de pe telefon. `billPrinterId` gol NU oprește nota — înseamnă „imprimanta ospătarului”. Același lucru se setează din Plan sală → Editare zonă → „Nu se tipărește nota de plată în zonă”.
+- ospătarul poate alege și el „Fără notă de plată” la „Începe Tură Nouă” (doar pentru el): nota nu mai iese pentru el nici acolo unde zona are imprimantă de notă (retipărirea cerută explicit din Operațiuni rămâne posibilă). Oprirea pe zonă e cea care se aplică tuturor, inclusiv la retipărire.
 
 ## Programări de sală pe zile + excepții pe dată
 

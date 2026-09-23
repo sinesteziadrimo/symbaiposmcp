@@ -41,6 +41,17 @@ Ce **NU** face: nu se uită în poză. Un fișier `IMG_0042.jpg` nu poate fi leg
 - Dacă pozele sunt foarte mari (peste ~5 MB fiecare), micșorează-le înainte de trimitere sau trimite-le una câte una.
 - Pozele care **există deja pe internet** (site vechi, feed de furnizor) NU trebuie citite de pe disc: `bulk_set_product_images` le descarcă singur din URL, fără limita de mărime, și acceptă la fel `productName` în locul lui `productId`.
 
+## Poze primite pe WhatsApp (Symbai Connect)
+
+Când userul trimite pozele în WhatsApp („pune-le la produse”), tu le vezi cu `download_media`, dar nu ai fișierul pe disc ca să-l codezi base64 și nici un link public. Folosești transferul direct, câte unul pentru fiecare poză:
+
+1. `download_media(message_id, chat_jid)` — te uiți la poză și alegi produsul (`search_products_db` / `list_products_without_photo`). Potrivirile nesigure le confirmi cu userul.
+2. `prepare_product_photo_transfer({ productId })` pe conexiunea firmei → primești `uploadId` și `uploadURL` (valabile 15 minute, pentru un singur transfer). `gallery: true` dacă produsul are deja poze pe care vrei să le păstrezi.
+3. `upload_media_to_symbai({ message_id, chat_jid, upload_url })` pe serverul WhatsApp din Symbai Connect — trimite poza direct la firmă. Merge doar spre firmele conectate în Connect; nu pleacă poze „vizualizare unică”, mesaje șterse, poze din conversațiile cu mesaje temporare sau fișiere peste 12 MB. Adresa de transfer e o cheie de unică folosință: n-o afișa în conversație și n-o scrie în notițe.
+4. `attach_product_photo_transfer({ uploadId })` pe conexiunea firmei → poza ajunge pe produs și se propagă la meniuri. Reapelat cu același `uploadId`, nu dublează poza.
+
+Dacă transferul spune „a fost deja folosită” sau nu a putut fi confirmat (rețea, eroare la firmă), cheamă întâi `attach_product_photo_transfer` cu același `uploadId` — poza poate să fi ajuns deja. Doar dacă atașarea spune că poza lipsește sau că transferul a expirat, reia de la pasul 2 cu un transfer nou. O poză veche pe care WhatsApp n-o mai oferă se cere din nou clientului. Închide bucla la fel, cu `list_products_without_photo`.
+
 ## Închide bucla
 
 După ce ai terminat loturile, rulează `list_products_without_photo` cu aceleași filtre. Îți spune exact ce produse au rămas descoperite, cu numele lor exact — pe care i-l dai userului ca să-și redenumească fișierele rămase. E singura verificare care contează; „am urcat 140 de poze" nu înseamnă „meniul are poze peste tot".
@@ -52,7 +63,7 @@ Fișiere de tipul `IMG_0042.jpg`, `DSC_1177.jpg`, `foto1.jpg` — numele nu con�
 Două ieșiri, spuse userului ca atare:
 
 1. **Redenumește fișierele** după preparat (îi dai lista de nume exacte din `list_products_without_photo`) — după redenumire le urci tu, normal.
-2. **Potrivirea vizuală din aplicație**: pagina Meniuri → Prețuri → **Poze Bulk Meniu**, unde AI-ul se uită în poză, nu la nume, și propune preparatul. Acolo userul confirmă și salvează.
+2. **Potrivirea vizuală din aplicație**: pagina Meniuri → Prețuri → **Poze Bulk Meniu**, unde AI-ul se uită în poză, nu la nume, și propune preparatul. Acolo userul confirmă și salvează. Pagina arată câte produse sunt disponibile pentru potrivire și, dacă unitatea are mai multe meniuri, permite alegerea meniului; o poză rămasă fără produs apare ca „poză fără produs”, nu ca salvată.
 
 ## Capcane confirmate
 
