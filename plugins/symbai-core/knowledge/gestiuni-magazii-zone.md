@@ -62,6 +62,11 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 - Un transfer confirmat greșit **nu se șterge, se anulează** din aplicație sau prin `void_inventory_document`. Citește întâi diagnosticul fără `confirm:true`; execută anularea autorizată cu documentul și motivul exacte. Respectă refuzurile privind consumul ulterior, inventarul sau perioada contabilă. Verifică și corecțiile deja postate, ca să nu inversezi aceeași mișcare de două ori. O diferență între antetul NIR-ului și gestiunea unui produs nu dovedește un transfer necesar: vezi `intrari-marfa-receptie.md`.
 - ⚠ Gestiunile de vehicul nu se încarcă și nu se descarcă prin transfer manual — doar din cursa de distribuție.
 
+**Gestiunea produsului greșită (nu stocul)** — de ex. o materie primă de bucătărie apare la bar. Nu face transfer dacă omul vrea ca produsul să nu fi stat niciodată pe bar:
+- gestiunea implicită (magazia de casă) și gestiunile din fișa produsului → `assign_product_warehouses` cu `homeWarehouseId` + `expectedHomeWarehouseId` (previzualizare, apoi `confirm:true`); `mode:'replace'` scoate gestiunile greșite din fișă. `update_product` refuză intenționat câmpul de gestiune.
+- intrările vechi puse pe gestiunea greșită → corecția recepției sursă (`correct_confirmed_reception` cu `lineWarehouses`, vezi `corectare-receptii-mcp.md`), nu transfer.
+- consumurile deja postate din gestiunea greșită se refac prin reprocesare, după ce rutarea e corectă.
+
 **Transfer între zone ale ACELEIAȘI gestiuni** — se face **doar din aplicație** (Magazii, zone și rafturi → transfer între locuri). Mută amplasarea, nu valoarea: cantitatea totală pe gestiune și costul rămân neschimbate. Cere ca gestiunea să aibă urmărirea pe zone pornită și verifică soldul zonei sursă înainte de a accepta.
 
 ## Deschiderea, redenumirea și închiderea unei gestiuni

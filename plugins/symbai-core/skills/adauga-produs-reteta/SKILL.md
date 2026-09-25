@@ -23,6 +23,8 @@ Pentru „pune 130 g de zahăr”, „schimbă prețul la 12 lei” sau o modifi
 2. Modifică numai câmpurile cerute, prin unealta dedicată din catalogul live. Acordul deja dat pentru acea operație rămâne valabil. Păstrează tipul, meniul, rutarea, unitățile și randamentul dacă nu fac parte din cerere.
 3. Recitește rezultatul: ID-ul, câmpul și valoarea solicitată. Continuă ceilalți pași ai aceleiași cereri fără un nou „continuă”, cu excepția ritmului pas cu pas cerut explicit.
 
+**Rețetă creată din greșeală / dublură:** `delete_recipe` o scoate din listă (ștergere reversibilă, istoricul loturilor rămâne). Dacă rețeta e încă folosită în meniuri active, unealta refuză și listează pozițiile; `force:true` numai după confirmarea explicită a omului. **Brandul rețetei** nu se schimbă cu `update_recipe`: folosește `get_product_recipe_context` → `set_product_recipe_variant` (`mode:'shared', unify:true` pentru o rețetă comună ambelor branduri; `mode:'brand'` pentru o formulă doar a unui brand). O poziție de meniu nefolosită se scoate cu `update_menu_item(active:false)`.
+
 Nu relua inventarul de branduri, taguri, meniuri, stilul barului sau întregul catalog pentru o corecție cunoscută. Nu lansa un audit de food cost al întregii firme ca verificare a unei singure linii. Dacă utilizatorul cere și costul actual, recalculează prin raportul dedicat după modificare; vechiul cost nu dovedește valoarea nouă. Spune separat când recalcularea este încă în curs.
 
 ## Rețete: informațiile necesare din aceeași citire
