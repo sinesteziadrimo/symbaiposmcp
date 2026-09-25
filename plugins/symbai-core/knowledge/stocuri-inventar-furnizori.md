@@ -227,6 +227,14 @@ Verifici întâi structura cu `list_warehouses_full` și `list_storage_zones_ful
 - **Marfa primită diferă de comandă/factură (lipsă, deteriorat, preț diferit)?** Se înregistrează ca diferențe la recepție — le vezi și le rezolvi în `/inventory/disputes` sau direct pe comanda din `/purchase-orders/:id`.
 - **„Recepționat de" ≠ autorul operației.** Numele completat în recepție identifică persoana care a primit fizic marfa; câmpurile de audit „creat/confirmat/rezolvat de" vin din contul autentificat și nu pot fi înlocuite din formular. Când explici istoricul, spune separat cine a declarat recepția și cine a executat acțiunea în aplicație.
 
+## Verificarea unui inventar introdus din urmă
+
+La o numărătoare istorică, compară cantitatea fizică cu soldul de la `countDate`, nu cu soldul de astăzi. Mișcările ulterioare explică de ce soldul curent poate fi diferit. Pentru liste parțiale, `unlisted:'keep'` păstrează produsele care nu au fost numărate; golul din Excel nu înseamnă zero.
+
+La produse unificate, `includeMergedProducts:true` permite numărarea comună a codului actual și a codurilor vechi dovedite. Activează opțiunea doar când persoana care a numărat confirmă că totalul include aceeași marfă sub toate acele coduri. Sesiunea păstrează această componență: o unificare ulterioară nu lărgește retroactiv observația. Nu dubla diferența cu ajustări separate pe codurile vechi.
+
+După finalizare, descoperă și apelează `verify_physical_inventory`. Parcurge paginile prin `nextOffset`. Verificările cantităților și echilibrului notelor sunt necesare, dar nu dovedesc singure costul final. `unknownCostLines`, `pendingWork` și `financialVerificationComplete:false` trebuie comunicate ca limite; nu transforma costul necunoscut în zero. O diferență evaluată canonic la zero bani poate să nu aibă notă monetară, chiar dacă are cantitate nenulă. Pentru soldul de acum, folosește separat `get_stock_levels` pe gestiune. Nu presupune că un tool nou este disponibil înainte să verifici versiunea și capabilitățile instanței.
+
 ## Pentru acces SQL
 
 Dacă tokenul are activat accesul SQL (doar-citire), descoperă întâi structura cu `list_database_tables` → `describe_database_table`, apoi interoghează cu `execute_sql_query`. Găsești tabele pentru produse, gestiuni și zone, loturi și mișcări de stoc, documente de intrare/ieșire (NIR-uri, transferuri), sesiuni de inventar cu intrările de numărare, facturi de intrare cu liniile lor, furnizori cu cataloage și istoric de prețuri, și comenzi de aprovizionare.

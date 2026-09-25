@@ -115,6 +115,10 @@ La produse unificate, distinge formula originală de formula actuală a produsul
 - **Configurarea metodelor de plată** care nu generează consum (Setări → Metode de plată).
 - Dacă vreuna dintre acestea blochează clientul, îi propun să trimită cererea cu `trimite_ticket_symbai`, tip „sugestie".
 
+## Recalculare după inventare istorice
+
+Păstrează data și cantitățile fizice ale fiecărui inventar; nu le rescrie pentru a face raportul să iasă. Verifică listele în ordine cronologică și consultă fluxul „Inventare din urmă și produse unificate” din `gestioneaza-stocuri`. Un cod vechi unificat nu reprezintă automat o marfă diferită. După reprocesare, recitește `verify_physical_inventory` pe fiecare sesiune și stocul curent separat. Un job fizic terminat și note echilibrate nu certifică FIFO final; citește costurile necunoscute și coada de evaluare. Nu porni joburi paralele și nu promite durate sau consum de memorie fără măsurare pe instanța respectivă.
+
 ## Legături (fișiere knowledge relevante)
 - `knowledge/consum-zilnic-cost-marfa.md` — calendarul consumului, din ce gestiune și din ce lot scade, cost realizat vs teoretic, playbook complet de diagnostic.
 - `knowledge/produse-meniu-retete.md` — rețete, randament, unități de măsură, tipuri de produs.
