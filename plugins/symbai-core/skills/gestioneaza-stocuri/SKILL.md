@@ -15,6 +15,8 @@ Pentru inventarieri, diferențe mari, stoc negativ, transferuri sau documente ca
 
 Pentru loturi provizorii, datorii de recepție și costuri încă necunoscute, citește [loturile provizorii](../../knowledge/loturi-provizorii.md). Verifică documentele existente și capabilitatea disponibilă înainte să promiți stingerea datoriei.
 
+Dacă bucătăria a OBȚINUT materia primă din alta (pulpe dezosate din pulpe cu os, zeamă din lămâi) și de aceea produsul obținut e pe minus, înregistrează transformarea cu skill-ul `transforma-produs` (`quick_transform_product`, cu `productionDate` pentru zilele trecute) — nu o ajustare de stoc.
+
 Dacă bucătăria a folosit alte ingrediente, citește [înlocuirile temporare](../../knowledge/inlocuiri-temporare-ingrediente.md) și folosește skill-ul `inlocuieste-ingredient-temporar`. Caută registrul înainte să propui ajustări; un minus singur nu dovedește cauza. Identifică perioada, proporția, gestiunile și excepțiile reale și verifică separat salvarea, recalcularea și soldurile.
 
 

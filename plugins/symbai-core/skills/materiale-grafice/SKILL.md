@@ -31,6 +31,7 @@ Userul vrea un material grafic care arată profesionist (afiș, flyer, postare, 
 - **Permisiune**: scrierea cere modulul `marketing_social` („Marketing & Social Media"). „Permisiune insuficientă" → portal Hub → Acces AI.
 
 ## Legături
+- Textul, mesajul și scenariul video al materialului (cârlig, problemă, emoție, beneficii, CTA; video vertical cu zoom și subtitrări) → skill-ul `scrie-continut-marketing` + `knowledge/continut-marketing-video.md`.
 - Tool-urile MCP + modelul de element + cheatsheet de cereri → `knowledge/materiale-grafice.md` (secțiunile „Tool-urile MCP" + „Cheatsheet").
 - Cum conduci Chrome (deep-link, screenshot = livrabil) → `knowledge/condu-chrome.md`.
 - Coduri QR de masă (generare + print în lot pe șablon) → `knowledge/plan-sala-qr.md` + pagina „Coduri QR".

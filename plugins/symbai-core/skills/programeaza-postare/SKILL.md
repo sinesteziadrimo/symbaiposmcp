@@ -14,7 +14,7 @@ Pentru TikTok citește `knowledge/tiktok-publicare.md`: conectare OAuth, video/f
    - Pentru TikTok linkul conduce la Integrări: utilizatorul apasă conectarea din pagina autentificată, apoi continuă OAuth în același browser. Nu îi cere chei de aplicație sau tokenuri. După conectare verifică și `get_tiktok_creator_info`.
    - Instagram NU are link separat: după ce Facebook e conectat, leagă-l cu `conecteaza_instagram_din_facebook` (opțional `brandId`). Cere pagina Facebook cu permisiuni Instagram + un cont IG Business/Creator asociat; la eroare transmite mesajul exact.
    - Alternativ, dă link la pagina de conturi cu `gaseste_in_aplicatie("conturi social media")`.
-2. Compune textul postării împreună cu utilizatorul (sau propune 2-3 variante dacă ți-o cere). Ține cont de brand și de ce vrea să promoveze.
+2. Compune textul postării împreună cu utilizatorul (sau propune 2-3 variante dacă ți-o cere). Ține cont de brand și de ce vrea să promoveze. Pentru texte și scenarii noi aplică metoda din `scrie-continut-marketing` (dosarul de voce din memoriile brandului, cârlig, problemă, beneficii, un singur CTA).
 3. `schedule_social_post`:
    - `brandId`, `content` (textul), `platforms` (ex. `["facebook","instagram"]`),
    - `scheduledAt` în viitor, format ISO cu fus (ex. `2026-06-15T19:00:00+03:00`) → postarea e **PROGRAMATĂ** pentru acea oră;

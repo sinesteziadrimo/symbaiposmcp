@@ -29,9 +29,9 @@ Pentru fluxul din acest fișier ai nevoie de modul **simplu** sau **restaurant &
 Aceasta e pagina ta principală. Titlul ei se adaptează modului: „Producție" (simplu), „Producție & evenimente" (restaurant & evenimente). Are taburile:
 - **Calendar & Capacitate** — vezi producția programată pe zile; pui mâna pe un lot ca să-i vezi detaliile. Util ca să nu suprasoliciți bucătăria într-o zi.
 - **Loturi Producție** — inima paginii: creezi, pornești și finalizezi loturile; vezi statusul fiecăruia (planificat / în lucru / finalizat) și ingredientele consumate.
-- **Rețete** — gestionezi rețetele de semipreparate (nume, randament, tip de păstrare, valabilitate, ingrediente).
+- **Rețete** — gestionezi rețetele: segmentele **Semipreparate**, **Produse finite**, **Transformări** (materii prime obținute intern) și Evenimente. La **Rețetă nouă** alegi întâi **ce produs rezultă**: un **produs nou** cu tipul lui (dropdown-ul arată doar tipurile cu stoc care se pot produce: semipreparat, produs finit, **materii prime** …) sau un **produs existent** din catalog (de ex. „Pulpe dezosate", ca stocul să intre exact pe produsul folosit deja în alte rețete).
 
-Butoane: **„Adaugă Lot Producție"** (peste tot) și **„Adaugă Eveniment"** (de la modul restaurant & evenimente în sus).
+Butoane: **„Producție nouă"** (peste tot), **„Transformare rapidă"** (restaurant, nu fabrică) și **„Adaugă Eveniment"** (de la modul restaurant & evenimente în sus).
 
 ## Concepte (limbaj de restaurant)
 - **Rețetă de semipreparat** — „fișa" produsului: ce ingrediente intră și cât iese (randamentul). Ex: „Ciorbă de burtă", randament 10 porții.
@@ -108,6 +108,26 @@ Randamentul și procentele din rețetă sunt valori declarate. Nu demonstra o er
 ### 5. Folosești semipreparatul în meniu
 Semipreparatul finalizat e acum un produs pe stoc. Îl legi de un produs/preparat din meniu (din modulul Produse & Meniuri) ca să-l vinzi sau ca să-l folosești ca ingredient într-o altă rețetă.
 
+## Transformare rapidă (materie primă obținută intern)
+
+Butonul **„Transformare rapidă"** e în Producție (`/productie-evenimente`) și în **Bucătăria Azi** (`/bucatarie`, secțiunea „De pregătit azi"). Când o materie primă se face în bucătărie din alta — **pulpe dezosate din pulpe cu os**, **zeamă de lămâie din lămâi**, carne tocată din pulpă — se înregistrează ca **transformare rapidă**: un lot creat, pornit și finalizat dintr-o singură mișcare. Consumă ce s-a folosit, pune pe stoc ce s-a obținut, costul trece prin FIFO (7 kg × 12,50 lei ÷ 5 kg = 17,50 lei/kg). Așa produsul obținut nu mai intră pe minus când vânzările îl consumă din rețete, iar materia primă folosită scade corect.
+
+- **Prima dată** între două produse spui cât ai folosit și cât ai obținut; proporția se salvează ca **rețetă de transformare** a produsului obținut (segmentul „Transformări").
+- **Data viitoare** ajunge cantitatea obținută; consumul se calculează după rețetă. Dacă spui și cât ai folosit (materia primă principală), consumul se ia exact de acolo, iar diferența devine randamentul real.
+- Produsul obținut poate fi unul **existent** (recomandat când e deja ingredient în rețete) sau unul **nou**, creat cu tipul ales (`raw_material` pentru materie primă).
+- Gestiunea aleasă primește produsul obținut; ingredientele se scad după rutarea lor normală, ca la orice lot de restaurant. Fabricile lucrează pe flux tehnologic, nu cu transformarea rapidă.
+- Nu confunda cu **înlocuirea temporară** (preparatul a folosit alt ingredient în locul celui din rețetă) — vezi `inlocuiri-temporare-ingrediente.md`.
+
+**MCP**: `preview_quick_transformation` (citire, nu scrie nimic) → `quick_transform_product` (modulul `productie`). Argumente: `outputProductId` sau `outputProductName` sau `newOutputProduct {name, productType, unit}`, `outputQty`, `inputs[] {productId|productName, qty}` (obligatoriu la prima transformare), `warehouseId` (sau `locationId` ca să se propună gestiunea), opțional `productionDate`, `notes`, `idempotencyKey` (aceeași cheie nu dublează la reluare). Rețeta de transformare se poate crea și separat cu `create_recipe` + `outputProductType:"raw_material"` (sau `productId` al materiei prime existente).
+
+**Reguli transformări**: implicit orice produs în orice produs; un manager poate permite doar anumite perechi „din X → în Y" (Rețete → Transformări → „Reguli transformări"; MCP `get_quick_transformation_rules` / `configure_quick_transformation_rules`). Cu lista activă, restul transformărilor se refuză (`TRANSFORMATION_NOT_ALLOWED`), în aplicație și prin conexiune.
+
+**Etichete și fișă**: ca la orice lot — la finalizare se scrie fișa de producție și se tipăresc etichetele configurate pe rețeta de transformare; în fereastra din aplicație se aleg etichetele, imprimanta, copiile și fișa pe hârtie.
+
+**În Mișcări stoc** (`/stock-movements`): o producție are două documente, **„Consum în producție”** (ce s-a scăzut) și **„Intrare din producție”** (ce a intrat pe stoc). La o transformare rapidă apar ca **„Transformare · consum”** și **„Transformare · intrare”**, iar sub fiecare rând scrie „Transformare rapidă TR-…: Pulpe cu os → Pulpe dezosate” (la o producție: „Producție lot …: …”). Operatorul afișat e omul care a făcut transformarea (responsabilul lotului), nu un utilizator tehnic. Documentele mai vechi pot avea în note formularea „Ieșire producție”; e aceeași intrare pe stoc.
+
+**Ce poate refuza**: materie primă care nu e în rețeta existentă (se modifică rețeta, nu se face produs dublat); gestiune de fabrică; prima transformare fără dreptul de rețete (o face un manager); tip de produs fără stoc. Dacă materia primă folosită nu avea stoc/lot, lotul obținut poate rămâne blocat la control până se completează proveniența — verifică recepția materiei prime.
+
 ## „Ce-ți cere userul → ce faci" (cheatsheet restaurant)
 
 | Userul spune… | Ce faci |
@@ -122,6 +142,8 @@ Semipreparatul finalizat e acum un produs pe stoc. Îl legi de un produs/prepara
 | „Au ieșit doar 45 de porții, nu 50" | Dacă s-au folosit ingredientele pentru 50, `exec_complete_batch` cu `actualQty=50`, `actualOutputQty=45` — consum pentru 50, intrare de 45, cost împărțit la 45. |
 | „Pune lotul pe pauză / reia-l" | `exec_stop_batch` (cu reason) / `exec_resume_batch`. |
 | „Mută producția de mâine pe joi" | `exec_reschedule_batch` (batchId, newDate, reason). |
+| „Transformă-mi 5 kg pulpe cu os în pulpe dezosate" / „am stors lămâi, au ieșit 0,8 l zeamă" | `quick_transform_product` (produsul obținut + cantitatea obținută + ce s-a folosit + gestiunea). Nesigur → `preview_quick_transformation` întâi. |
+| „Pulpele dezosate sunt pe minus, dar le-am dezosat noi" | Înregistrează transformările făcute (`quick_transform_product`, cu `productionDate` pentru zilele trecute); nu corecta stocul prin ajustare. |
 | „Ce semipreparate am pe stoc acum?" | `get_semipreparate_stock`. |
 | „Ce loturi am produs săptămâna asta?" | `exec_list_batches` (status=completed, dateFrom, dateTo). |
 | „Cum stă lotul X?" | `exec_get_batch_progress` (batchId). |
@@ -133,7 +155,7 @@ Semipreparatul finalizat e acum un produs pe stoc. Îl legi de un produs/prepara
 
 ## Permisiuni MCP
 - **Citire** (rapoarte/liste) — nu cer modul de scriere: `list_recipes`, `get_recipe_details`, `list_recipe_ingredients`, `get_recipe_labels`, `get_production_sheet_config`, `run_bom_explosion`, `get_semipreparate_stock`, `get_stock_levels`, `exec_list_batches`, `exec_get_batch_progress`.
-- **Scriere lot / execuție** — cer modulul `productie` pe token: `exec_create_batch`, `exec_update_batch`, `exec_start_batch`, `exec_stop_batch`, `exec_resume_batch`, `exec_complete_batch`, `exec_reschedule_batch`.
+- **Scriere lot / execuție** — cer modulul `productie` pe token: `exec_create_batch`, `exec_update_batch`, `exec_start_batch`, `exec_stop_batch`, `exec_resume_batch`, `exec_complete_batch`, `exec_reschedule_batch`, `quick_transform_product` (previzualizarea `preview_quick_transformation` e citire).
 - **Scriere rețete** — cer modulul `retete` pe token: `create_recipe`, `update_recipe`, `add_recipe_ingredients`, `bulk_replace_recipe_ingredients`, `remove_recipe_ingredient`, `set_recipe_labels`, `set_production_sheet_config`.
 
 ## Întrebări frecvente și capcane

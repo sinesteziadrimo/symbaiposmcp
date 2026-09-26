@@ -1,76 +1,135 @@
 ---
 name: gestioneaza-hotel
-description: Recepția și managementul hotelului (PMS) prin MCP + link direct — ocupare, disponibilitate, rezervări (sosiri/plecări), folio-uri, camere, charge-to-room, tipuri de cameră, loialitate hotel; check-out, tarife, OTA, housekeeping prin pagina potrivită. La „cum stă hotelul azi", „am camere libere între X și Y", „cine sosește azi", „trece consumul pe camera 204".
+description: Recepția și managementul hotelului prin conexiunea Symbai — ocupare, disponibilitate, rezervări (creare, modificare, anulare cu previzualizare, neprezentare), oaspeți, check-in cu actul de identitate, walk-in, mutare în altă cameră, check-out, note de cont (consum, transfer, încasare), housekeeping și mentenanță, minibar, închiderea zilei, tarife, restricții și canale (Booking/Expedia), grupuri, coduri promo, recenzii, feedback și indicatori. La „cum stă hotelul azi", „am camere libere între X și Y", „fă o rezervare", „anulează rezervarea", „fă check-in / check-out", „trece consumul pe camera 204", „ce camere sunt de făcut", „rulează închiderea zilei", „schimbă tariful în weekend", „răspunde la recenzia de pe Booking".
 ---
 
-# Gestionează hotelul (PMS) — recepție & management prin MCP + link direct
+# Gestionează hotelul — recepție și management prin conexiune
 
-Userul e proprietar/manager de hotel sau pensiune. Vrea răspunsuri și acțiuni rapide: cum stă ocuparea azi, are camere libere, ce rezervări sunt, cine are de plată, fă o rezervare, trece consumul pe cameră. **Regula de aur a fluxului HIBRID: ce are tool MCP faci prin conexiune (rapid, fără click); restul îl ARĂȚI navigând la pagina potrivită cu link direct — NU dai click prin tab-uri.** Modulul Hotel apare doar dacă PMS-ul e activat pe instanță.
+Utilizatorul e proprietar, manager sau recepționer de hotel ori pensiune. Vrea răspunsuri și acțiuni rapide: cum stă ocuparea azi, are camere libere, cine sosește și cine pleacă, cine are de plată, fă o rezervare, cazează oaspetele, trece consumul pe cameră, închide ziua. **Aproape tot se face prin conexiune (tool-urile de hotel), rapid și cu toate verificările aplicației. Browserul îl folosești doar ca să-i ARĂȚI rezultatul pe pagina potrivită, cu link direct.** Modulul Hotel apare doar dacă activitatea de hotel e configurată pe unitate.
 
 ## Înainte de orice
-1. Citește **`knowledge/hotel-pms.md`** (concepte: sejur/stay, folio, rate manager, channel manager, housekeeping, group block, loialitate hotel separată de POS; harta de pagini; fluxurile zilnice; capcane OTA + folio + check-out). Și **`knowledge/condu-chrome.md`** (doctrina „click rar": tool MCP → deep-link → click pe element doar la nevoie; screenshot = livrabil; capcana unității active; fallback fără extensie). NU repeta aici regulile de Chrome — le aplici de acolo.
-2. **Context la început** (ca peste tot): `list_brands` + `list_locations` → afli `brandId`/`locationId`. Tool-urile de hotel le deduc singure dacă tenantul are **un singur** brand + o singură locație; dacă are mai multe, trebuie să le dai explicit (un hotel cu mai multe proprietăți = brand/locație distincte). „Data de azi" e **data de business** a hotelului (din setările proprietății), nu neapărat calendaristică.
-3. **Permisiune**: citirile cer `readModule: hotel`; scrierile cer și modulul **Hotel** în `writeModules`. „Permisiune insuficientă" → portal Hub → Acces AI → bifează Hotel.
+1. Citește **`knowledge/hotel-pms.md`** (sejur, notă de cont, tarife, canale, housekeeping, grupuri, loialitatea hotelului; paginile; fluxurile zilnice; capcanele) și **`knowledge/condu-chrome.md`** (tool întâi → link direct → click doar la nevoie; captura de ecran e ca să-i arăți, nu ca să verifici).
+2. **Unitatea**: `list_brands` + `list_locations` → `brandId`/`locationId`. Tool-urile de hotel le deduc singure dacă firma are o singură unitate; altfel le dai explicit. Dacă pe aceeași unitate sunt mai multe hoteluri, dai și `propertyId` (îl vezi în `get_hotel_property_settings`). „Azi" înseamnă **ziua de lucru a hotelului** (se schimbă la închiderea zilei), nu neapărat data din calendar.
+3. **Drepturi**: citirile cer modulul **Hotel** la citire; acțiunile îl cer și la scriere („Permisiune insuficientă" → proprietarul îl bifează din portalul Hub → Acces AI). Acțiunile se fac **în numele angajatului conectat**, cu rolul și unitățile lui: dacă rolul nu permite, de exemplu, anularea sau încasarea, aplicația refuză — spune-i utilizatorului cine are dreptul, nu căuta ocolișuri. O conexiune de firmă fără persoană vede cel mult sumarele de bază; pentru operațiile de recepție primește un mesaj clar că trebuie conectată nominal (skill-ul `conecteaza-symbai`).
 
-## Fluxul hibrid — intenție → tool MCP, apoi unde o ARĂȚI
+## ⛔ Regula de aur: confirmă înainte de orice acțiune
+- Înainte de fiecare scriere spune exact ce se va întâmpla (oaspetele, camera, perioada, suma, canalul) și **așteaptă „da"**. Acordul pentru o operație nu acoperă alta.
+- Cu atât mai mult când acțiunea: **mută bani** (consum pe cameră, încasare, transfer între note, penalitate, depozit), **anulează** sau marchează **neprezentare**, face **check-out**, **publică în afară** (tarife, restricții sau disponibilitate trimise spre Booking/Expedia, reluarea sincronizării, răspuns public la o recenzie) sau **închide ziua**.
+- Unde există, arată întâi **previzualizarea**: `preview_hotel_cancellation` (penalitate, depozit, sumă de returnat), `get_hotel_early_checkout_quote`, `simulate_hotel_night_audit`, soldul din `get_hotel_folio`.
+- După acțiune **recitește** starea (lista sau detaliul) și spune ce s-a schimbat + unde se vede. La eroare sau timeout recitește înainte de a relua; reluarea aceleiași operații cu aceeași cheie (`idempotencyKey`) nu o dublează, iar o a doua operație identică, voită, primește o cheie nouă.
 
-Întâi încearcă tool-ul. Apoi, ca să-i arăți userului, navighează la pagina potrivită cu **link direct** și fă screenshot (vezi `condu-chrome.md`).
+## Intenție → tool → unde o arăți
 
-| Userul vrea… | Tool MCP (rapid, prin conexiune) | Unde o arăți (link direct) |
+Întâi tool-ul. Apoi, dacă utilizatorul vrea să vadă, deschide pagina cu link direct (vezi `condu-chrome.md`).
+
+**Ziua la recepție**
+| Utilizatorul vrea… | Tool | Pagina |
 |---|---|---|
-| „Cum stă hotelul azi / grad de ocupare / sosiri-plecări azi" | `get_hotel_dashboard_stats` | `/hotel` (Dashboard) |
-| „Am camere libere între X și Y / ce disponibilitate am" | `get_hotel_availability(from, to, roomTypeId?)` — `to` = ziua de plecare, exclusivă | `/hotel/front-desk` |
-| „Ce rezervări am / confirmate / anulate / cine sosește" | `list_hotel_reservations(status?)` | `/hotel/front-desk?tab=arrivals` (sau `?tab=departures` / `?tab=inhouse`) |
-| „Ce note de cont (folio) am deschise / cine are de plată / solduri" | `list_hotel_folios(status?)` — status `open`/`closed`/`settled` | `/hotel/folios` |
-| „Ce camere am / câte ocupate / murdare / scoase din uz" | `list_hotel_rooms(status?)` | `/hotel/rooms` (status camere) sau `/hotel/housekeeping` |
-| „Fă o rezervare la camera X pentru perioada Y" | `create_hotel_reservation(roomTypeId, checkInDate, checkOutDate, …)` — verifică automat disponibilitatea | `/hotel/front-desk` |
-| „Schimbă / mută data / anulează rezervarea" | `update_hotel_reservation(reservationId, status?/checkInDate?/…)` (anulare = `status:"cancelled"`) | `/hotel/front-desk` |
-| „Fă check-in la rezervarea X / cazează în camera Y" | `hotel_check_in(reservationId, roomId?)` — asignează cameră + deschide folio | `/hotel/front-desk?tab=arrivals` |
-| „Trece consumul de la restaurant/bar/spa pe camera Z" | `hotel_charge_to_room(stayId, amount, posOutlet?, description?)` — majorează soldul folio, de plată la check-out | `/hotel/folios?tab=transactions` |
-| „Adaugă un tip de cameră (Single/Dublă/Apartament)" | `create_hotel_room_type(name, code, baseRate?, …)` | `/hotel/room-types` |
-| „Adaugă o cameră nouă" | `create_hotel_room(propertyId, roomTypeId, roomNumber, …)` | `/hotel/rooms` |
-| „Cum stă fidelitatea hotelului / câți membri / câte puncte datorez" | `get_hotel_loyalty_overview` | `/hotel/crm` |
-| „Câte puncte are oaspetele X / istoricul lui de puncte" | `get_guest_loyalty_detail(guestProfileId)` | `/hotel/guests` → `/hotel/crm` |
+| „Cum stă hotelul azi / ocupare / sosiri și plecări" | `get_hotel_dashboard_stats` | `/hotel` |
+| „Cine sosește / pleacă azi, ce rezervări am" | `list_hotel_reservations` (filtre de dată și status) | `/hotel/front-desk?tab=arrivals` / `?tab=departures` |
+| „Cine e cazat acum" | `list_hotel_stays` | `/hotel/front-desk?tab=inhouse` |
+| „Ce camere am / câte libere, murdare, scoase din uz" | `list_hotel_rooms(status?)` | `/hotel/rooms` sau `/hotel/front-desk?tab=rack` |
+| „Am camere libere între X și Y" | `get_hotel_availability(from, to)` — `to` = ziua plecării, exclusivă | `/hotel/front-desk` |
 
-⚠ Cele de mai sus sunt SINGURELE tool-uri de hotel. Tot restul recepției **n-are tool** (vezi mai jos) — pentru ele navighezi + arăți, nu inventa apeluri.
+**Rezervări și oaspeți**
+| Utilizatorul vrea… | Tool | Pagina |
+|---|---|---|
+| „Caută oaspetele X / fișa lui" | `search_hotel_guests` → `get_hotel_guest` | `/hotel/guests` |
+| „Adaugă / corectează datele oaspetelui" | `create_hotel_guest` / `update_hotel_guest` | `/hotel/guests` |
+| „Fă o rezervare" | `get_hotel_availability` → `create_hotel_reservation` (cu oaspetele din `search_hotel_guests`) | `/hotel/front-desk` |
+| „Mută data / schimbă camera, persoanele sau tariful" | `modify_hotel_reservation` — reverifică disponibilitatea și recalculează totalul | `/hotel/front-desk` |
+| „Anulează rezervarea" | `preview_hotel_cancellation` → acord → `cancel_hotel_reservation` | `/hotel/front-desk` |
+| „Oaspetele nu a venit" | `mark_hotel_no_show` (după acord) | `/hotel/front-desk?tab=arrivals` |
+| „Listă de așteptare / parcare / obiecte pierdute" | tool-urile de hotel dedicate (caută-le cu `cauta_tool`) | `/hotel/front-desk` |
 
-## Navigare — pagini DISTINCTE, nu tab-uri pe o pagină
-Modulul Hotel are **o pagină per zonă** (URL stabil), nu un singur `/hotel?tab=…`. Mergi direct cu `navigate(url)` (ruta exactă vine din `gaseste_in_aplicatie("…")` sau `navigare-rapida.md` — nu inventa):
-- **`/hotel`** — Dashboard (ocupare, sosiri/plecări, venituri).
-- **`/hotel/front-desk`** — Recepția = centrul zilnic. Are sub-taburi adresabile cu **`?tab=`**: `arrivals` (sosiri), `departures` (plecări), `inhouse` (cazați acum), `rack` (room rack), `nightaudit` (audit de noapte). Deci `/hotel/front-desk?tab=departures` te duce DIRECT la plecările de azi.
-- **`/hotel/folios`** — note de cont; sub-taburi `?tab=transactions` (tranzacții) / `?tab=tax` (descompunere TVA).
-- **`/hotel/rooms`** (camere + status), **`/hotel/room-types`** (tipuri), **`/hotel/housekeeping`** (curățenie).
-- **`/hotel/rates`** (Rate Manager), **`/hotel/channels`** (Channel Manager / OTA), **`/hotel/groups`** (group blocks), **`/hotel/promo-codes`**.
-- **`/hotel/guests`** (oaspeți), **`/hotel/crm`** (CRM & loialitate hotel), **`/hotel/guest-feedback`**, **`/hotel/reviews`**, **`/hotel/property-settings`**, **`/hotel/analytics`**.
+**Check-in, mutări, check-out**
+| Utilizatorul vrea… | Tool | Pagina |
+|---|---|---|
+| „Fă check-in la rezervarea X" | `hotel_check_in` (camera + actul de identitate verificat) | `/hotel/front-desk?tab=arrivals` |
+| „A venit cineva fără rezervare" | `hotel_walk_in` | `/hotel/front-desk` |
+| „Mută oaspetele în altă cameră" | `hotel_room_change` | `/hotel/front-desk?tab=inhouse` |
+| „Fă check-out" | `get_hotel_folio` (sold) → acord → `hotel_check_out` | `/hotel/front-desk?tab=departures` |
+| „Pleacă mai devreme" | `get_hotel_early_checkout_quote` → acord → `confirm_hotel_early_checkout` | `/hotel/front-desk?tab=inhouse` |
 
-Comutarea unității (brand+locație) e o stare a browserului — dacă hotelul e altă unitate decât cea activă, comut-o întâi (vezi `condu-chrome.md` regula g).
+**Note de cont (folio)**
+| Utilizatorul vrea… | Tool | Pagina |
+|---|---|---|
+| „Ce note sunt deschise / cine are de plată" | `list_hotel_folios(status?)` | `/hotel/folios` |
+| „Ce e pe nota camerei 204" | `get_hotel_folio` | `/hotel/folios?tab=transactions` |
+| „Trece consumul pe camera 204" (manual, în afara POS) | `post_hotel_folio_charge` (după acord pe sumă) | `/hotel/folios?tab=transactions` |
+| „Mută consumurile pe altă notă" | `transfer_hotel_folio_charges` | `/hotel/folios` |
+| „Încasează nota" | `settle_hotel_folio` (suma și metoda confirmate; emite documentul fiscal) | `/hotel/folios` |
+| „Ce depozite / garanții am" | `list_hotel_deposits` | `/hotel/folios` |
+| „Ce e în minibar / aprovizionează minibarul" | `get_hotel_room_stock` / `restock_hotel_room` / `list_hotel_room_restock_history` | `/hotel/rooms` |
 
-## Ce rămâne CLICK (n-are tool — navighează + arată, ghidează userul)
-Multe operațiuni de recepție trăiesc doar în UI; pentru ele du userul la pagina potrivită și, dacă vrea, ghidează-l pas cu pas (sau apeși tu butonul prin Chrome doar dacă chiar n-are alt drum — vezi `condu-chrome.md` regula d):
-- **Check-out + încasare + emitere factură** din folio — `/hotel/folios` (deschizi folio-ul, verifici cheltuielile, încasezi, scoți factura). Tu poți deschide folio-ul ca CITIRE (`list_hotel_folios`), dar închiderea/încasarea = în pagină. De știut: **plata parțială lasă folio-ul deschis** (rămâne soldul); nota tipărită **înainte de plată** e marcată **PROFORMA** (nu e document fiscal); cu opțiunea **„cere achitarea la check-out"** activă, check-out-ul nu se face cu folio neachitat.
-- **Tarife & restricții (Rate Manager), reguli de yield, prețuri competitori** — `/hotel/rates`.
-- **Conectare/sincronizare OTA (Booking/Expedia), paritate, mapări camere** — `/hotel/channels`. „Cameră vândută de două ori" = aici se verifică jurnalul de sincronizare.
-- **Housekeeping** (marchezi camere curate/în lucru, aloci sarcini) — `/hotel/housekeeping`.
-- **Group blocks / allotment** — `/hotel/groups`.
-- **Night audit (execute)**, încuietori / door locks, push OTA — **AMÂNATE**: nu există prin conexiune (doar citești că auditul rulează). În timpul auditului, `hotel_charge_to_room` e blocat tăcut — explică userului că e temporar.
+**Housekeeping și mentenanță**
+| Utilizatorul vrea… | Tool | Pagina |
+|---|---|---|
+| „Ce camere sunt de făcut azi" | `list_hotel_housekeeping_tasks` | `/hotel/housekeeping` |
+| „Generează și împarte curățenia zilei" | `generate_hotel_housekeeping_day` → `auto_assign_hotel_housekeeping` | `/hotel/housekeeping` |
+| „Camera 204 e gata / inspectată / scoasă din uz" | `update_hotel_housekeeping_task` / `inspect_hotel_room` / `set_hotel_rooms_status` | `/hotel/housekeeping` |
+| „S-a stricat ceva în cameră" | `create_hotel_maintenance_ticket` / `update_hotel_maintenance_ticket` / `list_hotel_maintenance_tickets` | `/hotel/housekeeping` |
 
-## Reguli (cele care contează)
-- **Confirmă suma înainte de `hotel_charge_to_room`** — adaugă bani pe nota oaspetelui. Tool-ul **refuză** dacă depășește limita de credit pe cameră (house limit) → atunci e nevoie de aprobare de manager, fă operațiunea din aplicație. Charge-to-room **NU încasează** bani — doar crește soldul folio, de plată la check-out.
-- **Modelul de venit pentru consumul pe cameră**: **„outlet"** (implicit) — consumul din restaurant rămâne venit al restaurantului, cu bonul lui; nota de cameră îl afișează doar informativ. **„folio"** — venitul se consolidează pe camera de hotel, fără bon la restaurant. Când userul întreabă „al cui e venitul de la room service / de ce nu iese bon la restaurant", verifică întâi ce model e ales.
-- **Check-in cere camera curată** — doar camere `clean`/`inspected` primesc check-in; `dirty`/`occupied`/`maintenance`/`out_of_service` sunt refuzate. Dacă rezervarea n-are cameră asignată, dă `roomId` (vezi `list_hotel_rooms`).
-- **`get_hotel_availability`: `to` = ziua de PLECARE, exclusivă** (3 nopți 10→13 = `from:2026-06-10, to:2026-06-13`). `roomTypeId` se ia din `get_hotel_availability` (listează tipurile) sau `list_hotel_rooms`.
-- **Anularea = `update_hotel_reservation(status:"cancelled")`** — ștergerea de entități întregi NU e disponibilă prin conexiune; pentru ștergeri reale recomandă userului din aplicație.
-- **Confirmă-prin-citire, nu prin screenshot**: după o scriere (rezervare/check-in/charge), tool-ul a întors `success` = e salvat; arată userul cu un `list_*` și spune-i să dea refresh dacă nu vede. Screenshot-ul e ca să-i ARĂȚI, nu ca să verifici (vezi `condu-chrome.md` regula f).
-- **Folio ≠ notă de restaurant; loialitate hotel ≠ loialitate POS** — nopțile sunt în `/hotel/crm`, nu în `/loyalty` (vezi `hotel-pms.md` capcane).
-- **Data de business** poate diferi de cea calendaristică (audit de noapte) — dashboard-ul și „sosiri azi" se raportează la ea.
-- **Limbaj de hotelier** cu userul („ocupare", „note de cont", „sosiri/plecări", „trec consumul pe cameră"), nu jargon de tool (`folioId`, `stayId`, `brandId`).
-- **Nu inventa** camere, tarife, oaspeți, solduri — ce nu știi, citești cu tool-ul sau întrebi userul.
+**Închiderea zilei (night audit)**
+| Utilizatorul vrea… | Tool | Pagina |
+|---|---|---|
+| „Pot închide ziua? ce blochează" | `get_hotel_night_audit_status` → `simulate_hotel_night_audit` | `/hotel/front-desk?tab=nightaudit` |
+| „Închide ziua" | acord → `run_hotel_night_audit`; excepțiile: `resolve_hotel_night_audit_exception` | `/hotel/front-desk?tab=nightaudit` |
+
+**Tarife, canale, grupuri**
+| Utilizatorul vrea… | Tool | Pagina |
+|---|---|---|
+| „Ce tarife am în perioada X" | `list_hotel_rate_plans` → `get_hotel_rate_calendar` | `/hotel/rates` |
+| „Schimbă prețul / pune durată minimă / închide vânzarea" | `set_hotel_rate_prices` / `set_hotel_rate_restrictions` (după acord pe interval și valori) | `/hotel/rates` |
+| „Ce prețuri îmi recomandă sistemul" | `get_hotel_price_recommendations` → `approve_hotel_price_recommendation` / `reject_hotel_price_recommendation` | `/hotel/rates` |
+| „Coduri promo" | `list_hotel_promo_codes` / `create_hotel_promo_code` / `update_hotel_promo_code` | `/hotel/promo-codes` |
+| „Merge Booking/Expedia? paritate" | `get_hotel_channel_status` / `get_hotel_rate_parity` | `/hotel/channels` |
+| „Retrimite disponibilitatea / oprește sau repornește un canal" | `push_hotel_ari` / `replay_hotel_ota_sync` / `pause_hotel_channel` / `resume_hotel_channel` (după acord) | `/hotel/channels` |
+| „Blochează camere pentru un grup" | `list_hotel_group_blocks` / `create_hotel_group_block` / `update_hotel_group_block` | `/hotel/groups` |
+
+**După sejur și rapoarte**
+| Utilizatorul vrea… | Tool | Pagina |
+|---|---|---|
+| „Ce recenzii am / răspunde la recenzie" | `list_hotel_reviews` → `reply_hotel_review` (textul aprobat de utilizator) | `/hotel/reviews` |
+| „Ce feedback au lăsat oaspeții / recuperează un nemulțumit" | `get_hotel_feedback` → `update_hotel_feedback_recovery` | `/hotel/guest-feedback` |
+| „Ocupare, ADR, RevPAR, GOP" | `get_hotel_kpis` | `/hotel/analytics` |
+| „Cum stă fidelitatea hotelului / punctele oaspetelui" | `get_hotel_loyalty_overview` / `get_guest_loyalty_detail` | `/hotel/crm` |
+| „Setările hotelului / camere și tipuri" | `get_hotel_property_settings` / `update_hotel_property_settings`, `create_hotel_room` / `update_hotel_room`, `create_hotel_room_type` / `update_hotel_room_type` | `/hotel/property-settings`, `/hotel/rooms`, `/hotel/room-types` |
+
+Numele exacte și parametrii îi citești din schema live (`cauta_tool` → schema). Dacă un tool din tabel lipsește la tine, instanța are o versiune mai veche sau conexiunea nu are dreptul: fă operația din pagina indicată și nu inventa apeluri.
+
+## Navigare — o pagină pe zonă
+Modulul Hotel are **o pagină pe zonă** (adresă stabilă). Mergi direct cu linkul (ruta exactă o dă `gaseste_in_aplicatie("…")` sau `navigare-rapida.md` — nu inventa):
+- **`/hotel`** — panoul zilei (ocupare, sosiri, plecări, venituri).
+- **`/hotel/front-desk`** — recepția, centrul zilnic, cu sub-taburi **`?tab=`**: `arrivals` (sosiri), `departures` (plecări), `inhouse` (cazați acum), `rack` (harta camerelor), `nightaudit` (închiderea zilei).
+- **`/hotel/folios`** — note de cont; `?tab=transactions` (mișcări) / `?tab=tax` (defalcarea TVA).
+- **`/hotel/rooms`** (camere și stare), **`/hotel/room-types`** (tipuri), **`/hotel/housekeeping`** (curățenie și mentenanță).
+- **`/hotel/rates`** (tarife, restricții, recomandări), **`/hotel/revenue`** (venituri), **`/hotel/channels`** (Booking/Expedia), **`/hotel/groups`** (grupuri), **`/hotel/promo-codes`**.
+- **`/hotel/guests`** (oaspeți), **`/hotel/crm`** (loialitatea hotelului), **`/hotel/guest-feedback`**, **`/hotel/reviews`**, **`/hotel/property-settings`**, **`/hotel/analytics`**.
+
+Unitatea activă (brand + locație) e o stare a browserului — dacă hotelul e altă unitate decât cea activă, comut-o întâi (vezi `condu-chrome.md`).
+
+## Reguli care contează
+- **Check-in**: cere actul de identitate verificat (tipul și numărul) și o cameră **curată sau inspectată**. Dacă aplicația refuză (cameră nepregătită, rezervare anulată sau deja plecată, altă zi decât ziua de lucru, act lipsă), spune-i utilizatorului motivul și ce are de făcut; nu forța altă cameră și nu completa date inventate.
+- **Anularea se face numai prin `preview_hotel_cancellation` → `cancel_hotel_reservation`**: previzualizarea arată penalitatea, depozitul reținut și ce se returnează; anularea folosește exact valorile din previzualizare. Nu anula și nu marca neprezentare schimbând rezervarea (`modify_hotel_reservation` nu schimbă statusul). Ștergerea completă a unei rezervări nu există prin conexiune.
+- **Consum pe cameră**: `post_hotel_folio_charge` crește soldul notei de cont, **nu încasează** bani. O notă din POS (restaurant, bar) se trece pe cameră **din POS, la plată, cu „Trece pe cameră"** — nu o posta și pe nota de cont, s-ar dubla. Dacă se depășește limita de credit a camerei, e nevoie de aprobarea managerului în aplicație.
+- **Al cui e venitul consumului pe cameră**: pe **„outlet"** (implicit) rămâne venitul restaurantului, cu bonul lui, iar nota de cont îl arată doar informativ; pe **„folio"** se consolidează la hotel, fără bon la restaurant. La „de ce nu iese bon la restaurant" verifică întâi ce variantă e aleasă în setările hotelului.
+- **Încasarea** (`settle_hotel_folio`) emite documentul fiscal: confirmă suma și metoda. O **plată parțială lasă nota deschisă** (rămâne soldul); nota tipărită **înainte de plată** e **PROFORMA** (nu e document fiscal); cu opțiunea **„cere achitarea la check-out"** activă, check-out-ul nu trece cu sold neachitat.
+- **`get_hotel_availability`: `to` = ziua PLECĂRII, exclusivă** (3 nopți 10→13 = `from: 2026-06-10, to: 2026-06-13`). `roomTypeId` îl iei de aici, `roomId` din `list_hotel_rooms`, sejurul din `list_hotel_stays`, nota din `list_hotel_folios`.
+- **Închiderea zilei** schimbă ziua de lucru a hotelului. Rulează `simulate_hotel_night_audit`, arată ce blochează și cere acordul. Cât rulează, unele acțiuni (de exemplu consumul pe cameră) sunt blocate temporar — explică, nu reîncerca în buclă.
+- **Tarifele, restricțiile și retrimiterile spre canale ajung pe Booking/Expedia**: confirmă intervalul, tipurile de cameră și valorile înainte. Dacă o cameră pare vândută de două ori, verifică întâi `get_hotel_channel_status` (erori de sincronizare).
+- **Răspunsul la o recenzie e public**: scrie o propunere, arat-o și publică doar textul aprobat.
+- **Indicatori**: `get_hotel_kpis` poate întoarce GOP gol, cu motiv (de exemplu lipsesc costurile perioadei) — spune motivul, nu raporta zero.
+- **Nota de cont ≠ nota de restaurant; loialitatea hotelului ≠ loialitatea POS** — nopțile și punctele hotelului sunt în `/hotel/crm`, nu în `/loyalty`.
+- **Verifică prin citire, nu prin captură**: după o acțiune reușită recitește lista sau detaliul; captura de ecran e doar ca să-i arăți.
+- **Limbaj de hotelier** („ocupare", „note de cont", „sosiri/plecări", „trec consumul pe cameră"), fără nume tehnice de câmpuri.
+- **Nu inventa** camere, tarife, oaspeți, solduri sau acte — ce nu știi citești cu tool-ul sau întrebi utilizatorul.
 
 ## Legături
-- Concepte + harta de pagini + fluxuri zilnice + capcane (OTA, folio, check-out, loialitate separată) → `knowledge/hotel-pms.md`.
-- Doctrina „click rar" (tool → deep-link → click pe element; screenshot = livrabil; unitatea activă; fallback fără extensie) → `knowledge/condu-chrome.md`.
-- Link exact la orice pagină → `gaseste_in_aplicatie("…")` (sursa autoritară de navigare) + `navigare-rapida.md`.
-- Oaspeți & GDPR (export/anonimizare/merge profile) → ghidul „GDPR & date clienți" (`export_guest_gdpr_data`, `anonymize_guest`, `merge_guests`).
-- Rezervări & evenimente (sală, petreceri, contracte/avansuri), CRM de vânzări → skill-urile `gestioneaza-crm` + `construieste-prezentare`; recenzii Booking/TripAdvisor → skill-ul `raspunde-recenzii`.
-- Facturare fiscală a folio-ului → ghidul de finanțe (`finante-facturare-contabilitate.md`).
-- Blocaj (ceva ce nu se poate prin conexiune — check-out, tarife, OTA, night audit) → ghidează în aplicație + `trimite_ticket_symbai` ca sugestie dacă lipsește un tool util.
+- Concepte, pagini, fluxuri zilnice și capcane → `knowledge/hotel-pms.md`.
+- Tool întâi → link direct → click doar la nevoie; unitatea activă → `knowledge/condu-chrome.md`.
+- Link exact la orice pagină → `gaseste_in_aplicatie("…")` + `navigare-rapida.md`.
+- Oaspeți și GDPR (export, anonimizare, dubluri) → skill-ul `gestioneaza-date-clienti-gdpr` (`export_guest_gdpr_data`, `anonymize_guest`, `find_duplicate_guests`, `merge_guests`).
+- Evenimente, săli, contracte și avansuri; CRM de vânzări → `gestioneaza-crm`; recenziile în general → `raspunde-recenzii`.
+- Facturarea fiscală a notei de cont → `knowledge/finante-facturare-contabilitate.md`.
+- Ceva ce chiar nu se poate prin conexiune → ghidează în aplicație și trimite o sugestie cu `trimite_ticket_symbai`.
