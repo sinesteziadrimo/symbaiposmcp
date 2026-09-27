@@ -61,6 +61,16 @@ Pentru transcriere locală, organizatorul are nevoie de Symbai Connect și compo
 
 Încărcarea MCP acceptă cel mult 6 MiB înainte de codificare, cu `fileName` și `fileBase64` fără prefix `data:`. Omiterea ambelor păstrează fișierul. Pentru fișiere mai mari folosește încărcarea disponibilă în aplicație, fără a pretinde că MCP le acceptă. `read_crm_material_file` descarcă în fragmente verificate. `acknowledge_crm_material` confirmă lectura reviziei exacte numai dacă titularul a parcurs materialul; descărcarea de către asistent nu dovedește lectura angajatului.
 
+## Agenda CRM în Symbai Staff
+
+În versiunile care includ Agenda CRM, aceasta se deschide din pagina principală a agentului („Ziua ta în CRM”) sau Mai multe → CRM → Agenda CRM. Are întâlnirile pe zile, vizualizare personală/de echipă conform drepturilor, ore disponibile și editarea programului săptămânal. Orele agendei folosesc fusul telefonului, afișat pe ecran; programul săptămânal folosește fusul profilului de calendar. Modificarea orelor păstrează excepțiile și zilele libere existente.
+
+Din fișa oportunității se pot deschide prezentarea, porni Symbai Meet cu o prezentare aleasă și vedea întâlnirile clientului. Gazda deschide sala cu identitatea sa; nu distribui clientului linkul de gazdă. Pentru o sală de evenimente folosește întâlniri fizice, rezervare, produse, ofertă și avans. Pentru Symbai/software folosește fluxul ofertă → contract → facturi comerciale, fără conversie într-o rezervare.
+
+Staff poate trimite linkul de programare și linkul de plată al produselor sau al unei sume explicite în RON, când oportunitatea folosește rezervări. Pentru facturile Symbai deja emise, agentul poate partaja intrarea în contul de plată al clientului; acesta se autentifică în portalul Hub și verifică factura înainte să plătească. Partajarea nu dovedește livrarea mesajului și nici încasarea. Nu interpreta valoarea unei oportunități în EUR ca sumă RON și nu crea încă o plată când răspunsul celei anterioare este incert.
+
+Întâlnirile confirmate pot genera o notificare Staff pentru fiecare gazdă cu 15 minute înainte. Sunt respectate permisiunile, brandul și preferințele de notificare. Deschiderea notificării duce la ziua întâlnirii; dacă brandul activ este diferit, utilizatorul trebuie să îl selecteze. Notificările clientului pe email rămân configurate separat în tipul întâlnirii. Verifică versiunea și disponibilitatea live înainte să promiți că funcțiile sunt instalate.
+
 ## Cursuri online în Materiale
 
 Pentru cursuri cu lecții text/video, creare, editare, reordonare, publicare, ștergere și progres personal/al echipei folosește [Cursuri online în CRM](crm-cursuri-online.md). Instrumentele `list_crm_courses`, `create_crm_course` și editările punctuale de lecții sunt distincte de fișierele bibliotecii și de asistenții AI de mai jos. Verifică disponibilitatea live.
