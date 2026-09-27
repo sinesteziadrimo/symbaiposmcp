@@ -1,5 +1,7 @@
 # Claude Code + MCP Symbai — Model De Operare
 
+Pentru cursuri online în CRM, lecții text/video, editări, ștergeri și progres, citește [Cursuri online în CRM](crm-cursuri-online.md). Folosește schema instrumentelor live, revizia cursului și operații stabile la retry.
+
 Pentru modificarea sau anularea recepțiilor, citește [Corectarea recepțiilor prin MCP](corectare-receptii-mcp.md). Același ghid se aplică ChatGPT, Codex și Claude Code; folosește acordul existent și verifică factura, cantitățile fizice și contabilitatea.
 
 Acest fisier este ghidul transversal pentru agentii care folosesc pluginul Symbai in Claude Code. Scopul este simplu: raspunsuri corecte, actiuni sigure si rezultate verificate pe datele reale ale clientului.

@@ -1,6 +1,6 @@
 ---
 name: investigheaza-masa
-description: Investighează o masă, o notă, o comandă sau un ospătar — ce e pe masă acum, cine ce a comandat, anulări, discounturi, transferuri, plăți, retururi, cine a aprobat; plus cererile de aprobare (vezi/aprobă/respinge). La „ce e pe masa 12", „ce a făcut ospătarul Ion azi", „de ce s-a anulat nota X", „cine a dat discountul", „ce am de aprobat".
+description: Investighează o masă, o notă, o comandă sau un ospătar — ce e pe masă acum, cine ce a comandat, anulări, discounturi, transferuri, plăți, retururi, cine a aprobat; plus cereri de retur/discount/casă/client, transfer, split și aprobări/respingeri/acceptări. La „ce e pe masa 12", „ce a făcut ospătarul Ion azi", „de ce s-a anulat nota X", „cine a dat discountul", „ce am de aprobat".
 ---
 
 # Investighează o masă / notă / ospătar + aprobă cereri
@@ -35,12 +35,16 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 - Pentru `kind="new_item_on_terminal_parent"`: produsele acoperite de subtotalul încasat se inserează automat; dacă vezi `conflictCode="viva_confirmed"`, produsul nou DEPĂȘEȘTE suma de produse acoperită de plata Viva. Explică managerului: „plata Viva e reală și suma e fixată; produsul acesta nu este acoperit de tranzacția confirmată".
 - Workflow: `list_shadow_order_conflicts(orderId?/status:"active")` → dacă e nevoie de povestea notei, `get_order_timeline(orderId)` + `get_order_payments(orderId)` → dă link la Control Operațional (`/operations`) pentru decizie vizuală. Dacă tool-ul nu există încă pe instanță, trimite userul la pagina Control Operațional; alternativ, dacă tokenul are acces SQL doar-citire, poți căuta singur cererile de tip conflict de sincronizare (descoperă structura cu `list_database_tables` → `describe_database_table`).
 
-### 4. „Aprobă / respinge cererea" → `respond_operation_request`
-`respond_operation_request(requestId: 123, action: "approve", approvedBy: "Nume Manager", note: "…")` — aprobă sau respinge direct. Produce efectele complete (statusul produselor se actualizează, ospătarul primește notificare, se emit bonuri de retur la bucătărie, totul intră în jurnal).
-- **Confirmă MEREU cu utilizatorul înainte** de a aproba/respinge (e o acțiune reală).
-- **Excepție transferuri**: cererile de transfer între ospătari se pot doar RESPINGE de aici — aprobarea se face de ospătarul destinatar din aplicație (altfel produsele/masa nu s-ar muta efectiv).
-- **Excepție retururi split**: cererea „părinte" a unui retur împărțit pe secții NU se aprobă direct — primești o eroare care cere aprobarea sub-cererilor pe secții. Aprobă/respinge fiecare sub-cerere în parte (protecție contra dublei creditări).
-- Necesită ca pe conexiune (token) să fie activat dreptul de scriere pe „Comenzi POS" (din portal Hub → Acces AI). Dacă lipsește, tool-ul îți spune.
+### 4. Cereri și operațiuni POS prin conexiune nominală
+Descoperă schema live a instrumentului înainte de apel. Dacă instanța nu are încă extensia, explică necesitatea actualizării și folosește numai funcțiile disponibile.
+
+1. Identifică nota cu `get_table_status`, apoi citește `get_pos_operation_context(orderId)` pentru liniile exacte și cererile existente.
+2. `create_pos_operation` creează `return`, `house`, `discount` sau `customer`. Returul/casa cer selecție explicită de linii și cantități. Discountul pe selecție se aplică numai liniilor întregi; pentru o parte din cantitate folosește întâi split. Nu transforma consumul inclus într-un eveniment în „din partea casei”.
+3. `transfer_pos_items` mută selecția; `scope:"table"` mută întreaga masă, inclusiv liniile adăugate între timp. `transfer_pos_employee` transferă direct către ospătar cu dreptul corespunzător. `request_pos_transfer` trimite cererea către destinatar, pentru toată masa sau o selecție.
+4. `split_pos_bill` împarte pe produse/cantități sau pe sumă; nu încasează. `cancel_pos_split` reunește o notă copil eligibilă.
+5. `respond_operation_request(requestId, action)` decide cererea: `approve`/`reject`, `approve_return_stock`, `accept`/`decline` pentru transfer, `cancel` pentru retragere, `clarification` pentru retur/casă, `archive` pentru notificare respinsă. Identitatea vine din conexiune. Transferul se acceptă doar prin conexiunea destinatarului; nu inventa `approvedBy` ca să acționezi în numele lui. Returul împărțit pe secții se decide pe sub-cereri.
+
+Folosește `confirm:true` și, unde este cazul, `applyDirect:true` în baza mandatului explicit deja primit, fără reconfirmări inutile. Aplicarea directă respectă drepturile și politica unității; verifică starea returnată. Pentru aceeași intenție păstrează UUID-ul `localId`. După timeout, verifică cererea și ambele note înainte de retry; nu retrimite automat un transfer incert. `paymentMethod` se folosește numai la aprobarea unei confirmări de plată încă deschise; dacă pașii se opresc, raportează și notele a căror metodă s-a schimbat deja. Pentru fiscal, plăți și anularea unei note folosește instrumentele dedicate din catalog, nu o modificare generică de status.
 
 ### 5. „De ce s-a anulat nota X / ce s-a întâmplat cu comanda" → `get_order_timeline`
 `get_order_timeline(orderId: 1234)` — povestea completă a unei comenzi: antet (masă, ospătar, client, totaluri), produsele cu statusul fiecărei linii (activ/anulat/returnat/transferat), plățile (metode, bacșiș, fiscal), cererile de aprobare legate și jurnalul de audit (cine ce a făcut, când).
@@ -65,7 +69,7 @@ Pentru istoricul complet al unei comenzi anume de pe masă, treci la `get_order_
 - Cronologie pe oră/minut; folosește nume de ospătar/manager, nu ID-uri.
 - Pentru „cine a aprobat / cine a anulat" — citește autorul din eveniment, nu presupune.
 - Sume în RON. Nu arunca date brute — sintetizează.
-- Aprobare/respingere = acțiune reală: confirmă întâi cu utilizatorul, spune-i ce efect are.
+- Operațiile modifică nota: execută în limitele cererii utilizatorului și raportează starea efectivă, inclusiv pașii rămași.
 - Dacă nu găsești ceva: verifică numărul mesei/notei sau ora, lărgește perioada, sau întreabă utilizatorul. La mese cu același număr în locații diferite, trimite și `locationId`.
 
 ## Corelări complexe (rar) — SQL

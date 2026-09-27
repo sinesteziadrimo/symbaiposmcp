@@ -126,7 +126,16 @@ Capcane:
 
 **Scriere — modul `personal`:** `create_shift` (tura ospătarului; include secțiunea/raionul pentru rutarea comenzilor QR), `update_shift`, `bulk_create_shifts`.
 
-**Scriere — modul `comenzi_pos`:** `respond_operation_request` (aprobă/respinge o cerere de la ospătar — retur/discount/casă/client/confirmare plată/storno; produce efectele complete + notifică ospătarul). Confirmă mereu cu utilizatorul înainte. Transferurile între ospătari se pot doar respinge de aici (aprobarea se face de ospătarul destinatar din aplicație). `cancel_unpaid_order` (anulează o comandă deschisă, neplătită, netrimisă la bucătărie).
+**Operațiuni prin MCP — modul `comenzi_pos`, conexiune nominală:** verifică întâi catalogul live; instrumentele noi sunt disponibile după actualizarea instanței.
+- `get_pos_operation_context(orderId)` citește nota, identificatorii liniilor, cantitățile, prețurile și cererile existente în unitățile permise operatorului.
+- `create_pos_operation` creează retur, din partea casei, discount sau atribuire client. Pentru retur/casă se trimit liniile și cantitățile exacte. Discountul se aplică pe linii întregi sau pe întreaga notă; pentru o parte din cantitate, împarte nota înainte. `applyDirect:true` cere aplicarea imediată cu drepturile operatorului; starea returnată arată dacă s-a aplicat sau a rămas la aprobare.
+- `transfer_pos_items` mută selecția pe altă masă. `scope:"table"` înseamnă toată masa, inclusiv produsele adăugate între timp. `transfer_pos_employee` transferă direct către alt ospătar cu dreptul corespunzător.
+- `request_pos_transfer` cere preluarea mesei sau a produselor de către destinatar. Crearea cererii nu dovedește transferul.
+- `split_pos_bill` împarte pe produse/cantități sau pe sumă, creând o notă copil neîncasată. `cancel_pos_split` reunește o notă copil eligibilă cu părintele.
+- `respond_operation_request` permite `approve`, `reject`, `approve_return_stock`, `accept`, `decline`, `cancel`, `clarification` și `archive`, în funcție de tipul cererii și drepturile operatorului. Transferul se acceptă prin conexiunea nominală a destinatarului; un nume scris în argumente nu schimbă identitatea. Retururile împărțite pe secții se decid pe sub-cereri.
+- `cancel_unpaid_order` rămâne instrumentul pentru anularea unei note deschise, neplătite și netrimise la bucătărie. Copiile fiscale și rambursările folosesc fluxurile lor dedicate; un retur comercial nu rambursează automat o plată.
+
+Instrumentele noi de creare/transfer/split previzualizează implicit; `confirm:true` execută în baza mandatului utilizatorului. Nu cere din nou acordul pentru o operație deja cerută clar. Păstrează același `localId` pentru aceeași intenție de retur/discount/split. După întrerupere sau rezultat necunoscut, recitește cererea și notele sursă/destinație înainte de reluare; transferurile nu se retrimit orbește. La confirmare de plată cu schimbare de metodă, citește și lista notelor deja modificate dacă decizia finală a eșuat.
 
 **SQL (dacă tokenul are SQL activat):** `list_database_tables` → `describe_database_table` → `execute_sql_query` (doar citire).
 

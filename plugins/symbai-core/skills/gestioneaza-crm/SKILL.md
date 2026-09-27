@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-crm
-description: CRM-ul de vânzări — pipeline lead-uri/deal-uri, activități, oferte comerciale cu variante, configurare pe vertical, rezervări, evenimente, jocuri/atracții. Calendare de vânzări stil Calendly, Symbai Meet, Head of Sales/Team Leader, materiale și Academia de training. La „configurează-mi CRM-ul", „pipeline de vânzări", „adaugă lead/deal", „fă/arată oferta clientului", „organizează o petrecere/eveniment", „de ce nu văd pagina CRM".
+description: CRM-ul de vânzări — pipeline lead-uri/deal-uri, activități, oferte comerciale cu variante, configurare pe vertical, rezervări, evenimente, jocuri/atracții. Calendare de vânzări stil Calendly, Symbai Meet, Head of Sales/Team Leader, materiale, cursuri online cu lecții text/video și progres, și Academia de training. La „configurează-mi CRM-ul", „pipeline de vânzări", „adaugă lead/deal", „fă/arată oferta clientului", „organizează o petrecere/eveniment", „de ce nu văd pagina CRM".
 ---
 
 # Gestionează CRM-ul de vânzări — pipeline, configurare, rezervări, evenimente & jocuri
@@ -10,6 +10,8 @@ Ești asistentul Symbai care ajută clientul (proprietar/manager) să-și conduc
 ## Configurare, calendare și training prin MCP
 
 Pentru echipe, funcții comerciale, programări publice, Symbai Meet, materiale sau asistenți de training citește [ghidul CRM de configurare](../../knowledge/crm-configurare-calendar-training.md). Începe cu descoperirea live și `get_crm_configuration_guide` dacă este disponibil. Ghidul nu dovedește publicarea funcțiilor pe tenant. Academia pentru oameni este distinctă de asistenții personali din grupuri.
+
+Pentru creare/editare de cursuri online, lecții, video, ordine, publicare, ștergere și progres citește [Cursuri online în CRM](../../knowledge/crm-cursuri-online.md). Acesta este fluxul comun Claude Code/Codex; nu confunda cursurile din Materiale cu trainingul AI.
 
 ## Înainte de orice
 1. Citește **`knowledge/agent-operare-avansata.md`** pentru standardul de lucru cap-coadă, apoi **`knowledge/crm-vanzari-pipeline.md`** (pagina `/sales-crm` cu toate taburile ei, pipeline Kanban + lifecycle deal, fișa de eveniment, funcții AI, adaptarea per vertical, configurarea `/settings/sales-crm`) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`. Mecanica detaliată a rezervărilor/evenimentelor (BEO, contract e-sign, avans, P&L) e în `knowledge/rezervari-clienti-evenimente.md`; jocurile/atracțiile în `knowledge/jocuri-activitati.md`.
@@ -22,7 +24,7 @@ Pentru echipe, funcții comerciale, programări publice, Symbai Meet, materiale 
 
 ## Regula de aur
 
-ID-uri, nu nume (`brandId`, `locationId`, `gameId`). **Caută înainte de a crea** (`create_customer`/`create_reservation` pot face dedupe pe nume exact). La jocuri, **verifică ÎNTÂI disponibilitatea** (`check_game_availability`/`get_game_slots`) înainte de `create_game_reservation` — overbooking-ul e capcana #1. După orice scriere, **verifică prin CITIRE**, nu prin UI (interfața se actualizează la refresh). Ștergerea de entități întregi NU se face prin conexiune — îndrumă userul în aplicație.
+ID-uri, nu nume (`brandId`, `locationId`, `gameId`). **Caută înainte de a crea** (`create_customer`/`create_reservation` pot face dedupe pe nume exact). La jocuri, **verifică ÎNTÂI disponibilitatea** (`check_game_availability`/`get_game_slots`) înainte de `create_game_reservation` — overbooking-ul e capcana #1. După orice scriere, **verifică prin CITIRE**, nu prin UI (interfața se actualizează la refresh). Pentru ștergere, folosește numai instrumentele dedicate disponibile și cererea autorizată: cursurile/lecțiile au `delete_crm_course` / `delete_crm_course_lesson`, cu ID și revizie exactă. Pentru entități fără instrument de ștergere, folosește aplicația.
 
 ## (a) Configurează CRM-ul pe verticalul clientului (MCP și UI)
 

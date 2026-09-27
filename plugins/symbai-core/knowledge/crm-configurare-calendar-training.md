@@ -61,6 +61,10 @@ Pentru transcriere locală, organizatorul are nevoie de Symbai Connect și compo
 
 Încărcarea MCP acceptă cel mult 6 MiB înainte de codificare, cu `fileName` și `fileBase64` fără prefix `data:`. Omiterea ambelor păstrează fișierul. Pentru fișiere mai mari folosește încărcarea disponibilă în aplicație, fără a pretinde că MCP le acceptă. `read_crm_material_file` descarcă în fragmente verificate. `acknowledge_crm_material` confirmă lectura reviziei exacte numai dacă titularul a parcurs materialul; descărcarea de către asistent nu dovedește lectura angajatului.
 
+## Cursuri online în Materiale
+
+Pentru cursuri cu lecții text/video, creare, editare, reordonare, publicare, ștergere și progres personal/al echipei folosește [Cursuri online în CRM](crm-cursuri-online.md). Instrumentele `list_crm_courses`, `create_crm_course` și editările punctuale de lecții sunt distincte de fișierele bibliotecii și de asistenții AI de mai jos. Verifică disponibilitatea live.
+
 ## Academia: asistentul de training
 
 Academia este pentru instruirea și evaluarea oamenilor. Este distinctă de asistenții personali din grupuri (`asistent_creeaza`) și de agenții AI de vânzări către clienți. Dreptul de a edita agenți AI nu acordă dreptul de a administra probele oamenilor.
