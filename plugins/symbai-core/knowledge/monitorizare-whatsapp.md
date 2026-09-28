@@ -38,7 +38,15 @@ Mesajele proprietarului scrise de pe telefonul lui nu pornesc rulări (el se des
 
 ## Urmărire live din asistentul interactiv
 
-`watch_chat` cu `dispatch: "stream"` nu pornește nimic automat: agentul publică evenimentele pe un flux local (`/api/watches/stream`, autentificat cu tokenul local al asistentului), pe care asistentul deschis îl ascultă cu `Monitor`. Se închide sesiunea, se închide și acoperirea.
+Când proprietarul vrea ca **numai asistentul din conversația lui** să răspundă („trimite-mi tot aici”, „să nu mai răspundă altcineva”), monitorizarea trece pe `dispatch: "stream"` (`watch_chat` sau `update_watch`): Connect nu mai pornește niciun asistent în fundal, iar mesajele ajung în sesiunea deschisă.
+
+- Rezultatul are `flux.comanda` (`SymbaiConnect.exe --listen <id>`). Rul-o cu `Monitor`, persistent. Fiecare mesaj care declanșează apare ca un bloc 📩: grup, expeditor, oră, Message ID, text, media, linkuri. Tokenul local nu apare în comandă.
+- Când `Monitor` expiră, rulează **aceeași** comandă: ascultătorul ține minte ultimul mesaj primit, iar ce a venit între timp se livrează imediat, fără dubluri. Nu înlocui fluxul cu `list_messages` periodic.
+- Se închide sesiunea, se oprește și răspunsul: mesajele din pauză se livrează la redeschidere (cât timp serviciul nu a fost repornit). Dacă omul vrea acoperire și cu sesiunea închisă, monitorizarea revine pe `codex`/`claude`.
+
+## Documente primite ca link
+
+Un link `docs.google.com` / `drive.google.com` dintr-un mesaj se deschide cu `read_document_link` (pe serverul WhatsApp, disponibil și rulărilor automate) sau cu `drive_read` și linkul întreg (serverul `symbai-google`), prin contul Google conectat în Symbai Connect. Rezultatul este TEXTUL documentului, inclusiv pentru Slides, PDF, Word, Excel și PowerPoint din Drive. Nu încerca linkul pe web (Google arată doar pagina de login) și nu cere omului PDF-ul decât dacă unealta spune că niciun cont conectat nu are acces; atunci spune cu ce cont să fie partajat.
 
 ## Diagnostic
 
