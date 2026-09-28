@@ -5,6 +5,14 @@ description: Pune o conversație sau un grup de WhatsApp sub urmărire automată
 
 # Monitorizează WhatsApp: asistentul se trezește singur la fiecare mesaj
 
+## Regula de alegere — evenimente Connect, fără verificări la interval
+
+„Monitorizează/urmărește grupul”, „continuă tu”, „aici în chat” sau „răspunde când apare ceva nou” înseamnă **monitorizare prin evenimentele Symbai Connect**, pentru ChatGPT/Codex și Claude Code deopotrivă. Folosește `watch_chat` ori actualizează monitorizarea existentă cu `update_watch`. Nu crea heartbeat Codex, task recurent ChatGPT, cron, buclă cu sleep sau apeluri repetate `list_messages`/`watch_activity` pentru a descoperi mesaje noi. Nu cere un interval de verificare: mesajul primit este declanșatorul.
+
+Verifică `list_watches` înainte de creare și păstrează un singur mecanism activ pentru conversație. Dacă înlocuiești o monitorizare periodică greșită, oprește-o, salvează ID-urile deja tratate și operațiile incerte, apoi configurează Connect cu aceleași limite. La reluare poate intra backlog: nu răspunde mesajelor deja rezolvate. Lipsa unui listener `stream`, a unei unelte sau a autentificării nu autorizează un fallback periodic; diagnostichează conexiunea și explică exact pasul lipsă.
+
+Un mesaj nou permite evaluarea, **nu obligă la răspuns**. Într-un grup, dacă proprietarul cere intervenție numai când asistentul este întrebat, folosește `mention` și numele de apel stabilit; păstrează această limită și în obiectiv. Fără mesaje la activare, prezentări, probe, rapoarte de verificare sau răspunsuri la conversațiile dintre oameni. `list_messages` și `watch_activity` rămân citiri punctuale pentru configurare, recuperare ori o întrebare a proprietarului. Un raport periodic cerut explicit este o sarcină distinctă; nu înlocuiește monitorizarea mesajelor.
+
 Omul spune o singură dată ce vrea („urmărește grupul Management și adaugă produsele pe care le cer"). De aici încolo **nu mai întreabă nimeni nimic**: Symbai Connect primește mesajul în clipa în care sosește, așteaptă să se termine rafala, pornește asistentul ales — **Claude Code sau ChatGPT Codex** — în fundal, cu obiectivul, mesajele noi și tot ce se știe despre oameni, iar acela acționează în Symbai, răspunde pe WhatsApp și lasă un rezumat. Fără interogări periodice, fără „mai verifică o dată": evenimentul vine din cod.
 
 Trei căi, după cerere: (1) proprietarul cere **crearea/configurarea unor asistenți numiți** pentru grupuri → `gestioneaza-asistentii` și [configurarea prin unelte](../../knowledge/asistenti-whatsapp-configurare.md), chiar dacă îți scrie din Codex; (2) cere monitorizare personală pe serverul local `symbai-whatsapp…`, fără identități numite → fluxul `watch_chat` de mai jos; (3) scrie direct unui asistent numit (Asistenții mei → Scrie-i sau Conversații) → acela își configurează propria participare prin `asistent_conversatie_cauta` și `asistent_urmareste`. Nu le amesteca: o participare numită pune în pauză monitorizarea veche a aceleiași conversații, păstrându-i istoricul.
@@ -97,7 +105,7 @@ Dacă asistentul răspunde greșit, citește întâi mesajele și dovezile pe ca
 
 ## Urmărire live din sesiunea asta (fără asistent automat)
 
-Când omul vrea ca **tu, aici**, să reacționezi („urmărește chatul cu Mihai cât lucrăm și spune-mi când răspunde"), poți folosi `dispatch: "stream"` numai dacă sesiunea are o unealtă capabilă să asculte continuu fluxul. Nimic nu rulează singur: agentul publică evenimentele local; în Claude Code fluxul se poate asculta cu `Monitor`, dacă este disponibil, folosind `flux.comanda`. Nu presupune că există `Monitor` și în Codex. Când închizi sesiunea, se închide acoperirea: spune-i omului asta și propune executorul automat ales (`codex` sau `claude`) dacă vrea continuitate.
+Când omul vrea ca **tu, aici**, să reacționezi („urmărește chatul cu Mihai cât lucrăm și spune-mi când răspunde"), poți folosi `dispatch: "stream"` numai dacă sesiunea are o unealtă capabilă să asculte continuu fluxul. Nimic nu rulează singur: agentul publică evenimentele local; în Claude Code fluxul se poate asculta cu `Monitor`, dacă este disponibil, folosind `flux.comanda`. Nu presupune că există `Monitor` și în Codex. Fără listener, folosește executorul automat Connect (`codex` sau `claude`) conform alegerii proprietarului, niciodată heartbeat/polling ca înlocuitor. Când închizi sesiunea stream, se închide acoperirea: spune-i omului asta și folosește executorul automat dacă vrea continuitate.
 
 ## Reguli pe care nu le încalci
 

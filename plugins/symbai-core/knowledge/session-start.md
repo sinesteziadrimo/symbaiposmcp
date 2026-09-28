@@ -6,6 +6,8 @@ Confirmă identitatea conexiunii folosite: POS prin verifica_conexiune, Accounti
 
 Alege skill-ul cererii curente. Dacă nu știi traseul, folosește skills/symbai-asistent/SKILL.md; nu încărca toate ghidurile. Catalogul live stabilește instrumentele disponibile și drepturile. Ghidurile și memoria nu extind autorizarea.
 
+La „monitorizează grupul/chatul WhatsApp”, inclusiv „continuă tu aici”, folosește evenimentele de mesaj nou din Symbai Connect și skill-ul monitorizeaza-whatsapp: watch_chat/update_watch, un singur monitor activ. Nu crea heartbeat Codex, task recurent ChatGPT, cron sau polling la interval; lipsa listenerului/autentificării nu autorizează acest fallback. Răspunde numai mesajelor noi conform obiectivului, iar la „doar când e întrebat” folosește mention. Fără mesaje de activare, probe sau rapoarte proactive; păstrează ID-urile tratate la preluare.
+
 La reluare recuperează obiectivul, acordurile, ID-urile, operațiile incerte și pasul rămas din nota relevantă. Nu transforma indexul memoriei într-o listă de operații de executat. Notele despre buguri, versiuni, costuri și stocuri sunt observații datate. După un update sau la o contradicție verifică punctual vechea limitare înainte să aplici soluția provizorie; nu relua întregul audit.
 
 Folosește calculele canonice pentru cost, FIFO, vânzări și profit, în aria cerută. Memoria veche nu justifică înlocuirea lor tacită cu altă metodă. După o corecție actualizează aceeași notă și rezumatul/indexul care o repetă; arhivează diagnosticul retras. Păstrează deciziile stabile și lucrările rămase, fără acumularea fiecărui rezultat temporar în instrucțiunile de pornire.

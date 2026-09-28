@@ -37,6 +37,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 
 **Chat privat din Symbai Staff cu Codex/Claude Code:** [chat-staff](../chat-staff/SKILL.md) — firma și contul vin automat din Staff, Connect execută cu conexiunea exactă, iar răspunsul revine pe telefon.
 
+**„Monitorizează/urmărește grupul WhatsApp”, inclusiv „continuă tu aici”:** [monitorizeaza-whatsapp](../monitorizeaza-whatsapp/SKILL.md) — evenimentele de mesaj nou din Symbai Connect, prin `watch_chat` / `update_watch`. Nu crea heartbeat Codex, task recurent ChatGPT, cron sau polling la interval și nu cere frecvența. Verifică monitorizarea existentă, evită dublurile și răspunde numai mesajelor noi care îndeplinesc obiectivul; pentru „doar când e întrebat”, folosește `mention`. Fără mesaje proactive de activare sau verificare. Lipsa listenerului nu autorizează polling.
+
 **Asistenți personali numiți în grupurile echipei:** [gestioneaza-asistentii](../gestioneaza-asistentii/SKILL.md) — creează roluri AI proprii, configurează participările și accesul restrâns, citește activitatea și îmbunătățește instrucțiunile și memoria din feedback.
 
 **Implementări (implementator / coordonator):** [coordoneaza-implementarile](../coordoneaza-implementarile/SKILL.md) — întrebările asistenților de implementare, îndrumarea lor, pauză/pornire, sarcini și persoanele clientului (WhatsApp + grup intern, fără dubluri).

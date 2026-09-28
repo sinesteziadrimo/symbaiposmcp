@@ -4,6 +4,8 @@
 
 ## Pe scurt
 
+Pentru **„monitorizează grupul/chatul WhatsApp”**, folosește [monitorizarea prin Symbai Connect](monitorizare-whatsapp.md): asistentul este declanșat de mesajele noi, cu `watch_chat` / `update_watch`. Nu crea automatizări la interval, heartbeat-uri sau bucle de citire în ChatGPT/Codex ori Claude Code. Respectă cererea de a răspunde numai când asistentul este întrebat; activarea nu autorizează un mesaj în grup.
+
 Symbai adună într-un singur inbox mesajele de la clienți de pe toate canalele — WhatsApp Business, mesaje directe și comentarii de pe paginile sociale — ca să le poți citi și răspunde dintr-un singur loc, cu sugestii de răspuns de la AI. Conversațiile se pot lega de fișa clientului și de pipeline-ul de vânzări (CRM). Înainte de orice mesaj de marketing, sistemul verifică automat consimțământul. Acest ghid e despre conversațiile 1-la-1 cu clienții; pentru postări programate și reclame, vezi ghidul „Marketing & Social Media".
 
 ## Concepte
