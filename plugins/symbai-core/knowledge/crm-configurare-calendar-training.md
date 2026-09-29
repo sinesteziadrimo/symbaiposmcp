@@ -45,6 +45,8 @@ Pentru Symbai Meet selectează o prezentare existentă și configurează când s
 
 Pentru transcriere locală, organizatorul are nevoie de Symbai Connect și componenta Dictate pregătită pe calculatorul de unde participă. Un executor AI online pe alt calculator nu dovedește această disponibilitate. Verifică starea transcrierii din întâlnire; dacă serviciul local nu este disponibil, nu afirma că discuția a fost transcrisă local. Invitarea, participarea, transcrierea și înregistrarea sunt etape distincte, fiecare cu setările și rezultatul ei. Pentru dictare și citirea răspunsurilor vezi [accesibilitate și voce](accesibilitate-voce.md).
 
+În întâlnire, organizatorul are și butonul **Sfaturi**: un canal privat cu Sym pe care clientul nu îl vede. Sym urmărește discuția (chat și, cu Connect, ce se spune), sugerează răspunsuri la obiecții și dă butoane care deschid pagina potrivită pentru toată sala. Frecvența (fără sfaturi, doar la cerere, automat rar sau des), tonul, regulile și informațiile lui Sym se aleg din setările Sym ale întâlnirii și rămân pe calculatorul organizatorului. Același asistent lucrează și în [webinarii](crm-webinarii.md).
+
 ## Agenda și lucrul zilnic
 
 `get_crm_workspace` are secțiuni: `overview`, `cards`, `tasks`, `staff`, `report`, `teams`. Cardurile folosesc cursor; celelalte liste folosesc offset. Trimite numai filtrele acceptate de secțiune. Pentru întâlnirile online și fizice ale zilei folosește și `get_crm_calendar(section:meetings)`. Sarcinile și întâlnirile sunt obiecte distincte.

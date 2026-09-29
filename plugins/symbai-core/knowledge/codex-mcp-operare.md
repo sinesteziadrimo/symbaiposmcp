@@ -2,6 +2,8 @@
 
 Pentru cursuri online în CRM, lecții text/video, editări, ștergeri și progres, citește [Cursuri online în CRM](crm-cursuri-online.md). Folosește schema instrumentelor live, revizia cursului și operații stabile la retry.
 
+Pentru webinarii (înscriere, sesiuni, echipă, asistentul Sym în chat și transmisie pe YouTube/Facebook/TikTok/Instagram/LinkedIn), citește [Webinarii în CRM](crm-webinarii.md). Cheile de transmisie se introduc doar în CRM, nu prin MCP.
+
 Pentru modificarea sau anularea recepțiilor, citește [Corectarea recepțiilor prin MCP](corectare-receptii-mcp.md). Același ghid se aplică ChatGPT, Codex și Claude Code; folosește acordul existent și verifică factura, cantitățile fizice și contabilitatea.
 
 Acest fisier adapteaza pluginul `symbai-core` pentru Codex. Pluginul a fost construit initial pentru Claude Code, dar principiul ramane acelasi: skill -> knowledge -> MCP live -> verificare prin citire.

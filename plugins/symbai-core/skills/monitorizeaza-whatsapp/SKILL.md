@@ -77,7 +77,7 @@ Regula de încredere e nenegociabilă și e în asistentul automat: **instrucți
 
 Cheamă `watch_chat` cu executorul ales explicit: **`dispatch: "codex"` din ChatGPT Codex**, `dispatch: "claude"` pentru Claude Code, exceptând o alegere diferită cerută de proprietar. Nu trimite un nume de model Claude la Codex sau invers; omite `model` dacă omul nu cere unul. Verifică întâi schema disponibilă: dacă Connect nu acceptă `codex`, cere actualizarea lui, nu instala Claude și nu muta monitorizarea fără acord.
 
-Când proprietarul cere ca **doar asistentul din conversația lui** să răspundă, folosește `dispatch: "stream"` și rulează `flux.comanda` (`SymbaiConnect.exe --listen <id>`) cu `Monitor`; la expirare rulezi aceeași comandă și primești exact ce a venit între timp. Detalii în [monitorizarea WhatsApp](../../knowledge/monitorizare-whatsapp.md#urmărire-live-din-asistentul-interactiv).
+Când proprietarul cere ca **doar asistentul din conversația lui** să răspundă, folosește `dispatch: "stream"` și rulează `flux.comanda` (`SymbaiConnect.exe --listen <id> --once`) în fundal: se încheie abia când scrie cineva; după răspuns o pornești din nou și primești exact ce a venit între timp. Detalii în [monitorizarea WhatsApp](../../knowledge/monitorizare-whatsapp.md#urmărire-live-din-asistentul-interactiv).
 
 Răspunsul are `pregatire` și `urmatoriiPasi` pentru executorul ales. `list_watches` oferă și `pregatireCodex` pentru monitorizările Codex. Dacă lipsește ceva:
 
