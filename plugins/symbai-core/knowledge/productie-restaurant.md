@@ -128,6 +128,19 @@ Butonul **„Transformare rapidă"** e în Producție (`/productie-evenimente`) 
 
 **Ce poate refuza**: materie primă care nu e în rețeta existentă (se modifică rețeta, nu se face produs dublat); gestiune de fabrică; prima transformare fără dreptul de rețete (o face un manager); tip de produs fără stoc. Dacă materia primă folosită nu avea stoc/lot, lotul obținut poate rămâne blocat la control până se completează proveniența — verifică recepția materiei prime.
 
+## Bucătarul declară ce a folosit (nu doar în fabrică)
+
+Când rețeta spune „apă **sau** fond clar de legume” ori fiecare bucătar pune altceva, consumul nu trebuie să rămână fix pe rețetă. Există două căi, ambele de restaurant/catering:
+
+1. **Bucătăria de evenimente, consum „Declarat de bucătar”** — `/bucatarie` → vederea **„Evenimente”** → butonul **Setările bucătăriei** → *Consumul de ingrediente* = **„Declarat de bucătar”**. Setarea e pe locație și o schimbă cine are drept de gestionare sau planificare a producției.
+   - Pe fiecare preparat al evenimentului, bucătarul (cu PIN-ul lui) trece ce a pus în oală, de câte ori vrea, inclusiv ingrediente care nu sunt în rețetă. Rețeta rămâne ca sugestie.
+   - La finalizare se scade **numai ce a declarat**, cu cost FIFO real, care intră în costul evenimentului. Fără nicio linie declarată, aplicația cere confirmare înainte să finalizeze fără consum.
+   - Se aplică rundelor pornite după schimbare și doar preparatelor din evenimente (rezervări cu meniu). Producția din afara evenimentelor scade în continuare rețeta.
+   - **MCP**: `get_event_kitchen_settings` (`locationId`) citește modul curent; `configure_event_kitchen_settings` (`locationId`, `consumptionMode: "declared"`) îl schimbă. Câmpurile omise rămân cum sunt. Cere autentificare nominală și drept de gestionare sau planificare a producției; confirmă întâi cu utilizatorul locația.
+2. **Înlocuiri de consum** — pe `/bucatarie`, vederea clasică: o regulă pe interval („de luni până vineri, în loc de apă s-a folosit fond de legume”), aplicată automat consumului din acea perioadă. Detalii: `inlocuiri-temporare-ingrediente.md`.
+
+Dacă niciuna nu se folosește, consumul urmează rețeta, iar diferența apare la inventar.
+
 ## „Ce-ți cere userul → ce faci" (cheatsheet restaurant)
 
 | Userul spune… | Ce faci |
@@ -165,4 +178,5 @@ Butonul **„Transformare rapidă"** e în Producție (`/productie-evenimente`) 
 - **Am planificat 5, dar a ieșit altă cantitate. Ce intră pe stoc?** → `plannedQty=5` reprezintă 5 unități de randament, nu 5 ture. Declară cantitatea efectiv obținută în `actualOutputQty`. Păstrează în `actualQty` cantitatea de rețetă pentru care ai folosit ingredientele; o pierdere de randament nu trebuie să reducă ingredientele deja consumate.
 - **Am înregistrat greșit un lot finalizat. Îl pot storna?** → Da, prin fluxul canonic: `preview_production_cleanup` pe `batchIds` explicite, apoi `delete_production_period` pe aceeași selecție autorizată, cu `confirm:true` și `acknowledgeAccountingImpact:true`. Pentru un singur lot folosește `maxBatches:1`, fără cascadă; verifică întâi documentele, gestiunea, perioada și dependențele din previzualizare. Verifică prin citire lotul și mișcările după execuție, inclusiv după un timeout, înainte de orice repetare. Nu confunda stornarea evidenței greșite cu recuperarea fizică a ingredientelor unei producții reale; pentru neconformități folosește fluxul de calitate/retușare. `exec_cancel_batch` nu înlocuiește stornarea unui lot deja postat.
 - **De ce a scăzut alt lot de marfă decât mă așteptam?** → Verifică loturile alocate explicit și ordinea intrărilor. Producția simplă de restaurant alege automat FIFO pentru restul necesarului. Nu atribui alegerea datei expirării fără să verifici traseul folosit.
+- **Pot trece ingredient cu ingredient ce a folosit bucătarul la un lot?** → Da, la evenimente: Bucătăria de evenimente cu consumul „Declarat de bucătar” (secțiunea de mai sus). Nu e o funcție exclusivă de fabrică. Pentru o schimbare pe o perioadă folosește Înlocuirile de consum.
 - **Am nevoie de stații de lucru, scanare QR, planificare, control calitate.** → Acelea sunt funcții de **fabrică** — vezi `productie-fabrica.md`. Pentru un restaurant clasic nu sunt necesare și complică inutil.
