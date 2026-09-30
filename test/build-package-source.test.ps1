@@ -13,7 +13,10 @@ try {
     $commit = & git -C $repo rev-parse HEAD
     if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve test source' }
     $sourceZip = Join-Path $testRoot 'source.zip'
-    & git -C $repo archive --format=zip --output=$sourceZip $commit -- .claude-plugin/marketplace.json plugins
+    # Only marketplace plugins are packaged; standalone review packages under plugins/ are not.
+    $marketplace = (& git -C $repo show "${commit}:.claude-plugin/marketplace.json") -join "`n" | ConvertFrom-Json
+    $pluginPaths = @($marketplace.plugins | ForEach-Object { "plugins/$($_.name)" })
+    & git -C $repo archive --format=zip --output=$sourceZip $commit -- .claude-plugin/marketplace.json @pluginPaths
     if ($LASTEXITCODE -ne 0) { throw 'Cannot archive test source' }
     $output = Join-Path $testRoot 'package.zip'
     & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Join-Path $repo 'build-package.ps1') -SourceRef $commit -Output $output
