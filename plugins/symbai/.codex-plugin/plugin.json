@@ -1,0 +1,46 @@
+{
+  "name": "symbai",
+  "version": "1.0.0",
+  "description": "Read sales, products, orders and stock from your Symbai company.",
+  "author": {
+    "name": "Symbai",
+    "email": "support@symbai.app",
+    "url": "https://symbai.app"
+  },
+  "homepage": "https://symbai.app/en/",
+  "license": "MIT",
+  "keywords": [
+    "symbai",
+    "sales",
+    "inventory",
+    "products",
+    "business",
+    "pos"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Symbai",
+    "shortDescription": "Sales and stock insights",
+    "longDescription": "Ask about sales, products, orders and recorded stock in your Symbai company. Compare periods, find best-selling products and inspect product and order details using the access granted to your employee account. Requires an existing Symbai account and AI access enabled by your company administrator. This version reads data; it does not change products, stock, orders or payments.",
+    "developerName": "MP RIVERSIDE GROUP",
+    "category": "Productivity",
+    "capabilities": [
+      "Sales reports",
+      "Product search",
+      "Order details",
+      "Stock levels"
+    ],
+    "websiteURL": "https://symbai.app/en/",
+    "privacyPolicyURL": "https://symbai.app/en/privacy",
+    "termsOfServiceURL": "https://symbai.app/en/terms",
+    "defaultPrompt": [
+      "Summarize yesterday's sales in Symbai.",
+      "Which products sold best this month?",
+      "Show the current recorded stock in my warehouses."
+    ],
+    "brandColor": "#0771D5",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/icon.png"
+  }
+}
