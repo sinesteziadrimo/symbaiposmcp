@@ -19,7 +19,7 @@ o listă de cauze posibile și nu alege una ca să ai ce răspunde** — un moti
 plauzibil spus pe un ton sigur trimite omul să repare altceva decât ce e stricat,
 iar el pierde o zi.
 
-1. Apelează `connection_status` (serverul MCP local al Symbai Connect). Merge chiar
+1. Dacă serverul local Symbai Connect oferă `connection_status`, apelează-l. Merge chiar
    și când toate celelalte tool-uri refuză — exact pentru asta există.
 2. Citește blocul `conectare`:
    - `stare` — verdictul: `licenta_valida_mcp_neverificat` (în versiunile vechi `ok`), `neactivat`, `oprit_de_symbai`, `fara_legatura`, `blocat_local`, `offline`, `fara_date_pos`. Licența validă nu confirmă uneltele din conversație.
@@ -79,11 +79,11 @@ descarce încă unul.
 
 ## Văd puține tool-uri / lipsesc module întregi (furnizori, meniuri, P&L…)
 
-Dacă serverul POS răspunde, `cauta_tool` caută în catalogul lui, iar `verifica_conexiune` arată identitatea și restricțiile. Dacă serverul întreg lipsește sau tocmai a fost conectat, verifică întâi încărcarea lui în conversație. Catalogul POS nu include uneltele locale WhatsApp/Google. Pentru un server POS funcțional, verifică:
+Dacă serverul POS răspunde și oferă `cauta_tool`, acesta caută în catalogul lui, iar `verifica_conexiune` arată identitatea și restricțiile. Dacă serverul întreg lipsește sau tocmai a fost conectat, verifică întâi încărcarea lui în conversație. Catalogul POS nu include uneltele locale WhatsApp/Google. Pentru un server POS funcțional, verifică:
 
-1. **Aria de angajat** (`arieAngajat.restransa: true`) — contul e alocat doar pe o PARTE din unitățile active (branduri / locații / gestiuni permise). Atunci rămân doar tool-urile cu verificare de arie, iar `tooluriCuArieCompleta` arată câte ar fi altfel. Remediu, în aplicație, de un administrator cu rol complet (de regulă proprietarul): Personal → fișa angajatului → pe fiecare axă limitată bifează unitățile active lipsă sau apasă «Permite toate». Unitățile dezactivate/arhivate nu contează. Efectul apare la următoarea pornire a sesiunii (reconectare) — spune-i explicit să repornească.
-2. **Rolul POS** — modulele se derivă generos din permisiunile rolului; un rol îngust (ospătar, bucătar) vede doar modulele domeniului lui, iar uneltele sensibile (salarii, contracte, registru de casă, jurnal, blocare perioadă, infrastructura din Setări) cer exact permisiunea paginii echivalente. Ștergerile de perioadă, GDPR-ul și forțările tehnice sunt doar pentru rolul complet. Remediu: `configureaza-roluri` (completează rolul), nu SQL.
-3. **Profilul de tool-uri** al tokenului (restaurant / fabrică / construcții / hotel / marketing) — ascunde domeniile din afara verticalei; se schimbă din Hub → Acces AI (revocă și acordă din nou cu profilul dorit).
+1. **Aria de angajat** (`arieAngajat.restransa: true`) — contul e alocat doar pe o PARTE din unitățile active (branduri / locații / gestiuni permise). Atunci rămân doar tool-urile cu verificare de arie, iar `tooluriCuArieCompleta` arată câte ar fi altfel. Verifică dacă această limitare este intenționată. Numai pentru o extindere cerută și autorizată, administratorul actualizează alocările din Personal → fișa angajatului; «Permite toate» este potrivit doar dacă accesul la toate unitățile a fost cerut. Unitățile dezactivate/arhivate nu contează. Serverul recitește drepturile; reîncarcă lista de unelte dacă aplicația păstrează catalogul vechi. Păstrează identitatea nominală, fără un token de organizație ca ocolire.
+2. **Rolul POS** — modulele se derivă generos din permisiunile rolului; un rol îngust (ospătar, bucătar) vede doar modulele domeniului lui, iar uneltele sensibile (salarii, contracte, registru de casă, jurnal, blocare perioadă, infrastructura din Setări) cer exact permisiunea paginii echivalente. Ștergerile de perioadă, GDPR-ul și forțările tehnice sunt doar pentru rolul complet. Numai pentru o extindere cerută și autorizată, folosește `configureaza-roluri` pentru permisiunile necesare; nu modifica drepturile prin SQL.
+3. **Profilul de tool-uri** al tokenului (restaurant / fabrică / construcții / hotel / marketing) — ascunde domeniile din afara verticalei. Pentru extinderea cerută și autorizată, proprietarul folosește Hub → Acces AI → Adaugă acces → Toate instrumentele, păstrând conexiunea existentă. Reîncarcă apoi catalogul; rolul POS, aria și modulele grantului continuă să limiteze accesul.
 4. **Modulele grantului** din Hub → Acces AI — ce n-a bifat proprietarul nu apare.
 
 O conexiune veche poate coexista cu cea nominală și poate răspunde încă folosind un token de organizație. Verifică identitatea pe conexiunea aleasă, apoi folosește conexiunea nominală pentru aceeași firmă. Nu șterge alte conexiuni doar după nume și nu le considera cauza unei erori pe o conexiune diferită.
