@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "symbai",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Read sales, products, orders and stock from your Symbai company.",
   "author": { "name": "Symbai", "email": "support@symbai.app", "url": "https://symbai.app" },
   "homepage": "https://symbai.app/en/",
@@ -83,7 +83,7 @@
         }
       },
       "publication": {
-        "release_notes": "Initial release: employee OAuth sign-in and read-only access to sales reports, product search, order details and stock levels.",
+        "release_notes": "Initial release: employee OAuth sign-in and read-only access to sales reports, product search, known order summaries and stock levels. Includes focused business responses and documentation of the OpenAI connection.",
         "translations": {
           "ro-RO": {
             "subtitle": "Vânzări și stocuri",

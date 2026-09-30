@@ -12,8 +12,7 @@ Confirm the connected employee with `verifica_conexiune` and resolve brands and 
 - Sales totals: `raport_vanzari`; product quantities and revenue: `vanzari_produse`; rankings: `top_produse`; trends: `vanzari_in_timp`.
 - Products: `search_products_db`, followed by `get_product_details` for the returned identifier.
 - Stock: `list_warehouses_full`, then `get_stock_levels` with the relevant warehouse or product filters.
-- Orders: `get_orders_summary`, then `get_order_details` for a concrete returned identifier.
-- Weather and holidays, when relevant to the user's question: `get_location_context` for a location returned by `list_locations`. This can query external weather and holiday providers using the business location. It is not needed for an ordinary sales total.
+- Orders: `get_order_details` for a known Symbai order ID supplied by the user or already returned in this conversation. This provides status, totals and payment summary. If no ID is available, ask for it; this plugin does not search orders or return their individual lines.
 
 Use the live input schema and identifiers returned by the tools. Follow supported pagination; state when a response is capped. Resolve relative dates in the business timezone. If the tools do not provide the timezone or scope needed for an unambiguous answer, ask for the missing detail.
 
