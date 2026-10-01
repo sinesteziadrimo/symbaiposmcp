@@ -1,6 +1,6 @@
 ---
 name: configureaza-roluri
-description: Roluri & permisiuni — ce vede și ce poate fiecare rol, rol nou din preseturi, catalogul de permisiuni, read-only, storno/reduceri, ce primește rolul prin asistent. La „ce vede rolul X", „ce poate casierul", „de ce nu vede angajatul pagina Y", „fă un rol de ospătar fără reduceri", „aplică rolurile standard".
+description: Roluri & permisiuni — ce vede și ce poate fiecare rol, rol nou din preseturi, adaptarea rolurilor existente, catalogul de permisiuni, read-only, storno/reduceri, ce primește rolul prin asistent. La „ce vede rolul X", „ce poate casierul", „de ce nu vede angajatul pagina Y", „de ce nu poate marca / încasa managerul", „fă-i cont de manager", „dă-i rolului și dreptul X", „fă un rol de ospătar fără reduceri", „aplică rolurile standard".
 ---
 
 # Configurează roluri & permisiuni — înțelege întâi, apoi acționează
@@ -17,7 +17,7 @@ Pentru **ordinea și aspectul Symbai Staff**, permisiunile sunt doar limita de a
 
 ## ⚠ Înainte de orice: rolul cerut există deja?
 
-La ORICE „fă-mi un rol de X" / „adaugă roluri la locația Y", **primul apel e `find_role_for_job(job)`**, nu `create_role`. Symbai are un catalog de roluri **prestabilite** pe tipuri de activitate, cu permisiunile deja setate corect — treaba ta e să le găsești și să le aplici, nu să compui drepturi de mână.
+La ORICE „fă-mi un rol de X" / „adaugă roluri la locația Y" / „fă-i cont de manager lui Z" (când rolul nu e deja în `list_roles`), **primul apel e `find_role_for_job(job)`**, nu `create_role`. Symbai are un catalog de roluri **prestabilite** pe tipuri de activitate, cu permisiunile deja setate corect — treaba ta e să le găsești și să le aplici, nu să compui drepturi de mână.
 
 | Verdictul lui `find_role_for_job` | Ce faci |
 |---|---|
@@ -27,7 +27,22 @@ La ORICE „fă-mi un rol de X" / „adaugă roluri la locația Y", **primul ape
 
 **La locație nouă** nu întreba „ce roluri vrei?" și nu inventa lista: `plan_location_roles(brandId)` deduce singur activitatea locației și îți spune exact ce roluri îi lipsesc din setul recomandat. Prezinți lista clientului, iar la acceptul lui le aplici dintr-o mișcare cu `apply_role_presets`.
 
-**De ce:** rolurile compuse manual pierd sistematic chei pe care presetul le are (tipic `pin_login` → omul nu se mai poate loga rapid pe terminal, și `tasks_view` → nu primește spațiu de lucru în Symbai Staff), iar aceeași meserie ajunge cu drepturi diferite de la o locație la alta.
+**De ce:** rolurile compuse manual pierd sistematic chei pe care presetul le are (tipic `pin_login` → omul nu se mai poate loga rapid pe terminal, și `tasks_view` → nu primește spațiu de lucru în Symbai Staff), iar aceeași meserie ajunge cu drepturi diferite de la o locație la alta. Caz real: un „Manager" compus de mână din chei `all:<categorie>` — conturile s-au creat, dar oamenii n-au putut primi PIN și n-au putut marca, iar clientul i-a mutat pe toți pe Admin / Proprietar ca să poată lucra.
+
+**Alege șablonul după ce FACE omul, nu după primul nume care seamănă.** Propunerile vin cu `operationalAccess` (marchează pe POS / încasează / intră cu PIN). Șabloane cu nume apropiat pot fi meserii diferite: „Manager Hotel" conduce recepția și housekeepingul și **nu** marchează pe POS; „Manager Restaurant" și „Manager" marchează și încasează. Când rezultatul are `ambiguousPresets`, alege după atribuțiile din cerere sau întreabă o singură dată („trebuie să poată marca și încasa?") — nu lua primul.
+
+## Adaptarea rolurilor existente
+
+Cererile de după instalare sunt mai ales ajustări: „dă-i managerului și rapoartele", „ospătarii să nu mai poată da reduceri", „șeful de sală să poată anula produse".
+
+1. `describe_role(roleName)` — ce are rolul acum, câți angajați sunt pe el, ce poate efectiv (`operationalAccess`).
+2. Găsești cheia exactă în `list_permission_catalog(category)`; nu ghici denumiri.
+3. `set_role_permissions(roleId, addPermissions:[…])` sau `removePermissions:[…]` — atingi DOAR ce s-a cerut. `permissions:[…]` rescrie tot setul și șterge ce nu ai listat.
+4. `describe_role` din nou + citești `accessWarnings`. Dacă ai scos din greșeală `pin_login`, `pos_access` sau `create_order`, omul nu mai poate lucra — avertismentul îți spune.
+5. Schimbarea afectează **toți** angajații de pe rol. Dacă e doar pentru o persoană, creezi un rol propriu pornind de la setul actual (`describe_role` → `rawPermissions` ± cheile cerute → `preview_role_access` → `create_role`) și muți doar omul acela cu `update_employee(roleId)`.
+6. Rol stricat sau incomplet față de șablon („Manager" fără PIN): `apply_role_presets(roleNames:["Manager"], confirm:true)` îl completează cu ce lipsește, fără să șteargă drepturile adăugate de client.
+
+**Nu rezolva un drept lipsă mutând omul pe Admin / Proprietar.** Completează rolul lui.
 
 ## Tool-uri de ÎNȚELEGERE (READ — cer citire pe modulul `personal`)
 
@@ -79,7 +94,8 @@ La ORICE „fă-mi un rol de X" / „adaugă roluri la locația Y", **primul ape
 - **Chei reale, mereu.** Cheia greșită nu deblochează nimic; confirmă cu `preview_role_access` (îți spune ce e necunoscut).
 - **`all` = tot; `all:<categorie>` = tot grupul.** Preferă `all:<categorie>` pentru o funcție completă pe o zonă.
 - **Pagina de configurare cere drept de „management"** — un rol doar-`_view` nu o vede (intenționat).
-- **PIN-ul cere `pin_login`** pe rol ca să apară câmpul de PIN pe fișa angajatului.
+- **PIN-ul cere `pin_login`** pe rol (direct, prin `all:staff` sau `all`). Un rol pe care se marchează pe POS fără `pin_login` lasă omul fără PIN — pune cheia explicit pe orice rol propriu de sală, bar, casă sau bucătărie.
+- **„Manager" nu e un singur lucru.** Verifică `operationalAccess` înainte să pui omul pe rol: managerul care trebuie să marcheze are nevoie de `takeOrders` și `pinLogin`.
 - **Nu transforma PIN-ul de login în PIN operațional pe telefon.** În Symbai Staff personal, permisiunea rolului autorizează operația; PIN-ul per operație rămâne numai pe Workstation Tablet partajat.
 - **Pontajele (prezența) au chei dedicate:** `attendance_view` (vede tabul „Pontaje (prezență)" din `/staff` și pontajele echipei) și `attendance_manage` (le administrează). Fără ele, tabul nu apare.
 - **„Locul la CRM" nu se dă din rol** — se setează pe fișa angajatului.
