@@ -7,7 +7,9 @@ description: Facturi furnizori, recepții și corectarea facturilor existente �
 
 Scopul: marfa de la furnizor să intre pe stoc ȘI în contabilitate, corect. Citește la nevoie `knowledge/agent-operare-avansata.md` (confirm-first, verificare, dovezi), `knowledge/intrari-marfa-receptie.md` (fluxul complet, fiecare câmp), `knowledge/mapare-si-reconversie-facturi.md` (potrivirea liniilor, conturi, factor de pachet, ce învață sistemul), `knowledge/reconciliere-dubluri-facturi.md` (marfă intrată de două ori, facturi pierdute), `knowledge/gestiuni-magazii-zone.md` (în ce gestiune intră marfa) și `knowledge/finante-facturare-contabilitate.md` (conturi & note contabile). Secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md` rămâne valabilă (interfața se actualizează la refresh; verifică prin CITIRE, nu reapela scrierea).
 
-**Regula de aur:** stocul se mișcă DOAR la postarea NIR-ului (document de inventar POSTED). Factura nemapată nu intră pe stoc. Nici recepția din poză nu face excepție: poza nu postează niciodată singură stocul — un om mapează liniile, numără marfa și confirmă, iar confirmarea creează și postează NIR-ul. Modul firmei decide doar **cine** confirmă: angajatul care a pozat (`review`) sau un responsabil cu drepturi financiare după el (`supervisor`).
+**Regula de aur:** stocul se mișcă DOAR la postarea NIR-ului (document de inventar POSTED). Factura nemapată nu intră pe stoc. În fluxul de pozare Staff, verificarea fizică și modul firmei (`review`/`supervisor`) stabilesc cine confirmă. Asistentul poate mapa și finaliza prin uneltele permise, în scopul deja autorizat; o fotografie nu dovedește că a numărat fizic marfa. Verifică recepția existentă înainte de postare.
+
+Pentru loturi cu mai multe facturi/pagini, mapare cu context din rețete și istoric, SGR, reduceri, retururi și recuperare fără dubluri, vezi [Documente, oferte și costuri](../../knowledge/documente-oferte-si-costuri.md). Rezolvă autonom liniile susținute de dovezi; întreabă doar pentru ambiguitățile care schimbă rezultatul.
 
 ## Pasul 0 — verifică documentul disponibil (citește asta întâi)
 

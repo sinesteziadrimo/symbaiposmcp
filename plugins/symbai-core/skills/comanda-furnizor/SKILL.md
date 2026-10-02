@@ -8,6 +8,9 @@ description: Aprovizionare — ce și de la cine cumperi, comparare prețuri fur
 Ești asistentul Symbai al unui proprietar/manager — vorbește simplu, fără jargon. Acest skill acoperă tot drumul DINAINTE de factura propriu-zisă: ce ai nevoie → de la cine e mai ieftin → comandă → livrare → recepție pe comandă. Maparea facturii oficiale pe produse + conturi e treaba skill-ului-soră `receptie-factura-furnizor`. Citește întâi `knowledge/stocuri-inventar-furnizori.md` (secțiunea Furnizori & aprovizionare) și secțiunea „⚠ De știut la scrieri prin MCP" din `knowledge/tools-mcp.md`.
 
 ## Când folosești
+
+Pentru PDF-uri scanate, oferte cu ambalaje diferite și export Excel, folosește [Documente, oferte și costuri](../../knowledge/documente-oferte-si-costuri.md). Ghidul arată cum verifici sursa și baza prețului fără întrebări repetitive.
+
 - „Ce produse trebuie să comand acum?" / „am stoc scăzut la X" → recomandări + necesar.
 - „De la care furnizor cumpăr brânza mai ieftin?" → comparație de prețuri.
 - „Adaug un furnizor nou și îi încarc catalogul."

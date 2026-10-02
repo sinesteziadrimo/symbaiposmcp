@@ -61,11 +61,13 @@ Modificări, anulări și refaceri: citește [Corectarea recepțiilor prin MCP](
 
 | Simptom | Întâi | Apoi |
 |---|---|---|
-| „Nu iese bonul la bucătărie/bar" | `list_print_problems` (ce e blocat ACUM) | povestea unui bon: `get_print_job_timeline`; `retry_print_job`, `reprint_print_job_elsewhere` |
+| „Nu iese bonul la bucătărie/bar" | `list_print_problems` cu `type: "kitchen"` (ce e blocat sau eșuat ACUM; implicit privește doar bonurile fiscale) | povestea unui bon: `get_print_job_timeline`; `retry_print_job`, `reprint_print_job_elsewhere` |
+| „Nu a ieșit bonul de retur la bucătărie", „e pornit bonul de retur?" | `diagnose_return_bon` (pe comandă: de ce nu a ieșit; fără argumente: pe ce imprimante e pornit) | pornire: `update_printer` cu `printReturnBon`; bon eșuat: `retry_print_job` |
 | „Bonul a ieșit de două ori", „marfa e de două ori pe notă" | `get_order_timeline` | `repair_duplicated_order_items` 🔒 |
 | „Nota încasată apare neîncasată în administrare" | `list_shadow_order_conflicts` | `force_edge_resync` (doar rol complet) — repune în coadă rândurile blocate pe serverul local |
 | „Ce e pe masa 12 / ce s-a întâmplat cu nota X" | `get_table_status`, `get_order_timeline` | audit: `jurnal_activitate` |
 | „Modificatorii produsului nu apar în POS" | `diagnose_product_option_runtime` | grupuri inactive / nepublicate pe canal |
+| „Grupul apare la ospătar, dar nu la bar / pe QR / pe Wolt" | `get_product_option_groups(productId, channel)` | grup restrâns pe platforme — `diagnose_product_option_runtime` listează `groupsOnOtherPlatforms` |
 | „Produsul nu apare în meniul de pe QR" | `verifica_produse_lipsa_portal` | skill `configureaza-portal` |
 | „KDS-ul a sărit un tichet" | `get_kds_timeline(sessionUid \| screenId)` | rutarea pe taguri: skill `gestioneaza-etichete` |
 

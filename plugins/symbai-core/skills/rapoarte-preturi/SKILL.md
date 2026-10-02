@@ -6,6 +6,7 @@ description: Rapoarte, vânzări, KPI, food cost, marjă, prețuri, P&L (pe prod
 # Rapoarte, cifre și prețuri
 
 Citește `knowledge/rapoarte-preturi.md` pentru ce înseamnă fiecare indicator + regulile de TVA.
+Pentru comparații din oferte/PDF-uri, cost standard versus realizat și export de fișiere, vezi [Documente, oferte și costuri](../../knowledge/documente-oferte-si-costuri.md).
 Pentru **configurarea P&L-ului** (categorii, KPI, praguri, grupări de venituri, template-uri de industrie) și pentru **P&L-ul salvat cu ajustări manuale** (cheltuieli/venituri/angajați/evenimente suplimentare), citește `knowledge/setari-pnl.md`.
 Când întrebarea nu e despre raport, ci despre **de unde vin cifrele de cost** („de ce e food cost-ul aiurea", „am corectat rețeta / prețul de pe factură și raportul arată la fel", „de ce diferă costul din P&L de cel din rețetă"), citește `knowledge/consum-zilnic-cost-marfa.md` și treci pe skill-ul `verifica-consumul` — raportul nu se schimbă până nu se recalculează consumul perioadei.
 

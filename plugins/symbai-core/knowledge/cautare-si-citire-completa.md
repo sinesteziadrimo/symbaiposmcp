@@ -23,6 +23,8 @@ Nu folosi crearea unui furnizor/client ca mecanism de căutare. Numele se caută
 
 `cauta_tool(intrebare: "caută factura de la furnizor", tip: "citire", limita: 8)` întoarce numele, descrierea, schema, domeniul, modulul de citire și `annotations`, inclusiv `readOnlyHint`. `tip: "scriere"` restrânge la operații care pot modifica date; implicit `toate`. Descoperirea nu execută unealta și nu acordă drepturi.
 
+`citeste_tool(nume, argumente)` execută o unealtă de citire; nu citește schema unei unelte de scriere. Pentru a inspecta parametrii finalizării unui document, folosește `cauta_tool` cu `tip: "toate"` sau `"scriere"`. Urmează `executaCu` din rezultat: `citeste_tool` pentru citiri, `ruleaza_tool` pentru modificări autorizate. Nu inventa aliasuri după numele din memorie; ia numele exact din catalog.
+
 Urmează `pagination.nextArguments` pentru alte sugestii. Catalogul acoperă numai uneltele permise acum pe conexiunea POS, nu alte servere locale sau firme. Dacă schema nu este în lista aplicației, apelează `ruleaza_tool(nume, argumente)`. La drepturi lipsă verifică `verifica_conexiune`; nu cere automat acces global pentru o citire pe un modul. Dacă versiunea live nu are `tip` sau `offset`, folosește parametrii declarați și reformulează căutarea.
 
 ## Paginare fără rânduri pierdute

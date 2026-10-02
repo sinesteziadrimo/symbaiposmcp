@@ -37,12 +37,13 @@ Toate trei descriu aceeași marfă și aceiași bani. Reconcilierea le unește �
 
 ## Fluxuri frecvente
 
-### 0. Ordinea corectă de lucru (previne 90% din dubluri)
-1. Marfa sosește → o primești pe poză sau pe aviz, ca să ai stocul real imediat.
-2. Aștepți e-Factura oficială. **Nu introduce manual aceeași factură** în paralel — sistemul o va aduce singur.
-3. Când vine, verifici în Reconciliere dacă documentele s-au unit singure. Ce n-a fost unit, legi tu.
-4. **Abia apoi** creezi recepția, o singură dată, din documentul unit.
-Regula de aur: **un singur document oficial pe livrare, o singură recepție pe factură**.
+### 0. Pornește de la documentul și recepția existente
+1. Caută factura și recepția după furnizor, număr, dată și aria corectă. Citește liniile și legăturile existente.
+2. Dacă utilizatorul îți dă factura pentru introducere, o poți înregistra din documentul primit și finaliza prin fluxul canonic; nu trebuie să aștepți SPV. Refolosește factura existentă dacă a fost deja introdusă. Pentru un aviz fără factură se aplică fluxul de recepție nefacturată.
+3. Dacă marfa are deja NIR postat, reconciliază documentele și finalizează legătura; nu crea o nouă intrare pentru aceeași marfă. Dacă nu există recepție, creeaz-o din factura mapată, respectând verificările fluxului.
+4. Când sosește e-Factura, verifică asocierea cu documentul manual/fotografiat și păstrarea recepției. O potrivire propusă ori un import reușit nu dovedesc singure că reconcilierea s-a încheiat.
+
+Obiectivul este o singură evidență a aceleiași mărfuri și datorii. Vezi [Documente, oferte și costuri](documente-oferte-si-costuri.md) pentru loturi de facturi și continuarea autonomă a pașilor autorizați.
 
 ### 1. Ce rezolvă sistemul singur când vine e-Factura
 1. **Caută geamănul**: același furnizor (după CUI) + același număr de factură.
