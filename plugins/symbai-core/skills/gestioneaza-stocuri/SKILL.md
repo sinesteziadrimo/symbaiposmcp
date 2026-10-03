@@ -148,3 +148,5 @@ Nu porni o a doua reprocesare peste una activă. Dacă vânzările trebuie refă
 
 
 **Corecția unei recepții nu cere singură reprocesarea consumului zilnic.** Urmează [corectare-receptii-mcp.md](../../knowledge/corectare-receptii-mcp.md): costurile și acoperirea consumurilor se regularizează prin recepție, cu păstrarea istoricului.
+
+Pentru liste de ingrediente din grupuri, mese pentru personal/client/owner, bufet fără modulul dedicat, producții și transferuri, citește [Consumuri din mesaje](../../knowledge/consumuri-din-mesaje.md). Orice asistent autorizat poate folosi ghidul live stock_operations; catalogul conexiunii stabilește capabilitățile efectiv disponibile. Execută și confirmă scurt; întreabă numai lipsurile decisive după verificare.

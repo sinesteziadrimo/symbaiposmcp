@@ -211,3 +211,5 @@ Caută și identifică lotul exact, rețeta, produsul, data și gestiunea. Cite�
 - `knowledge/produse-meniu-retete.md` — rețete și tipuri de produs (baza oricărei producții).
 - `knowledge/stocuri-inventar-furnizori.md` — recepții/NIR și loturile de materii prime care alimentează producția.
 - `knowledge/tools-mcp.md` — reguli generale pentru scrieri prin conexiune (secțiunea „⚠ De știut la scrieri prin MCP").
+
+Pentru liste de ingrediente din grupuri, mese pentru personal/client/owner, bufet fără modulul dedicat, producții și transferuri, citește [Consumuri din mesaje](../../knowledge/consumuri-din-mesaje.md). Orice asistent autorizat poate folosi ghidul live stock_operations; catalogul conexiunii stabilește capabilitățile efectiv disponibile. Execută și confirmă scurt; întreabă numai lipsurile decisive după verificare.

@@ -64,6 +64,17 @@ Precizează separat citirea și modificarea: „membrii acestui grup pot întreb
 
 Pune ce s-a decis deja în `notes` (convenții: „transferurile de seară intră pe gestiunea Bar"). Asistentul automat le citește la fiecare rulare și le completează singur cu `note_watch` — atât are voie să schimbe la propria monitorizare; obiectivul, modul și oamenii de încredere rămân ale proprietarului, prin `update_watch` din asistentul lui.
 
+## Facturi și acte primite în grup
+
+Cererea „monitorizează grupul și introdu facturile” autorizează procesarea documentelor noi din conversația și firma precizate, în aria acordată. Pentru un asistent numit păstrează participarea lui; pentru clientul direct Claude Code/Codex folosește monitorul Connect de mai sus. Nu porni ambele și nu înlocui evenimentele cu un program periodic. Verifică accesul executorului la firma corectă și la fișierele primite; pentru o participare numită, partajarea trebuie să includă atașamentele.
+
+Obiectiv adaptabil la mandatul deja dat:
+> Preia facturile și actele noi din această conversație pentru firma și unitățile autorizate. Citește originalele și toate paginile, grupează corect documentele și păstrează legătura mesaj/fișier/pagină → factură. Consultă produsele, rețetele, furnizorii, mapările și documentele anterioare după nevoie; decide autonom potrivirile susținute de dovezi. Tratează distinct SGR, reducerile, retururile și plățile. Introdu și finalizează cazurile clare prin fluxurile canonice, verificând recepția existentă și reconcilierea cu eFactura pentru a nu dubla stocul sau datoria. Nu inventa numărători fizice ori pagini lipsă. Continuă restul lotului și cere numai informația care schimbă decizia. Păstrează ID-urile procesate și operațiile incerte; reia factura deschisă când vin pagini sau clarificări. Răspunde numai potrivit modului și destinatarilor autorizați, fără mesaj la activare.
+
+Dacă proprietarul a cerut numai ciorne sau analiză, adaptează finalizarea din exemplu la acea limită. Citește [Documente, oferte și costuri](../../knowledge/documente-oferte-si-costuri.md) și [recepție factură furnizor](../receptie-factura-furnizor/SKILL.md); pentru asistenții numiți ghidul live este `invoice_documents`. La lipsa textului PDF verifică `view_document_page` și vederea nativă disponibilă; numele fișierului nu dovedește conținutul. Alte acte folosesc fluxul lor (bancă, casă, cheltuieli, transferuri), nu se transformă toate în facturi. O factură și chitanța ei descriu achiziția și plata, nu două achiziții.
+
+Ține în `notes`/memoria participării cazurile deschise, paginile lipsă, documentele create și rezultatele incerte. Oprește-te numai pe ambiguitatea reală, nu pe întregul lot. Prima rulare verifică documentele și efectele reale, nu doar starea „activ”. Nu trimite facturi ori mesaje artificiale în grup pentru probă.
+
 ## Pasul 3 — Descrie oamenii cu `remember_contact`
 
 Aici stă „știe cum și ce să răspundă fiecăruia". Pentru fiecare om important:
