@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "symbai",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Read sales, products, orders and stock from your Symbai company.",
   "author": { "name": "Symbai", "email": "support@symbai.app", "url": "https://symbai.app" },
   "homepage": "https://symbai.app/en/",
