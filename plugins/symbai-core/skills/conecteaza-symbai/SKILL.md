@@ -86,6 +86,8 @@ Dacă serverul POS răspunde și oferă `cauta_tool`, acesta caută în catalogu
 3. **Profilul de tool-uri** al tokenului (restaurant / fabrică / construcții / hotel / marketing) — ascunde domeniile din afara verticalei. Pentru extinderea cerută și autorizată, proprietarul folosește Hub → Acces AI → Adaugă acces → Toate instrumentele, păstrând conexiunea existentă. Reîncarcă apoi catalogul; rolul POS, aria și modulele grantului continuă să limiteze accesul.
 4. **Modulele grantului** din Hub → Acces AI — ce n-a bifat proprietarul nu apare.
 
+Un asistent numit din **Asistenții mei** are în plus modulele și pachetele bifate la el și la participare (grup, sarcină, WhatsApp). Conexiunea ta poate fi completă, iar asistentul tot fără acces: urmează [gestioneaza-asistentii](../gestioneaza-asistentii/SKILL.md), secțiunea „Când asistentul spune că nu are acces”.
+
 O conexiune veche poate coexista cu cea nominală și poate răspunde încă folosind un token de organizație. Verifică identitatea pe conexiunea aleasă, apoi folosește conexiunea nominală pentru aceeași firmă. Nu șterge alte conexiuni doar după nume și nu le considera cauza unei erori pe o conexiune diferită.
 
 ## Ce înseamnă fiecare verdict

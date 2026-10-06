@@ -58,7 +58,7 @@ O cerere de verificare permite citirea. Nu alege în locul proprietarului o sum�
 
 Citirea, corectarea raportului, operarea numerarului și configurarea programului sunt drepturi separate. Folosește dreptul nominal exact și unitățile acordate, fără a cere rol de administrator global.
 
-În **Asistenții mei**, pachetele sunt `cash.read`, `cash.close`, `cash.entries` și `cash.settings`. Șablonul „Verificarea închiderilor de zi” pornește cu citire. Adaugă scriere numai când proprietarul o cere. În grupuri, datele de casă sunt disponibile numai dacă publicul actual are acces la ele.
+În **Asistenții mei**, pachetele de casă sunt `cash.read`, `cash.close`, `cash.entries`, `cash.settings` și `cash.fiscal` (rapoarte X/Z). Accesul pe modulul «Financiar & Contabilitate» (Citește/Modifică) dă în plus uneltele modulului, ca în Claude Code/Codex. Șablonul „Verificarea închiderilor de zi” pornește cu citire. Adaugă scriere numai când proprietarul o cere. În grupuri, datele de casă și cele financiare sunt disponibile numai dacă fiecare membru are acces la ele.
 
 Setările pot fi citite/scrise prin modulul `setari` sau `financiar`, cu dreptul de configurare. Verificarea consumului este disponibilă și prin modulul `financiar`; generarea/reprocesarea lui are drepturi distincte.
 
