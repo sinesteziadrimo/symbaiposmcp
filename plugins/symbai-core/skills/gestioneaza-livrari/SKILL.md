@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-livrari
-description: Livrarea hands-free — dispecerat cu flotă proprie, livratori și vehicule, zone și taxe, curieri externi (Glovo/Uber Direct/Bolt), AWB-uri, retururi RMA, alerte. La „ce comenzi de livrare am", „cui dau comanda / cel mai bun șofer", „de ce a eșuat livrarea / relivrează", „adaugă o zonă de livrare", „cere ofertă la Glovo", „urmărește coletul", „aprobă returul".
+description: Livrarea hands-free — dispecerat cu flotă proprie, comenzi la telefon cu memoria clientului și dispecer comun pe piață, livratori și vehicule, zone și taxe, curieri externi (Glovo/Uber Direct/Bolt), AWB-uri, retururi RMA, alerte. La „ce comenzi de livrare am", „cui dau comanda / cel mai bun șofer", „de ce a eșuat livrarea / relivrează", „adaugă o zonă de livrare", „cere ofertă la Glovo", „urmărește coletul", „aprobă returul", „cine e clientul care sună / unde i-am livrat", „cine a sunat și n-a comandat", „telefon de comenzi / dispecer comun pe piață".
 ---
 
 # Gestionează livrarea — dispecerat + flotă + curieri, prin MCP, click rar
@@ -33,7 +33,11 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 | „cât m-a costat flota / consum pe mașină" | `get_vehicle_expenses(from,to)` (km, RON, RON/km, L/100km) | `/deliveries/vehicle-expenses` |
 | „alocă comanda lui X / mai multe pe X" | `assign_orders_to_driver(orderIds,driverId)` · `batch_assign_orders` · `unassign_orders` | `/deliveries/dispatch` |
 | „marchează comanda gata / eșuată / relivrează" | `mark_order_ready_for_delivery` · `mark_delivery_failed(reason)` · `retry_failed_delivery` | `/deliveries/dispatch` · `/deliveries/failed` |
-| „comandă rapidă la telefon" | `create_quick_delivery_order(customerName, deliveryAddress, …)` | `/dispatch/mission-control` (Comandă rapidă) |
+| „comandă rapidă la telefon" | întâi `get_delivery_customer(phone)` (adresele știute), apoi `create_quick_delivery_order(customerName, customerPhone, deliveryAddress, …)` | `/dispatch/mission-control` (Comandă rapidă) |
+| „cine e 0722… / unde i-am livrat / ce a comandat ultima dată / are o comandă pe drum?" | `get_delivery_customer(phone \| customerId)` (read-only; date personale) | `/deliveries/pos` (Centru de Comenzi) |
+| „cine a sunat și n-a comandat / pe cine sun înapoi" | `list_delivery_calls(hours, onlyMissed:true)` | `/deliveries/pos` (butonul Apeluri) |
+| „scoate adresa greșită a clientului" | `forget_delivery_customer_address(addressId, confirm:true)` după acord | `/deliveries/pos` |
+| „suntem pe o piață comună? / unde notez comanda de la telefon?" | `get_market_phone_ordering` | `/deliveries/pos` („Comandă pe <piață>") |
 | „adaugă/schimbă o zonă / taxa de livrare" | `create_delivery_zone` · `update_delivery_zone` | `/deliveries/zones` |
 | „adaugă/modifică un vehicul" | `create_vehicle` · `update_vehicle` | `/deliveries/fleet` (tab Vehicule) |
 | „marchează/scoate-l ca livrator" | `set_employee_as_driver(employeeId,isDriver)` | `/deliveries/fleet` (tab Livratori) |
@@ -59,6 +63,13 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 Pentru „micul dejun doar dimineața", „meniul de noapte", „oprește categoria X în afara weekendului" sau „program pe Wolt/Glovo", nu folosi ofertele/discounturile. Flux corect: găsești ținta (`search_products_db` / `list_menu_categories` / `list_menus`) → `list_availability_schedules` → `create_availability_schedule` sau `update_availability_schedule` (modul `produse_meniu`) → recitești și dai linkul `/menu/promotions`, tab **Disponibilitate**. Asta setează vizibil/comandabil; prețul rămâne neschimbat.
 
 > Rutele exacte le confirmi cu `gaseste_in_aplicatie("dispecerat" / "zone livrare" / "AWB" / "retururi")` — **nu inventa URL-uri**. Cheat-sheet în `navigare-rapida.md`. Multe pagini de livrare au sub-tab-uri adresabile cu `?tab=…` — du-te direct la tab.
+
+## Comenzile la telefon și dispecerul comun
+
+Citește [livrari-telefon-memorie-clienti](../../knowledge/livrari-telefon-memorie-clienti.md) la „ține minte clienții", „telefonul de comenzi nu arată cine sună", „configurează Staff pe telefonul de comenzi" sau „dispecer comun pentru franciză". Regulile:
+- Înainte de o comandă telefonică citești clientul cu `get_delivery_customer`. Nu ceri din nou adresa pe care o ai deja.
+- Pe o piață comună (`get_market_phone_ordering` spune piața), comanda se notează pe site-ul pieței în mod dispecer, ca rutarea să aleagă restaurantul. Nu o crea cu `create_quick_delivery_order` pe unitatea care a răspuns, decât dacă userul cere explicit „doar la noi".
+- Telefonul de comenzi se configurează în Symbai Staff (Profil → Setări → „Telefon de comenzi"). Nu există unealtă MCP care să pornească identificarea apelantului pe telefon.
 
 ## Cazurile rare unde chiar dai click (Chrome activ)
 Aproape nimic din dispecerat nu cere click — dar:

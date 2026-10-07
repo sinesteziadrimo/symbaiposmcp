@@ -4,7 +4,7 @@
 
 ## Pe scurt
 
-Ghiduri pentru fluxurile extinse: [depozit, colete și predare](depozit-colete-predare.md), [GLS pentru magazinul online](gls-magazin-online.md) și [meniul partajat al unei vitrine](meniu-partajat-livrari.md). Verifică disponibilitatea pe conexiunea și versiunea firmei.
+Ghiduri pentru fluxurile extinse: [depozit, colete și predare](depozit-colete-predare.md), [GLS pentru magazinul online](gls-magazin-online.md), [meniul partajat al unei vitrine](meniu-partajat-livrari.md) și [comenzile la telefon, memoria clientului și dispecerul comun](livrari-telefon-memorie-clienti.md). Verifică disponibilitatea pe conexiunea și versiunea firmei.
 Modulul acoperă tot ce pleacă din local către client: comenzile de pe platformele de livrare (Glovo, Wolt, Bolt Food, Tazz), livrarea cu flotă proprie (dispecerat, zone, livratori, vehicule), comenzile magazinului online (expediere cu AWB prin curieri naționali, retururi, antifraudă, marketplace-uri gen eMAG) și abonamentele cu livrări recurente. Include și aplicația dedicată a livratorului (PWA „Symbai Livrator") plus pagina publică de urmărire a comenzii pentru client.
 
 ## Concepte
