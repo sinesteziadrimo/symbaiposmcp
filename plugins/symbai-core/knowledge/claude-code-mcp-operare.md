@@ -5,6 +5,7 @@ Pentru cursuri online în CRM, lecții text/video, editări, ștergeri și progr
 Pentru webinarii (înscriere, sesiuni, echipă, asistentul Sym în chat și transmisie pe YouTube/Facebook/TikTok/Instagram/LinkedIn), citește [Webinarii în CRM](crm-webinarii.md). Cheile de transmisie se introduc doar în CRM, nu prin MCP.
 
 Pentru modificarea sau anularea recepțiilor, citește [Corectarea recepțiilor prin MCP](corectare-receptii-mcp.md). Același ghid se aplică ChatGPT, Codex și Claude Code; folosește acordul existent și verifică factura, cantitățile fizice și contabilitatea.
+Pentru extrase bancare, reconciliere cu facturile și registrul de casă, citește [Reconciliere bancară și registru de casă prin asistent](reconciliere-bancara-registru-casa-mcp.md): ordinea de lucru, ce unealtă face fiecare pas și de ce „legat” nu înseamnă „plătit”.
 
 Acest fisier este ghidul transversal pentru agentii care folosesc pluginul Symbai in Claude Code. Scopul este simplu: raspunsuri corecte, actiuni sigure si rezultate verificate pe datele reale ale clientului.
 

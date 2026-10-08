@@ -42,6 +42,8 @@ Modificări, anulări și refaceri: citește [Corectarea recepțiilor prin MCP](
 | „Factura are zero linii" | `diagnose_incoming_invoice_integrity` | `repair_missing_incoming_invoice_lines` (doar din XML-ul oficial, pe ciornă) |
 | „Furnizorul apare cu alt nume / CUI lipsă" | `resolve_supplier_identity`, `list_suppliers_without_tax_id` | `repair_incoming_invoice_supplier_tax_ids` |
 | „Sunt facturi noi la ANAF?" | `check_new_efactura` | `process_new_efactura` / `import_efactura` |
+| „Au apărut facturile altei firme", „CUI greșit la ANAF" | pe instanțele actualizate: `get_efactura_intake_policy` (CUI ANAF vs CUI firmă), `list_received_efactura(buyerNotOwnCompany:true)` | `configure_efactura_import(alignCuiWithCompany:true)` 🔒, `delete_incoming_invoices` 🔒, `delete_unused_suppliers` 🔒 — pe instanțele actualizate; pașii în [Intrări marfă](intrari-marfa-receptie.md) |
+| „Am șters o eFactură și o vreau înapoi" | pe instanțele actualizate: `check_new_efactura(includeAlreadyImported:true)` — apare cu `dismissedByUser` | `import_efactura(anafIds)` |
 | „Produsul furnizorului intră la produsul greșit" | `list_supplier_product_mapping_conflicts` | `resolve_supplier_product_mapping` 🔒 |
 | „Ce a făcut softul luna asta?" | `audit_primary_accounting_period` | `audit_consumption_chain` pe interval: vânzare → consum → stoc → notă |
 

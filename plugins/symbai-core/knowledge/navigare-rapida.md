@@ -182,10 +182,10 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 - **Casierii (mod organizare)** `/finance/cash-registers` — Configurare casierii (de obicei o dată): mod organizare per firmă / locație / brand×locație, „Regenerează casieriile" (auto-creează lipsa după locație nouă), monedă, reguli pe țară (plafoane), mapări auto-feed; casierii goale se șterg, cele cu istoric se dezactivează.
 · NU aici: pentru operațiunile zilnice de numerar → /finance/cash-book; pentru închiderea de zi → /finance/daily-close. Alias: /finance/cash-book/registers redirect aici.
 - **Registru Contabil** `/accounting-ledger` — Note contabile cu 3-4 vizualizări (butoane, nu tab-uri): „Conturi" (solduri pe cont cu drill-down la înregistrări), „Toate înregistrările" (jurnal filtrabil pe brand/perioadă/sursă/status), „Plan de Conturi" (chart + populare RO), iar la multi-brand/locație: „Analitice Brand & Locații" (reguli denumire analitice + reguli split cheltuieli). Export CSV.
-· NU aici: pentru configurarea conturilor pe tip de produs → /ai-product-types; pentru importul de date contabile de la contabil → /accounting-import; pentru cheltuieli/plăți operaționale → /finance?tab=expenses
+· NU aici: pentru configurarea conturilor pe tip de produs → /ai-product-types; pentru extrase bancare și state de salarii → /finance/bank-statements; pentru cheltuieli/plăți operaționale → /finance?tab=expenses
 - **Rapoarte Fiscale** `/finance/fiscal-reports` — Raportul fiscal pentru contabilitate: bonuri emise, X/Z, defalcare TVA, export ANAF.
 · NU aici: pentru ritualul de închidere de zi cu numărătoare casă → /finance/daily-close; pentru raportul Z din analiză → /analytics?tab=daily
-- **Import Contabilitate** `/accounting-import` — Imporți datele contabile: balanțe, jurnale, plan de conturi din software-ul contabil.
+- **Extrase bancare** `/finance/bank-statements` — Imporți extrasul băncii și potrivești plățile cu facturile; al doilea tab e pentru statele de salarii.
 · NU aici: pentru notele contabile/planul de conturi în aplicație → /accounting-ledger; pentru import produse/clienți → /data-import sau /customer-import
 - **AI CFO (Cash Flow)** `/ai-cashflow` — Întrebi AI-ul cum stai cu cash-flow-ul („am bani de salarii?"): previziuni + strategie financiară, conversațional.
 · NU aici: pentru fluxul de numerar detaliat (plăți programate/recurente) → /finance?tab=cashflow; pentru registrul legal de numerar → /finance/cash-book

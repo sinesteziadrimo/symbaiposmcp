@@ -283,7 +283,7 @@
 - **Cererile Mele de Concediu** (`/my-leave-requests`) — Cereri concediu ale angajatului curent — solicitare, status, istoric
 ## CONTABILITATE & IMPORT
 
-- **Import Contabilitate** (`/accounting-import`) — Import date contabile — import balanțe, jurnale, plan conturi din software contabil
+- **Extrase bancare** (`/finance/bank-statements`) — importul extraselor bancare și reconcilierea plăților cu facturile; al doilea tab: state de salarii (adresa veche `/accounting-import` duce aici)
 - **Registru Contabil** (`/accounting-ledger`) — Note contabile cu 3-4 vizualizări (butoane, nu tab-uri): „Conturi' (solduri pe cont cu drill-down la înregistrări), „Toate înregistrările' (jurnal filtrabil pe brand/perioadă/sursă/status), „Plan de Conturi' (chart + populare RO), iar la multi-brand/locație: „Analitice Brand & Locații' (reguli denumire analitice + reguli split cheltuieli). Export CSV.
 - **Produse Depozit** (`/warehouse-products`) — Administrare produse pe depozit — stocuri per gestiune, alocare depozite
 - **Rețete Produse** (`/ai-recipes`) — Atelier rețete: titlu „AI Rețetare”, toate produsele finite + semipreparate (și fără rețetă), cost/unitate + food cost, presets (De rezolvat, Critice, Fără rețetă, Incomplete, Vândute marjă mică, Semipreparate), toggle sursă cost (mediu din stoc / catalog furnizor), „Rezolvă cu Sym”, chat „Sym Chef”, package builder.

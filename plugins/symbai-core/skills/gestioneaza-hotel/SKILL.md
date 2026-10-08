@@ -49,7 +49,7 @@ Utilizatorul e proprietar, manager sau recepționer de hotel ori pensiune. Vrea 
 |---|---|---|
 | „Fă check-in la rezervarea X" | `hotel_check_in` (camera + actul de identitate verificat) | `/hotel/front-desk?tab=arrivals` |
 | „A venit cineva fără rezervare" | `hotel_walk_in` | `/hotel/front-desk` |
-| „Am uitat să-l cazez ieri" (oaspete deja cazat, neînregistrat) | `get_hotel_property_settings` (data de business) → arăți datele, nopțile trecute și suma → acord → `hotel_walk_in` cu `checkInDate` în trecut (cel mult 7 zile) și `expectedBusinessDate`; nopțile trecute intră imediat pe notă | POS → Recepție hotel → „Vinde o cameră” → Sosire |
+| „Am uitat să-l cazez ieri" (oaspete deja cazat, neînregistrat) | `search_hotel_guests` / `list_hotel_reservations` (dacă are rezervare pe acele nopți, mergi pe fluxul ei, nu dubla) → `get_hotel_property_settings` (data de business) → arăți datele, nopțile trecute și suma → acord → `hotel_walk_in` cu `checkInDate` în trecut (cel mult 7 zile) și `expectedBusinessDate`; nopțile trecute intră imediat pe notă | POS → Recepție hotel → „Vinde o cameră” → Sosire |
 | „Mută oaspetele în altă cameră" | `hotel_room_change` | `/hotel/front-desk?tab=inhouse` |
 | „Fă check-out" | `get_hotel_folio` (sold) → acord → `hotel_check_out` | `/hotel/front-desk?tab=departures` |
 | „Pleacă mai devreme" | `get_hotel_early_checkout_quote` → acord → `confirm_hotel_early_checkout` | `/hotel/front-desk?tab=inhouse` |

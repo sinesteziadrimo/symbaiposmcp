@@ -190,6 +190,8 @@ Aceeași livrare poate ajunge de trei ori: poza de la recepție, avizul șoferul
 
 **Igienă:** `/inventory/inbox-quality` (eFacturi fără NIR, ciorne vechi, mapări slabe) + badge-ul roșu din Reconciliere. `list_received_efactura` exclude automat documentele înlocuite — dacă userul „vede două", una e cea înlocuită, vizibilă doar în aplicație.
 
+**Factura nu e a noastră** (cumpărătorul are alt CUI decât firma — tipic la un SPV citit pe CUI greșit): nu o mapa și nu-i face NIR. Pe instanțele actualizate, `list_received_efactura` are `buyerTaxId`/`buyerIsOwnCompany` pe fiecare rând și filtrul `buyerNotOwnCompany:true`; eFactura fără recepție se șterge (`delete_incoming_invoices`), iar CUI-ul ANAF se verifică și se corectează cu `get_efactura_intake_policy` / `configure_efactura_import`. Pașii compleți: secțiunea „Facturile altei firme aduse din SPV" din `knowledge/intrari-marfa-receptie.md`.
+
 **Reconciliere prin MCP:** `preview_received_invoice_link` → `link_received_invoice_to_reception` → `finalize_received_invoice`. Citește ambele documente, păstrează deciziile pe linii între previzualizare și aplicare, apoi verifică factura și starea contabilă. Vezi ghidul de corectare a recepțiilor.
 
 ## Servicii / utilități fără stoc
