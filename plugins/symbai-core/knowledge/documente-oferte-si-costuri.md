@@ -44,6 +44,18 @@ Un tabel util conține: produs și ambalaj, sursa/data, prețul original, prețu
 
 ## Costul și profitul răspund unor întrebări diferite
 
+**Nu compara valori cu sensuri diferite.** Prețul de achiziție se verifică în factura/recepția sursă, în aceeași unitate și pe aceeași bază TVA. Costul mediu privește marfa rămasă în gestiunea aleasă. Costul rețetei din Produse Meniu este o estimare pentru rețeta curentă, folosind sursa de preț selectată. Costul realizat privește consumul înregistrat în perioada aleasă. Aceste valori pot diferi corect; nu rescrie una ca să o egalezi cu cealaltă.
+
+Separă patru situații: **cost cunoscut**, **cost estimat inclus în valoare**, **cost necunoscut** și **cost în curs de actualizare**. Un cost estimat nu este automat o lucrare blocată. Zero poate fi justificat prin marfă gratuită ori reducere pe document; verifică sursa, nu atribui automat prețul altei recepții. Un cost necunoscut nu este zero și nu dovedește profit integral. O afișare rotunjită la 0,00 nu dovedește nici ea preț zero.
+
+Pentru costurile consumului, descoperă `get_consumption_problems` și citește rezumatul `costs` în aceeași perioadă și locație. Costurile estimate sunt deja incluse în valoarea calculată: nu le aduna încă o dată. „Fără preț” și „în actualizare” sunt categorii distincte. Dacă există o parte necunoscută, comunică subtotalul cunoscut și limita lui, nu un total final. `get_consumption_breakdown` explică documentele de consum selectate; unele versiuni separă `liniiFaraCost` de `liniiCuCostZero`. Verifică rezultatul live înainte să presupui aceste câmpuri. Prezența tuturor prețurilor nu certifică singură rețetele, cantitățile sau încheierea tuturor verificărilor.
+
+La `get_menu_engineering`, marja și food cost-ul sunt estimări pentru rețeta curentă, nu costul final al vânzărilor istorice. Citește `costComplete` dacă este disponibil; un produs cu cost incomplet nu poate fi clasificat corect după profitabilitate. Vânzările folosite de această unealtă acoperă tot istoricul de comenzi finalizate; `period` este doar etichetă informativă. Pentru o perioadă exactă folosește raportul de vânzări/P&L potrivit.
+
+Când aduni gestiuni cu stoc pozitiv și negativ, valoarea totală poate fi cunoscută fără să existe un cost mediu unitar util pentru suma lor. Citește costul separat pe gestiuni; un minus de cantitate nu dovedește lipsa prețului. Nu transforma o medie indisponibilă într-o valoare totală zero.
+
+Înainte să compari două totaluri, aliniază perioada, locația, gestiunea, unitatea de măsură, TVA-ul și documentele incluse. Sumarul consumurilor generate automat poate exclude un consum introdus manual, pe care un raport al tuturor consumurilor îl include. Diferența se explică prin documentele respective, nu prin ajustarea artificială a costului.
+
 | Întrebarea | Dovada potrivită |
 |---|---|
 | Cât ar costa rețeta pentru cantitatea cerută? | `get_production_cost_estimate`; citește `costComplete`, `warnings` și sursele prețurilor. Este estimare standard. |

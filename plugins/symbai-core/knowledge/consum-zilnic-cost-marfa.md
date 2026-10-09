@@ -15,6 +15,8 @@ Două excepții de reținut din prima: **comenzile de livrare (Glovo/Wolt/Bolt/T
 
 ## Concepte
 
+Pentru diferența dintre preț de achiziție, cost mediu, cost de rețetă și cost realizat, precum și între cost estimat, necunoscut și în actualizare, citește [Documente, oferte și costuri](documente-oferte-si-costuri.md#costul-și-profitul-răspund-unor-întrebări-diferite). În pagina **Probleme**, așteaptă rezultatul verificării; încărcarea sau o eroare de citire nu înseamnă „zero probleme”.
+
 ### Citirea corectă a costurilor istorice
 
 Liniile originale pot păstra costuri și valori vechi, inclusiv zero, după o recalculare financiară. Verifică separat costul financiar recalculat pentru documentul, linia și gestiunea vizate, dacă mai este în așteptare, dacă reflectă ultima corecție și ajustările de evaluare active din registru și contabilitate. Costul financiar raportat reprezintă valoarea totală actualizată, nu o diferență de adunat din nou la valoarea originală. O valoare recalculată prezentă nu certifică singură întreaga istorie; o valoare în așteptare ori depășită nu este cost final zero.
@@ -81,7 +83,7 @@ Se decide **pentru fiecare ingredient în parte** (nu pentru rețetă), în func
 - Alegerea fizică a loturilor poate prioritiza **„expiră primul”**; la termene egale sau fără termen, cel **intrat primul**. La restaurante, evaluarea financiară FIFO urmărește separat cronologia intrărilor și ieșirilor, păstrând trasabilitatea loturilor fizice.
 - ⚠ „Metoda de evaluare" din Setări → Stocuri (FIFO / LIFO / medie) **nu schimbă din ce lot iese marfa** — ea influențează doar costul estimativ afișat înainte de a exista consum real.
 - Pentru cantitatea neacoperită de loturi se poate afișa o estimare la costul mediu al gestiunii. Nu o prezenta drept cost financiar definitiv: în FIFO financiar, sursele sau prețurile nedovedite pot rămâne în așteptare până sunt completate datele reale.
-- ⚠ **Un lot recepționat cu cost 0 consumă „gratuit"**: acoperă cantitatea, contribuie 0 la cost și trage food cost-ul în jos fără nicio eroare vizibilă. Îl găsești cu `scan_suspect_reception_costs` și `get_product_reception_history`.
+- **Cost zero la recepție**: poate fi justificat de factura sursă, de exemplu marfă gratuită. Verifică documentul cu `get_product_reception_history` și, pentru triere, `scan_suspect_reception_costs`. Un cost fizic original zero poate avea deja o evaluare financiară actualizată; citește costul curent înainte să declari marfa fără valoare. Nu schimba un preț justificat și nu regenera cantitățile doar pentru un avertisment vechi.
 - Consumul zilei se înregistrează în registru la **sfârșitul zilei de business**. O numărare de inventar închisă la ora 14:00 nu include consumul acelei zile.
 
 ## Ce oprește complet consumul

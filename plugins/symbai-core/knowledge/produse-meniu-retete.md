@@ -68,6 +68,12 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 
 **Conex**: „Sym Menu" (`/ai-menu`) — agent AI conversațional care creează sau editează meniul întreg pentru o unitate; „Prețuri Meniu Nou" (`/ai-pricing`) — analiza și recomandările de preț.
 
+## Cum citești costul din Produse Meniu
+
+Costul rețetei și food cost-ul din pagina meniului sunt estimări pentru rețeta curentă, cu sursa de preț selectată: cost mediu sau catalog furnizor. Prețul de achiziție al unei recepții și costul consumului unei zile răspund altor întrebări și pot avea alte valori. Vezi [diferențele și verificările](documente-oferte-si-costuri.md#costul-și-profitul-răspund-unor-întrebări-diferite).
+
+Dacă un ingredient nu are preț sau o conversie nu este demonstrabilă, un subtotal pozitiv nu face rețeta completă. Citește avertismentul și produsul indicat; nu considera procentul drept food cost final. O marfă fără rețetă poate fi perfect validă dacă este revândută ca atare. Verifică prețul ei de achiziție, nu inventa o rețetă.
+
 ## Meniul Zilei (meniu fix cu feluri la alegere)
 
 Pagina de administrare: **Meniul Zilei** (folosește `gaseste_in_aplicatie("meniul zilei")` pentru link). Cum funcționează:
