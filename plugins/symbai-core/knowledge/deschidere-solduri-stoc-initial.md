@@ -62,12 +62,14 @@ Tot ce se poate seta din față se poate face și prin conversație. Ordinea fir
 | vezi ce s-ar regla la publicare | `preview_opening_trial_balance` |
 | publici balanța | `publish_opening_trial_balance` 🔒 |
 | vezi foaia de stoc | `get_opening_stock` |
-| introduci cantitățile | `save_opening_stock` |
+| introduci cantitățile și costurile lor | `save_opening_stock` |
 | publici stocul | `publish_opening_stock` 🔒 |
 
 `get_opening_setup` e punctul de intrare: îți spune ce e setat, ce e publicat și care e pasul următor.
 
-La stoc, produsele și gestiunile se pot da **după cod sau după denumirea exactă** — nu trebuie să știi id-uri. Dacă denumirea prinde mai multe produse, tool-ul refuză și cere id-ul, în loc să ghicească: o deschidere pusă pe produsul greșit se repară doar cu inventar.
+La stoc, fiecare rând poartă cantitatea și **costul ei**: `unitCost` (fără TVA, pe unitatea de stoc) sau `totalValue` (valoarea fără TVA a acelei cantități din raportul vechi — costul unitar se calculează singur). E singura cale prin care stocul de pornire primește costuri: inventarul fizic (`apply_physical_inventory`) și `set_initial_stock` nu au câmp de cost, deci un produs fără cost cunoscut ar intra acolo la valoare 0. Rândul fără cost e refuzat și numit în răspuns; rândurile cu cost 0 sunt listate separat, ca să le confirmi cu omul.
+
+Produsele și gestiunile se pot da **după cod sau după denumirea exactă** — nu trebuie să știi id-uri. Dacă denumirea prinde mai multe produse, tool-ul refuză și cere id-ul, în loc să ghicească: o deschidere pusă pe produsul greșit se repară doar cu inventar.
 
 Cele două publicări cer `confirm: true` și **nu se apelează niciodată din proprie inițiativă** — arată-i omului ce cantități și ce valoare urmează să intre, cere OK, abia apoi confirmă.
 

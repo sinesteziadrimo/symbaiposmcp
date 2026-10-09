@@ -55,7 +55,8 @@ De ce: valoarea mărfii e deja în balanță, pe conturile de clasa 3. Dacă foa
 
 ### 4. Stocul inițial
 - `get_opening_stock` — ce e deja introdus, plus stocul pe care produsele îl au DEJA.
-- `save_opening_stock` cu rândurile. Produsele și gestiunile se pot da **după cod sau denumire exactă** — nu-i cere id-uri. Dacă o denumire prinde mai multe produse, tool-ul refuză: cere-i omului să aleagă, nu ghici.
+- `save_opening_stock` cu rândurile: produs, gestiune, `qty` și **costul** — `unitCost` (fără TVA, pe unitatea de stoc) sau `totalValue` (valoarea fără TVA a acelei cantități, cum apare în raportul de stoc valoric din programul vechi; costul unitar se calculează singur). Aici se pun costurile de pornire ale produselor — inventarul fizic și `set_initial_stock` nu primesc costuri. Produsele și gestiunile se pot da **după cod sau denumire exactă** — nu-i cere id-uri. Dacă o denumire prinde mai multe produse, tool-ul refuză: cere-i omului să aleagă, nu ghici.
+- Rândul fără cost e refuzat și numit în răspuns (produsul și al câtelea rând trimis). Rândurile salvate cu cost 0 sunt listate separat: confirmă cu omul că marfa chiar nu are valoare, altfel retrimite-le cu costul.
 - Pentru alimentar/producție, întreabă dacă are **lot și termen de valabilitate** — fără ele, FEFO nu poate scoate marfa veche prima, iar o retragere de lot nu are de unde porni.
 - `publish_opening_stock` cu `confirm: true`, după ce i-ai arătat câte rânduri și ce valoare intră.
 

@@ -20,7 +20,7 @@
 | 2 | **Import date** (produse, meniu, stoc) | tot fluxul inteligent: pre-creezi refs + construiești fișier canonic + verifici/corectezi (`02b/c/d`) | upload fișier în pagină, meniu din PDF/poze | 02,02b,02c,02d |
 | 3 | **Verificare & completare** | `list_*` + repari: `auto_assign_vat_batch`, `bulk_update_products` (tip/TVA/unitate), `update_menu_item`/`apply_menu_prices` (preț), `create_menu_category` | cardurile de pe dashboard + butoanele Quick-Fix (sunt wrappere pe aceleași tool-uri) | 02 |
 | 4 | **Gestiune & stocuri** (ghid) | nimic de creat AICI (gestiunile + stocul = pasul 2). Explică NIR vs inventar vs transfer | Intrări Marfă (NIR), Verificări Stoc, Mișcări — pagini | 02 |
-| 5 | **Creare manuală** (dacă sari importul) | `create_warehouse`, `bulk_create_products`, `create_menu`, `add_menu_item`, `set_initial_stock` | — (echivalentul manual al pasului 2) | 02 |
+| 5 | **Creare manuală** (dacă sari importul) | `create_warehouse`, `bulk_create_products`, `create_menu`, `add_menu_item`, stoc inițial cu costuri: `save_opening_stock` → `publish_opening_stock` | — (echivalentul manual al pasului 2) | 02 |
 | 6 | **Etichete** (rutare bonuri) | `create_tag` (1/secție), `bulk_assign_tag` (filtre pe categorie), `list_untagged_products`, `list_tag_summary` | pagina vizuală de asignare (alternativă la bulk) | 03 |
 | 7 | **Instalare PC** (server local) | 0 tool-uri (verifici după cu SQL pe `devices` dacă ai SQL) | **TOT**: download ZIP/PC + installer ca Admin (2 min) + alegi Server-ul. Explică pașii + debug rețea | 04 |
 | 8 | **Imprimante & ecrane bucătărie** | `create_printer` (nume = numele secției/tagului, ca să se lege automat), `create_kds_screen` | casa fiscală Datecs/Daisy, rutarea tag→imprimantă („Leagă automat"), butonul Test | 04 |

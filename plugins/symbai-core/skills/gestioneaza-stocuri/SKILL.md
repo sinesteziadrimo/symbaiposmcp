@@ -67,8 +67,9 @@ Pentru „cât stoc de X am”, `get_stock_levels` caută după nume/SKU/cod de 
 6. După numărare, diferențele apar în `/inventory-check?tab=variance`; se aprobă în tabul Aprobări. Pot înregistra o diferență și prin MCP: `create_inventory_adjustment` cu `productId`+`systemQty`+`countedQty`+`reason` (rămâne în așteptare, NU mișcă stocul), apoi `approve_inventory_adjustment` cu `adjustmentId`+`confirm:true` ca să aplic diferența pe stocul real (confirmă întâi cu clientul).
 7. Verific cu `get_daily_consumption_status` dacă consumul zilei e generat (altfel diferențele par mai mari).
 
-**C. Setez stoc inițial pentru un produs nou**
-1. Confirm produsul cu `search_products_db` / `get_product_details`.
+**C. Stoc inițial**
+0. **Stocul de pornire al firmei (mai multe produse, cu costuri)** nu se pune de aici: se încarcă prin foaia de stoc inițial — `get_opening_setup` → `save_opening_stock` (produs, gestiune, cantitate și `unitCost` sau `totalValue` pe FIECARE rând) → `publish_opening_stock`. Vezi skill-ul `deschide-firma`. `set_initial_stock` și inventarul fizic NU primesc costuri: un produs fără cost cunoscut intră la valoare 0, iar răspunsul o semnalează („fără cost”).
+1. Pentru corecția punctuală a unui produs care are deja cost: confirm produsul cu `search_products_db` / `get_product_details`.
 2. `set_initial_stock` cu `productId` + `quantity` și, dacă știi gestiunea, `warehouseId` (necesită modul produse_meniu). Dacă tool-ul spune că produsul are stoc în mai multe gestiuni și cere `warehouseId`, nu reîncerca în orb: rulează `list_warehouses_full` / `get_stock_levels(productName)` ca să alegi gestiunea corectă, confirmă cu userul, apoi reapelează cu `warehouseId`.
 
 **C2. Setez cost standard provizoriu, fără stoc**

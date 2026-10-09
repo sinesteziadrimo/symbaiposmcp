@@ -93,11 +93,13 @@ add_menu_item({ menuId: 5, productId: 123, price: 12.5, name: "Coca-Cola 330ml" 
 
 **4. TVA** — de regulă cotele 0/11/21 există deja (`list_vat_rates`). Dacă lipsește una: `create_vat_rate({ name: "TVA Alimente", rate: 11 })`. Pentru clasificare automată pe produse: `auto_assign_vat_batch({ brandId, onlyMissing: true })` (AI, loturi de 50; filtre opționale warehouseId/productType). În RO HoReCa, dacă importul nu primește TVA explicit, serverul are fallback determinist: mâncare/preparate/apă → 11; alcool, băuturi zaharoase/aromate, cafea/ceai, non-food sau incert → 21. Explicitul din fișier câștigă.
 
-**5. Stoc inițial** (doar dacă utilizatorul a confirmat) — `set_initial_stock({ productId, quantity })`, un apel per produs:
-- Cantitatea e **ABSOLUTĂ** (stocul-țintă, nu adaos); re-apelul cu aceeași valoare e no-op.
-- Creează un document de ajustare deja POSTAT, cu efecte în contabilitate — e pentru setup, NU pentru corecții curente de stoc (alea se fac din aplicație prin inventar/mișcări).
-- Fără gestiune specificată merge în **prima gestiune activă**; cu mai multe gestiuni trimite și `warehouseId` (acceptat de server, deși nu apare în schemă).
-- Pentru sute de produse cu stoc, calea B e mai rapidă (coloana `initialStock` la importul de produse din wizard).
+**5. Stoc inițial, CU COSTURI** (doar dacă utilizatorul a confirmat) — foaia de stoc inițial, nu ajustări produs cu produs:
+- `get_opening_setup` → luna stocului și pasul următor; luna lipsă se alege cu `set_opening_config({ openingStockEffectiveMonth })`.
+- `save_opening_stock({ rows })` — pe fiecare rând: produsul (id, cod sau denumire exactă), gestiunea, `qty` și **costul**: `unitCost` (fără TVA, pe unitatea de stoc) sau `totalValue` (valoarea fără TVA a acelei cantități din raportul vechi; costul unitar se calculează singur). Se poate trimite pe bucăți: implicit rândurile se adaugă peste ce e deja pe foaie.
+- **Costul e obligatoriu pe fiecare rând** și devine costul de pornire al produsului (food cost, costul mărfii vândute, marjă). Rândul fără cost e refuzat și numit în răspuns: ia costul din raportul sursă (stoc valoric, ultima factură) ori cere-l omului. Nu pune 0 „ca să treacă” și nu folosi prețul de vânzare. Răspunsul semnalează separat rândurile salvate cu cost 0.
+- `get_opening_stock` → arată-i omului rândurile și valoarea totală (trebuie să bată cu raportul lui) → `publish_opening_stock({ confirm: true })` după acordul lui explicit. Se publică o singură dată pe brand; nu produce note contabile.
+- **Nu încărca stocul de pornire cu `set_initial_stock`, `apply_physical_inventory` ori un document `ADJUSTMENT_PLUS`**: niciuna nu primește costuri, deci produsele fără cost cunoscut intră la valoare 0, iar ajustările produc și note contabile. `set_initial_stock` rămâne pentru corecția punctuală a unui produs care are deja cost.
+- Detalii și capcane: skill-ul `deschide-firma` + `knowledge/deschidere-solduri-stoc-initial.md`.
 - Dacă userul vrea doar un cost provizoriu pentru food cost înainte de prima recepție, NU seta stoc fictiv: folosește `set_standard_costs` / `standardCost` pe produs. Nu mișcă stoc, nu schimbă CMP și este umbrit de prima recepție reală.
 
 **6. Furnizori** (opțional, modul `furnizori`) — `create_supplier({ name, brandId, cui?, phone?, paymentTermsDays?, deliveryDays? })`, apoi catalogul: `create_supplier_product({ supplierId, name, unit?, price?, vatRate? })` + legătura la produsul intern `create_supplier_product_mapping({ supplierProductId, productId, isPreferred? })`.

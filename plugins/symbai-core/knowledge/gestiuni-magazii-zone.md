@@ -96,7 +96,7 @@ Schimbarea global ↔ zonal se face din configurarea magaziei. Revenirea la glob
 1. `list_warehouses_full` — verifici că nu există deja una cu același nume la acea locație.
 2. `create_warehouse` cu numele și locația (brandul doar dacă gestiunea e a unui singur brand). Zona implicită apare automat.
 3. `bulk_create_storage_zones` pentru frigidere/rafturi, dacă vrei organizare pe zone.
-4. `assign_product_warehouses` pentru produsele care vor avea stoc acolo, apoi `set_initial_stock` dacă pornești cu marfă existentă.
+4. `assign_product_warehouses` pentru produsele care vor avea stoc acolo. Dacă pornești cu marfă existentă: mută-o cu un transfer din gestiunea în care e deja (își păstrează costul); pentru stocul de pornire al firmei folosește foaia de stoc inițial (`save_opening_stock`, cu cost pe fiecare rând). `set_initial_stock` nu primește costuri — un produs fără cost cunoscut ar intra la valoare 0.
 
 **2. Mut marfă din depozit în bar**
 1. `get_stock_levels` cu `warehouseId`-ul depozitului — confirmi ce ai efectiv.
