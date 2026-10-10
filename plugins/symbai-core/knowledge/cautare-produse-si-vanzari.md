@@ -9,6 +9,7 @@ Catalogul identifică produsul; raportul măsoară vânzările. O absență din 
 | „Caută Haribo”, „ce produs are codul acesta?” | `search_products_db(query: "Haribo")`: ID, nume, SKU/cod de bare/EAN, unitate, tip și taguri. |
 | „Cât Haribo am vândut în august?” | `vanzari_produse(cauta: "Haribo", perioada: "custom", startDate: "2026-08-01", endDate: "2026-08-31", locationId: ID verificat)`: toate produsele potrivite, cantități, valori ale liniilor și bonuri distincte. Nu trebuie căutat întâi în catalog. |
 | „Vânzările produsului cu ID 123” | `vanzari_produse(productId: 123, ...)`; pentru mai multe produse, `productIds: [123, 456]`. Nu folosi ID de articol de meniu. |
+| „Câte s-au bonat azi?”, „câte am vândut până acum, cu mesele deschise?” | `vanzari_produse(cauta sau productId, perioada: "azi", locationId)`: `total` = bonurile încasate; `peNoteDeschise` = aceleași produse de pe notele încă deschise. Spune ambele cifre și suma lor. |
 | „Cele mai vândute produse” | `top_produse`: clasament, cu paginare. Nu include produsele fără vânzări. |
 | „Cât am încasat?” / „Cât profit aduce?” | `raport_vanzari` / `get_product_pnl`: indicatori diferiți de valoarea liniilor vândute. |
 
@@ -31,6 +32,7 @@ Catalogul identifică produsul; raportul măsoară vânzările. O absență din 
 - Cantitatea rămâne separată pe produs. Unitatea prezentată este cea curentă a catalogului, dacă există; nu aduna kilograme cu bucăți și nu presupune unitatea pentru o linie istorică fără catalog.
 - Valoarea este suma liniilor de bon eligibile, fără bacșiș. Nu este profit și nu reprezintă automat încasările după toate ajustările aplicate notei. Pentru comparații citește definiția raportului și aceleași filtre.
 - Datele calendaristice includ ultima zi în Europe/Bucharest, după deschiderea comenzii. Raportul afișează intervalul, criteriul de dată și momentul verificării. Alte rapoarte pot folosi închiderea/plata sau limite de oră exacte; nu le presupune identice.
+- Totalul numără bonurile finalizate. În timpul zilei, o parte din ce s-a bonat stă încă pe mese: raportul o arată separat, în `peNoteDeschise` (cantitate, valoare, număr de note), fără să o adune la vânzări. Când omul întreabă „câte s-au bonat” sau „câte am dat azi”, răspunde cu ambele; când întreabă de încasări, doar cu totalul. Dacă versiunea live nu întoarce `peNoteDeschise`, spune că cifra acoperă numai notele încasate.
 - Zero rezultate înseamnă zero vânzări eligibile cu acele filtre și în acea arie. Nu dovedește că produsul nu există, că nu s-a vândut în altă unitate sau că o pagină dincolo de final este întreaga populație.
 
 ## Permisiuni și versiuni

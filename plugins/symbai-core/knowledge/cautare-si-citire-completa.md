@@ -13,6 +13,8 @@ Pentru „găsește X”, începe cu unealta de citire a acelei entități. `cau
 | Factură fiscală emisă către client | `list_fiscal_invoices(query, dateFrom?, dateTo?, brandId?, locationId?)` | Serie/număr, cumpărător/CUI, status și e-Factura. |
 | Notă/comandă POS | `list_orders(query, orderId?, customerId?, employeeId?, tableId?, status?, dateFrom?, dateTo?)` | `query` caută număr, masă sau ospătar. Intervalul privește data deschiderii în ora României. Fără status apar toate stările; suma notelor nu înlocuiește raportul de vânzări. |
 | Stocul unui produs | `get_stock_levels(query sau productId, warehouseId?)` | Nume/SKU/cod; `productType` acceptă și coduri proprii. Lista privește produsele stocabile și cantitățile din gestiuni. |
+| Transfer între gestiuni: „s-a făcut deja?”, „care e ultimul transfer de X?” | `list_stock_transfers(fromWarehouseId?, toWarehouseId?, productId?, fromDate?, toDate?)` | Fiecare transfer vine cu liniile lui (produs, unitate, trimis, primit). Fără `status` nu apar cele anulate. `data.total` numără toate potrivirile. Dacă unealta lipsește din catalog, versiunea instalată e mai veche: `get_stock_transfer(transferId)` pentru unul cunoscut, altfel SQL pe `stock_transfers` + `stock_transfer_lines`. |
+| Ultimul preț de intrare, istoricul intrărilor unui produs | `get_product_reception_history(productId)` | Loturile din recepțiile înregistrate, cu document, gestiune și cost; recepțiile anulate lipsesc. Prețul pe ambalaj și TVA-ul se citesc din factură. |
 | Rețetă | `list_recipes(query, status?, brandId?)` | Implicit active; `status: "all"` include inactive. ID-ul rețetei diferă de `productId`. Detalii: `get_recipe_details(recipeId)`. |
 | Client existent | `list_customers_360(search, brandId?, locationId?)` | Nume, email sau telefon; `get_customer_360(customerId)` pentru fișă și `list_customer_360_orders(customerId)` pentru bonuri. |
 | Angajat existent | `get_staff_overview(query?, employeeId?)` | Identitatea și starea. Pentru ture/pontaje cere colecția și perioada din schema live; o primă pagină nu descrie toată echipa. |
@@ -41,6 +43,18 @@ Datele sunt zile calendaristice `YYYY-MM-DD`, inclusiv capetele intervalului. Tr
 ## Rânduri șterse și sensul coloanelor
 
 `search_products_db` exclude implicit produsele șterse logic și spune în mesaj câte rânduri șterse se potrivesc; `includeDeleted: true` le arată marcate `deleted: true`. `get_product_details` pe un rând șters începe cu avertismentul „PRODUS ȘTERS”. În SQL, `products.deleted_at`/`recipes.deleted_at` NOT NULL = șters, indiferent de `active`. Când o citire SQL întoarce rânduri dintr-un astfel de tabel, răspunsul conține `deletedRowsAudit` cu numărul exact de rânduri șterse; `describe_database_table` adaugă blocul `semantics`, iar `citeste_instructiuni_agent(subiect: dictionar_date)` dă dicționarul de sens și șabloanele SQL de bază (catalog viu, dubluri șterse, rețeta unui produs, vânzări nete pe perioadă, sold pe gestiuni, mișcări, recepții, poziții de meniu, distribuția unui status). Folosește șabloanele în locul interogărilor improvizate; procedura completă este în [verificarea dovezilor](verificarea-dovezilor.md).
+
+## SQL: numele reale, nu cele ghicite
+
+O conversație nouă nu ține minte schema celei dinainte. Înaintea primului `execute_sql_query` pe un tabel pe care nu l-ai citit în această sarcină, cere `describe_database_table(tableNames: ["…", "…"], format: "compact")` sau citește lista de nume reale din `citeste_instructiuni_agent(subiect: "dictionar_date")`. Cele ghicite cel mai des greșit:
+
+- `inventory_documents`: `doc_no`, `doc_date`, `doc_type`, `warehouse_from_id`, `warehouse_to_id` (nu există `warehouse_id`).
+- `inventory_document_lines`: `document_id`, `qty`. `inventory_ledger`: `doc_id`, `qty_delta`.
+- `incoming_invoices`: `invoice_date`. `incoming_invoice_lines`: `incoming_invoice_id`, `item_name`, `mapped_product_id`.
+- `orders`: `opened_at`, `total_amount`. `recipes`: `yield`. `stock_transfers`: `transfer_no`. `products`: `active`.
+- `production_batches`: `source_warehouse_id`, `destination_warehouse_id`, `batch_number`, `planned_qty`.
+
+Versiunile recente ale serverului reiau singure interogarea când numele scris este sinonimul exact al unei coloane reale și spun în mesaj ce au înlocuit; folosește de atunci numele real. Un nume ambiguu (sursă sau destinație?) rămâne eroare: alege tu coloana potrivită întrebării. `information_schema` și `pg_*` nu se interoghează; `FROM a, b` se scrie cu `JOIN` explicit.
 
 ## Ce reții în memorie
 

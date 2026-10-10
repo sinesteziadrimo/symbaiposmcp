@@ -62,6 +62,16 @@ ID-uri, nu nume (roleId, employeeId, floorConfigId). Caută înainte de a crea. 
 3. `create_staff_schedule` cu `status:"draft"` = ciornă (invizibilă); `"published"` = vizibilă angajatului. (Tura creată cu `create_shift` nu are draft/publish — există direct.)
 4. Confirmă: `get_staff_overview(brandId, locationId)` arată turele viitoare cu raionul (`sectionName`); pentru detaliu fin poți folosi accesul SQL read-only. (`get_shift_detail` e pentru turele de **producție**, nu pentru turele de personal — nu-l folosi aici.)
 
+### Aranjează grila Planificatorului după un tabel (grupe, culori, ordinea oamenilor)
+
+Când omul trimite un tabel (poză sau text) cu grupe de tip „Tura 1 / Tura 2 / Tura 3" și oamenii de sub fiecare:
+
+1. `get_staff_schedule_layout(brandId, locationId)` — vezi grila de acum pe grupe, cu id-urile angajaților care pot apărea în ea și `rowId`-urile rândurilor existente.
+2. Potrivește numele din tabel cu angajații din răspuns. Un nume pe care nu-l găsești sau care se potrivește cu doi oameni îl întrebi, nu îl ghicești.
+3. `update_staff_schedule_layout` cu grila ÎNTREAGĂ: `sections` de sus în jos, fiecare cu `label`, `bgColor` (#rrggbb) și `employeeIds` în ordine. Păstrează `rowId` la rândurile care rămân; rândurile pe care nu le trimiți se șterg. Pentru oamenii care nu sunt în tabel alege împreună cu omul: rămân la sfârșit (implicit) sau se ascund din grilă cu `unlistedEmployees:"hide"`.
+4. Primul apel e doar previzualizare. Arată-i omului pe scurt ce se schimbă (rânduri șterse, cine se mută, cine se ascunde) și, după acord, reapelează cu `confirm:true` și `expectedVersion` din previzualizare.
+5. Grila aranjează doar AFIȘAREA. Turele propriu-zise se creează separat (`bulk_create_staff_schedules`); un om ascuns reapare singur cât are o tură în perioada afișată.
+
 ## (d) Configurează Program Salon (aranjament per zi)
 
 Pregătire aranjamente (dacă lipsesc): `create_floor_zone` → `bulk_create_floor_tables` → `create_floor_config(name, brandId, locationId, zoneIds)` → `add_sections_to_config(floorConfigId, sections:[{name,color}])` → `assign_tables_to_section(floorConfigId, sectionId, tableDbIds[])`. `assignedCount` de la asignare înseamnă mese DISTINCTE, nu desktop+mobile dublat; confirmă prin `get_floor_config(section:"tables")`. Apoi **ce aranjament pe ce zi**: `create_floor_config_schedule(brandId*, dayOfWeek* [0=Duminică…6=Sâmbătă], floorConfigId*, locationId*)` pentru fiecare zi de operare. Excepțiile pe dată și presetul QR per raion (Prenume / La scanare / Confirmare ospătar) se setează din tabul Program Salon în aplicație.
