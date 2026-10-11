@@ -12,7 +12,10 @@ Pentru factura generată din propriul NIR deja postat și evaluat, corecția exc
 
 - **Data reală a intrării:** `set_reception_operational_date({id: ID_FACTURA, receiptDate: "AAAA-LL-ZZ", confirm: true})`. ID-ul este al facturii. Data oficială `invoiceDate` și data înregistrării `registrationDate` se păstrează. Nu le substitui pentru a muta recepția. Această salvare este suficientă pentru dată; nu apela și corecția NIR-ului dacă nu ai pregătit separat schimbări de linii.
 - **Prețul de achiziție introdus greșit:** citește linia și documentul-sursă, folosește `update_incoming_invoice_line` cu `invoiceId`, `lineId` și valorile corectate verificate; apoi `correct_confirmed_reception` cu `id: ID_FACTURA`, `expectedOldNirId` citit și o `idempotencyKey` stabilă. Omite cantitățile fizice, `physicalVerificationConfirmed` și `acknowledgeConsumedLots` dacă numărătoarea nu se schimbă. Nu activa stocul negativ pentru această corecție. Câmpul `receptionPrice` desemnează prețul de vânzare/raft în fluxul respectiv; nu îl confunda cu prețul de achiziție al facturii.
+- **Ambalaj recepționat greșit** (un bax intrat ca o singură bucată, un borcan intrat la greutatea brută în loc de cea scursă): `correct_invoice_line_mapping` cu `invoiceId`, `lineId`, `productId` și `packMultiplier` — 24 pentru baxul de 24, 0,88 pentru 0,88 kg scurse pe borcan. Acest pas doar **pregătește** linia: valoarea ei rămâne cea din factură, iar NIR-ul și stocul sunt încă neschimbate. Pregătește toate liniile de corectat, apoi aplică o singură dată cu `correct_confirmed_reception`. Rezultatul poate fi un NIR nou, cu aceeași dată; cel vechi rămâne anulat în istoric. Când un mesaj spune „Apasă «Salvează corecția»”, pasul tău este `correct_confirmed_reception`, nu o trimitere a utilizatorului la ecran.
 - **Ambele:** salvează separat data operațională și liniile, prin operațiile de mai sus, apoi verifică rezultatul. Nu trimite data recepției ca dată fiscală.
+
+**Inventar finalizat după recepția corectată.** Symbai îi reface singur diferențele, în câteva minute, astfel încât stocul să rămână cel numărat: un plus de inventar care doar compensa greșeala este înlocuit cu diferența reală. Nu adăuga ajustări manuale. Verifică după câteva minute: `preview_physical_inventory` cu aceleași numărători, la aceeași dată, nu mai trebuie să propună nicio modificare pentru produsele corectate.
 
 La restaurante, costurile FIFO se recalculează în fundal, inclusiv pentru consumuri deja acoperite, semipreparate și transferuri. Se schimbă costul atribuit și marja; cantitățile istorice, rețetele deja folosite și prețul plătit de client se păstrează. Nu șterge și nu reprocesa consumul zilnic pentru o asemenea corecție.
 
@@ -96,6 +99,7 @@ La `correct_confirmed_reception`, `id` este ID-ul facturii, iar `expectedOldNirI
 - Dacă s-au schimbat unitatea, loturile sau distribuția și sistemul cere noua alocare fizică, obține numărătoarea reală; nu o deduce automat din factură.
 - La corectarea unei conversii, stabilește dacă utilizatorul schimbă și cantitatea efectiv primită sau doar exprimarea facturii. Transmite cantitatea fizică verificată dacă aceasta se schimbă. Câmpurile fiscale originale rămân intacte, inclusiv valorile lipsă din documentele vechi; nu inventa o unitate originală pentru a trece validarea.
 - Un timeout înseamnă rezultat necunoscut. Recitește factura, NIR-ul și istoricul înainte de retry; nu genera altă cheie ca să „treacă”.
+- Aplicarea poate dura 1–3 minute când firma are multe documente după acea recepție. Răspunsul „încă în lucru” (`stillRunning`) sau o eroare 524 a conexiunii nu înseamnă eșec: operația continuă pe server. Spune-i utilizatorului că se aplică, așteaptă 1–2 minute, recitește factura și liniile NIR-ului și reia numai dacă valorile au rămas cele vechi, cu aceeași cheie și aceleași argumente.
 
 ## Recepție deja consumată sau încă fără preț
 
@@ -131,7 +135,7 @@ Urmărește `get_reception_cost_recalculation({id: ID_FACTURA})`:
 
 | Stare | Ce spui și ce faci |
 |---|---|
-| `pending` / `retry` | Corecția este salvată, costurile se actualizează în fundal; utilizatorul poate continua lucrul. Recitește starea, fără repetarea scrierii. |
+| `pending` / `retry` | Corecția este salvată și cantitățile sunt deja corecte; costurile se actualizează în fundal, dintr-o coadă comună a firmei: de la câteva minute la peste o oră când coada este mare. Utilizatorul poate continua lucrul. Nu aștepta în buclă și nu repeta scrierea: spune ce este salvat și reverifică starea la următoarea lui cerere. |
 | `resolved` | Costurile afectate au fost actualizate. Sincronizarea contabilă se verifică separat. |
 | `waiting` | Sunt încă surse sau prețuri lipsă; partea cunoscută este actualizată. Completează numai datele reale autorizate. |
 | `attention` | Comunică problema concretă și identificatorii returnați; editarea rămâne posibilă. Nu inventa costuri sau ajustări ca să dispară mesajul. |
