@@ -77,7 +77,8 @@ Modulul acoperă tot ce ține de relația cu clienții: rezervări de masă și 
 - **Centru Recenzii** (`/hotel/reviews`) — inbox recenzii externe (TripAdvisor/Google).
 
 ### Pagini publice
-- **Booking Public** (`/book/...`) — aplicația publică de rezervare (multilingvă) pentru clienți.
+- **Rezervare online de masă** — în portalul clienților (`https://<subdomeniu>.symbai.app/portal/`, cu `?brandId=…&locationId=…` sau calea `/<slug-brand>/portal/`): secțiunea „Rezervă o masă” de pe pagina principală. Nu există o adresă separată de tip `/book` pentru mese.
+- **Booking Public hotel** (`/book/...`) — motorul public de rezervare a CAMERELOR de hotel (multilingv, cere modulul Hotel). Nu se folosește pentru mese la restaurant.
 
 ## Fluxuri frecvente
 
@@ -126,6 +127,13 @@ Modulul acoperă tot ce ține de relația cu clienții: rezervări de masă și 
 - **De ce clientul nu poate rezerva online un grup de 15 persoane, dar eu pot din POS?** → Limitele min/max persoane se aplică rezervărilor online; personalul poate depăși limitele din POS.
 - **Calendarul pare gol / lipsesc rezervări** → Verifică filtrele globale de brand și locație din partea de sus a paginii.
 - **Pot genera câte un link de rezervare pentru fiecare canal și apoi vedea un dashboard unic pe surse?** → Da. Configurează sursele clientului, apoi folosește `build_reservation_tracking_link` pentru fiecare canal/campanie. Rezervarea păstrează separat canalul operațional și atribuirea de marketing semnată. Vezi totalul, procentul și distribuția pe zi/oră în `/reservations` → **Timp Rotație & Analiză** sau în `/customer-followup`; prin chat, `get_crm_funnel` întoarce aceeași atribuire pentru utilizatorii cu acces CRM. Sursele istorice care nu mai sunt configurate rămân vizibile, dar un UTM inventat manual nu devine sursă de încredere. Hotel Analytics rămâne separat pentru rezervările hoteliere.
+- **Restaurantul are un site făcut de altă firmă. Cum îl legăm de rezervările din Symbai?** → Prin portalul clienților, fără formular propriu (rezervările dintr-un formular propriu nu intră în Symbai):
+  - **Ce pregătești în Symbai:** rezervările activate în portal (`configure_portal_features`), rezervările online pornite pe unitate (`configure_reservation_settings` cu `onlineBookingEnabled: true`), programul, limita de persoane online și mesele cu capacitate pe planul de sală. Verifică întâi cu `get_reservation_settings` dacă setările sunt proprii locației, ale brandului sau globale.
+  - **Pe site:** un buton „Rezervă o masă” către portal sau portalul într-un iframe/popup. Symbai nu blochează afișarea în iframe, dar testează pagina pe domeniul site-ului. Nu există script de widget separat.
+  - **Urmărire:** `build_reservation_tracking_link` întoarce și `portalUrl`, adică același link semnat pe formularul din portal; pune-l pe buton sau ca adresă a iframe-ului.
+  - **Ce se întâmplă la rezervare:** rezervarea intră direct în /reservations. Disponibilitatea se calculează din capacitatea meselor/zonelor, procentul online pe zonă și ritmul pe 15 minute. Masa NU se alocă automat: o alege personalul. Oaspetele primește confirmare pe email, numai dacă a lăsat adresa. Mesajul spune „confirmată” cu confirmare automată, altfel „cerere”. Nu se trimite SMS/WhatsApp la rezervarea online.
+  - **Nu există** un API public cu cheie pentru crearea rezervărilor din alt sistem.
+  - **Meniul pe site:** portalul are meniul public cu preț și disponibilitate actualizate în ~1 minut. Citirea lui direct din browserul altui domeniu este blocată de browser. Site-ul îl poate citi prin propriul server, din meniul public al portalului (`/api/portal/menu/items?brandId=…&locationId=…`). Nu este un API versionat: cere confirmarea echipei Symbai înainte ca site-ul să depindă de el. Feed-urile de produse (XML/CSV) sunt pentru Google/Meta: au prețul produsului și nu știu că un preparat e „epuizat” în meniu. Cheia stabilă a unui preparat este ID-ul produsului; prețul și disponibilitatea țin de poziția din meniu.
 - **Am generat linkul, dar sursa are 0 rezervări** → Verifică brandul și locația linkului, că sursa există exact în setările acelui scope și că linkul nu a expirat. Apoi separă traficul de conversie: scanarea/clickul nu dovedește că formularul a fost trimis. Raportul grupează după momentul creării rezervării în fusul orar al organizației.
 - **De ce nu pot șterge definitiv un client?** → Pentru clienți/POS/portal, fluxul corect este GDPR: anonimizare + dezactivare, cu istoricul financiar păstrat fără PII. Prin AI folosește `forget_customer_gdpr` cu confirmare explicită; pentru duplicate folosește fuziunea de clienți (păstrează istoricul, cu audit).
 - **„/customers" și „/portal-customers" sunt pagini diferite?** → Nu, e aceeași pagină de clienți, accesibilă pe ambele rute.
