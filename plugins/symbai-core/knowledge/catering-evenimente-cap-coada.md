@@ -8,7 +8,7 @@ Citește la: „ofertă de catering”, „nuntă / petrecere / eveniment corpor
 |---|---|---|
 | 1. Cererea | `create_deal` (data evenimentului, persoane, tipul de eveniment al brandului) → `advance_deal` (client, etapă) | Tipul de eveniment trebuie să fie unul configurat pe brand; un tip necunoscut e refuzat cu lista celor valide. Clientul se poate adăuga și după creare (`customerId` sau `newCustomer`). |
 | 2. Oferta | `create_sales_quote_draft` / `update_sales_quote_draft` | Linia „pe persoană” se leagă de un pachet din Meniu Evenimente (`eventMenuId`): așa ajung preparatele la bucătărie. Anexa ofertei e doar text pentru client. Citește avertismentele din răspuns (TVA diferit de produs, preț pe persoană). |
-| 3. Trimisă / acceptată | `publish_sales_quote_link`, `get_sales_quote_pdf`, `set_sales_quote_status`, `set_primary_sales_quote` | Previzualizează întâi; acceptarea ofertei principale copiază liniile pe eveniment și confirmă meniul legat. |
+| 3. Trimisă / acceptată | `publish_sales_quote_link`, `get_sales_quote_pdf`, `set_sales_quote_status`, `set_primary_sales_quote` | Previzualizează întâi; acceptarea ofertei principale copiază liniile pe eveniment și confirmă meniul legat. Marchează oferta trimisă înainte de PDF (altfel pleacă marcată ciornă). Confirmarea clientului pe email sau la telefon ajunge: nu îi cere și confirmarea pe link și nu lăsa butoanele omului. |
 | 4. Evenimentul | `create_event_from_deal(dealId)` | Întoarce `reservationId`; dacă evenimentul există deja, îl întoarce pe acela (nu crea altul). |
 | 5. Meniul | `attach_event_menu_to_reservation(reservationId, eventMenuId, guestCounts)` | Felurile cu toate preparatele incluse se completează singure; `courseChoices` doar la felurile la alegere. |
 | 6. Numărul final | `confirm_event_final_guests` (previzualizare, apoi `confirm:true` cu acordul omului) | Răspunsul spune ce s-a recalculat: oferta, venitul evenimentului, valoarea și persoanele oportunității, bucătăria. |
@@ -42,6 +42,8 @@ Citește la: „ofertă de catering”, „nuntă / petrecere / eveniment corpor
 - Anularea loturilor rămase fără cerință după schimbarea meniului: bucătarul decide; asistentul le arată.
 
 ## Vezi și
+
+- `asistent-oferte-email-whatsapp.md` — asistentul care preia cererile din email, propune răspunsul pe WhatsApp și duce oferta până la confirmare; ce a mers și ce a corectat proprietarul.
 
 - `meniuri-evenimente-si-meniul-zilei.md` — pachetele de eveniment ca șabloane.
 - `rezervari-clienti-evenimente.md` — fișa evenimentului, BEO, P&L.

@@ -97,8 +97,10 @@ Coordonare cross-canal (un singur canal/promoție/zi):
 | **Meta — boost la postare** | da — `boost_post` (+ `list_boostable_posts`) | — |
 | **Meta — pauză / repornire** | da — `pause_ad_campaign`, `resume_ad_campaign` | — |
 | **Status și rezultate campanie** | da — `list_ad_campaigns`, `get_ad_campaign_status`, `get_ad_campaign_insights` | — |
-| **Modificare buget pe campanie (scalare)** | da — `set_campaign_budget(confirm:true)` pentru Meta | da pentru Google/TikTok sau setări avansate |
-| **Audiențe personalizate / asemănătoare din lista CRM** | — (le pregătești segmentul cu `preview_guest_segment`) | da |
+| **Modificare buget pe campanie (scalare)** | da — `set_campaign_budget(confirm:true)` pentru Meta; bugetul pe set (ABO) cu `set_ad_set_budget(confirm:true)` | da pentru Google/TikTok sau setări avansate |
+| **Folosirea audiențelor personalizate / lookalike existente în contul Meta** | da — `list_custom_audiences`, apoi `customAudienceIds` / `excludedCustomAudienceIds` la crearea reclamei | da |
+| **Crearea audiențelor personalizate / asemănătoare din lista CRM** | — (le pregătești segmentul cu `preview_guest_segment`) | da |
+| **Schimbarea materialului/textului unei reclame publicate; copii de set/reclamă** | da — `update_ad` (reintră în verificare), `duplicate_ad_set` / `duplicate_ad` (pe pauză) | da |
 | **Google Ads (Performance Max, Search)** | — | da |
 | **TikTok Ads (Smart+, Spark Ads)** | — | da |
 | **Conectare cont Meta / cont reclame** | — (vezi skill-ul `conecteaza-meta`) | da |
@@ -116,7 +118,7 @@ Regula de onestitate: dacă proprietarul cere ceva ce nu se poate din chat (ex. 
 - **Atribuirea umflă ROAS** — cifrele raportate de platformă supraestimează ROAS-ul real în medie de ~2,3×. Judecă rentabilitatea pe `get_attribution_report` / `get_attribution_ltv_by_channel` (date din POS-ul tău), nu pe ce zice doar Meta/Google.
 - **Țintire geografică corectă** — pentru un local țintește orașul (Meta adaugă rază) sau rază 5-8 km în jurul punctului. Nu suprapune oraș + județ + țară (se respinge). Acoperire pe toată țara în UE cere date de plătitor/beneficiar verificate.
 - **Confirmare obligatorie la cheltuială** — orice tool de creare/pornire/scalare reclamă cheltuie bani reali; rulează cu `confirm:true` și spune-i clar proprietarului bugetul, durata și ținta înainte. Nu repeta comanda dacă ecranul nu s-a actualizat — verifică prin `get_ad_campaign_status`/`get_ad_campaign_insights`.
-- **Nu inventa tool-uri** — pentru Google, TikTok și audiențe personalizate spune cinstit „se face din aplicație" și ghidează acolo. Pentru Meta, folosește tool-urile existente (`set_campaign_budget` inclus).
+- **Nu inventa tool-uri** — pentru Google, TikTok și CREAREA audiențelor personalizate spune cinstit „se face din aplicație" și ghidează acolo. Pentru Meta, folosește tool-urile existente (`set_campaign_budget`, `set_ad_set_budget`, `update_ad`, `duplicate_ad_set`, `list_custom_audiences` incluse).
 
 ## Vezi și
 

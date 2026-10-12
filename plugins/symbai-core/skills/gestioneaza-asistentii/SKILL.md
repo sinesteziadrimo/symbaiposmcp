@@ -11,6 +11,8 @@ Acest skill este pentru chatul proprietarului care administrează asistenți. Î
 
 **Asistenți numiți pentru grupuri WhatsApp**, inclusiv mai mulți creați într-o singură cerere → [configurare prin unelte](../../knowledge/asistenti-whatsapp-configurare.md). Ghidul leagă partajarea locală din Connect de aprobarea nominală POS și `asistent_whatsapp`, explică alegerea explicită `privacy:internal/customer` și de ce SQL-ul și „Read all” nu ajung pe WhatsApp. Nu porni un watcher paralel și nu căuta în browser setări oferite de catalogul live.
 
+**Asistent de oferte din email, cu acordul pe WhatsApp** („răspunde-mi la cererile de ofertă”, „să trimită după ce aprob”, catering, evenimente, servicii) → [modelul verificat](../../knowledge/asistent-oferte-email-whatsapp.md): două sarcini (emailurile și acordurile), exemplele „Cereri de ofertă din email” și „Oferte aprobate pe WhatsApp”, stilul emailurilor, food cost-ul în intervalul proprietarului și pașii pe care asistentul îi face singur.
+
 ## Trainingul agenților de vânzări
 
 La instruire, probe, prag de promovare, voce și cunoștințe de produs folosește Academia: [ghid CRM/calendar/training](../../knowledge/crm-configurare-calendar-training.md) și skill-ul [gestioneaza-crm](../gestioneaza-crm/SKILL.md). Nu crea un asistent personal de grup în locul configurației Academiei și nu considera dreptul de editare a agenților AI drept de administrare a oamenilor.

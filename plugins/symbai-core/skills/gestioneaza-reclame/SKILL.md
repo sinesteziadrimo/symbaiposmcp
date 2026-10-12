@@ -29,6 +29,14 @@ Pentru impact real până la CRM/plată, citește `knowledge/marketing-impact.md
 
 Pe lângă boost, poți crea reclame de la zero, cu un obiectiv anume. Toate au aceeași logică ca boost-ul: **cer `confirm:true`** după ce utilizatorul aprobă bugetul, respectă plafonul, `dailyBudgetRon` minim 5, `durationDays` opțional (≥2), și accept aceleași opțiuni de țintire (`locations`, `interests`, `ageMin`/`ageMax`/`gender`) + `imageUrl` opțional (URL https către poza reclamei) + `campaignName` opțional. Întorc `campaignId` + status (`pending_review` = succes, a intrat la verificare).
 
+**Video în loc de imagine** (de regulă merge mult mai bine decât statica): un singur material per reclamă — `imageUrl` SAU unul dintre:
+- `videoId` — clip deja în contul Meta (ex. clipul unei reclame vechi);
+- `videoUrl` — link https public către un MP4; Meta îl descarcă în contul de reclame;
+- `mediaAssetId` — un material din Biblioteca Media a brandului (`browse_brand_media`), imagine sau video.
+Reclama se publică doar după ce Meta confirmă clipul procesat; coperta se pune automat. Dacă primești „Meta încă îl procesează" + un `videoId`, nu s-a creat nimic: reapelează aceeași unealtă peste 1–2 minute cu acel `videoId` (fără `videoUrl`/`mediaAssetId`, ca să nu-l urci a doua oară).
+
+**Audiențe personalizate / lookalike**: `list_custom_audiences` arată audiențele din contul Meta (și cele făcute în Ads Manager), mărimea și dacă sunt gata de folosit. Pasează `metaAudienceId`-urile în `customAudienceIds` (de inclus) sau `excludedCustomAudienceIds` (de exclus, ex. clienții existenți) la orice unealtă de creare, inclusiv `boost_post`. Sunt acceptate doar audiențele contului de reclame al brandului; cele incluse trebuie să fie gata de livrare.
+
 - **`create_traffic_ad`** — trimite clienții pe un link (meniu online, site, pagină de rezervări). Obligatoriu `websiteUrl`. Opțional `headline`, `adText`, `ctaType` (ex. `SHOP_NOW`, `ORDER_NOW`, `SEE_MENU`, `GET_OFFER`; implicit `LEARN_MORE`). Dacă nu dai imagine, Meta folosește previzualizarea linkului.
 - **`create_messages_ad`** — clienții apasă și încep o conversație pe Messenger (întrebări, rezervări, comenzi prin mesaj). Obligatoriu `adText`. Opțional `headline`.
 - **`create_calls_ad`** — buton de apel direct din reclamă (bun pentru rezervări telefonice). Obligatoriu `phoneNumber` (ex. `+40723123456`). Opțional `adText`, `headline`.
@@ -64,6 +72,10 @@ Fluxul e identic: verifică contul (`list_ad_accounts`) → confirmă bugetul + 
 - **Pune pe pauză** (oprește cheltuiala imediat): `pause_ad_campaign(campaignId)` — acțiune sigură, nu cere confirmare.
 - **Repornește**: `resume_ad_campaign(campaignId, confirm:true)` — reia cheltuiala, deci cere confirmarea utilizatorului.
 - **Schimbă bugetul zilnic**: `set_campaign_budget(campaignId, newDailyBudgetRon, confirm:true)` — bani reali. Întâi arată metricile, suma nouă în RON/zi și motivul, apoi cere OK explicit. Respectă plafonul de buget zilnic setat de proprietar pe token; dacă Meta refuză, nu promite că s-a schimbat.
+- **Seturile și reclamele unei campanii**: `list_ad_sets(campaignId)` — `adSetId`, buget, optimizare, status și reclamele fiecărui set (`adId`, material, început de text). Spune și dacă bugetul e pe campanie sau pe set.
+- **Buget pe SET (campanii ABO)**: dacă `set_campaign_budget` refuză pentru că bugetul e pe set, folosește `set_ad_set_budget(adSetId, newDailyBudgetRon | newLifetimeBudgetRon, confirm:true)`. Tipul bugetului (zilnic / pe toată durata) rămâne cel al setului. Aceleași plafoane ca la campanie; dacă tokenul are plafon per campanie și campania n-are limită totală pe Meta, reapelezi cu `setSpendCap:true` doar cu acordul utilizatorului.
+- **Modifică o reclamă publicată**: `update_ad(adId, …, confirm:true)` — material nou (`imageUrl`/`videoId`/`videoUrl`/`mediaAssetId`), `adText`, `headline`, `websiteUrl`, `ctaType` (+ `phoneNumber` la `CALL_NOW`). Trimite doar ce se schimbă. Pe Meta se creează un creative nou atașat aceleiași reclame: **reclama reintră în verificare** și poate să nu livreze până la aprobare — spune-i asta utilizatorului înainte de confirmare. Nu merge pe reclamele boost (conținutul vine din postare) sau în format flexibil.
+- **Copii (pe pauză)**: `duplicate_ad_set(adSetId, confirm:true)` — copie nativă Meta a setului (implicit cu reclamele; Meta copiază dintr-o dată cel mult 3), utilă când Meta refuză o schimbare pe setul publicat (ex. obiectivul de optimizare) și cere set nou. `duplicate_ad(adId, confirm:true)` — o variantă a unei reclame (apoi `update_ad` pe copie). Copiile pornesc mereu pe pauză; pornirea se face din Symbai (Reclame) sau din Ads Manager.
 
 ## Optimizarea unei campanii care rulează
 
@@ -92,11 +104,11 @@ Optimizarea o faci TU, din cifre — nu întreba asistentul Symbai „cum optimi
 
 **O singură schimbare pe rând.** Dacă schimbi și bugetul, și țintirea, și creativul în aceeași zi, nu mai știi ce a funcționat.
 
-**Ce NU se poate schimba după publicare:** imaginea și textul unei reclame deja publicate sunt fixate de Meta. Pentru alt vizual sau alt mesaj creezi o **reclamă nouă** (în aceeași campanie) și pui pe pauză vechea — nu încerca să „editezi" reclama care rulează. Bugetul, țintirea, starea (activ/pauză) și perioada se pot modifica normal.
+**Ce se schimbă după publicare:** materialul, textul, titlul și butonul unei reclame publicate se schimbă cu `update_ad` — Meta atașează un creative nou și reclama reintră în verificare (învățarea se reia). Când reclama veche merge și vrei doar să testezi o variantă, fă `duplicate_ad` și modifică copia. Obiectivul de optimizare al unui set publicat nu se poate schimba — pentru asta e nevoie de un set nou (`duplicate_ad_set`, apoi ajustarea copiei din aplicație). Bugetul, starea (activ/pauză) și perioada se pot modifica normal.
 
 ## Reguli (IMPORTANT — bani reali)
 
-- **Mereu confirmă bugetul + postarea înainte de `boost_post`/`resume`/`set_campaign_budget`** (pune `confirm:true` doar după „da"-ul utilizatorului). Pauza NU cere confirmare.
+- **Mereu confirmă bugetul + postarea înainte de `boost_post`/`resume`/`set_campaign_budget`/`set_ad_set_budget`**, iar modificarea/copierea înainte de `update_ad`/`duplicate_ad_set`/`duplicate_ad` (pune `confirm:true` doar după „da"-ul utilizatorului). Pauza NU cere confirmare.
 - **Respectă plafonul**: dacă proprietarul a setat un buget max/zi sau max/campanie pe token (Hub → Acces AI), tool-ul refuză sumele peste plafon cu un mesaj clar. Nu insista — propune o sumă ≤ plafon sau roagă proprietarul să mărească plafonul din portal.
 - **Durată**: pentru un buget total mărginit, dă `durationDays` (≥2). Altfel campania rulează cu buget zilnic până o pui pe pauză — spune-i clar utilizatorului.
 - **Minim 5 RON/zi** (cerința Meta).
