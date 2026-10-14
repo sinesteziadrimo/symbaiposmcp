@@ -4,7 +4,7 @@
 
 ## Scopul fazei
 
-La final, fiecare produs finit care se vinde are o rețetă **legată de produs prin ID**, cu ingrediente în cantități și unități corecte. Asta deblochează două lucruri esențiale: **costul real al porției** (food cost = cost ingrediente ÷ preț de vânzare) și **scăderea automată din stoc** la fiecare vânzare prin POS. Fără rețetă, un preparat vândut nu consumă nimic din stoc și apare fără cost în rapoarte — P&L-ul și marja devin ficțiune. Fazele următoare (siguranță alimentară, rapoarte, prețuri AI) se construiesc pe rețetele de aici.
+La final, fiecare produs finit care se vinde are o rețetă **legată de produs prin ID**, cu ingrediente în cantități și unități corecte. Asta deblochează două lucruri esențiale: **costul real al porției** (food cost = cost ingrediente ÷ preț de vânzare fără TVA) și **scăderea automată din stoc** la fiecare vânzare prin POS. Fără rețetă, un preparat vândut nu consumă nimic din stoc și apare fără cost în rapoarte — P&L-ul și marja devin ficțiune. Fazele următoare (siguranță alimentară, rapoarte, prețuri AI) se construiesc pe rețetele de aici.
 
 Precondiție: faza de produse e gata — produsele finite (ce se vinde) și materiile prime (ingredientele) există deja în catalog.
 
@@ -13,19 +13,20 @@ Precondiție: faza de produse e gata — produsele finite (ce se vinde) și mate
 - **`retete` (Rețete)** — obligatoriu pentru toate scrierile fazei: `create_recipe`, `update_recipe`, `add_recipe_ingredients`, `remove_recipe_ingredient`, `bulk_replace_recipe_ingredients`, `add_recipe_outputs`, `remove_recipe_output`, `set_recipe_labels`, `set_production_sheet_config`.
 - **`produse_meniu`** — opțional, doar dacă descoperi materii prime lipsă și vrei să le creezi controlat cu `create_product` (recomandat în locul auto-creării din tool-urile de rețetă — vezi Capcane).
 
-Fără modulul activat în portalul Hub → Acces AI, tool-urile de scriere întorc „permisiune insuficientă" — cere utilizatorului să bifeze modulul pe token și reîncearcă. Citirile (`list_recipes`, `get_recipe_details`, `analyze_recipes`...) merg întotdeauna.
+Fără modulul activat în portalul Hub → Acces AI, tool-urile de scriere întorc „permisiune insuficientă" — cere utilizatorului să bifeze modulul pe token și reîncearcă. Citirile (`list_recipes`, `get_recipe_details`, `get_recipe_card`, `analyze_recipes`...) cer doar modulul de citire corespunzător (Rețete, respectiv Produse & Meniuri pentru analizele de food cost); costurile apar numai cu dreptul de a vedea costuri.
 
 ## Ce afli singur ÎNAINTE să întrebi — și ce întrebi utilizatorul
 
 **Afli singur (nu pune întrebări la care există răspuns în date):**
 - `list_brands` — brandId (necesar la `analyze_recipes`/`analyze_food_costs` și util la `create_recipe`).
-- `list_recipes` (parametri: `productType`, `query`, `limit`) — ce rețete există deja. Notă: prin conexiunea MCP acest tool are parametrii de mai sus, NU `status`/`brandId`; rezultatul NU include `productId` — legătura cu produsul o vezi doar în `get_recipe_details`.
-- `analyze_food_costs({ brandId })` — ce produse vândute N-AU rețetă (raportate „fără rețetă"; atenție: potrivirea produs↔rețetă e pe NUME aici, o rețetă legată prin ID dar numită diferit apare fals ca lipsă).
+- `list_recipes` (`query`, `ingredientQuery`, `status`, `brandId`, `productType`, `limit`/`offset`) — ce rețete există deja. Rezultatul include `productId` și `productLinkStatus` (`linked`/`unlinked`), deci vezi direct rețetele nelegate.
+- `analyze_food_costs({ brandId })` — ce produse vândute N-AU rețetă (raportate „fără rețetă"). Rețeta se găsește după legătura prin ID; potrivirea după nume se folosește doar pentru rețetele vechi nelegate, cu nume identic.
 - `analyze_recipes({ brandId })` — starea rețetelor existente: food cost per rețetă, ingrediente fără cost, rețete fără preț de vânzare.
 - `list_menu_items` — ce se vinde efectiv (lista de candidați la rețetă; prioritizează ce e în meniu).
 - `search_products_db({ query, productType })` — ID-urile și **unitățile** produselor: `finished_good` pentru produsele finite, `raw_material` pentru ingrediente.
-- `get_product_details({ productId })` — fișa produsului (tip, unitate, preț, furnizor, taguri) + în ce rețete e folosit ca INGREDIENT. NU arată rețeta care produce produsul — pentru asta `get_recipe_details`.
+- `get_product_details({ productId })` — fișa produsului (tip, unitate, preț, furnizor, taguri), în ce rețete e folosit ca INGREDIENT și ce rețete îl produc (în aria ta). Formula de editat o citești cu `get_product_recipe_context`.
 - `get_recipe_details({ recipeId })` / `list_recipe_ingredients({ recipeId })` — conținutul unei rețete existente.
+- `get_recipe_card({ productId | productName | recipeId })` — rețeta cu costul pe porție, prețurile din meniuri și food cost-ul, într-un apel; util la verificarea rețetelor create.
 
 **Întrebi utilizatorul (minimul real):**
 - **Rețetarul propriu-zis** — singura informație pe care n-o poți deduce: „Pentru fiecare preparat am nevoie de ingrediente și gramaje per porție. Mi le poți da (listă, dictare, fișier)? Sau vrei să propun eu gramaje standard pe care le confirmi?" Dacă propui tu gramaje, cere confirmare EXPLICITĂ per rețetă înainte de scriere — gramajele lui, nu ale tale, determină costul și stocul.
@@ -44,15 +45,15 @@ Nu cere date opționale (timp de preparare, etape, etichete, fișe de producție
 ```
 create_recipe({ name: "Paste Carbonara", productId: 1234, brandId: 1, yield: "1 porție" })
 ```
-Singurul parametru obligatoriu e `name`, dar **dă mereu `productId`**: fără el, tool-ul încearcă potrivire pe nume și, dacă numele rețetei diferă de numele produsului, rețeta rămâne NELEGATĂ (productId null) → vânzarea nu scade stocul. Legarea prin ID e și imună la redenumiri ulterioare ale produsului.
+Singurul parametru obligatoriu e `name`, dar **dă mereu `productId`**: fără el, tool-ul caută produsul după nume (exact, apoi o singură potrivire parțială) și, dacă nu găsește nimic, CREEAZĂ un produs finit nou cu numele rețetei. Rețeta ajunge legată de produsul greșit sau de un duplicat, iar produsul vândut rămâne fără rețetă → vânzarea lui nu scade stocul. Legarea prin ID e și imună la redenumiri ulterioare ale produsului. Dacă produsul are deja rețetă activă pe același brand, `create_recipe` o întoarce pe cea existentă în loc să creeze alta.
 
-⚠ **`yield` (randamentul) este un divizor real, nu o etichetă**: tot ce scrii în rețetă se **împarte** la el la fiecare vânzare. Pune-l **1** (sau lasă-l gol) când rețeta e scrisă **pentru o porție** — cazul obișnuit la restaurant. Pune un număr mai mare **doar** dacă ai scris cantitățile pentru mai multe porții deodată (ex. o oală de 20 de porții). Contează **doar cifra**, nu textul de lângă ea: „5 kg" se citește „împarte la 5", chiar dacă produsul se vinde la bucată. Zecimalele se scriu cu **punct** — „2,5" se citește 2. Un randament pus din greșeală e una dintre cele mai frecvente cauze pentru „stocul nu scade cât ar trebui" și „food cost prea mic", și se vede abia peste zile. Restul câmpurilor (`prepTime`, `storageType`, `stages`...) sunt opționale.
+⚠ **`yield` (randamentul) este un divizor real, nu o etichetă**: tot ce scrii în rețetă se **împarte** la el la fiecare vânzare. Pune-l **„1 porție”** (cifra 1 cu unitatea produsului) când rețeta e scrisă **pentru o porție** — cazul obișnuit la restaurant. Un randament gol se consumă tot ca 1, dar calculul costului (`get_production_cost_estimate`, `get_recipe_card`) îl refuză cu `RECIPE_YIELD_EVIDENCE_REQUIRED`. Pune un număr mai mare **doar** dacă ai scris cantitățile pentru mai multe porții deodată (ex. o oală de 20 de porții). Unitatea contează: în aceeași familie se convertește în unitatea produsului („500 g” pe un produs ținut în kg = 0,5), iar între familii diferite cifra rămâne divizor („5 kg” pe un produs vândut la bucată se citește „împarte la 5”). Pentru zecimale preferă **punctul**; versiunile recente citesc și virgula, dar verifică randamentul citit înapoi. Un randament pus din greșeală e una dintre cele mai frecvente cauze pentru „stocul nu scade cât ar trebui" și „food cost prea mic", și se vede abia peste zile. Restul câmpurilor (`prepTime`, `storageType`, `stages`...) sunt opționale.
 
-**Idempotență**: înainte de creare verifică `list_recipes({ query: "<numele produsului>" })` și, pe candidați, `get_recipe_details({ recipeId })` — dacă există deja o rețetă cu `productId`-ul produsului, NU crea alta (două rețete pe același produs = ambiguitate; sistemul alege una singură). `get_product_details` NU arată rețeta asociată produsului. Editează rețeta existentă cu tool-urile de la pasul 4-5.
+**Idempotență**: înainte de creare verifică `list_recipes({ query: "<numele produsului>" })` și, pe candidați, `get_recipe_details({ recipeId })` — dacă există deja o rețetă cu `productId`-ul produsului, NU crea alta (două rețete pe același produs = ambiguitate; sistemul alege una singură). `get_product_details` arată și rețetele care produc produsul. Editează rețeta existentă cu tool-urile de la pasul 4-5.
 
 **4. Adaugă ingredientele — în unitatea REȚETEI.**
 
-⚠ **Poarta unităților — verificare OBLIGATORIE înainte de scriere.** Pentru fiecare ingredient compară unitatea în care scrii rețeta cu unitatea produsului (o ai deja din pasul 2, altfel `get_product_details`): masă cu masă (g↔kg), volum cu volum (ml↔l), bucăți cu bucăți. Perechile din familii diferite — „25 g" dintr-un produs ținut la „buc", „40 ml" dintr-o sticlă ținută la „buc" — **nu se pot traduce** și cantitatea se ia brut (25 de bucăți consumate). Nu scrie linia așa: fie schimbi unitatea produsului, fie recalculezi cantitatea în unitatea produsului (180 g dintr-un produs „buc de 1,8 kg" = 0.1 buc). **Corectează perechile imposibile ACUM** — după ce încep vânzările, corectura cere și recalcularea consumului pe toate zilele afectate. Pe un catalog care are deja rețete, `scan_recipe_unit_mismatches` (citire) îți listează toate perechile netraductibile, separate în „reparabile automat" și „de rezolvat manual", iar `fix_recipe_unit_mismatches` 🔒 (modul `inventar`) le corectează pe cele sigure — atenție, repară doar definiția rețetei; istoricul de consum rămâne de reprocesat separat.
+⚠ **Poarta unităților — verificare OBLIGATORIE înainte de scriere.** Pentru fiecare ingredient compară unitatea în care scrii rețeta cu unitatea produsului (o ai deja din pasul 2, altfel `get_product_details`): masă cu masă (g↔kg), volum cu volum (ml↔l), bucăți cu bucăți. Perechile din familii diferite — „25 g" dintr-un produs ținut la „buc", „40 ml" dintr-o sticlă ținută la „buc" — **nu se pot traduce** sigur: calculul costului le refuză, iar consumul poate lua cifra ca atare (25 de bucăți). Nu scrie linia așa: fie schimbi unitatea produsului, fie recalculezi cantitatea în unitatea produsului (180 g dintr-un produs „buc de 1,8 kg" = 0.1 buc). **Corectează perechile imposibile ACUM** — după ce încep vânzările, corectura cere și recalcularea consumului pe toate zilele afectate. Pe un catalog care are deja rețete, `scan_recipe_unit_mismatches` (citire) îți listează toate perechile netraductibile, separate în „reparabile automat" și „de rezolvat manual", iar `fix_recipe_unit_mismatches` 🔒 (modul `inventar`) le corectează pe cele sigure — atenție, repară doar definiția rețetei; istoricul de consum rămâne de reprocesat separat.
 
 ```
 add_recipe_ingredients({
@@ -75,7 +76,7 @@ add_recipe_ingredients({
 
 ## Ce se face DOAR din aplicație
 
-- **Ștergerea unei rețete întregi** — nu există tool de ștergere prin MCP (politică: ștergerile doar din UI). Ghidează cu `gaseste_in_aplicatie({ intrebare: "șterge o rețetă" })`; verifică apoi cu `list_recipes` că a dispărut.
+- **Ștergerea unei rețete întregi** — prin MCP există `delete_recipe` (modul `retete`), numai la cererea explicită a utilizatorului: rețeta dispare din liste, istoricul se păstrează. Dacă rețeta e folosită în meniuri active, primul apel refuză și le numără; `force: true` doar după ce utilizatorul confirmă. Verifică apoi cu `list_recipes` că a dispărut. Restaurarea unei rețete șterse se face din pagina Rețete.
 - **Import rețetar din Excel** — pagina de mapare a rețetarului (potrivire ingredient → produs, conflictele de unități blochează importul). `gaseste_in_aplicatie({ intrebare: "import rețetar din Excel" })`. După import: `analyze_recipes` + `list_recipes` ca să vezi ce a intrat.
 - **„Leagă rețetele de produse" (reparare 1-click)** — dacă găsești rețete cu productId null care au omolog în catalog: `gaseste_in_aplicatie({ intrebare: "leagă rețetele de produse" })` (e în Setări → Reparații). Verifică apoi cu `get_recipe_details` că productId s-a completat.
 - **Reprocesarea consumului pe trecut** — dacă rețetele se creează/corectează DUPĂ ce au existat deja vânzări, istoricul de consum nu se rescrie singur. `gaseste_in_aplicatie({ intrebare: "reprocesare consum zilnic" })`; utilizatorul alege perioada. Relevant doar la clienți care vindeau deja înainte de onboarding.
@@ -85,13 +86,13 @@ add_recipe_ingredients({
 
 ## Echivalentul în wizard-ul din aplicație
 
-**Pasul 14 din /onboarding** („Rețetar — Cost & Descărcare Stoc Automat"). E un pas informativ care trimite utilizatorul către atelierul de rețete (pagina AI Rețetare, cu editor, creator AI conversațional și analiză) și către fișa tehnică. Rețetele create prin conexiunea ta apar imediat în acele pagini — dar **bifa pasului în wizard NU se actualizează prin conexiune**: dacă utilizatorul parcurge wizardul, apasă el „Continuă" pe pasul 14.
+**Pasul 14 din /onboarding** („Rețetar — Cost & Descărcare Stoc Automat"). E un pas informativ care trimite utilizatorul către pagina Rețete (`/recipes`: rețetarul cu filtre, editor, food cost și asistentul Sym) și către fișa tehnică. Rețetele create prin conexiunea ta apar imediat în acele pagini — dar **bifa pasului în wizard NU se actualizează prin conexiune**: dacă utilizatorul parcurge wizardul, apasă el „Continuă" pe pasul 14.
 
 ## Verificare la final
 
-- [ ] `list_recipes` — rețetele create există; apoi `get_recipe_details({ recipeId })` pe fiecare rețetă nouă — `productId` nenul (o rețetă fără productId = stoc care nu scade; `list_recipes` prin MCP NU afișează productId).
+- [ ] `list_recipes` — rețetele create există, fiecare cu `productId` nenul (`productLinkStatus: "linked"`); o rețetă fără productId = stoc care nu scade.
 - [ ] `list_recipe_ingredients` pe fiecare rețetă nouă — cantități și unități corecte, fără linii cu eroare.
-- [ ] `analyze_food_costs({ brandId })` — fără produse vândute rămase „fără rețetă" (sau lista rămasă e asumată de utilizator; potrivirea e pe nume — vezi mai sus).
+- [ ] `analyze_food_costs({ brandId })` — fără produse vândute rămase „fără rețetă" (sau lista rămasă e asumată de utilizator).
 - [ ] `analyze_recipes({ brandId })` — fără ingrediente fără cost; food cost plauzibil (orientativ 20–40%). **Orice valoare peste ~100% = aproape sigur o unitate greșită** — oprește-te și corectează înainte să mergi mai departe.
 - [ ] `search_products_db` pe 2-3 nume de ingrediente nou-menționate — nu s-au creat duplicate accidentale în catalog.
 
@@ -99,10 +100,10 @@ add_recipe_ingredients({
 
 - **Unitățile de măsură — greșeala clasică ×1000.** Ingredientul se declară în unitatea REȚETEI (60 g, 50 ml); conversia la unitatea produsului (kg, l) e automată, dar DOAR între unități din aceeași familie (g↔kg, ml↔l). O pereche neconvertibilă — ex. „25 g" dintr-un produs ținut la „buc" — se folosește BRUT: 25 de bucăți consumate, cost de zeci de ori mai mare. Exemplu de efect: rețete cu gramaje pe produse ținute la bucată, fără conversie → food cost peste 150% și stocuri negative de mii de kg, care se repară doar prin reprocesarea consumului pe toate zilele afectate. Regulă practică: pentru produse pe `buc`, declară fracția (180 g dintr-un produs „buc de 1,8 kg"? recalculează în buc: 0.1) sau cere utilizatorului să țină ingredientul pe kg. Verifică ÎNTOTDEAUNA `analyze_food_costs` după un val de rețete noi.
 - **`productName` auto-creează produse.** În `add_recipe_ingredients`, `bulk_replace_recipe_ingredients` și `add_recipe_outputs`, un `productName` care nu se potrivește cu nimic din catalog creează SILENȚIOS un produs nou (la ingrediente: materie primă, unitate = `unit`-ul dat sau „kg"; la outputs: produs finit/semipreparat, unitate = `outputUnit` sau „buc"). Un typo („Pancceta") = produs duplicat + rețetă legată de produsul greșit, fără stoc și fără preț. De aceea: rezolvă ID-urile cu `search_products_db` întâi și trimite `productId`.
-- **Potrivirea pe nume e fuzzy (exact, apoi parțial).** „Lapte" poate nimeri „Lapte de cocos" dacă nu există produsul „Lapte". Încă un motiv pentru `productId`.
-- **`create_recipe` fără `productId`** leagă rețeta prin potrivirea numelui rețetei cu un produs; nume diferit → rețetă orfană → niciun consum la vânzare. Dă `productId` explicit, întotdeauna.
+- **Potrivirea pe nume e fuzzy (exact, apoi parțial).** „Lapte" poate nimeri „Lapte de cocos" dacă acesta e singura potrivire parțială; la mai multe potriviri tool-ul refuză și cere `productId`. Încă un motiv pentru `productId`.
+- **`create_recipe` fără `productId`** leagă rețeta de produsul găsit după nume sau creează unul nou; produsul vândut, cu alt nume, rămâne fără rețetă → niciun consum la vânzare. Dă `productId` explicit, întotdeauna.
 - **`bulk_replace_recipe_ingredients` e distructiv** — șterge toate ingredientele înainte să adauge lista nouă. E pentru „rescrie rețeta", nu pentru „mai adaugă ceva" (acolo folosești `add_recipe_ingredients`).
 - **Nu crea a doua rețetă pe același produs.** Sistemul rezolvă consumul printr-o singură rețetă per produs; duplicatele creează ambiguitate. Verifică înainte cu `list_recipes` (căutare pe nume) + `get_recipe_details` (vezi Idempotență la pasul 3).
-- **`run_bom_explosion` e doar estimare** — adună cantitățile recursiv FĂRĂ conversie de unități între rețete și sub-rețete; bun ca sanity check („500 porții = ~12 kg paste"), nu ca necesar exact de aprovizionare dacă rețetele amestecă g și kg.
+- **`run_bom_explosion` e necesarul din rețetă, nu stocul** — adună recursiv cantitățile în unitatea de stoc a fiecărei materii prime (g→kg, ml→l, ca motorul de cost), dar nu verifică stocul disponibil, pierderile reale sau loturile. O pereche de unități neconvertibilă rămâne problemă de rețetă: rezolv-o cu `scan_recipe_unit_mismatches`.
 - **Rețete corectate după vânzări** = istoricul rămâne calculat greșit până la „Reprocesare consum" din aplicație (vezi secțiunea UI-only).
 - **Cache-ul interfeței**: utilizatorul nu vede rețeta nouă în pagina deja deschisă până la refresh. Confirmarea ta vine din `get_recipe_details`, nu din ce vede el pe ecran.

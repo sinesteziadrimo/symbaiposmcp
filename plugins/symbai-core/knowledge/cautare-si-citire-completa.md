@@ -4,9 +4,11 @@ Pentru „găsește X”, începe cu unealta de citire a acelei entități. `cau
 
 ## Alegerea uneltei
 
+La produse, poziții de meniu și rețete (`search_products_db`, `list_menu_items`, `export_menu`, `list_recipes`) spui explicit ce stare vrei: `status: "active"`, `"inactive"` sau `"all"`. Pozițiile de meniu mai au `"sold_out"` (epuizate: în meniu, dar `available=false`). Fără `status` unealta refuză. Fiecare rând își arată starea, iar mesajul spune câte rânduri au rămas afară. Când omul cere „toate produsele” sau „ce e oprit”, alege starea după întrebare: „ce e oprit pe delivery” înseamnă și `sold_out`, nu doar `inactive`.
+
 | Ce cauți | Punctul de pornire | Ce verifici |
 |---|---|---|
-| Produs după nume, SKU sau cod de bare/EAN | `search_products_db(query)` | ID, cod, unitate și stare. Nu este raport de stoc/vânzări. |
+| Produs după nume, SKU sau cod de bare/EAN | `search_products_db(query, status)` | ID, cod, unitate și `status` pe fiecare rând. Nu este raport de stoc/vânzări. |
 | Vânzările unui produs, inclusiv în afara topului | `vanzari_produse(cauta sau productId/productIds, perioada, locationId)` | Perioada, unitatea și `data.paginare`. Vezi [ghidul produselor](cautare-produse-si-vanzari.md). |
 | Furnizor existent | `list_suppliers(query)` | Nume, CUI, contact, email sau telefon. `supplierId` selectează exact; fără `active` sunt incluși și inactivii. |
 | Factură primită de la furnizor | `list_invoices(query, supplierId?, dateFrom?, dateTo?, brandId?, locationId?)` | `id` este ID-ul documentului; `numar` este numărul facturii. `status` = plată (`unpaid/partial/paid`); `processingStatus` = procesare. |
@@ -15,7 +17,7 @@ Pentru „găsește X”, începe cu unealta de citire a acelei entități. `cau
 | Stocul unui produs | `get_stock_levels(query sau productId, warehouseId?)` | Nume/SKU/cod; `productType` acceptă și coduri proprii. Lista privește produsele stocabile și cantitățile din gestiuni. |
 | Transfer între gestiuni: „s-a făcut deja?”, „care e ultimul transfer de X?” | `list_stock_transfers(fromWarehouseId?, toWarehouseId?, productId?, fromDate?, toDate?)` | Fiecare transfer vine cu liniile lui (produs, unitate, trimis, primit). Fără `status` nu apar cele anulate. `data.total` numără toate potrivirile. Dacă unealta lipsește din catalog, versiunea instalată e mai veche: `get_stock_transfer(transferId)` pentru unul cunoscut, altfel SQL pe `stock_transfers` + `stock_transfer_lines`. |
 | Ultimul preț de intrare, istoricul intrărilor unui produs | `get_product_reception_history(productId)` | Loturile din recepțiile înregistrate, cu document, gestiune și cost; recepțiile anulate lipsesc. Prețul pe ambalaj și TVA-ul se citesc din factură. |
-| Rețetă | `list_recipes(query, status?, brandId?)` | Implicit active; `status: "all"` include inactive. ID-ul rețetei diferă de `productId`. Detalii: `get_recipe_details(recipeId)`. |
+| Rețetă | `list_recipes(query, status, brandId?)` | `status` obligatoriu; rețetele șterse nu apar; `ingredientQuery` caută rețetele care conțin un ingredient. ID-ul rețetei diferă de `productId`. Detalii: `get_recipe_details(recipeId)`. „Arată-mi rețeta X / cât costă porția”: `get_recipe_card(productName \| productId \| recipeId)` — ingrediente, cost pe porție, prețuri și food cost pe meniu, într-un apel. |
 | Client existent | `list_customers_360(search, brandId?, locationId?)` | Nume, email sau telefon; `get_customer_360(customerId)` pentru fișă și `list_customer_360_orders(customerId)` pentru bonuri. |
 | Angajat existent | `get_staff_overview(query?, employeeId?)` | Identitatea și starea. Pentru ture/pontaje cere colecția și perioada din schema live; o primă pagină nu descrie toată echipa. |
 

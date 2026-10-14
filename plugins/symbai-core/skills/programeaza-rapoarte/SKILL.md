@@ -23,6 +23,7 @@ Obiectivul programat precizează:
 - Forma: pe WhatsApp un rezumat cu cifrele principale și acțiunile; pe email un subiect și corp lizibil. Atașamente doar când uneltele disponibile chiar le pot produce și trimite. Separă companiile și monedele; nu însuma EUR cu RON fără metodă explicită.
 - Destinatarii autorizați și expeditorul. Email: propria principală cu `canSend=true`, sau adresa personală cerută explicit. WhatsApp: conversația verificată. Nu folosi emailul unui coleg ori expeditorul operațional al brandului ca fallback.
 - O cheie de livrare pentru sarcină + companie + perioadă + destinatar, păstrată în checkpoint. Fără duplicarea raportului la retry sau restart. Dacă sursa esențială lipsește, raportul este incomplet și explică lipsa; cifrele absente nu devin zero.
+- Fereastra de timp în care raportul are sens și verificarea conversației înainte de trimitere. O rulare recuperată la trezirea PC-ului, în afara ferestrei sau după ce raportul perioadei a plecat deja, nu trimite nimic. Detalii în secțiunea „Ora potrivită și o singură trimitere” din ghidul de sarcini.
 
 ## Programează și urmărește
 

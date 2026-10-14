@@ -34,9 +34,9 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 
 ## Meniu, produse & rețete
 - **Meniu & Dispozitive POS** `/menu` — Hub meniu cu 5 tab-uri reale: Prețuri Meniu, Platforme, Configurare Afișaj (POS/Web), Meniu Fizic, Oferte & Promoții.
-· NU aici: pentru catalog produse/categorii → /master-data; pentru rețete → /ai-recipes; pentru analiză popularitate-profitabilitate (cadrane) → /ai-pricing
+· NU aici: pentru catalog produse/categorii → /master-data; pentru rețete → /recipes; pentru analiză popularitate-profitabilitate (cadrane) → /ai-pricing
 - **Prețuri Meniu** `/menu?tab=pricing` — Editor prețuri de vânzare per meniu: listă „Toate produsele”, food cost total, sortare după food cost, adaugă produse/pachete-combo, buton „Prețuri Meniu Nou” (→/ai-pricing) + „Adaugă poze bulk”.
-· NU aici: pentru recomandări de preț + cadrane stars/plowhorses → /ai-pricing (buton „Prețuri Meniu Nou”); pentru cost din rețetă → /ai-recipes
+· NU aici: pentru recomandări de preț + cadrane stars/plowhorses → /ai-pricing (buton „Prețuri Meniu Nou”); pentru cost din rețetă → /recipes
 - **Prețuri Meniu Nou** `/ai-pricing` — Analiza popularitate vs profitabilitate: cadrane Vedete/Cai de povară/Puzzle/Câini + recomandări de preț AI.
 · NU aici: ca să SETEZI efectiv prețurile + food cost → /menu?tab=pricing
 - **Oferte & Promoții** `/menu?tab=promotions` — Motor de oferte care reduc nota; 3 sub-tab-uri: Panou Control, Upsell & Cross-sell, Happy Hour & Dinamic. Tipuri promo: Reducere %, Articol Gratuit, Cumpără X primești Y, Sumă Fixă. Pe canale (POS/Kiosk/Website/QR/Delivery) și zile/ore; buton „Sugestii AI” + „Campanie Nouă”.
@@ -52,11 +52,11 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 - **Centru Meniu** `/menu/center` — Overview manager: ce e indisponibil acum (86), produse cu lipsuri, acțiuni rapide pe meniu.
 · NU aici: prețuri → /menu?tab=pricing; alerte stoc → /inventory
 - **Categorii și Produse** `/master-data` — Nomenclatorul complet de produse cu grupare pe Magazii / Categorii / Categorii Meniu, fișa produsului (poze, alergeni, taguri, gestiune, preț recepție), duplicare meniu cu categorii+produse, curăță categorii goale.
-· NU aici: pentru preț de VÂNZARE → /menu?tab=pricing; pentru rețete/food cost → /ai-recipes; pentru tipurile de produs+conturi → /ai-product-types
-- **Rețete (AI Rețetare)** `/ai-recipes` — Atelier rețete: titlu „AI Rețetare”, toate produsele finite + semipreparate (și fără rețetă), cost/unitate + food cost, presets (De rezolvat, Critice, Fără rețetă, Incomplete, Vândute marjă mică, Semipreparate), toggle sursă cost (mediu din stoc / catalog furnizor), „Rezolvă cu Sym”, chat „Sym Chef”, package builder.
-· NU aici: pentru tab-ul stale /inventory?tab=recipes (NU randează rețete) → folosește /ai-recipes; pentru fișă tehnică tabelară export CSV → /recipe-datasheet; pentru import rețetar Excel → /recipe-mapping
+· NU aici: pentru preț de VÂNZARE → /menu?tab=pricing; pentru rețete/food cost → /recipes; pentru tipurile de produs+conturi → /ai-product-types
+- **Rețete** `/recipes` — Rețetar: caută și selectează rețeta, explică ingredientele, cantitățile, unitățile, randamentul și food cost-ul. Fișa preparatului include etape, depozitare și valabilitate. Editare, salvare, sugestii de la echipă și restaurarea rețetelor șterse în aceeași pagină. Vechea `/ai-recipes` redirecționează aici.
+· NU aici: pentru tab-ul stale /inventory?tab=recipes (NU randează rețete) → folosește /recipes; pentru fișă tehnică tabelară export CSV → /recipe-datasheet; pentru import rețetar Excel → /recipe-mapping
 - **Fișă Tehnică Rețete** `/recipe-datasheet` — Tabel cu toate rețetele: ingrediente, cantități, costuri, totaluri, export CSV.
-· NU aici: ca să CREEZI/editezi rețete → /ai-recipes; import rețetar din Excel → /recipe-mapping
+· NU aici: ca să CREEZI/editezi rețete → /recipes; import rețetar din Excel → /recipe-mapping
 - **Alergeni** `/allergens` — 3 tab-uri: Lista alergeni (creare/editare cei 14 UE), Acoperire produse, Matrice Cross-Contact. Asociezi alergeni la materii prime (produsele finite moștenesc prin rețetă); buton „Sugestii Automate” după nume.
 · NU aici: pentru taguri de alergeni propuse de AI + rutare KDS + TVA → /ai-tags (Sym Tag Master); pentru alergeni la import → tot /ai-tags sau fișa produsului
 - **Etichete & Alergeni (Sym Tag Master)** `/ai-tags` — Titlu „Sym Tag Master”: gestionare etichete (panou „Etichete”) + chat AI „Chat AI / Propuneri AI” care PROPUNE taguri de alergeni (Reg. UE 1169), rutare imprimante/KDS și marketing — tu Aplici/Refuzi fiecare propunere, nimic automat.
@@ -64,7 +64,7 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 - **Meniu din PDF / poze** `/menu/import-pdf` — Încarci meniul ca PDF sau poze; AI extrage produsele, prețurile, pozele și designul paginilor (pentru Meniu Fizic), cu propunere editabilă înainte de import.
 · NU aici: pentru import produse/stoc/furnizori din Excel → /data-import; pentru editarea prețurilor după import → /menu?tab=pricing
 - **Leagă Rețetarul (import Excel)** `/recipe-mapping` — Imporți rețetarul din Excel: fiecare ingredient se mapează la un produs existent (potrivire exactă/similară/AI); conflictele de unitate de măsură blochează importul până le rezolvi.
-· NU aici: ca să CREEZI/editezi rețete manual → /ai-recipes; pentru fișă tehnică tabelară (export CSV) → /recipe-datasheet
+· NU aici: ca să CREEZI/editezi rețete manual → /recipes; pentru fișă tehnică tabelară (export CSV) → /recipe-datasheet
 
 ## Stocuri, furnizori & achiziții
 - **Tablou de Bord Stoc** `/inventory` — Dashboard FĂRĂ tab-uri: carduri KPI (valoare stoc, stoc redus, de plătit furnizori) + alerte + ultimele mișcări.
@@ -308,7 +308,7 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 - **Reparații Date** `/settings/repair` — Titlu „Reparații”. 11 unelte 1-click cu scanare/preview înainte de aplicare: reconciliere comenzi, curăță produse fantomă (cloud+edge), Sync 100% cloud↔edge, unifică categorii meniu, leagă rețete↔produse (alergeni), corectează unități neconvertibile, conturi non-stocabile, GL umflat penalități, rutare bucătărie/bar, curăță rețete orfane, reconciliază rețete↔produse (product_id).
 · NU aici: pentru procese automate recurente programate → /settings/cron-jobs (Procesări Periodice). Pentru legarea rețete↔produse din alt loc → tot reparațiile / Setări→Reparații.
 - **Mese Servite** `/finance/served-meals` — Titlu „Mese Servite”. KPI strip (mese/venit/cost/marjă) + căutare + filtru status (Toate/Cost de stabilit/Cost stabilit/Ciornă) + tabel registru. Buton „Masă servită nouă” (dialog: Manual/Din eveniment/Din comandă POS). Drawer detaliu cu tab-uri Cost(fișe consum)/Eveniment/Contract/General.
-· NU aici: pentru flag-ul fiscal isMasaServita pe produs → fișa produsului, nu aici. Pentru recomandări rețetă masă servită → /ai-recipes. Pentru registru de casă → /finance/cash-book.
+· NU aici: pentru flag-ul fiscal isMasaServita pe produs → fișa produsului, nu aici. Pentru rețeta unui produs → /recipes. Pentru registru de casă → /finance/cash-book.
 - **Loguri Activitate** `/audit-logs` — Titlu „Loguri Activitate”. Jurnal audit cine/ce/când cu diff vechi→nou. Căutare text + filtru categorie (9: POS & Comenzi, Inventar & Stoc, Producție, Finanțe, Setări, Personal, Meniu & Produse, Clienți, Sistem) + filtru angajat + masă + perioadă (Azi/Ieri/Săptămâna trecută/Luna trecută/interval).
 · NU aici: pentru același jurnal prin AI → tool MCP jurnal_activitate. Pentru starea tehnică/erori sistem → /observability. Pentru logurile edge/Print Agent live → /settings?tab=edge-server „Loguri Live”.
 - **Import Date** `/data-import` — Titlu „Importuri Date”. 3 tab-uri: „Import Nou” (wizard 4 pași: Încărcare fișier → Mapare coloane → Confirmare → Rezultat, alegi entitatea țintă), „Șabloane (N)” (salvează/reaplică mapări), „Istoric (N)” (rulări trecute).

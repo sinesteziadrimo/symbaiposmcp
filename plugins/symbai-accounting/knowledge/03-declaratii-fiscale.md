@@ -24,6 +24,8 @@
 ## Cum se pregătesc D300, D394 și D406 în Symbai
 1. **Datele lunii sunt complete.** Dacă firma lucrează cu Symbai POS, luna trebuie predată integral din POS (vânzări, achiziții, plăți, stocuri, note) și închisă în Accounting. Un import parțial sau o lună deschisă blochează calculul oficial cu un mesaj clar; nu se „completează” manual.
 2. **Profilul perioadei e confirmat** de contabil: regimul TVA, scutirile, deducerea pe fiecare achiziție (integrală / limitată / fără), iar la D300 eventualele regularizări pentru recepții corectate după ce luna lor a fost declarată. La D394 se atestă dosarul perioadei.
+   - **D300, în ordine:** citești profilul și registrul deducerilor → contabilul verifică fiecare document și atestă profilul (registrul confirmat cere pro-rata 100%) → abia apoi se confirmă regularizările R30, fiecare cu varianta deja declarată în decontul anterior, după registrul fiscal. O nouă atestare a profilului cere reconfirmarea R30, iar o modificare a documentelor după confirmare cere reconfirmarea registrului.
+   - Asistentul poate pregăti și previzualiza totul; confirmarea o dă numai contabilul (sau tu, la cererea lui explicită), cu drept de editare în contabilitate. Nu alege varianta „deja declarată” după cea mai convenabilă sumă.
 3. **Previzualizarea oficială** (`preview_d300_official`, `preview_d394_official`, `preview_d406_official`) arată totalurile, concordanța documente ↔ note și blocajele cu pasul de urmat. Repetarea ei nu schimbă nimic.
 4. **Generarea, semnarea și depunerea** se fac din aplicație, de om. Nimic nu se depune automat.
 

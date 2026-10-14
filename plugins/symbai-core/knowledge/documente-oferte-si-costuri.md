@@ -59,6 +59,7 @@ Când aduni gestiuni cu stoc pozitiv și negativ, valoarea totală poate fi cuno
 | Întrebarea | Dovada potrivită |
 |---|---|
 | Cât ar costa rețeta pentru cantitatea cerută? | `get_production_cost_estimate`; citește `costComplete`, `warnings` și sursele prețurilor. Este estimare standard. |
+| Cât costă porția și ce food cost are pe fiecare meniu? | `get_recipe_card`: același cost standard pe o unitate, lângă prețul cu și fără TVA din fiecare meniu. |
 | De ce a costat diferit lotul produs? | `get_production_cost_variance`, când lotul are consum și rezultat real. |
 | Cât a costat marfa efectiv vândută? | Rapoartele canonice cu consum evaluat; integritatea costurilor trebuie să fie verificată. |
 | Cât am cumpărat de la furnizor? | Facturile de achiziție în perioada și aria cerute. Totalul lor nu este COGS. |

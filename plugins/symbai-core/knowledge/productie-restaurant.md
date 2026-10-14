@@ -47,8 +47,9 @@ Butoane: **„Producție nouă"** (peste tot), **„Transformare rapidă"** (res
 
 ### 1. Pregătirea: rețeta de semipreparat
 **Citește mai întâi** ce ai deja:
-- `list_recipes` (params: `status` = active|inactive|all, `brandId`, `limit`) — lista rețetelor de producție.
+- `list_recipes` (params: `status` = active|inactive|all, obligatoriu; `brandId`, `limit`) — lista rețetelor de producție. Fără `status` unealta refuză.
 - `get_recipe_details` (params: `recipeId`) — randament, timp de preparare, tip păstrare, valabilitate, ingrediente, fișă de producție.
+- `get_recipe_card` (params: `productName` exact, `productId` sau `recipeId`) — rețeta cu subrețetele desfăcute un nivel, costul pe porție, prețurile din meniuri și food cost-ul; răspunsul la „arată-mi rețeta X” și „cât costă porția”.
 - `list_recipe_ingredients` (params: `recipeId`) — doar ingredientele, cu produs și unitate.
 
 **Acțiune** dacă rețeta nu există sau nu e completă:
@@ -146,6 +147,7 @@ Dacă niciuna nu se folosește, consumul urmează rețeta, iar diferența apare 
 | Userul spune… | Ce faci |
 |---|---|
 | „Vreau să fac o rețetă de ciorbă / sos / aluat" | `create_recipe` (nume, randament, tip păstrare, valabilitate) → `add_recipe_ingredients` (ingredientele cu cantitate + unitate). |
+| „Arată-mi rețeta X” / „cât costă porția de X” | `get_recipe_card` — un singur apel, fără SQL și fără calcule de cost separate. La `status: ambiguous` arată variantele și întreabă. |
 | „Adaugă/scoate un ingredient din rețeta X" | `get_recipe_details` (vezi ce e acum) → `add_recipe_ingredients` sau `remove_recipe_ingredient`. |
 | „Schimbă tot ce intră în rețeta X" | `bulk_replace_recipe_ingredients`. |
 | „Câte kg de carne/cartofi îmi trebuie pentru 200 de porții?" | `run_bom_explosion` (recipeId, quantity) — listă materii prime, fără să miști stoc. |

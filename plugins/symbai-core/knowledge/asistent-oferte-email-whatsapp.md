@@ -39,6 +39,7 @@ Un asistent numit (de exemplu „asistenta de catering”) cu două sarcini, amb
 ## Capcane tehnice întâlnite
 
 - **Clientul nou cu telefonul proprietarului.** `create_deal` cu `newCustomer` refolosește clientul existent cu același telefon sau email. Citește de ce client s-a legat oportunitatea și spune dacă diferă numele.
+- **Meniu acceptat cu preparate fără lot.** Pachetul completat după crearea evenimentului ajungea la bucătărie doar parțial (de exemplu 5 loturi din 15). Leagă preparatele de produse cu rețetă înainte de trimiterea ofertei. Pe versiunile noi, răspunsul acceptării numește preparatele fără lot și pe oportunitate apare o sarcină: spune-i proprietarului într-un rând. Reîncarcă meniul evenimentului (`refreshSnapshot:true`) doar dacă clientul a primit varianta actuală.
 - **Asistent restrâns la un brand.** Pe versiunile vechi, `list_event_menus`/`get_event_menu` erau refuzate în aria restrânsă. Pe cele noi se citesc pachetele brandului, inclusiv cele fără unitate.
 - **Mesajele trimise de asistent** apar pe grup ca trimise de pe numărul proprietarului. Instrucțiunile le recunosc după marcaje („📩”, „✅”, blocurile de email), ca să nu fie luate drept acorduri. Pe versiunile noi, trimiterile automate nu mai pornesc participarea nici dacă conțin @numele.
 - **Monitorul de email** pornește de la mesajele de după salvare. Un email sosit înainte se ia cu o rulare manuală.

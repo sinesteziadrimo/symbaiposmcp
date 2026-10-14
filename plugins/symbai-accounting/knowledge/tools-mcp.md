@@ -33,7 +33,12 @@
 - `create_tax_declaration` / `update_tax_declaration` — gestionează intrările de declarații (doar evidență; nu generează fișierul și nu depune).
 - **Previzualizări oficiale, doar citire** — aceleași calcule ca ecranul aplicației, cu blocajele explicate: `preview_d300_official` (decont TVA), `preview_d394_official`, `preview_d406_official` / `dry_run_d406`. Ele refuză corect o lună care nu e închisă sau a cărei predare din POS nu e completă — citește motivul, nu-l ocoli.
 - D394: `get_d394_profile_workbench` (dosarul perioadei) → `apply_d394_profile_attestation` *(confirm)* cu amprentele exacte din ultima citire. D406: familia de reparare/atestare (`list_d406_fiscal_vector`, `attest_d406_fiscal_vector`, `get_d406_master_data_repair_issues` …) și registrul anual al mijloacelor fixe (`get_d406_active_annual_manifest_preview` → `seal_d406_active_annual_manifest`).
-- Confirmările din decontul D300 (registrul deducerilor pe document și regularizările recepțiilor corectate din luni anterioare) se dau de contabil în aplicație, în dialogul D300.
+- D300 — confirmările decontului, cu aceleași drepturi ca dialogul D300 (persoana conexiunii trebuie să poată edita contabilitatea; citirile cer doar vizualizare):
+  - `get_d300_filing_profile` — profilul perioadei, valorile implicite, conturile bancare și facturile de 9%; `profile.reviewEpoch` se copiază la salvare.
+  - `get_d300_purchase_deduction_register` — registrul deducerilor pe document (integrală / parțială / fără), documentele care blochează și dacă confirmarea salvată mai e valabilă.
+  - `apply_d300_filing_profile` *(confirm)* — atestă profilul complet; `purchaseDeductionPoliciesReviewed:true` confirmă registrul (cere pro-rata 100%). Refuză dacă altcineva a schimbat profilul după citire: recitește și reverifică.
+  - `list_d300_receipt_regularization_reviews` → `preview_d300_receipt_regularization_review` → `confirm_d300_receipt_regularization_review` *(confirm)* — regularizarea R30 a recepțiilor corectate după ce luna lor a fost declarată. Contabilul alege varianta egală cu ce s-a declarat deja, după registrul fiscal; serverul calculează diferența. Salvarea profilului cere reconfirmarea R30.
+  - Dacă uneltele lipsesc din catalog (versiune Accounting mai veche), contabilul dă aceleași confirmări în aplicație, în dialogul D300.
 - Generarea fișierului oficial, semnarea și depunerea la ANAF se fac în aplicație; nu sunt automate, iar depunerea e ireversibilă.
 
 ## eFactura, documente & închidere

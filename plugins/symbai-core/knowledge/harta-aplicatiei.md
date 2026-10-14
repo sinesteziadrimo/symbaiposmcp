@@ -77,7 +77,7 @@
 - **Niveluri Stoc** (`/master-data`) — Stoc minim/maxim (par levels): se setează ca proprietate a produsului în Categorii și Produse; alertele de stoc se calculează din ea.
 - **Risipă & Pierderi** (`/stock-exits`) — Pierderi și risipă (expirat, deteriorat, casare): se înregistrează ca fișe de ieșire la Ieșiri Stoc.
   - Tab **Mișcări Stoc** (`/stock-operations?tab=movements`) — Mișcări stoc: intrări, ieșiri și transferuri — istoricul operațiunilor de gestiune.
-- **Rețete Inventar** (`/ai-recipes`) — Atelier rețete: titlu „AI Rețetare”, toate produsele finite + semipreparate (și fără rețetă), cost/unitate + food cost, presets (De rezolvat, Critice, Fără rețetă, Incomplete, Vândute marjă mică, Semipreparate), toggle sursă cost (mediu din stoc / catalog furnizor), „Rezolvă cu Sym”, chat „Sym Chef”, package builder.
+- **Rețete** (`/recipes`; vechea `/ai-recipes` redirecționează aici) — Rețetar: caută și selectează rețeta, explică ingredientele, cantitățile, unitățile, randamentul și food cost-ul. Fișa preparatului include etape, depozitare și valabilitate. Editare, salvare, sugestii de la echipă și restaurarea rețetelor șterse în aceeași pagină.
 - **Producție Inventar** (`/productie-evenimente`) — Loturi de producție și semipreparate (consum materii prime) — pagina de producție restaurant.
 - **Depozite & Gestiuni** (`/warehouse-products`) — Depozite și gestiuni: creezi/editezi gestiunile și vezi ce produse conține fiecare.
 - **Categorii Inventar** (`/master-data`) — Categorii de produse pentru stoc — se gestionează în nomenclatorul de produse (grupare pe categorii).
@@ -253,10 +253,7 @@
 - **Onboarding Avansat** (`/ai-advanced-onboarding`) — Agent AI pentru funcționalități avansate — integrări, automatizări, asistenți, website
 - **Import din Excel** (`/ai-bulk-import`) — Import în masă din Excel/CSV cu mapare AI a coloanelor, validare și raport pe fiecare rând
 - **AI Menu Creator** (`/ai-menu`) — Asistent AI Chef pentru creare meniu echilibrat — ingrediente, costuri
-- **AI Rețetare** (`/ai-recipes`) — Atelier rețete: titlu „AI Rețetare”, toate produsele finite + semipreparate (și fără rețetă), cost/unitate + food cost, presets (De rezolvat, Critice, Fără rețetă, Incomplete, Vândute marjă mică, Semipreparate), toggle sursă cost (mediu din stoc / catalog furnizor), „Rezolvă cu Sym”, chat „Sym Chef”, package builder.
-- **Editor Rețete AI** (`/ai-recipes`) — Atelier rețete: titlu „AI Rețetare”, toate produsele finite + semipreparate (și fără rețetă), cost/unitate + food cost, presets (De rezolvat, Critice, Fără rețetă, Incomplete, Vândute marjă mică, Semipreparate), toggle sursă cost (mediu din stoc / catalog furnizor), „Rezolvă cu Sym”, chat „Sym Chef”, package builder.
-- **Creare Rețete AI** (`/ai-recipes?tab=create`) — Sym Recipe — creare rețete noi de la zero cu AI (ingrediente, cantități, food cost calculat automat)
-- **Analiză Rețete AI** (`/ai-recipes`) — Atelier rețete: titlu „AI Rețetare”, toate produsele finite + semipreparate (și fără rețetă), cost/unitate + food cost, presets (De rezolvat, Critice, Fără rețetă, Incomplete, Vândute marjă mică, Semipreparate), toggle sursă cost (mediu din stoc / catalog furnizor), „Rezolvă cu Sym”, chat „Sym Chef”, package builder.
+- **Rețete** (`/recipes`; vechile `/ai-recipes` și `/ai-recipes?tab=create` redirecționează aici) — Rețetar: caută și selectează rețeta, explică ingredientele, cantitățile, unitățile, randamentul și food cost-ul. Fișa preparatului include etape, depozitare și valabilitate. Editare, salvare, sugestii de la echipă și restaurarea rețetelor șterse în aceeași pagină. Sym, în coloana din dreapta, vede rețeta deschisă și costul ei.
 - **AI Doctor Veterinar** (`/ai-dsv`) — Expert AI legislație alimentară — fișe tehnice, HACCP, norme sanitare
 - **AI Achiziții** (`/ai-procurement`) — Asistent AI aprovizionare — analiză cheltuieli, optimizare comenzi
 - **Prețuri Meniu Nou** (`/ai-pricing`) — Asistent AI pricing — analiză food cost, recomandări prețuri, marje
@@ -286,7 +283,7 @@
 - **Extrase bancare** (`/finance/bank-statements`) — importul extraselor bancare și reconcilierea plăților cu facturile; al doilea tab: state de salarii (adresa veche `/accounting-import` duce aici)
 - **Registru Contabil** (`/accounting-ledger`) — Note contabile cu 3-4 vizualizări (butoane, nu tab-uri): „Conturi' (solduri pe cont cu drill-down la înregistrări), „Toate înregistrările' (jurnal filtrabil pe brand/perioadă/sursă/status), „Plan de Conturi' (chart + populare RO), iar la multi-brand/locație: „Analitice Brand & Locații' (reguli denumire analitice + reguli split cheltuieli). Export CSV.
 - **Produse Depozit** (`/warehouse-products`) — Administrare produse pe depozit — stocuri per gestiune, alocare depozite
-- **Rețete Produse** (`/ai-recipes`) — Atelier rețete: titlu „AI Rețetare”, toate produsele finite + semipreparate (și fără rețetă), cost/unitate + food cost, presets (De rezolvat, Critice, Fără rețetă, Incomplete, Vândute marjă mică, Semipreparate), toggle sursă cost (mediu din stoc / catalog furnizor), „Rezolvă cu Sym”, chat „Sym Chef”, package builder.
+- **Rețete** (`/recipes`; vechea `/ai-recipes` redirecționează aici) — Rețetar: caută și selectează rețeta, explică ingredientele, cantitățile, unitățile, randamentul și food cost-ul. Fișa preparatului include etape, depozitare și valabilitate. Editare, salvare, sugestii de la echipă și restaurarea rețetelor șterse în aceeași pagină.
 ## MARKETING — EMAIL & ADS
 
 - **Revizuire Email-uri** (`/email-review`) — Revizuire și aprobare campanii email înainte de trimitere

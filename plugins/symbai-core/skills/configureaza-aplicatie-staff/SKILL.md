@@ -61,7 +61,12 @@ Funcțiile configurabile curente acoperă: sarcini, recepție marfă, manipulare
 
 Important: acestea sunt acțiuni fizice în aplicația mobilă. Prin MCP poți crea/citi sarcini, producție, loturi, QC și predări, dar nu simulezi camera sau imprimanta din chat; trimite operatorul în Symbai Staff și verifică apoi prin citire.
 
-**Regula PIN:** Symbai Staff este aplicația personală a angajatului. Dacă rolul și unitatea autorizează operația, nu cere PIN din nou la pornire/finalizare. PIN-ul per operație aparține stației partajate **Workstation Tablet**. Prima asociere a telefonului sau reasocierea după reset cere parola o singură dată; apoi telefonul de încredere lucrează fără PIN operațional.
+**Regula PIN:** PIN-ul la operațiile de fabrică din Symbai Staff se alege per unitate, în cardul Aplicației Staff → „PIN la operațiile de fabrică” (MCP: `configure_staff_app_defaults` cu `deviceMode`; citire: `get_staff_app_config` → `deviceMode`):
+- **Automat** (implicit): telefonul confirmat (o conectare cu parola + tura pornită din Pontaj) lucrează fără PIN; telefonul neconfirmat cere PIN-ul operatorului.
+- **Telefon personal** (`personal`): fiecare angajat are aplicația lui — după conectare (PIN sau parolă) nu se mai cere PIN; semnează angajatul conectat.
+- **Terminal comun** (`shared`): același telefon/terminal e folosit de mai mulți angajați — fiecare operație se confirmă cu PIN-ul celui care o face, chiar și pe telefonul confirmat.
+
+Rolul, unitatea și calificarea autorizează în continuare operația; setarea decide doar dacă se cere PIN. La „nu mai vreau PIN pe telefoane” alege `personal`; la „mai mulți oameni folosesc același terminal” alege `shared`. Workstation Tablet rămâne oricum stație partajată, cu PIN.
 
 ## Preview-ul de telefon
 

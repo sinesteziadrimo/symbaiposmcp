@@ -102,7 +102,7 @@ Modulul de rapoarte acoperă tot ce ține de cifre: dashboard-ul de start, rapoa
 - `raport_vanzari` — vânzări pe perioadă cu comparație automată vs perioada anterioară; primul reflex la „cât am vândut".
 - `vanzari_produse` — caută direct după nume, ID-uri, SKU sau cod de bare în toate vânzările perioadei/unității, înainte de paginare; totalurile sunt complete.
 - `top_produse` — clasament după valoarea liniilor sau cantitate; prima pagină nu reprezintă toate produsele. Ponderea se raportează la toate potrivirile. Vezi [căutare produse și vânzări](cautare-produse-si-vanzari.md) pentru definiții și disponibilitatea live.
-- `vanzari_in_timp` — tipare și ore/zile de vârf (grupare pe zi / oră / zi a săptămânii).
+- `vanzari_in_timp` — tipare și ore/zile de vârf: grupare pe zi, oră, zi a săptămânii (`zi_saptamana`), săptămână calendaristică (`saptamana`, de luni) sau lună (`luna`). „Pe săptămâni” înseamnă `saptamana`, nu `zi_saptamana`. O săptămână sau lună tăiată de capetele perioadei ori încă în curs are `partiala:true`: nu o compara direct cu cele întregi.
 - `performanta_ospatari` — vânzări, bonuri, bon mediu și bacșiș per angajat.
 - `jurnal_activitate` — cine a făcut ce și când (anulări, discounturi, modificări de preț).
 - `generate_report` — raport rapid: `food_cost`, `sales_summary` sau `stock_value`. Pentru `stock_value`, același utilizator trebuie să aibă cumulativ dreptul de a vedea **rapoarte**, **costuri** și **inventarul în regim de citire**; lipsa unuia dintre ele oprește raportul. Rezultatul separă clar produsele fără cost, produsele fără preț de vânzare și pozițiile cu stoc negativ — nu le ascunde și nu le prezenta ca zero.

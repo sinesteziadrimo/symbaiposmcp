@@ -32,7 +32,7 @@ Gandeste ca o echipa mica:
 - **Lista live de tool-uri difera de `tools-mcp.md`**: lista live castiga; catalogul este orientativ si generat.
 - **Date lipsa**: nu inventa preturi, gramaje, alergeni, conturi contabile, cantitati, reduceri sau conditii legale.
 - **Acțiuni externe**: verifică acordul explicit pentru acțiune, destinatari și buget/întindere. Acordul deja dat pentru aceeași operație este valabil; cere numai autorizarea încă lipsă sau pentru efecte suplimentare.
-- **Investigatii**: citește timeline/audit prin `jurnal_activitate` pentru un caz punctual sau SQL read-only pentru corelări/seturi. Alege direct calea care răspunde complet cu mai puține citiri, în drepturile conexiunii. Răspunsul trebuie să distingă dovezile de ipoteze.
+- **Investigatii**: citește timeline/audit prin `jurnal_activitate` pentru un caz punctual sau SQL read-only pentru corelări/seturi. Acțiunile fără unitate (apeluri MCP, asistenți, reprocesări) apar și cu un brand cerut; cele ale echipei Symbai au „[suport Symbai]” în detalii. Alege direct calea care răspunde complet cu mai puține citiri, în drepturile conexiunii. Răspunsul trebuie să distingă dovezile de ipoteze.
 - **Lucrari mari**: imparte in checkpoint-uri verificabile si pastreaza progres local cand skill-ul o cere (ex. onboarding/import).
 
 ## Cand folosesti Chrome
