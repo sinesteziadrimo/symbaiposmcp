@@ -25,6 +25,9 @@ Regula de aur: nu conchide „Symbai nu poate” dintr-o unealtă lipsă. Urmeaz
 | „Din ce gestiune scade ingredientul X?" | `diagnose_consumption_warehouse_routing(product, brand, location)` | gestiuni lipsă: `audit_product_warehouse_coverage`; produse fără zonă („Necategorizat" în P&L): `scan_unzoned_products` |
 | „Lotul arată mai mult decât gestiunea", „deficit fals" | `check_stock_health` și previzualizarea `repara_loturi_peste_stoc` | Urmează motivul și documentele indicate; `check_container_placement_drift` verifică separat plasările în recipiente. Execută numai reparația confirmată de previzualizare. |
 | „Am corectat rețeta și rapoartele arată la fel" | rapoartele nu se recalculează singure | `reprocess_daily_consumption` 🔒 pe perioadă (verifică jobul cu `get_reprocess_job_status`) |
+| „Reprocesarea nu se mai termină", „stă în valuating de zile" | `get_reprocess_job_status(jobId)` — citește `waitingFor` | cantitățile sunt deja publicate; spune ce așteaptă (zile cu rețete de refăcut, documente de cost oprite → `retry_inventory_document_valuation`, coada de costuri). Nu porni altă reprocesare |
+| „Costul FIFO al produsului e prea mare / s-a dublat" | `get_product_fifo_cost(warehouseId, productId, from, to)` | nu-l recalcula prin SQL (un JOIN pe document dublează valorile); loturile la cost 0 sau o recepție intrată în altă unitate (`scan_suspect_reception_costs` cu `section: "units"`) explică salturile |
+| „Un pachet a intrat ca 1 kg", „unitate greșită la recepție" | `scan_suspect_reception_costs(section: "units")` | corecția recepției existente, cu acordul omului: [Corectarea recepțiilor prin MCP](corectare-receptii-mcp.md) |
 | „Ingrediente pe care nu le-am cumpărat niciodată" | `scan_unpurchased_ingredients` | de regulă produs dublat sau rețetă legată greșit: `link_recipe_products` |
 
 O ieșire permisă fără acoperire pe lot poate lăsa o diferență între stocul net și marfa fizică încă prezentă, inclusiv în carantină. Citește documentele indicate și cantitatea rămasă fără acoperire: completează intrarea reală lipsă sau corectează documentul greșit prin fluxul lui. Diferența singură nu dovedește că marfa trebuie eliminată. Nu șterge loturi, nu modifica o numărătoare și nu elibera carantina pentru a egala două valori.
@@ -68,6 +71,8 @@ Modificări, anulări și refaceri: citește [Corectarea recepțiilor prin MCP](
 | „Bonul a ieșit de două ori", „marfa e de două ori pe notă" | `get_order_timeline` | `repair_duplicated_order_items` 🔒 |
 | „Nota încasată apare neîncasată în administrare" | `list_shadow_order_conflicts` | `force_edge_resync` (doar rol complet) — repune în coadă rândurile blocate pe serverul local |
 | „Ce e pe masa 12 / ce s-a întâmplat cu nota X" | `get_table_status`, `get_order_timeline` | audit: `jurnal_activitate` |
+| „Cine a schimbat meniul zilei?" | `jurnal_activitate(tipEntitate: "daily_menu")` | felurile înainte → după, din aplicație sau prin asistent; ID-ul meniului din `list_daily_menus` |
+| „Ultima sincronizare cu Glovo/Wolt e veche" | `get_delivery_channel(id)` — `lastSyncAt`, `menuConfirmedAt`, `lastOrderAt`, erori | o publicare veche cu comenzi recente și fără erori = meniu neschimbat; diagnostic complet: `glovo_integration_status` / `wolt_integration_status` |
 | „Modificatorii produsului nu apar în POS" | `diagnose_product_option_runtime` | grupuri inactive / nepublicate pe canal |
 | „Grupul apare la ospătar, dar nu la bar / pe QR / pe Wolt" | `get_product_option_groups(productId, channel)` | grup restrâns pe platforme — `diagnose_product_option_runtime` listează `groupsOnOtherPlatforms` |
 | „Produsul nu apare în meniul de pe QR" | `verifica_produse_lipsa_portal` | skill `configureaza-portal` |

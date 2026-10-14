@@ -129,6 +129,8 @@ Fiecare canal are un **mod de re-sincronizare automată**, care decide când ple
 
 Dacă cineva spune „am schimbat ceva și nu se vede pe platformă", verifică întâi modul canalului cu `get_delivery_channel` — pe **nightly** sau **manual** comportamentul e cel așteptat, nu o defecțiune. Excepție: **granițele de program** (deschiderea/închiderea unei ferestre orare, start/expirare de meniu al zilei) se trimit și pe canalele „nightly", pentru că altfel un meniu de prânz n-ar apărea deloc în ziua respectivă.
 
+**„Ultima sincronizare e de acum trei săptămâni"** nu înseamnă singur un canal oprit. Pe canal, `lastSyncAt` e ultima **publicare** reală a meniului. `menuConfirmedAt` e ultima dată când s-a confirmat că meniul de pe platformă corespunde celui din Symbai, prin publicare sau prin verificarea „identic, nu-l mai retrimit”. Cât timp structura meniului nu se schimbă, verificarea de noapte nu retrimite nimic și nu mută nicio dată. Înainte să spui că sincronizarea s-a oprit, verifică `lastOrderAt`, `errorCount`/`lastError` și `menuConfirmedAt` cu `list_delivery_channels` sau `get_delivery_channel`. Comenzi recente, fără erori și un meniu confirmat înseamnă că nu a fost nimic de publicat. Pentru un diagnostic complet folosește `glovo_integration_status` / `wolt_integration_status`. Dacă `menuConfirmedAt` lipsește din răspuns, versiunea instalată e mai veche.
+
 Plafoane de care depinde promptitudinea: Glovo acceptă 5 sincronizări complete pe zi per canal, Wolt una la 15 minute. De-aia prețul și disponibilitatea merg prin actualizări mici (`update_channel_menu_items`), nu prin sincronizare completă.
 
 ### Disponibilitate programata: mic dejun, meniu de noapte, weekend

@@ -110,6 +110,8 @@ Cere confirmare explicita inainte de:
 
 Confirmarea trebuie sa includa datele importante: brand, locatie, numar destinatari, suma/buget, data/ora, entitate si efect.
 
+Când o previzualizare spune „arată-i utilizatorului” sau „cere-i acordul”, trimiți `confirm:true` abia după ce omul a văzut efectul și a spus „da” într-un mesaj nou; o cerere de dinainte de previzualizare nu e acord pentru efectele pe care nu le știa (inventar la 0, dezactivare). Dacă omul a refuzat un apel, te oprești și întrebi; nu atingi altă cale spre același rezultat. O reluare după eșec cu alt interval sau altă variantă decât cea cerută se întreabă întâi.
+
 ## Verificare Prin Citire, Nu Prin Ecran
 
 Aplicatia poate tine date in cache. Daca un tool MCP a returnat succes, nu repeta scrierea doar pentru ca ecranul nu s-a schimbat. Fa asa:
@@ -206,6 +208,10 @@ Tool-urile de citire merg de obicei fara modul de scriere. Tool-urile de scriere
 Dacă lipsesc module dintr-o conexiune POS care răspunde, rulează `verifica_conexiune` și citește identitatea, `arieAngajat`, modulele și profilul. Dacă lipsește întreg serverul sau tocmai a fost conectat, verifică încărcarea lui în conversația curentă; WhatsApp și Google locale au servere separate. Urmează [alege-conexiunea.md](alege-conexiunea.md), apoi skill-ul `conecteaza-symbai`. Nu declara o limită a platformei sau deconectarea contului doar din absența uneltelor.
 
 Catalogul complet este in `tools-mcp.md`. Daca lista live din MCP difera de catalog, lista live castiga; `tools-mcp.md` este orientativ si generat.
+
+## Unelte Pe PC-ul Clientului
+
+Pe calculatorul clientului pot lipsi Python, Node, jq sau pdftoppm. Verifică o singură dată (`Get-Command python`) și, dacă lipsesc, folosește PowerShell (`ConvertFrom-Json`, `Export-Csv`); nu relua același apel eșuat în fiecare sesiune. Un `.ps1` cu diacritice se salvează UTF-8 cu BOM și se rulează cu `powershell -ExecutionPolicy Bypass -File`. Nu opri procese ale omului (de ex. Excel) fără să-l întrebi; scrie într-un fișier nou.
 
 ## Lucru Cu Date Mari
 

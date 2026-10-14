@@ -176,6 +176,8 @@ După spargere sau absorbție, recitește factura și folosește `create_receive
 
 **Scriere — modulul `furnizori`:** `create_supplier_product_mapping`, `bulk_create_supplier_product_mapping` (max 200/apel) — legi catalogul furnizorului la produsele tale, ca următoarele facturi să se recunoască după codul de articol.
 
+**Reguli de mapare în lot, fără factură deschisă** (din chat, Excel, alt program sau **altă firmă Symbai**): `preview_mapping_rules` → acordul userului → `create_mapping_rules({ expectedPreviewHash, confirm: true })`. Copierea dintr-o firmă în alta începe cu `export_mapping_rules` pe conexiunea sursă; exportul păstrează doar regula pe care sursa o aplică la facturi și pune deoparte (`sourceConflicts`) denumirile pe care sursa le leagă de produse diferite. Previzualizarea nu rescrie regulile existente: arată doar `differences`, iar lipsurile apar în `missingProducts` / `missingSuppliers`. Pașii completi: skill-ul `importa-date`.
+
 **Scriere — modulul `financiar`:** `update_product_type` — conturile unui tip de produs.
 
 **Scriere — modulul `setari`:** `configure_reception_policy` — cine poate mapa și crea produse la recepție.

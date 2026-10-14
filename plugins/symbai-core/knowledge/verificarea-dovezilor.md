@@ -36,6 +36,17 @@ La un transfer verifică mai întâi ruta și disponibilul operațional al produ
 
 La o neconcordanță compară același set de produse și aceeași gestiune: sold, registru, loturi eligibile, rezervări și marcajele de reconciliere. Citește setul împreună. Diferența este o constatare care trebuie urmărită până la documente și cronologie; nu dovedește singură producție lipsă și nu autorizează ajustări pentru egalizarea numerelor.
 
+## Dovezi care seamănă cu răspunsul, dar nu sunt
+
+- **Bonul fiscal:** `orders.fiscal_printer_id` e casa aleasă pentru notă, nu dovada bonului. Bonul emis este un rând `print_jobs` cu `order_id`-ul notei, `type = 'fiscal'`, `status = 'done'` și `fiscal_receipt_number` completat. O notă pe „Avans” sau pe termen poate să nu aibă bon deloc.
+- **Costul unei rețete:** `get_production_cost_estimate` ia prețul din lotul cel mai vechi cu stoc, adesea stocul inițial (`costSource.lotSourceDocType = STOCK_OPENING`), nu din „ultimele intrări”. Ultimul preț de intrare îl dă `get_product_reception_history`.
+- **Un lot nou ajuns la 0 imediat după recepție** a acoperit un sold negativ (vânzare fără stoc); nu spune că „s-a consumat deja tot”.
+- **Costul FIFO calculat prin SQL:** nu aduna `inventory_financial_costs` după un JOIN rând cu rând cu `inventory_ledger`, fiindcă rândurile se înmulțesc. O cifră mult peste factură se verifică întâi pe interogare; nu-i spune omului că FIFO „nu e de încredere”.
+- **`inventory_documents.status`** se scrie cu majuscule (`POSTED`, `CANCELLED`); un filtru `'cancelled'` scris mic nu exclude nimic.
+- **Totalurile din mesaj** („38 de facturi”, suma pe trimestru) se calculează din lista trimisă, nu se scriu separat.
+- **Soldul unui furnizor și „ce mai avem de plătit”:** în POS, starea de plată a facturilor (`incoming_invoices.payment_status`, `paid_amount`) vine din plățile înregistrate ulterior (casă, bancă, contabilitate) și poate rămâne în urmă cu săptămâni. Înainte de o sumă „de plătit”, verifică până la ce dată există plăți înregistrate (ultima factură marcată plătită) și spune limita; o factură „unpaid” din perioada neactualizată nu dovedește o datorie. Fără conexiunea de contabilitate nu da soldul ca definitiv.
+- **Contul unei lipse la inventar** depinde de produs (marfă sau materie primă pe 6xx, semipreparat pe 711/341); nu generaliza de la un singur document.
+
 ## Starea documentului și cauza incidentului sunt dovezi diferite
 
 Un NIR `POSTED` confirmă înregistrarea recepției. Nu explică singur o eroare Accounting și nu dovedește sincronizarea contabilă. Pentru cauză corelează documentul și momentul incidentului cu diagnosticul sau jurnalul exact. Nu transforma ipoteza „a fost o a doua încercare” într-un fapt fără dovadă.
@@ -45,6 +56,8 @@ Gestiunea din antet nu identifică automat destinația tuturor liniilor. Citeșt
 Pentru „ce recepții sunt pe gestiunea greșită”, verifică mai întâi metoda pe un document cu repartizare cunoscută, apoi aplic-o listei. Magazia de casă a produsului descrie configurația actuală; nu dovedește destinația istorică sau utilizarea exclusivă la bar/bucătărie. O nepotrivire este candidat de verificat, iar valoarea intrărilor nu este automat pierdere. Separă materiile prime de semipreparate când cererea le distinge. O rețetă se confirmă din fișa și precizările proprietarului, nu din existența ingredientului într-o gestiune.
 
 Pentru „cine a schimbat”, jurnalul filtrat și o pagină recentă nu acoperă automat tot istoricul. Urmează paginarea declarată de versiunea live sau restrânge la entitatea și perioada relevante; consemnează limitele de retenție/acces necunoscute. Zero la un cuvânt și o categorie înseamnă zero potriviri pentru acele filtre. Starea de azi a unei politici nu dovedește că nu a fost schimbată niciodată.
+
+„Cine a pornit/schimbat X" se caută în `jurnal_activitate` sau `audit_logs` (rândurile `mcp_tool_call`, cu unealta și argumentele în `metadata`), înainte de „nu știu cine". Un acces de suport al echipei Symbai apare ca „Acces complet admin" chiar dacă rândul poartă numele proprietarului: spune-i omului că a fost suportul Symbai, nu el.
 
 Un motiv standard precum „Anulare manuală din Recepții” nu identifică singur persoana sau interfața care a trimis cererea. Nici absența unui apel MCP în minutul respectiv nu dovedește apăsarea unui buton: pot lipsi înregistrări ori pot exista alte surse. Dacă jurnalul unei ștergeri în masă nu enumeră ID-urile facturilor, corelarea cu perioada rămâne o ipoteză; păstrează această limită și în concluzie. Un timestamp de creare identic între două documente nu dovedește singur reemiterea sau renumerotarea.
 
@@ -60,7 +73,11 @@ Randamentul unui lot poate fi mai mic decât suma ingredientelor din cauza pierd
 
 **Mișcările de stoc pe o perioadă** se numără după data documentului, fără documentele anulate și fără stornări; data înregistrării poate cădea în alt interval. O factură primită și nerecepționată nu este stoc. Când o cifră a ta diferă de a omului, caută întâi diferența de filtru, apoi răspunde.
 
-**Două perioade se compară pe aceeași bază.** Avansurile, bonurile de zero lei și bacșișul fie intră în ambele, fie în niciuna. Dacă o sursă nu le poate separa, spune asta lângă procent, nu într-o notă de final.
+**Două perioade se compară pe aceeași bază.** Avansurile, bonurile de zero lei și bacșișul fie intră în ambele, fie în niciuna. Dacă o sursă nu le poate separa, spune asta lângă procent, nu într-o notă de final. La fel venitul și costul: amândouă fără TVA (costul din Symbai e fără TVA) sau amândouă cu TVA.
+
+**Un rând de P&L nu e „inclus" în altul până nu i-ai văzut conturile.** Consumabilele și ambalajele au conturile lor; nu le declara cuprinse în materii prime din presupunere. Notele „din partea casei" / fără venit au valoarea de meniu și motivul salvate (personal, sportivi, proprietari, protocol): nu sunt automat protocol și nu valorează 0. La un eveniment, rețetele de pe notă și fișele de consum deja postate pentru el sunt aceeași marfă: costul se ia o singură dată.
+
+**„Anunță-mă când e gata"** nu se rezolvă cu un model pornit la fiecare 30 de minute. Pentru costurile unui inventar, `verify_physical_inventory` cu `summaryOnly:true` arată `unknownCostLines` și `sessionDocumentsPending`; coada totală a produselor nu ajunge la zero, iar `financialVerificationComplete` rămâne false în acea unealtă. O sarcină programată nu folosește Python sau PowerShell: o cerere de permisiune o blochează până revine omul.
 
 **Ce scrii unui om din afara firmei** (contabil, furnizor) rămâne scris în numele proprietarului. Trimite numai ce ai citit în această rulare; o deducție se formulează ca întrebare, nu ca fapt. Nu promite nimic în locul proprietarului și nu promite verificări într-un program la care nu ai acces: spune ce vezi și de unde. Un nume de furnizor negăsit se caută și aproximativ, după sumă și dată, înainte de „nu apare nicăieri”.
 

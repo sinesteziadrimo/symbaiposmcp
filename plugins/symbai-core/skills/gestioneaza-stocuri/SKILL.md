@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-stocuri
-description: Stocul din gestiuni — cât ai pe fiecare, inventariere (numărare fizică + diferențe), stoc inițial, consum zilnic din vânzări, transferuri între gestiuni, rapoarte de valoare, trasabilitate pe lot. La „cât stoc am", „inventariere", „diferențe la inventar", „de ce a scăzut/nu a scăzut stocul", „transfer din magazie în bucătărie", „stoc negativ", „din ce lot a venit".
+description: Stocul din gestiuni — cât ai pe fiecare, inventariere (numărare fizică + diferențe), stoc inițial, consum zilnic din vânzări, transferuri între gestiuni, rapoarte de valoare, trasabilitate pe lot. La „cât stoc am", „inventariere", „diferențe la inventar", „de ce a scăzut/nu a scăzut stocul", „transfer din magazie în bucătărie", „stoc negativ", „din ce lot a venit", „cât stoc aveam pe data X", „ce produse sunt / au rămas pe minus", „de ce e pe minus", „cum a evoluat stocul".
 ---
 
 # Gestionează stocurile (inventar)
@@ -49,6 +49,31 @@ Pentru „cât stoc de X am”, `get_stock_levels` caută după nume/SKU/cod de 
 12. **Tagul nu este regulă de stoc** — etichetele controlează vizibilitatea și rutarea către imprimantă/KDS. Pentru „din ce gestiune scade produsul la locația X", folosesc `diagnose_consumption_warehouse_routing` și corectez asignările/override-ul, nu tagurile.
 13. **PO-ul și avizul fără PO au fluxuri diferite** — dacă marfa aparține unei comenzi de furnizor, recepționez numai din detaliul acelei comenzi (sau cu tool-ul canonic `receive_purchase_order`), ca să se actualizeze liniile, cantitățile și statusul PO. Nu folosesc „Recepție angajat" și nu atașez manual `purchaseOrderId`: aș lăsa comanda disponibilă pentru o a doua recepție. „Recepție angajat" este doar pentru aviz fără PO; cer brandul, locația și gestiunea exacte, nu recomand „Auto" fără locație și nu aleg prima gestiune a organizației. Dreptul necesar este `stock_receive`. Numărul avizului furnizorului este referință externă, iar aplicația alocă separat numărul intern al documentului.
 14. **Factură cu NIR legat = două autorități distincte** — dreptul de a modifica factura nu dă automat dreptul de a inversa stocul. Pentru ștergerea împreună cu NIR-ul postat trebuie și `stock_receive` sau `po_approve`, în aria brand/locație a NIR-ului. Dacă lipsește, explic simplu că factura este păstrată/omisă pentru protecția stocului; nu promit succes, nu cer ocolirea din alt ecran și nu creez ajustări compensatorii. O rezoluție finală a unei dispute de recepție rămâne imuabilă și păstrează autorul autentificat.
+
+## Stocul în timp: o zi, evoluția, minusurile și cauza lor
+
+Aceleași cifre ca pagina **Mișcări stoc → Achiziții și evoluție stoc** („Stoc în timp”). Dacă uneltele nu apar, caută-le cu `cauta_tool("stocul la o dată")`; pe o instanță neactualizată lipsesc.
+
+- **„Cât stoc aveam din X pe 5 octombrie?”** → `get_product_stock_timeline` cu `productName` sau `productId` și `date`. Primești, pe fiecare gestiune, soldul la începutul și la sfârșitul zilei. Pentru o perioadă trimiți `dateFrom` și `dateTo`; zilele cu mișcări vin implicit, iar `detail:"miscari"` dă fiecare document cu soldul după el.
+- **„Ce produse sunt pe minus?”** → `list_negative_stock`, cu `mode`:
+  - `in_ziua`: pe minus la sfârșitul zilei date;
+  - `final_perioada`: au rămas pe minus la finalul perioadei;
+  - `in_perioada`: au fost pe minus oricând, inclusiv cele revenite.
+
+  Produsele finite fără rețetă vin într-o listă separată.
+- **„De ce e pe minus?”** → `explain_stock_position` pe produs, gestiune și perioadă. Afli:
+  - documentul cu care a trecut sub zero și de când durează minusul;
+  - intrările și ieșirile pe tipuri și preparatele vândute care l-au consumat;
+  - stocul rămas în altă gestiune, inventarele și documentele nepostate;
+  - zilele ale căror vânzări n-au scăzut încă stocul.
+
+Reguli:
+1. **Dă linkul.** Fiecare răspuns are `pageUrl`: pagina filtrată pe produs și gestiune, cu graficul evoluției. Trimite-l omului într-o frază („aici vezi graficul”).
+2. **Spune ce vezi, nu ce bănuiești.** Folosește constatările din `findings`, care au documentul, ziua și cantitatea. Nu declara o cauză fără dovadă. Dacă n-ai putut verifica ceva, spune exact ce.
+3. **Stocul de peste zi nu include vânzările zilei.** Consumul se generează noaptea, pentru ziua încheiată; livrările scad imediat. Citește zilele cu vânzări încă nescăzute înainte de concluzie.
+4. **Produsul finit fără rețetă se scade pe el însuși la fiecare vânzare.** Dacă nu se cumpără gata, minusul arată rețeta lipsă. **Semipreparatul consumat fără producție** cere înregistrarea producției, nu o ajustare.
+5. **Corecturile se fac numai cu acordul omului**, prin skill-ul potrivit: transfer, recepție, producție, rețetă sau inventar. Un minus nu se „repară” cu o ajustare pozitivă.
+6. **Nume, nu numere.** Vorbește despre produse și gestiuni pe nume; ID-urile sunt doar pentru unelte.
 
 ## Fluxul (pași numerotați cu tool-urile MCP)
 
@@ -119,9 +144,9 @@ Pentru „cât stoc de X am”, `get_stock_levels` caută după nume/SKU/cod de 
 
 ## Inventare din urmă și produse unificate
 
-Verifică disponibilitatea parametrilor și uneltelor pe instanța conectată cu `cauta_tool` și `citeste_tool`. Pentru liste primite din Excel, confirmă data, gestiunea, unitatea și cantitatea fizică. O celulă goală, o estimare sau soldul scriptic copiat în foaie nu reprezintă automat o numărătoare confirmată. Nu importa costuri estimate ca prețuri de intrare.
+Verifică disponibilitatea parametrilor și uneltelor pe instanța conectată cu `cauta_tool` și `citeste_tool`. **Un inventar primit de la utilizator (chat, poză, foaie, Excel) conține cantitățile FAPTICE numărate, nu mișcări de stoc.** Symbai calculează singur plusul și minusul față de scriptic la data numărării. Nu cere confirmarea că cifrele sunt faptice și nu le transforma în intrări sau ieșiri. Întreabă numai ce lipsește cu adevărat: data numărării, gestiunea, dacă lista e completă (restul pe 0) sau parțială, și o unitate neclară. O celulă goală nu înseamnă 0, iar o coloană care e evident soldul scriptic nu e o numărătoare. Produsele se dau prin `productId`, `sku` sau `name` (numele din nomenclator); nu le căuta rând cu rând prin SQL. Nu importa costuri estimate ca prețuri de intrare.
 
-Rulează `preview_physical_inventory` cu `countDate` și lista confirmată; pentru o listă parțială folosește `unlisted:'keep'`. Diferența istorică se compară cu soldul la data numărării; soldul curent este o informație separată. Introdu listele în ordine cronologică. Dacă aceeași marfă are coduri unificate, folosește `includeMergedProducts:true` numai după confirmarea că numărătoarea include toate codurile respective. Nu introduce separat zero pe vechiul cod și totalul pe cel nou: numărătoarea trebuie să observe o singură cantitate fizică.
+Rulează `preview_physical_inventory` cu `countDate` și lista primită; pentru o listă parțială folosește `unlisted:'keep'`. Dacă există deja o sesiune deschisă pentru aceeași gestiune și dată, continu-o prin `resumeSessionId`. Diferența istorică se compară cu soldul la data numărării; soldul curent este o informație separată. Un sold negativ azi, după un inventar retroactiv, arată doar că după numărare s-a descărcat mai mult decât s-a numărat: raportează-l (`produsePeMinusAzi`), fără să ceri reconfirmarea cantităților. Introdu listele în ordine cronologică. Dacă aceeași marfă are coduri unificate, folosește `includeMergedProducts:true` numai după confirmarea că numărătoarea include toate codurile respective. Nu introduce separat zero pe vechiul cod și totalul pe cel nou: numărătoarea trebuie să observe o singură cantitate fizică.
 
 Aplică prin `apply_physical_inventory` în autorizarea primită și păstrează ID-ul sesiunii. La eșec citește răspunsul: o sesiune deschisă poate conține deja numărătorile; continuă sesiunea existentă prin fluxul oferit, fără inventar duplicat. După finalizare, `verify_physical_inventory(sessionId,offset,limit)` arată diferențele și verificările cantitative, costurile necunoscute, dezechilibrele contabile și lucrările în așteptare. Citește toate paginile până la `complete:true`. `financialVerificationComplete:false` înseamnă că acest raport nu certifică evaluarea financiară finală, chiar dacă `quantityAdjustmentsMatch` și `journalBalanceMatches` sunt adevărate. Verifică separat recalcularea FIFO și stocul curent cu `get_stock_levels`.
 
@@ -133,6 +158,7 @@ Nu porni o a doua reprocesare peste una activă. Dacă vânzările trebuie refă
 
 ## Tool-uri folosite
 - **Organizare, plan și QR:** cele 16 unelte din fluxul H și `knowledge/organizare-depozitare-ai.md`; cer acces nominal și aria acordată. Capabilitățile asistentului pentru configurare și print se acordă separat.
+- **Stocul în timp (aceleași cifre ca pagina, cu link):** `get_product_stock_timeline` (o zi sau o perioadă), `list_negative_stock` (minusurile), `explain_stock_position` (de ce e pe minus).
 - **Citire (oricând):** `get_stock_levels`, `get_warehouse_products_summary`, `list_warehouses_full`, `list_storage_zones_full`, `list_stock_count_sessions`, `get_stock_count_session`, `get_daily_consumption_status` (o zi sau un interval, cu zilele lipsă), `diagnose_consumption_warehouse_routing`, `diagnose_inventory_document_reversal`, `get_reprocess_job_status`, `get_production_stock_overview`, `get_semipreparate_stock`, `list_lots` (paginat, ordonat implicit în ordinea reală de descărcare — expiră primul; filtre utile: `expiresBefore`, `onlyAvailable`), `list_pending_nirs`, `list_goods_receipts`, `scan_zero_cost_sold`, `scan_recipe_unit_mismatches` (unități de rețetă netraductibile — cauza clasică de „stoc absurd"), `search_products_db`, `get_product_details`, `generate_report`, `exec_trace_lot_origin`, `exec_trace_lot_destination`, `exec_get_lot_qc_status`, `jurnal_activitate`, `gaseste_in_aplicatie`.
 - **Scriere (cer modul produse_meniu / inventar, după caz):** `set_initial_stock`, `set_standard_costs`, `create_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`, `assign_product_storage_zones` (pune produsul în una sau mai multe zone, inclusiv cross-magazie), `assign_product_warehouses` (gestiunile în care „trăiește" produsul).
 - **Mișcări de stoc (cer modul Stocuri & Recepție):** `create_inventory_document` (motorul canonic — ieșiri/transferuri/intrări), `post_inventory_document`, `create_inventory_adjustment`, `approve_inventory_adjustment`, `generate_daily_consumption`, `update_warehouse` (inclusiv dezactivarea unei gestiuni). Toate mișcă stocul real → confirm-first (`confirm:true` doar după acordul clientului).

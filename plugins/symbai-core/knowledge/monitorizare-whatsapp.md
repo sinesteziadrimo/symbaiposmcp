@@ -10,7 +10,7 @@
 
 **ChatGPT Codex.** Se alege `dispatch: "codex"` la pornirea monitorizării. Folosește autentificarea ChatGPT a clientului, nu o cheie API și nu are nevoie de Claude. Calculatorul rămâne pornit, cu utilizatorul conectat și internet; fereastra Codex poate fi închisă. Aplicația ChatGPT obișnuită, fără Codex, nu ajunge. Connect și pluginul trebuie actualizate la o versiune care acceptă acest executor. La limite de cont sau erori nu trece automat la alt furnizor. Plafonul de pași Codex numără apelurile de unelte; atașamentele depind de cititoarele disponibile și nu se presupun citite dacă unealta nu le poate deschide.
 
-**Cum se pornește.** Din asistent, prin skill-ul `monitorizeaza-whatsapp` și uneltele MCP ale numărului: `watch_chat`, `list_watches`, `update_watch`, `stop_watch`, `watch_activity`, `remember_contact`, `contact_profiles`, plus `note_watch` (notițele, singura schimbare permisă asistentului automat). Nu există formular în panou pentru pornire: obiectivul se scrie în cuvintele omului, iar asistentul interactiv e cel care îl formulează bine.
+**Cum se pornește.** Din asistent, prin skill-ul `monitorizeaza-whatsapp` și uneltele MCP ale numărului: `watch_chat`, `list_watches`, `update_watch`, `stop_watch`, `watch_activity`, `remember_contact`, `contact_profiles`, plus uneltele asistentului automat: `note_watch` (notițele, pe secțiuni — singura schimbare permisă asupra monitorizării), `note_contact` (profil fără încredere) și `check_new_messages` (ce s-a scris cât lucra). Nu există formular în panou pentru pornire: obiectivul se scrie în cuvintele omului, iar asistentul interactiv e cel care îl formulează bine.
 
 ## Modurile
 
@@ -29,12 +29,19 @@ Mesajele proprietarului scrise de pe telefonul lui nu pornesc rulări (el se des
 - Un singur mesaj pe rulare (cel mult două), fără rafale; plafoanele anti-ban ale punții se aplică la fel ca pentru orice mesaj trimis prin asistent.
 - Rafalele se coalizează: pornirea așteaptă 8 secunde de liniște (maxim 45 de la primul mesaj). Plafon de 20 de rulări pe oră per conversație; depășit, monitorizarea se oprește singură (anti-buclă între doi asistenți). Trei rulări eșuate la rând o opresc de asemenea, cu motivul afișat.
 - Mesajele mai vechi de 12 ore (sosite cât agentul a fost oprit) intră doar ca context.
+- O schimbare cerută de cineva fără profil (nu e angajat cunoscut, nu e `trusted`) — rețete, prețuri, documente — se face numai după ce o confirmă proprietarul sau un responsabil din grup. Încrederea cuiva o stabilește doar proprietarul, cu `remember_contact` din asistentul lui; asistentul automat are `note_contact`, fără încredere. `staff` înseamnă angajat cunoscut, nu încredere de proprietar. Profilurile notate înainte de această regulă apar `incredereDeReconfirmat` (și `atentie` în `list_watches`) și, până le confirmă proprietarul, „trusted”/„owner” din ele nu dau drept de instrucțiune.
+- Regulile proprietarului din notițe („din grup nu se trimit fișiere", „întreabă înainte") se respectă înainte de acțiune, nu se constată după. Întrebările rămase deschise se trec în notițe, ca rularea următoare să nu le piardă.
+- Nu șterge mesaje deja citite sau citate de alții și nu comenta ori șterge mesajele altui asistent din același grup; corectezi printr-un mesaj nou, scurt.
+- În chatul cu furnizorul (Symbai) sau cu orice terț trimiți numai la cererea proprietarului: nu răspunzi în numele lui și nu afirmi cauze nedovedite. Pe un grup trimiți doar ce s-a cerut explicit; după o rezumare automată citează cererea exactă a omului înainte să acționezi pe ea.
+- Regulile de stil din notițe (denumiri, nu ID-uri interne; scurt; în română) rămân valabile și după rezumarea automată a conversației.
+- O sarcină încheiată se închide de tot: o notezi ca încheiată în notițe și îi scoți cuvintele de declanșare cu `update_watch`, ca să nu mai pornească rulări.
+- Mesajele care sosesc în timpul rulării: cu Claude Code, Connect oprește singur următoarea unealtă Symbai sau următorul răspuns WhatsApp și îi arată asistentului mesajele noi (într-un grup pe `mention`, doar ale proprietarului, ale persoanelor de încredere și ale celor care îl cheamă); cu Codex, asistentul le citește cu `check_new_messages` înaintea unei scrieri greu de întors. Un „stai” / „nu finaliza” al proprietarului are prioritate. Înainte de „mesajul tău a venit după ce terminasem", compară ora mesajului cu ora scrierii.
 
 ## Memoria asistentului automat
 
 - **Sesiunea asistentului ales** se reia la fiecare rulare: își amintește ce a făcut în aceeași conversație. `update_watch {clear_session: true}` o resetează. Schimbarea Claude ↔ Codex păstrează obiectivul și notițele, dar resetează sesiunea internă și modelul; este permisă doar între rulări.
-- **Notițele monitorizării** (`notes`): decizii și convenții aflate pe parcurs, scrise de asistentul automat cu `note_watch`. Rularea automată primește o listă explicită de unelte (răspuns, citire, media, `remember_contact`, `note_watch` și instanțele Symbai) — nu poate porni, opri sau rescrie monitorizări.
-- **Profilurile oamenilor** (`remember_contact`): nume, rol, încredere, limbă, preferințe — citite la fiecare rulare în care omul apare. De aici „știe cum și ce să răspundă fiecăruia".
+- **Notițele monitorizării** (`notes`): decizii și convenții aflate pe parcurs, scrise de asistentul automat cu `note_watch`, câte o secțiune odată. Rularea automată primește o listă explicită de unelte (răspuns, citire, media, `note_contact`, `note_watch`, `check_new_messages` și instanțele Symbai) — nu poate porni, opri sau rescrie monitorizări și nu poate schimba încrederea oamenilor.
+- **Profilurile oamenilor**: nume, rol, încredere, limbă, preferințe — citite la fiecare rulare în care omul apare. Proprietarul le scrie cu `remember_contact`, asistentul automat cu `note_contact` (fără încredere). De aici „știe cum și ce să răspundă fiecăruia".
 
 ## Urmărire live din asistentul interactiv
 
@@ -55,3 +62,6 @@ Un link `docs.google.com` / `drive.google.com` dintr-un mesaj se deschide cu `re
 - „ChatGPT Codex nu este autentificat” — Panou → *Monitorizări WhatsApp* → **Autentifică ChatGPT Codex**, login cu ChatGPT în browser, apoi reia. Nu este necesar login Claude sau cheie API.
 - „ChatGPT Codex nu este instalat” — instalează aplicația Codex pe calculatorul clientului și conecteaz-o din Symbai Connect.
 - Rulările lasă pe disc, în folderul de date al agentului (`watches/<id>/`), promptul primit și jurnalul ultimei rulări — prima privire când asistentul a răspuns pe lângă.
+- „Nu răspunde pe grup" după o cerere mare (de ex. food cost pe toate preparatele): rularea s-a oprit la plafonul de pași (`step_limit` în `watch_activity`); Connect a scris în grup „răspunde cu continuă” (în modul silent, proprietarului). Nu ridica plafonul fără acordul proprietarului; folosește unealta care întoarce toată lista într-un apel (`analyze_food_costs` cu `compact`, `menuId`, `menuCategoryIds`), nu câte un apel pe produs, și scrie un rând în grup când lucrul durează.
+- „Symbai nu răspunde” în timpul unei actualizări (`recovery_only`, repornire): cererea se reia singură de două ori, la câteva minute. Dacă Symbai a răspuns explicit `recovery_only`, conversația (în modul silent, proprietarul) primește apoi mesajul „răspunde cu continuă”; dacă doar conexiunea a picat la pornire, nu, fiindcă nu se știe dacă cererea avea nevoie de Symbai.
+- `sfat` în `list_watches` (sau „Sfat” în panou): majoritatea rulărilor din modul `always` nu au trimis nimic — oamenii vorbesc acolo între ei. Propune proprietarului modul `mention`, cu numele de apel.

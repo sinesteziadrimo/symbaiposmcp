@@ -1,6 +1,6 @@
 ---
 name: comanda-furnizor
-description: Aprovizionare — ce și de la cine cumperi, comparare prețuri furnizori, furnizor nou (căutat pe CUI, confirmat la ANAF/VIES), comenzi de achiziție + recepție, risc P&L pe furnizor. La „ce trebuie să comand", „de la cine e mai ieftin", „adaugă furnizor", „generează comandă furnizor", „am doi furnizori cu același CUI".
+description: Aprovizionare — ce și de la cine cumperi, comparare prețuri furnizori, furnizor nou (căutat pe CUI, confirmat la ANAF/VIES) sau din rețeaua Symbai, comandă din catalogul furnizorului (inclusiv „repetă ultima comandă”), trimitere, status + recepție, risc P&L pe furnizor. La „ce trebuie să comand", „de la cine e mai ieftin", „adaugă furnizor", „generează comandă furnizor", „repetă comanda de săptămâna trecută", „ce furnizori Symbai livrează X", „am doi furnizori cu același CUI".
 ---
 
 # Comandă de la furnizor (aprovizionare) — de la necesar la recepție
@@ -15,6 +15,8 @@ Pentru PDF-uri scanate, oferte cu ambalaje diferite și export Excel, folosește
 - „De la care furnizor cumpăr brânza mai ieftin?" → comparație de prețuri.
 - „Adaug un furnizor nou și îi încarc catalogul."
 - „Generează / creează o comandă de aprovizionare." (ciornă prin MCP)
+- „Repetă comanda de la Lactate SRL", „comandă ce comand de obicei", „ce e sub minim la furnizorul X?" → pasul D0.
+- „Ce furnizori Symbai livrează lactate?", „leagă-mi furnizorul din Symbai" → pasul C0.
 - „Recepționez marfa de la furnizorul Z." (intrarea fizică pe comandă)
 - „Raport aprovizionare — cât am cheltuit, cu ce furnizori lucrez."
 
@@ -22,7 +24,7 @@ Pentru PDF-uri scanate, oferte cu ambalaje diferite și export Excel, folosește
 - **ID-uri, nu nume**: `supplierId`, `productId`, `orderId` — ia-le din `list_*` înainte de scriere.
 - **Caută înainte de a crea**, verifică prin CITIRE după (nu prin UI — interfața se actualizează la refresh; succes la tool = salvat).
 - **Un furnizor se caută pe codul fiscal, niciodată pe nume.** Întâi în lista clientului, apoi denumirea oficială la ANAF/VIES, apoi încă o dată în listă cu ea — și abia dacă nu apare nimic se creează (vezi pasul C). Când nu e sigur, întrebi userul; nu creezi „un furnizor nou" ca să treci mai departe.
-- **Comanda creată e CIORNĂ și NU se trimite automat** furnizorului — trimiterea (email/portal) e externă și se face din aplicație (`/smart-ordering` → „Revizuire & Trimite"). Spune-i userului asta clar.
+- **Comanda creată e CIORNĂ și NU se trimite automat** furnizorului. Trimiterea (Symbai, email sau WhatsApp) iese din firmă și nu se retrage: o faci cu `send_purchase_order` numai când omul a cerut-o explicit, după ce i-ai arătat ciorna, sau omul o trimite din pagina „Comenzi furnizori" (`/supplier-orders`). Spune-i userului asta clar.
 - **Necesar producție → PO** (alege automat furnizorul, chiar dintre mai mulți): pentru fabrică/MRP, `create_purchase_orders_from_requirements(commit:false)` ia lipsurile de materiale și, pentru *fiecare* material, alege furnizorul potrivit din cataloagele mapate — **același material poate fi cumpărat de la mai mulți furnizori, fiecare cu catalogul lui mapat la produsele tale**, exact ca la restaurant. Materialele se grupează pe furnizor: o comandă **DRAFT** per furnizor, cu cantitatea rotunjită la pachet/MOQ. `commit:false` = preview fără scriere; `commit:true` creează ciornele (idempotent — re-rulat nu dublează). Cere confirmare explicită înainte de `commit:true`. `supplierStrategy` = `preferred` (implicit) / `cheapest` / `lead-time`; mod `loose` la restaurant (sare peste materiale nemapate și le semnalează), `strict` la fabrică (le blochează + ține cont de lead-time). Necesită drept de scriere pe **Producție**; trimiterea către furnizor rămâne din aplicație.
 - **Catalog multiplu pe același furnizor**: dacă un produs intern are mai multe produse de catalog la același furnizor, `/smart-ordering` arată **Alege produse**. Userul alege un catalog sau împarte cantitatea pe mai multe linii; până atunci draftul/trimiterea poate fi blocată. Nu inventa `supplierProductId` și nu dubla conversia de pachet; dacă e ambiguu, trimite userul în Smart Ordering sau cere alegerea explicită.
 - **Nu inventa** prețuri, coduri sau produse de catalog. Ce nu se potrivește → întreabă userul.
@@ -45,6 +47,11 @@ Pentru PDF-uri scanate, oferte cu ambalaje diferite și export Excel, folosește
 3. Pentru istoricul unui partener, `get_supplier_last_prices(supplierId)` este o citire separată, numai dacă este disponibilă contului. Nu folosi un istoric mai larg drept dovadă a recepțiilor brandului ales.
 4. Fără cantitate verificată, compară prețul pe aceeași unitate internă și monedă, MOQ/pachet, valabilitatea și termenul. Totalul achiziției se evaluează numai la cantitatea verificată, după rotunjire. Păstrează distincte prețul de catalog și ultimul preț recepționat; nu declara „cel mai ieftin” pe baza prețului unitar când cantitățile sau monedele diferă.
 
+### C0. Furnizor din rețeaua Symbai (comenzi directe, status venit singur)
+1. `search_symbai_suppliers(search)` caută în directorul Symbai după nume, CUI, oraș sau ce livrează. Pe fiecare rând: `inCompany` (îl ai deja în listă), `linked` (comenzile pleacă direct în Symbai) și `hubConnected` (există legătura contractuală în Symbai Hub). Un director care nu răspunde nu dovedește că furnizorul lipsește.
+2. `link_symbai_supplier(symbaiSupplierId)` îl leagă (sau leagă furnizorul existent cu același CUI), ca butonul din aplicație. Cere dreptul „Gestionare Furnizori" pe toată firma și merge numai cu `hubConnected:true`; altfel spune-i omului că legătura cu furnizorul se face întâi în Symbai Hub. Nu trimite nimic furnizorului.
+3. `sync_symbai_supplier_catalog(supplierId)` aduce catalogul lui (produse, ambalaje, prețuri). Produsele lui se leagă apoi de produsele tale (pasul C.4); cele nelegate apar la `unmapped` și nu se pot comanda.
+
 ### C. Furnizor nou + catalog (modul `furnizori`)
 
 ⚠ **Întâi cauți, abia la urmă creezi.** Ordinea nu e opțională: sărită, ajungi cu același furnizor de două ori în listă, iar un furnizor dublat nu se mai desface după ce are comenzi, recepții și facturi pe el.
@@ -59,6 +66,12 @@ Pentru PDF-uri scanate, oferte cu ambalaje diferite și export Excel, folosește
 5. Dacă unitatea furnizorului diferă de unitatea internă, pune conversia pe mapare: `packMultiplier:0.7, supplierUnit:"sticlă", internalUnit:"litru"` pentru sticlă de 0.7L ținută în litri; `packMultiplier:24, supplierUnit:"bax", internalUnit:"buc", packUnitKeyword:"bax"` pentru bax de 24. Nu dubla conversia la recepție/NIR.
 6. Opțional: `enable_supplier_portal(supplierId)` → link + parolă temporară ca furnizorul să-și confirme singur comenzile.
 7. Verifică: `get_supplier_last_prices(supplierId)` arată produsele mapate și prețurile efective.
+
+### D0. Comandă din catalogul furnizorului / „repetă ultima comandă" (ca pagina „Comenzi furnizori")
+1. Gestiunea în care intră marfa: `list_work_warehouses` (dacă nu e clară, întreabă; gestiunea folosită ultima dată la furnizor se vede în `list_purchase_orders(supplierId)`).
+2. `get_supplier_order_catalog(supplierId, warehouseId)` arată ce se poate comanda: preț și unitatea furnizorului, produsul tău, conversia, stocul și minimul gestiunii, `suggestedQty` (sub minim), `usualQty` (cât comanzi de obicei), `lastOrderQty` și data cea mai apropiată de livrare. `orderable:false` are motivul în `blockedReason` (conversie neconfirmată sau fără preț) — se corectează în catalogul furnizorului, nu se ocolește.
+3. `create_supplier_order_draft(supplierId, warehouseId, repeatLastOrder:true)` repetă ultima comandă a gestiunii; `lines:[{supplierProductId, supplierQty}]` pune cantitățile alese, în unitatea furnizorului (bax, sac, kg). Nu cere plan de aprovizionare; serverul recalculează linia (conversie, ambalaj, minim, preț). Răspunsul spune ce a intrat, ce a fost sărit și de ce.
+4. Arată-i omului ciorna (produse, cantități, total estimat, data de livrare). Trimite cu `send_purchase_order(id)` numai la cererea lui explicită, apoi verifică `get_purchase_order_send_log`; statusul îl urmărești cu `list_purchase_orders`.
 
 ### D. Creez o comandă (ciornă) și o pregătesc de trimis
 1. Pentru un plan complet, pornește de la `prepare_procurement_forecast`. Arată furnizorii, toate liniile, cantitățile executabile, totalurile pe monedă și termenele înainte de aplicare. O cerere de analiză nu autorizează crearea drafturilor; obține acordul pentru plan dacă nu există deja în conversație.
@@ -102,8 +115,8 @@ Pentru PDF-uri scanate, oferte cu ambalaje diferite și export Excel, folosește
 - Perete real (operație fără unealtă, după `cauta_tool`) → dă linkul cu `gaseste_in_aplicatie`; bug suspect → `trimite_ticket_symbai` (tip „sugestie", cu `dedupeKey`).
 
 ## Tool-uri folosite
-Citire: `list_brands`, `list_locations`, `list_work_warehouses`, `get_stock_levels`, `get_mps_net_requirements`, `get_material_requirements`, `list_procurement_recommendations`, `prepare_procurement_forecast`, `search_products_db`, `get_product_details`, `list_suppliers`, `get_supplier_pnl`, `get_supplier_last_prices`, `list_supplier_mapping_suggestions`, `analyze_procurement`, `get_purchases_summary`, `list_pending_nirs`, `list_reception_notes`, `resolve_supplier_identity`, `lookup_company_cui`, `lookup_eu_company_vat`, `gaseste_in_aplicatie`.
-Scriere (`furnizori`): `create_supplier`, `update_supplier`, `create_supplier_product`, `bulk_create_supplier_products`, `create_supplier_product_mapping`, `bulk_create_supplier_product_mapping`, `enable_supplier_portal`, `commit_procurement_forecast`, `create_purchase_order`, `add_purchase_order_item`, `receive_purchase_order`, `create_reception_note`.
+Citire: `list_brands`, `list_locations`, `list_work_warehouses`, `get_supplier_order_catalog`, `search_symbai_suppliers`, `list_purchase_orders`, `get_purchase_order_send_log`, `get_stock_levels`, `get_mps_net_requirements`, `get_material_requirements`, `list_procurement_recommendations`, `prepare_procurement_forecast`, `search_products_db`, `get_product_details`, `list_suppliers`, `get_supplier_pnl`, `get_supplier_last_prices`, `list_supplier_mapping_suggestions`, `analyze_procurement`, `get_purchases_summary`, `list_pending_nirs`, `list_reception_notes`, `resolve_supplier_identity`, `lookup_company_cui`, `lookup_eu_company_vat`, `gaseste_in_aplicatie`.
+Scriere (`furnizori`): `create_supplier`, `update_supplier`, `create_supplier_product`, `bulk_create_supplier_products`, `create_supplier_product_mapping`, `bulk_create_supplier_product_mapping`, `enable_supplier_portal`, `link_symbai_supplier`, `sync_symbai_supplier_catalog`, `create_supplier_order_draft`, `commit_procurement_forecast`, `create_purchase_order`, `add_purchase_order_item`, `send_purchase_order` (numai la cererea explicită a omului), `receive_purchase_order`, `create_reception_note`.
 Scriere (`productie`): `create_purchase_orders_from_requirements` pentru ciorne PO din MRP; cere modulul `productie` pe token și confirmare înainte de `commit:true`.
 
 ## Legături (knowledge)
