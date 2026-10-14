@@ -9,6 +9,8 @@ La „ce datorii de recepție avem”, „de ce rămâne costul necunoscut” sa
 - `quantityEvidence:unverified` și cantitățile `null` cer verificarea documentului original; nu înseamnă zero.
 - Păstrează `pagination.nextArguments` până la citirea completă. Dacă raportul s-a schimbat, reia de la prima pagină; nu combina două revizii.
 
+În producție, lotul provizoriu apare cel mai des la cererile de materiale: când depozitul are fizic mai mult decât arată sistemul, ecranul cererii oferă „Am mai mult aici — dau diferența de X pe lot provizoriu”. Se acceptă doar diferența pe care sistemul nu o vede (cererea minus stocul liber); peste ea, serverul spune cât este permis. Un astfel de lot poate fi folosit fără ordinea FEFO doar pentru cererea pentru care a fost creat.
+
 Identifică proveniența reală: producție internă, transfer sau furnizor. Citește documentele existente înainte să înregistrezi o intrare lipsă. O recepție nouă nu stinge automat lotul provizoriu. Dacă `automaticReconciliationAvailable` este fals, nu promite o stingere automată și nu dubla intrările pentru a încerca să o declanșezi.
 
 Pentru un plus care nu reprezintă marfă reală există decizia contabilă reversibilă de aducere la zero, acolo unde instanța o oferă și contabilul o autorizează. Pentru marfa reală, corecția trebuie să păstreze cantitățile fizice, recipientele, costurile documentate și istoricul. Nu confirma o numărătoare sau un retur fără dovadă fizică.

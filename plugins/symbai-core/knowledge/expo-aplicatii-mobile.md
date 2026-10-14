@@ -7,7 +7,7 @@
 | Aplicație | Pentru cine | Ce face |
 |---|---|---|
 | **Symbai POS** | ospătari, bar, recepție | operarea meselor de pe telefon: plan de sală, comenzi, plăți la masă, notificări de bucătărie |
-| **Symbai Portal** | clienții localului | meniu, comenzi, cont de client, activități/atracții din portal |
+| **Symbai Portal** | clienții localului | funcțiile portalului web, configurate per brand și locație (unele pot apărea întâi pe web): meniul QR de la masă și comenzile de acasă (livrare/ridicare, cu programare și urmărire), plata din soldul contului și codul virtual de plată, intrarea cu credit la parcuri, fidelizare, misiuni, evenimente/aniversări, activități/atracții. Ce apare depinde de configurarea portalului (`portal-config.md`) și de versiunea aplicației instalate |
 | **Symbai Staff** | angajați: livratori, agenți de teren, vânzări/CRM, sarcini, producție/fabrică, manageri | aplicația echipei: livrări, sarcini, recepție marfă, operare de fabrică cu scanare QR, pontaj self-service, HACCP, inventariere, cockpit de manager cu marketing |
 
 În conversații și în orice text pentru utilizator folosește numele de produs: **Symbai POS**, **Symbai Portal**, **Symbai Staff** (sau „Aplicația Staff").

@@ -4,7 +4,7 @@
 
 ## Scopul fazei
 
-La final, restaurantul are stratul „către client" pornit: **portalul clienților** (aplicația web pe care clientul o deschide prin QR sau link — meniu digital, comenzi, rezervări, fidelizare) e configurat și activ, **canalele de livrare** (Glovo/Wolt/Bolt Food/Tazz) sunt înregistrate, iar utilizatorul știe unde își face **website-ul**, **meniul fizic tipăribil**, **agenții de chat AI** și **CRM-ul de vânzări**. E ultima fază — consumă tot ce s-a construit înainte: meniul cu prețuri și poze (fazele de produse/meniu), planul de sală și QR-urile (faza 06), rezervările (faza 08). Singura zonă cu acoperire bună prin conexiune e **portalul**; restul e în mare parte ghidare în aplicație — fii onest cu utilizatorul despre asta.
+La final, restaurantul are stratul „către client" pornit: **portalul clienților** (aplicația web pe care clientul o deschide prin QR sau link — meniu digital, comenzi, rezervări, fidelizare) e configurat și activ, **canalele de livrare** (Glovo/Wolt/Bolt Food) sunt înregistrate, iar utilizatorul știe unde își face **website-ul**, **meniul fizic tipăribil**, **agenții de chat AI** și **CRM-ul de vânzări**. E ultima fază — consumă tot ce s-a construit înainte: meniul cu prețuri și poze (fazele de produse/meniu), planul de sală și QR-urile (faza 06), rezervările (faza 08). Singura zonă cu acoperire bună prin conexiune e **portalul**; restul e în mare parte ghidare în aplicație — fii onest cu utilizatorul despre asta.
 
 În conversație (om de business, non-tehnic): spune „portalul clienților" sau „aplicația pentru clienți", „platformele de livrare", „meniul de tipărit" — niciodată „MCP", „tool", „endpoint", „JSON", „device".
 
@@ -28,7 +28,7 @@ La final, restaurantul are stratul „către client" pornit: **portalul clienți
 **Întrebări MINIME (apoi execută):**
 1. *„Ce vrei să poată face clienții pe telefonul lor: să vadă meniul, să comande de la masă, să comande cu livrare/ridicare, să rezerve?"* — din răspuns decizi `businessType`, `allowDelivery`/`allowPickup` și ce funcționalități activezi.
 2. *„Ai culori de brand sau preferințe de aspect?"* — dacă nu, propune tu o combinație pe tipul localului (vezi rețetele de mai jos), nu-l pune să aleagă coduri hex.
-3. *„Lucrezi cu Glovo, Wolt, Bolt Food sau Tazz?"* — doar pentru cine confirmă creezi canale.
+3. *„Lucrezi cu Glovo, Wolt sau Bolt Food?"* — doar pentru cine confirmă creezi canale.
 4. Confirmă planul O DATĂ înainte de scrieri, apoi rulează tot lanțul fără re-întrebări. Nu întreba de website/meniu fizic/chat AI decât ca ofertă scurtă la final — sunt opționale și se fac din aplicație.
 
 ## Pașii de execuție — tool-urile MCP exacte
@@ -66,7 +66,7 @@ Rețete verificate pe tip: restaurant clasic → maro `#7c2d12`/negru `#0f172a` 
 ```json
 {"platform": "glovo", "brandId": 1, "locationId": 1, "isActive": true}
 ```
-`platform` din `glovo | wolt | bolt_food | tazz | own`; `brandId` obligatoriu. Idempotent pe platformă+brand: dacă există deja, întoarce canalul existent. **Asta doar înregistrează canalul** — credențialele de la platformă și sincronizarea meniului se fac din aplicație (vezi mai jos); fără ele canalul rămâne Offline și nu vin comenzi. Detalii operaționale: `livrari-comenzi-online.md`.
+`platform` din `glovo | wolt | bolt_food | own`; `brandId` obligatoriu. Idempotent pe platformă+brand: dacă există deja, întoarce canalul existent. **Asta doar înregistrează canalul** — credențialele de la platformă și sincronizarea meniului se fac din aplicație (vezi mai jos); fără ele canalul rămâne Offline și nu vin comenzi. Detalii operaționale: `livrari-comenzi-online.md`.
 
 Pentru Glovo, explică pașii reali:
 - se obțin de la Glovo: Partner API token, Glovo Store ID și Store Address External ID;

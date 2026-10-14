@@ -1,6 +1,6 @@
 ---
 name: accounting-asistent
-description: Orientează-te ca asistent Symbai Accounting. Încarcă la ORICE întrebare/cerere despre contabilitate prin Symbai — facturi de vânzare/achiziție, note contabile (jurnal), plan de conturi, declarații fiscale (D300/D394/D406/D112...), clienți & furnizori, stocuri/gestiune, salarizare, bancă & casă, rapoarte (balanță, P&L, cash-flow), eFactura ANAF. Explică cum lucrezi cu cele două surse (tool-uri MCP live + biblioteca de cunoștințe).
+description: Orientează-te ca asistent Symbai Accounting. Încarcă la ORICE întrebare/cerere despre contabilitate prin Symbai — facturi de vânzare/achiziție, note contabile (jurnal), plan de conturi, declarații fiscale (D300/D394/D406/D112...) și blocajele lor, bon fiscal de la furnizor, deducerea TVA, clienți & furnizori, stocuri/gestiune, salarizare, bancă & casă, rapoarte (balanță, P&L, cash-flow), eFactura ANAF. Explică cum lucrezi cu cele două surse (tool-uri MCP live + biblioteca de cunoștințe).
 ---
 
 # Asistentul Symbai Accounting
@@ -29,14 +29,15 @@ Dacă tool-urile NU apar în sesiune → folosește skill-ul `conecteaza-account
 3. **Bani = sume zecimale transmise ca text**: nu le rotunji și nu le trunchia. Notele contabile trebuie să aibă **debit = credit**.
 4. **Țara contează**: cotele de TVA și formatul declarațiilor depind de țara firmei (RO/DE/FR/...). Verifică, nu presupune cote.
 5. **Verifică prin re-citire**: după o scriere, citește înapoi rezultatul și confirmă utilizatorului cu dovada (id-ul creat, soldul nou etc.). Nu raporta „gata" fără să fi verificat.
+6. **Declarații = previzualizare, nu depunere**: pentru D300/D394/D406 folosește `preview_d300_official` / `preview_d394_official` / `preview_d406_official`. Un blocaj (lună deschisă, predare POS incompletă, confirmare de deducere sau regularizare lipsă) se explică și se rezolvă la sursă; nu-l ocoli și nu da atestări în locul contabilului. Generarea, semnarea și depunerea rămân acțiuni ale omului, în aplicație.
 
 ## Orientare pe knowledge
 
 - `knowledge/00-overview.md` = harta modulelor și regulile generale pentru asistență MCP-first.
 - `knowledge/tools-mcp.md` = catalogul de capabilități pe arii; folosește-l când alegi primul tool.
 - `knowledge/01-plan-de-conturi-monografii.md` = plan de conturi RO, monografii uzuale, reguli pentru `post_journal_entry`.
-- `knowledge/02-tva.md` = TVA RO, cote orientative, TVA la încasare, D300/D390/D394.
-- `knowledge/03-declaratii-fiscale.md` = ce declarații fiscale există, când sunt relevante și cum pregătești datele.
+- `knowledge/02-tva.md` = TVA RO, cote orientative, deducere integrală/limitată, bonul fiscal de la furnizor, TVA la încasare, D300/D390/D394.
+- `knowledge/03-declaratii-fiscale.md` = ce declarații fiscale există, când sunt relevante, cum se pregătesc D300/D394/D406 în Symbai (predarea lunii, confirmări, previzualizare) și ce rămâne doar previzualizare.
 - `knowledge/04-salarizare-si-regimuri.md` = salarizare, contribuții, REGES/Revisal și micro/profit la nivel orientativ.
 
 Pentru conectare/depanare → `conecteaza-accounting`.

@@ -194,6 +194,7 @@ Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește *
 - O ciornă din poză + o eFactura cu **același număr și sumă** trebuie să rămână UN singur document. Dacă vezi două, leagă-le în Reconciliere.
 - Înainte de „Leagă" manual: confirmă că numărul facturii și suma se potrivesc (legarea nu le verifică singură).
 - NIR creat de două ori pe aceeași factură = stoc dublat. Dacă bănuiești asta, caută în Recepții (NIR) după furnizor + dată.
+- **Gardul de dublă recepție** oprește o recepție când marfa pare deja intrată pe altă recepție; panoul arată numărul de produse și valoarea netă ale recepției candidate. Dacă e într-adevăr altă livrare, alegi „Nu este aceeași livrare”, cu motiv. Numerele fiscale diferite nu se unesc fără confirmarea explicită a omului că e aceeași livrare. În fabrică, o recepție dublă dovedită se anulează indicând recepția care rămâne. Pașii exacți: `reconciliere-dubluri-facturi.md`.
 - Procedura completă (ce face sistemul singur la importul eFacturii, ce blochează legarea, ce faci dacă marfa a intrat deja de două ori) e în `reconciliere-dubluri-facturi.md`.
 
 ## Tool-uri MCP utile (conexiunea live)
@@ -207,6 +208,9 @@ Fiecare firmă lucrează altfel. Cine configurează sistemul își stabilește *
 - `lookup_eu_company_vat` — verifică un cod de TVA european în VIES (perechea europeană a lui `lookup_company_cui`, care merge doar pentru România). ⚠ Distinge trei răspunsuri: firma există / codul nu e valabil / serviciul nu răspunde acum. Ultimul **nu** înseamnă că firma nu există — nu adăuga furnizorul ca nou pe baza lui.
 - `explain_photo_reception` — povestea unei recepții făcute din poză, în cuvinte: de ce furnizorul a fost sau nu recunoscut (și între ce firme trebuie ales), ce avertismente a lăsat analiza documentului, câte linii au deja produs legat și câte nu. Răspunde direct la „de ce n-a intrat marfa pe stoc" și „ce mai e de făcut la factura asta".
 - `suggest_invoice_line_products` — ce produse ar putea fi liniile unei facturi, cu motivul fiecărei propuneri și cu mențiunea dacă e destul de sigură ca să se aplice singură. Vezi `mapare-si-reconversie-facturi.md`.
+- `get_reception_invoice_status` — stadiul unei recepții față de factura oficială: așteaptă eFactura, trebuie legată, gata de finalizat sau finalizată. `compare_invoice_with_efactura` — compară antetul și liniile facturii din poză sau introduse manual cu eFactura oficială. Ambele sunt în versiunile din 14.10.2026; verifică întâi catalogul live.
+- `list_invoice_location_rules` — ce unitate a învățat sistemul pentru fiecare adresă de livrare de pe facturi; `correct_invoice_location_rules` (scriere, previzualizare întâi) atribuie sau retrage o regulă greșită. Nu mută facturile deja primite.
+- `get_stock_background_activity` — la „de ce e ocupată recepția / de ce durează Creează NIR”: ce lucrări de stoc rulează acum și dacă recepția are de așteptat (`receptionImpact`).
 - (general) `list_suppliers`, `search_products_db`, `list_product_types`, `get_stock_levels`, `list_pending_nirs`, `list_reception_notes`.
 
 **Scriere (cer modulul `inventar` = „Stocuri & Recepție" pe token):**

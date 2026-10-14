@@ -321,6 +321,8 @@ A3 pliat = pagină logică A4 210×297 mm și coală fizică A3 landscape 420×2
 
 `export_physical_menu_pdf` cu `mode:'reader'` pregătește paginile în ordine. `mode:'print'` pregătește colile impuse. Deschide linkul de pregătire când tool-ul indică `needs-render`, apoi repetă apelul. PDF-ul se livrează numai după generarea tuturor paginilor, pe revizia curentă. Descarcă fișierul din browserul autentificat înainte de expirarea linkului și inspectează-l. Nu trimite PDF-ul reader ca document impus și nu activa din nou „broșură” la un PDF print deja impus.
 
+**Pozele luate de pe alte site-uri** (catalog importat, bănci de imagini) intră acum în PDF dacă site-ul sursă permite descărcarea din browser; altfel pot lipsi din PDF deși apar în editor. Dacă o poză lipsește doar din PDF, încarc-o în Symbai (galeria produsului) și reexportă.
+
 O copertă fără fotografii poate fi completă prin tipografie și decor; un alergen lipsă rămâne informație de confirmat. Pagina goală de completare este o decizie editorială de revizuit, nu motiv pentru a omite produse sau informații alimentare.
 ## Bucla „grafician senior" (per pagină, cu vision)
 

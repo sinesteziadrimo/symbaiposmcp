@@ -85,6 +85,8 @@ Permisiuni pe token: configurarea și balanța cer modulul **`financiar`**; foai
 
 **„Am publicat stocul și lipsesc produse."** Nu se rescrie foaia. Adaugi ce lipsește printr-un inventar sau printr-o ajustare de stoc, la data potrivită.
 
+**„Am greșit costul unitar în stocul inițial publicat."** Nu anula și nu republica foaia. Cu prețul corect dovedit (factură, NIR, eFactura), `correct_opening_stock_value` (modul `financiar`) face previzualizarea, iar după acordul omului se confirmă cu același cod. Cantitățile și loturile rămân; ce s-a vândut, transferat sau inventariat din acel stoc se reevaluează automat prin FIFO, cu regularizări datate azi. Detalii: [Stocuri, inventar, furnizori](stocuri-inventar-furnizori.md).
+
 **„Balanța apare read-only."** Înseamnă că e ținută în Symbai Accounting. Ori o completezi acolo, ori schimbi masterul din Setări → Contabilitate.
 
 **„Stocul inițial îmi strică contabilitatea?"** Nu. Nu produce nicio notă contabilă, nici local, nici prin sincronizarea către Symbai Accounting — cantitățile ajung acolo ca poziție de stoc, nu ca mișcare de marfă.

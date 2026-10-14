@@ -60,7 +60,7 @@ Modulul acoperă serviciul la masă: planul de sală (desenat în designer, afi�
 **4. Reducere / din partea casei / retur (cereri către manager)**
 > ⚠ **Reducere și „din partea casei" sunt pentru CLIENȚI.** Pentru consumul ANGAJAȚILOR (echipa mănâncă din meniu) folosește **Beneficiu Personal**, NU reducere/din partea casei — altfel strici venitul și rapoartele P&L. Vezi `beneficiu-personal.md`.
 1. Pe masă → meniul „Acțiuni Masă" (cele 3 puncte). În Symbai POS nativ, acesta apare ca bottom sheet scrollabil; acolo găsești Reducere / Din partea casei / Retur și restul acțiunilor mesei.
-2. Completezi valoarea (procent sau sumă) și motivul (obligatoriu) → cererea merge la manager.
+2. Completezi valoarea (procent sau sumă) și motivul (obligatoriu) → cererea merge la manager. La „din partea casei" ospătarul alege și o **categorie de motiv** (implicit: Protocol — cu clientul, Refuzat client, Pierdere, Eveniment — cu evenimentul), apoi scrie detaliul. Categoriile se schimbă din Setări → POS (cel mult 20) sau prin asistent cu `configure_pos_settings` (`houseReasons` = lista completă; `null` revine la lista prestabilită, o listă goală înseamnă fără categorii). Categoria apare apoi în aprobări, jurnal și rapoarte.
 3. Managerul aprobă sau respinge; abia la aprobare se modifică nota. Rolurile cu auto-aprobare aplică efectul direct.
 4. Pe o masă poate exista o singură cerere de reducere/atribuire client în așteptare — una nouă o înlocuiește pe cea veche, cu confirmare.
 
@@ -96,6 +96,7 @@ Capcane:
 
 **7. Raport de tură și sertar de bani**
 1. „Tura mea" în POS: vânzări totale, pe metodă de plată, bacșișuri, reduceri, retururi, din partea casei, intrări/ieșiri numerar — cu intervale predefinite (azi, ieri, săptămâna…).
+1b. „Vânzările mele din tură” (Operațiuni, în POS web și în Symbai POS): ce produse a vândut ospătarul în tura curentă, filtrabile după categorie, bar/bucătărie, sală și masă, separat încasat / încă neîncasat. Sumele sunt cu TVA, înainte de reducerile pe toată nota și fără bacșiș; liniile anulate, returnate sau transferate, felurile din Meniul Zilei și marcajele de eveniment nu se numără.
 2. Sertarul de bani: intrări/ieșiri manuale de numerar cu note, contorizate în raport.
 3. La închiderea turei cifrele se îngheață — confirmările bancare târzii nu mai schimbă raportul istoric; numerarul de predat se calculează automat.
 

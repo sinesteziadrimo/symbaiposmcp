@@ -19,6 +19,9 @@
 - `create_bill` / `update_bill` — facturi de achiziție (AP).
 - `list_incoming_invoices` / `get_incoming_invoice` — facturi primite (eFactura).
 - `list_mapping_rules` / `create_mapping_rule` — reguli de mapare linii furnizor → cont/produs.
+- `create_incoming_invoice_draft` — ciornă introdusă manual; `invoiceType: "bon"` pentru **bonul fiscal de la furnizor** plătit pe loc. `update_incoming_invoice_context` primește `buyerTaxId` = CUI-ul cumpărătorului tipărit pe bon. TVA de pe bon se deduce numai dacă bonul are CUI-ul firmei și cel mult 100 € cu TVA (la cursul BNR din ziua bonului); altfel alege TVA nedeductibilă.
+- `preview_incoming_invoice_posting` → `post_incoming_invoice_to_nir` (marfă pe stoc) sau `post_incoming_invoice_accounting` (servicii/cheltuieli fără stoc). La bon, `receiptPayment` spune cum s-a plătit: `cash` + casieria în lei (plata intră în registrul de casă și stinge datoria odată cu postarea) sau `separate` (datoria rămâne pentru extras/documentul de casă). La factură în valută, `get_incoming_invoice_exchange_rate` dă dovada cursului BNR de copiat exact.
+- `list_purchase_bill_identity_reviews` / `resolve_purchase_bill_identity_review` — o factură citită din poză fără serie poate fi aceeași cu una deja înregistrată; înregistrarea stă oprită până când un om alege „aceeași factură” sau „documente distincte”. Nu decide tu în locul lui.
 
 ## Contabilitate / jurnal (modul `contabilitate`)
 - `post_journal_entry` *(confirm)* — postează o notă contabilă (debit=credit, min 2 linii).
@@ -27,18 +30,22 @@
 
 ## Declarații fiscale (modul `declaratii`)
 - `list_tax_declarations` / `get_tax_declaration` — tracker declarații (tip, perioadă, status, scadență).
-- `create_tax_declaration` / `update_tax_declaration` — gestionează intrările de declarații.
-- Generarea efectivă (D300/D394/D406/D112/CA3/UStVA...) și depunerea la ANAF se fac în aplicație; depunerea e ireversibilă.
+- `create_tax_declaration` / `update_tax_declaration` — gestionează intrările de declarații (doar evidență; nu generează fișierul și nu depune).
+- **Previzualizări oficiale, doar citire** — aceleași calcule ca ecranul aplicației, cu blocajele explicate: `preview_d300_official` (decont TVA), `preview_d394_official`, `preview_d406_official` / `dry_run_d406`. Ele refuză corect o lună care nu e închisă sau a cărei predare din POS nu e completă — citește motivul, nu-l ocoli.
+- D394: `get_d394_profile_workbench` (dosarul perioadei) → `apply_d394_profile_attestation` *(confirm)* cu amprentele exacte din ultima citire. D406: familia de reparare/atestare (`list_d406_fiscal_vector`, `attest_d406_fiscal_vector`, `get_d406_master_data_repair_issues` …) și registrul anual al mijloacelor fixe (`get_d406_active_annual_manifest_preview` → `seal_d406_active_annual_manifest`).
+- Confirmările din decontul D300 (registrul deducerilor pe document și regularizările recepțiilor corectate din luni anterioare) se dau de contabil în aplicație, în dialogul D300.
+- Generarea fișierului oficial, semnarea și depunerea la ANAF se fac în aplicație; nu sunt automate, iar depunerea e ireversibilă.
 
 ## eFactura, documente & închidere
 - `list_efactura_inbox`, `check_efactura_status`, `get_efactura_deadline` — citiri eFactura; `upload_invoice_to_efactura` cere modulul `facturare` si confirmare operationala cu utilizatorul.
+- `list_available_efactura_messages` / `preview_efactura_inbox_message` → `import_efactura_inbox_messages` — facturile primite din SPV. Un mesaj care nu se poate importa (ANAF indisponibil, limita zilnică a mesajului, document invalid) e reîncercat automat la intervale tot mai mari, apoi zilnic; nu se abandonează. Limita zilnică ANAF pe un mesaj se reia după miezul nopții.
 - `get_incoming_invoice_lines`, `approve_incoming_invoice`, `list_fixed_assets`, `dispose_fixed_asset`, `list_compensation_orders` — documente contabile si mijloace fixe.
 - `get_period_closing_readiness` — verifica daca perioada poate fi inchisa inainte de actiuni de finalizare; `post_vat_on_cash` cere modulul `contabilitate`.
 
 ## Parteneri (modul `parteneri`)
 - `list_clients` / `get_client` / `create_client` — clienți (cumpărători).
 - `list_suppliers` / `get_supplier` / `create_supplier` — furnizori.
-- `get_client_ledger` / `get_supplier_ledger` / `get_partner_stats` — fișe + statistici (citire).
+- `get_client_ledger` / `get_supplier_ledger` / `get_partner_stats` — fișe + statistici (citire). Fișa furnizorului e datată la înregistrarea contabilă; data documentului rămâne vizibilă separat.
 - `check_duplicate_invoice` — verifică duplicate la facturi primite.
 
 ## Stocuri & gestiune (modul `stocuri`)
@@ -58,6 +65,7 @@
 - `list_bank_transactions` / `create_bank_transaction` — tranzacții bancare.
 - `list_cash_registers` / `list_cash_transactions` / `create_cash_transaction` — registru de casă.
 - `list_registru_incasari_plati` / `create_registru_entry` — registru încasări-plăți.
+- `get_treasury_direct_posting_context` → `post_treasury_direct` *(confirm)* — contabilizează o operațiune de bancă/casă fără factură (comision, dobândă, transfer). Dacă linia bancară a fost clasificată deja în Symbai POS, contextul aduce contul propus și repartizarea gata de trimis; un transfer între conturi proprii propus din POS se înregistrează o singură dată pentru ambele operațiuni. Reluarea cu același `requestId` nu dublează nota.
 
 ## Setări & companie (modul `setari` pentru scriere)
 - `get_company` — datele firmei (secretele eFactura/Reges/SMTP sunt ascunse).

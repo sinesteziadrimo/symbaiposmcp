@@ -100,6 +100,24 @@ Aceleași reguli se aplică pe **ecranele web de Producție** (tab-urile Execuț
 5. **Predare între stații** (handover): `exec_handover_operation` (`fromOperationExecutionId`, `toFlowOperationId`; opțional `containerId`, `employeeId`, `notes`) — creează execuția pentru operația următoare. Sau `exec_create_handover` pentru predare/preluare/transfer cu detalii.
 6. **Corecții**: `exec_correct_quantities` (`operationExecutionId`, `correctionType` = qty_adjustment / reversal, `reason` obligatoriu; opțional `qtyGoodDelta`, `qtyScrapDelta`, `qtyReworkDelta`, `employeeId`). La `reversal`, MCP creează și postează storno pentru consum (`reversalDocId`) și pentru output (`outputReversalDocId`) ca să nu rămână stoc fantomă. Dacă tool-ul întoarce eroare la citire/creare linie/document sau la postare, operația NU e marcată reversată și rămâne retryable după corectarea cauzei. Retry-ul refolosește documentele de storno existente ca să nu dubleze stocul. Dacă răspunsul e `success:true`, stornările aplicabile sunt postate; verifică ID-urile întoarse prin citire în registrul de stoc.
 7. **Oprire operație**: `exec_stop_operation` (`operationExecutionId`, `reason`) — readuce la pending.
+8. **Corectarea cantităților declarate înainte de finalizare**: responsabilul de producție poate corecta bune/rebut pe o operație încă în lucru (din aplicație, cu PIN-ul lui, sau `exec_correct_quantities` cu `expectedQuantities` = ce ai citit înainte). Consumul deja înregistrat nu se schimbă. Corecția e refuzată dacă finalizarea a început sau dacă există deja recipiente, predări ori rework — atunci recitește și folosește corecția de după finalizare.
+
+**Consum nedeclarat la finalizare**: marfa produsă NU mai rămâne blocată la calitate pentru că lipsește consumul. Lotul se eliberează, iar documentul primește mențiunea „Consum de verificat”; responsabilul de producție corectează consumul ulterior. Blocajele reale de calitate (hold activ, origine contradictorie) rămân blocante.
+
+**Ce utilaj folosește operatorul**: pe fiecare operație din flux alegi modul — automat, la alegerea operatorului, planificat dar modificabil sau planificat fix (`configure_operation_start`, câmpul `equipmentSelectionMode`). Programarea pe un utilaj restrânge pasul doar la „automat” și „planificat fix”. Operatorul alege utilajul înainte să ceară materialele, pentru că utilajul poate schimba materialul consumat; tableta oferă alegerea doar dacă stația are cel puțin două utilaje.
+
+**Lot neplanificat la post**: pe tableta stației, „Ce pregătim?” arată fluxurile permise acolo; operatorul alege produsul și cantitatea, fără să treacă prin planificare (dacă politica stației permite).
+
+**Ecranele stațiilor prin asistent**: `list_workstation_screens(brandId, locationId)` și `update_workstation_screen` (când se declară cantitatea — în timpul lucrului sau la finalizare; modul ecranului — ghidat / focus / tablou; butonul de revenire la stații; numele).
+
+### Cererile de materiale către depozit
+Operația cere materialele, iar depozitul (Symbai Staff → „Cereri din producție”) le pregătește într-un recipient, le ridică și le predă la post.
+- **Citire / curățenie**: `list_production_material_requests` (pe lot sau operație; semnalează posibilele dubluri) și `cancel_production_material_requests` (cu motiv și `confirm:true`) — retrage doar liniile fără marfă pregătită; marfa deja pregătită se returnează fizic din Staff.
+- **A doua cerere peste necesar** e refuzată; ecranul arată unde e deja materialul și oferă „Cere în plus” doar dacă omul confirmă.
+- **Sistemul arată mai puțin decât e fizic**: ecranul spune „În sistem lipsesc X față de cerere” și oferă „Am mai mult aici — dau diferența de X pe lot provizoriu”, cu întrebarea „De unde este marfa?”. Se poate pune pe lot provizoriu doar diferența pe care sistemul nu o vede (vezi `loturi-provizorii.md`).
+- **Același recipient**: marfa pregătită trebuie pusă în alt recipient decât cel din care a fost luată; altfel „Confirmă” rămâne inactiv.
+- **Materialul deja la post** (primit ca semifabricat din pasul anterior sau rămas acolo) nu se mai cere încă o dată.
+- **Mostre**: `list_sample_material_options(locationId)` → `request_sample_materials` (produsele și cantitățile, cu `confirm:true`). Cererea apare în Staff; la „Predă mostrele” marfa iese din stoc pe tipul de ieșire „Mostre”. Nu confunda cu mostrele de retenție HACCP.
 
 **Citire / monitorizare operații:**
 În fabrică, listele de loturi, operații și predări, precum și `exec_get_operation_required_materials`, primesc `warehouseId`. Pentru o gestiune comună fără brand propriu, precizează împreună `brandId` și `locationId` ale fabricii dorite. Nu atribui artificial un brand gestiunii doar pentru a o putea citi. Păstrează filtrele primite în `pagination.nextArguments`; `summary` de pe prima pagină numără toate potrivirile.
@@ -332,6 +350,8 @@ Două sisteme paralele: **Quality Holds** (blochezi un LOT) și **QC Inspections
   - Creează/actualizează: `create_production_shift` (`name`, `shortName`, `startTime`, `endTime` HH:MM; opțional `color`, `efficiencyPercent`, `sortOrder`); `update_production_shift` (`shiftId` + câmpuri); ture temporare: `create_provisional_shift` / `update_provisional_shift`.
   - Asignări: `create_shift_assignment` (`shiftId`, `employeeId`, `date`); `bulk_create_shift_assignments` (`shiftId`, `employeeIds`, `dates`).
   - ⚠ **Eficiență %**: 70 = produce 70% din capacitate; dacă o tură are eficiență 70%, planifică ~143% din cantitate ca să atingi cererea.
+  - **Zona sau utilajul din program** pentru asignări deja făcute: `set_shift_assignment_stations` (interval, opțional angajați/tură/zona sau utilajul curent) — fără `confirm` arată ce s-ar schimba; aplici cu `confirm:true` și `expectedRevision` din previzualizare, după acordul managerului.
+  - **Programul de tură la pornirea operației** (`get_production_shift_roster_policy` / `set_production_shift_roster_policy`, sau Setări → Operațiuni cu containere → „Programul de tură la pornire”): două verificări — omul e în tura de acum și e pe zona/utilajul din program. Fiecare poate fi oprită, „avertizează” (implicit: pornirea merge, operatorul vede un mesaj și abaterea intră în dosarul lotului) sau „blochează” (operatorul poate continua doar cu un motiv scris, ex. „Înlocuiesc un coleg absent”). Se setează pe fabrică sau pe gestiune; nivelul global doar din aplicație.
 - **Utilizare echipamente**: `get_equipment_utilization` (`zoneId`) — loturi în lucru per echipament, status, capacitate.
 - Pagina: `/production/equipment-zones`.
 

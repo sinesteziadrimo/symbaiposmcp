@@ -5,14 +5,14 @@ description: Coordonează implementările Symbai ale implementatorului conectat 
 
 # Coordonează implementările
 
-Implementatorul lucrează cu câte un asistent de implementare pentru fiecare client. Aceleași operații există în trei locuri, cu aceleași drepturi: **Symbai Staff → Mai multe → Implementări**, pagina web **Implementări** (`/implementations`) și uneltele MCP de mai jos. Serverul verifică desemnarea din Hub (implementator) sau mandatul de coordonator; dacă o unealtă refuză, explică motivul primit, nu căuta altă cale.
+Implementatorul lucrează cu câte un asistent de implementare pentru fiecare client. Aceleași operații există în trei locuri, cu aceleași drepturi: **Symbai Staff → Mai multe → Implementări**, pagina web **Implementări** (`/implementations`) și uneltele MCP de mai jos. Serverul verifică desemnarea din Hub pe firma-sursă, atât pentru implementator, cât și pentru coordonator. Rolul de administrator în POS nu ține loc de desemnare: fără ea, refuzul este „Nu ai mandat de implementare în această firmă.”, iar o desemnare pe altă firmă sau una retrasă nu contează. Dacă o unealtă refuză, explică motivul primit și cere desemnarea echipei Symbai; nu căuta altă cale.
 
 ## Unelte
 
 | Unealtă | Folosește pentru |
 |---|---|
 | `implementari_lista` | dosarele active (`scope: mine` sau `team` pentru coordonatori): client, stare, termen, starea asistentului, `myQuestions`, sarcini pentru om, ultimul mesaj, progres |
-| `implementare_dosar` | `sectiune: conversatie` — mesajele cu asistentul (paginare cu `nextBefore`), întrebările (`canReply`), sarcinile deschise; `sectiune: persoane` — persoanele identificate și cine nu e încă identificat pe WhatsApp / în grupul intern, cu sugestii „aceeași persoană” |
+| `implementare_dosar` | `sectiune: conversatie` — mesajele cu asistentul (paginare cu `nextBefore`; `limita` 1–40 mesaje pe pagină, implicit 15, de la cel mai nou), întrebările (`canReply`), sarcinile deschise; `sectiune: persoane` — persoanele identificate și cine nu e încă identificat pe WhatsApp / în grupul intern, cu sugestii „aceeași persoană” |
 | `implementare_scrie_asistentului` | îndrumarea omului către asistent; pornește asistentul. `requestId` UUID nou pentru fiecare mesaj și fiecare dosar; același ID la reîncercare |
 | `implementare_raspunde_intrebarii` | răspunsul omului la o întrebare cu `canReply=true` (`questionId`, `expectedRevision` = `revision` citit) |
 | `implementare_comanda` | `porneste`, `pauza` / `reia` (cu `expectedRevision` al dosarului), `sarcina_asistent` (titlu, detalii, `requestId`), `sarcina_facuta` (`workId`, `expectedRevision` al sarcinii, ce s-a verificat) |
@@ -24,5 +24,6 @@ Implementatorul lucrează cu câte un asistent de implementare pentru fiecare cl
 - **Începe cu `implementari_lista`**, apoi deschide dosarul potrivit după nume. Nu ghici `caseId`.
 - **Mai mulți clienți deodată:** apelează `implementare_scrie_asistentului` o dată pe dosar, fiecare cu `requestId` propriu, și raportează la care a reușit.
 - **Persoane fără dubluri:** citește `implementare_dosar` cu `sectiune: persoane`. Aceeași persoană pe WhatsApp și în grupul intern se leagă într-o singură fișă. Dacă serverul spune că o identitate e deja la altcineva, actualizează acea persoană; nu crea una nouă. Rolul și notița ajung la asistent la fiecare rulare; ele nu dau drept de confirmare a etapelor.
+- **Ce primește asistentul la fiecare rulare:** cele mai noi îndrumări scrise de oameni sau de un coordonator, complete, cu marcaj pentru cele apărute după rularea lui anterioară. Când asistentul își recitește dosarul, propriile notițe de progres îi apar scurtate, ca un jurnal lung să nu ascundă îndrumările oamenilor. Nu repeta o îndrumare doar pentru că nu apare în primele mesaje: citește pagina următoare.
 - **Revizii:** după un conflict („s-a schimbat între timp”) recitește dosarul și reia cu revizia nouă; nu forța.
 - Operațiile sunt rezervate omului. Într-o rulare de asistent (numit sau personal) uneltele refuză intenționat.

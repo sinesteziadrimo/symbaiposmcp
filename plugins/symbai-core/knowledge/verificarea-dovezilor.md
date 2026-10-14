@@ -41,6 +41,7 @@ La o neconcordanță compară același set de produse și aceeași gestiune: sol
 - **Bonul fiscal:** `orders.fiscal_printer_id` e casa aleasă pentru notă, nu dovada bonului. Bonul emis este un rând `print_jobs` cu `order_id`-ul notei, `type = 'fiscal'`, `status = 'done'` și `fiscal_receipt_number` completat. O notă pe „Avans” sau pe termen poate să nu aibă bon deloc.
 - **Costul unei rețete:** `get_production_cost_estimate` ia prețul din lotul cel mai vechi cu stoc, adesea stocul inițial (`costSource.lotSourceDocType = STOCK_OPENING`), nu din „ultimele intrări”. Ultimul preț de intrare îl dă `get_product_reception_history`.
 - **Un lot nou ajuns la 0 imediat după recepție** a acoperit un sold negativ (vânzare fără stoc); nu spune că „s-a consumat deja tot”.
+- **„Singurul minus rămas este X”** cere lista completă: `list_negative_stock` pe toată gestiunea/unitatea, nu doar produsele cu mișcări în ziua verificată. Soldurile se citesc cu `get_stock_levels` sau `get_product_stock_timeline`, nu prin previzualizări de inventar cu cantități inventate.
 - **Costul FIFO calculat prin SQL:** nu aduna `inventory_financial_costs` după un JOIN rând cu rând cu `inventory_ledger`, fiindcă rândurile se înmulțesc. O cifră mult peste factură se verifică întâi pe interogare; nu-i spune omului că FIFO „nu e de încredere”.
 - **`inventory_documents.status`** se scrie cu majuscule (`POSTED`, `CANCELLED`); un filtru `'cancelled'` scris mic nu exclude nimic.
 - **Totalurile din mesaj** („38 de facturi”, suma pe trimestru) se calculează din lista trimisă, nu se scriu separat.

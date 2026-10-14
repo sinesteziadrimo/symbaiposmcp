@@ -16,7 +16,7 @@ Citește și:
 
 Pentru un cont deja conectat, începe cu diagnosticul din [conecteaza-symbai](../conecteaza-symbai/SKILL.md) și [alege-conexiunea.md](../../knowledge/alege-conexiunea.md). Pașii de instalare de mai jos sunt pentru prima conectare sau o instalare demonstrat necesară, nu remediul implicit pentru orice unealtă lipsă.
 
-1. Proprietarul intră în Hub → **Acces AI**, alege persoana și locația POS exacte, selectează permisiunile și acordă accesul.
+1. Proprietarul intră în Hub → **Acces AI**, alege persoana și locația POS exacte, selectează permisiunile și acordă accesul. Pe instanțele actualizate, și un **administrator POS** (rol cu acces complet) poate acorda accesul din POS: pe propria fișă primește automat Read all, fără expirare, cât timp are rolul complet; pentru un coleg confirmă cu codul primit pe emailul fișei lui POS.
 2. Angajatul intră în POS cu propriul cont și deschide **Conectează un asistent AI**.
 3. Descarcă ultimul **Pachet personalizat Symbai Connect** pentru Windows, macOS sau Linux și îl instalează pe calculatorul pe care va lucra.
 4. În panoul Symbai Connect apasă **Conectează** pentru Codex.

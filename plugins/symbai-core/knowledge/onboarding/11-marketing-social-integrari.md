@@ -4,7 +4,7 @@
 
 ## Scopul fazei
 
-La final, restaurantul are cel puțin o rețea socială conectată (tipic pagina de Facebook + Instagram), știe unde își gestionează postările și mesajele, are canalele de livrare declarate (dacă folosește Glovo/Wolt/Bolt/Tazz) și — opțional — o primă regulă de notificare automată. E o fază de „deschidere spre exterior": tot ce urmează în marketing (postări programate, agentul AI de marketing, inbox unificat, reclame) depinde de conturile conectate aici. Email marketing-ul se configurează integral din aplicație — rolul tău e de ghid + verificator.
+La final, restaurantul are cel puțin o rețea socială conectată (tipic pagina de Facebook + Instagram), știe unde își gestionează postările și mesajele, are canalele de livrare declarate (dacă folosește Glovo/Wolt/Bolt Food) și — opțional — o primă regulă de notificare automată. E o fază de „deschidere spre exterior": tot ce urmează în marketing (postări programate, agentul AI de marketing, inbox unificat, reclame) depinde de conturile conectate aici. Email marketing-ul se configurează integral din aplicație — rolul tău e de ghid + verificator.
 
 ## Permisiuni necesare pe token
 
@@ -26,7 +26,7 @@ Citirile (`verifica_integrare`, `list_social_accounts`, `list_social_posts`, `re
 **Întrebi utilizatorul (minimul):**
 1. *„Pe ce rețele e prezent restaurantul azi — Facebook, Instagram, TikTok, Google (harta), altele? Pe care vrei să le legăm acum?"* — leagă doar ce folosește, nu tot meniul de platforme.
 2. *„Vrei și promovări plătite (reclame pe Facebook/Instagram), sau deocamdată doar postări normale?"* — decide dacă atingi contul de reclame (`meta_ads`).
-3. *„Primiți comenzi prin Glovo, Wolt, Bolt Food sau Tazz? Prin care?"* — doar dacă da, creezi canalele de livrare.
+3. *„Primiți comenzi prin Glovo, Wolt sau Bolt Food? Prin care?"* — doar dacă da, creezi canalele de livrare.
 4. Confirmare înainte de orice scriere vizibilă: la postare — textul, platformele, data/ora; la regulă de notificare — pe scurt ce declanșează și ce face.
 
 Nu întreba de email marketing decât la final și doar ca ofertă („vrei să-ți arăt și unde se configurează trimiterea de email-uri către clienți?") — nu e blocant și nu ai tool-uri de scriere pentru el.
@@ -55,7 +55,7 @@ Obligatorii: `brandId, content, platforms`. Cu `scheduledAt` în viitor (ISO cu 
 ```
 create_delivery_channel(platform="glovo", brandId=1, locationId=2, isActive=true)
 ```
-`platform` ∈ `glovo | wolt | bolt_food | tazz | own`. Verifică întâi `list_entities(entityType="delivery_channels", brandId=1)` să nu dublezi. Atenție: tool-ul doar DECLARĂ canalul — cheile API ale platformei și activarea efectivă a fluxului de comenzi se fac din aplicație (vezi secțiunea următoare).
+`platform` ∈ `glovo | wolt | bolt_food | own`. Verifică întâi `list_entities(entityType="delivery_channels", brandId=1)` să nu dublezi. Atenție: tool-ul doar DECLARĂ canalul — cheile API ale platformei și activarea efectivă a fluxului de comenzi se fac din aplicație (vezi secțiunea următoare).
 
 Pentru Glovo, după ce canalul există, explică fluxul oficial în limbaj simplu:
 - utilizatorul are nevoie de la Glovo de: Partner API token, Glovo Store ID și Store Address External ID;

@@ -14,6 +14,8 @@ Contracte de muncă: se raportează în **REGES (Revisal)** la ITM — înregist
 
 Conturi: 641 cheltuieli salarii, 421 salarii datorate, 4315 CAS, 4316 CASS, 444 impozit venit, 436/646 CAM.
 
+Pontajul din Symbai POS (intrare/ieșire tură) ajunge în pontajul de salarizare din Accounting, actualizat la fiecare sincronizare fără dubluri. După finalizarea statului de plată al lunii, pontajul acelei luni rămâne înghețat: o modificare făcută ulterior în POS este semnalată, nu rescrie luna închisă.
+
 ## Regimuri de impozitare a firmei
 - **Impozit pe profit**: cotă **16%** pe profitul impozabil (venituri − cheltuieli deductibile ± ajustări fiscale). Declarație **D101** anual + plăți anticipate/trimestriale după caz.
 - **Microîntreprindere**: impozit pe **venituri** (cotă redusă), condiționat de **plafon de venituri + condiții** (nr. salariați, tip activitate, structura veniturilor) — **plafonul a scăzut în ultimii ani și condițiile s-au înăsprit**; verifică pragul + eligibilitatea CURENTE. Regimul micro și perioada lui de aplicare se văd pe datele firmei.

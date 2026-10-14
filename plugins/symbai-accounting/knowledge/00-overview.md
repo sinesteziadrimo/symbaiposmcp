@@ -26,6 +26,9 @@ Symbai Accounting e platforma de contabilitate AI-first, multi-țară (printre c
 - **eFactura / ANAF** = sistemul fiscal RO; depunerea e ireversibilă — se confirmă explicit.
 - **NIR** = notă de intrare-recepție (recepția mărfii pe stoc).
 - **Perioadă închisă** = lună blocată contabil; nu se mai pot posta note pe acea dată.
+- **Bon fiscal de la furnizor** = achiziție mică plătită pe loc; se introduce ca „Bon fiscal”, iar TVA se deduce doar cu CUI-ul firmei pe bon și cel mult 100 € (vezi `02-tva.md`).
+- **Predarea lunii din POS** = transferul complet al documentelor unei luni din Symbai POS în contabilitate. Până nu e completă și luna închisă, declarațiile oficiale pe acea lună sunt blocate.
+- **Regularizare** = diferența unei corecții făcute după ce luna documentului a fost declarată; intră în luna corecției, nu rescrie declarația veche.
 
 ## Reguli de aur (pentru asistent)
 

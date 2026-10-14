@@ -63,6 +63,8 @@ Utilizatorul e proprietar, manager sau recepționer de hotel ori pensiune. Vrea 
 | „Mută consumurile pe altă notă" | `transfer_hotel_folio_charges` | `/hotel/folios` |
 | „Încasează nota" | `settle_hotel_folio` (suma și metoda confirmate; emite documentul fiscal) | `/hotel/folios` |
 | „Ce depozite / garanții am" | `list_hotel_deposits` | `/hotel/folios` |
+| „Oferă minibarul din partea casei / trece-l în prețul cazării" | fără unealtă — din aplicație: nota deschisă → „Din partea casei” (vezi `knowledge/hotel-pms.md`); verifici apoi cu `get_hotel_folio` | `/hotel/folios` |
+| „Pe factură să apară o singură linie «Servicii cazare»” | fără unealtă — din aplicație, liniile documentului notei; permisă doar când tot ce e pe notă e cazare la TVA 11% | `/hotel/folios` |
 | „Ce e în minibar / aprovizionează minibarul" | `get_hotel_room_stock` / `restock_hotel_room` / `list_hotel_room_restock_history` | `/hotel/rooms` |
 
 **Housekeeping și mentenanță**

@@ -1,6 +1,6 @@
 ---
 name: trimite-ticket-suport
-description: Ticket către echipa Symbai (problemă tehnică, reclamație, sugestie, cerere de suport) prin trimite_ticket_symbai; trimite AUTOMAT o sugestie când userul se chinuie, ceva durează nejustificat sau lipsește un tool. La „nu merge X în Symbai", „am o problemă cu aplicația", „vreau să raportez ceva", „ar fi util să existe…".
+description: Ticket către echipa Symbai (problemă tehnică, reclamație, sugestie, cerere de suport) prin trimite_ticket_symbai; verifică întâi tichetele firmei (list_my_symbai_tickets) și completează-l pe cel existent; trimite AUTOMAT o sugestie când userul se chinuie, ceva durează nejustificat sau lipsește un tool. La „nu merge X în Symbai", „am o problemă cu aplicația", „vreau să raportez ceva", „ar fi util să existe…", „ce tichete am deschise", „ce a răspuns Symbai la tichet".
 ---
 
 # Trimite un ticket către echipa Symbai
@@ -8,6 +8,10 @@ description: Ticket către echipa Symbai (problemă tehnică, reclamație, suges
 Două situații diferite — tratează-le diferit:
 
 Pentru a decide dacă e bug, lipsă de tool sau doar pași greșiți, folosește standardul din `knowledge/agent-operare-avansata.md`: încearcă întâi citirea/diagnosticul real, apoi trimite ticket cu dovezi și workaround.
+
+## Întâi: tichetele existente ale firmei
+
+Înainte de un tichet nou, apelează `list_my_symbai_tickets` (implicit cele deschise; `status: "done"` pentru rezolvate, `query` pentru o căutare, `publicId` pentru un tichet cu toate mesajele lui). Dacă problema e deja raportată, trimite informația nouă pe același fir cu `trimite_ticket_symbai` + `appendTo: "SYM-NNNNN"` — un tichet rezolvat se redeschide, unul închis nu mai primește completări. Tot de aici răspunzi la „ce a zis Symbai la tichetul meu?” sau „am raportat deja asta?”: arată statusul și ultimul răspuns al echipei. Unealta e disponibilă după actualizarea instanței și pentru proprietar sau un utilizator cu acces la setări; dacă lipsește, continuă cu pașii de mai jos.
 
 ## A. Utilizatorul cere explicit (problemă / reclamație / suport)
 
@@ -40,4 +44,4 @@ După trimitere, anunță-l pe scurt pe utilizator: „Am trimis echipei Symbai 
 - Maxim o sugestie automată per idee per sesiune — folosește `dedupeKey` consecvent.
 - Tool-ul nu cere permisiune de scriere pe un modul, dar cere o conexiune MCP Symbai autentificată și încărcată în sesiune. Licența validă din Connect nu dovedește că sesiunea MCP funcționează.
 - Dacă lipsește tot serverul Symbai, verifică o singură dată conexiunea. După autentificare, dacă uneltele încă lipsesc, reîncarcă serverul MCP sau repornește aplicația asistentului și reia conversația existentă; nu repeta căutarea în toate modulele și nici login-ul la nesfârșit. Păstrează descrierea tichetului ca draft, fără să pretinzi că a fost trimis. Dacă legătura nu poate fi restabilită, oferă draftul pentru support@symbai.app; trimiterea prin email cere acordul utilizatorului.
-- Tichetul este trimis numai când primești referința lui. Ticketele nu pot fi citite înapoi prin conexiune — răspunsul vine pe emailul lăsat.
+- Tichetul este trimis numai când primești referința lui. Răspunsurile echipei se citesc cu `list_my_symbai_tickets` și vin și pe emailul lăsat, dacă a fost dat.

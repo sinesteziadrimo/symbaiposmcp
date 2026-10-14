@@ -128,12 +128,12 @@
   - Tab **Statistici Personal** (`/questionnaires?tab=staff-stats`) — Tab Statistici Personal — performanța angajaților din feedback clienți
 ## CANALE LIVRARE
 
-- **Manager Canale Livrare** (`/channels`) — Integrare agregatori livrare (Glovo/Wolt/Bolt/Tazz), 5 tab-uri: Prezentare & KPI, Control Comenzi, Meniu & Prețuri, Reconciliere, Integrări. Acceptare/refuz comenzi, sync meniu, comisioane.
+- **Manager Canale Livrare** (`/channels`) — Integrare agregatori livrare (Glovo/Wolt/Bolt), 5 tab-uri: Prezentare & KPI, Control Comenzi, Meniu & Prețuri, Reconciliere, Integrări. Acceptare/refuz comenzi, sync meniu, comisioane.
   - Tab **Prezentare Canale** (`/channels?tab=overview`) — Tab Prezentare — status platforme livrare, statistici, comisioane
   - Tab **Comenzi Livrare** (`/channels?tab=orders`) — Tab Comenzi — comenzi de pe platforme, status, acceptare/refuz
   - Tab **Meniu Platforme** (`/channels?tab=menu`) — Tab Meniu — sincronizare meniu cu platformele de livrare
   - Tab **Reconciliere Livrări** (`/channels?tab=reconciliation`) — Tab Reconciliere — verificare plăți platforme vs comenzi efective
-  - Tab **Integrări Livrare** (`/channels?tab=integrations`) — Tab Integrări — conectare API Glovo, Wolt, Bolt Food, Tazz
+  - Tab **Integrări Livrare** (`/channels?tab=integrations`) — Tab Integrări — conectare API Glovo, Wolt, Bolt Food
 ## SOCIAL MEDIA & MARKETING
 
 - **Conturi Social Media** (`/social-media`) — Configurare conturi per brand, 6 tab-uri: Conturi (conectare OAuth FB/IG/TikTok/YouTube/LinkedIn), Credentiale API, WhatsApp, Ads (conturi Meta Ads), CAPI (Conversions API), Audiențe Meta.
@@ -198,7 +198,7 @@
   - Tab **Design Bon & Notă** (`/settings?tab=bill-design`) — Secțiunea Design Bon — personalizare bon fiscal, notă de plată, header/footer
   - Tab **Setari POS** (`/settings?tab=pos`) — Titlu „POS & Bonuri” cu 3 tab-uri: „Bonuri & Imprimare” (template bon fiscal + metode de plată, vizibilitate per unitate), „Taxe & Financiar” (cote TVA + taxă serviciu + bacșiș/impozit bacșiș), „Flux Operațional” (auto-trimitere bucătărie, aprobare manager anulare, batch bonuri V2, out-of-stock global). Plus card „Curățare Mese & Comenzi”.
   - Tab **Inventar & Stoc Setări** (`/settings?tab=inventory`) — Secțiunea Inventar — configurare gestiuni, unități măsură, alerte stoc
-  - Tab **Integrări (API)** (`/settings?tab=integrations`) — Titlu „Integrări & API”. Carduri verticale: OpenAI ChatGPT (cheie proprie/Symbai + nivele AI), ANAF e-Factura & e-Transport (3 sub-tab-uri Conectare/e-Factura/e-Transport), Viva Wallet (ISV/Merchant), Card GP (Global Payments), GP HPP, rutare plăți online, + Tabs Cvent/Contabilitate(Saga/SmartBill)/Delivery(Glovo/Tazz/Bolt).
+  - Tab **Integrări (API)** (`/settings?tab=integrations`) — Titlu „Integrări & API”. Carduri verticale: OpenAI ChatGPT (cheie proprie/Symbai + nivele AI), ANAF e-Factura & e-Transport (3 sub-tab-uri Conectare/e-Factura/e-Transport), Viva Wallet (ISV/Merchant), Card GP (Global Payments), GP HPP, rutare plăți online, + Tabs Cvent/Contabilitate(Saga/SmartBill)/Delivery(Glovo/Wolt/Bolt).
   - Tab **Server IoT (MQTT)** (`/settings?tab=mqtt`) — Secțiunea MQTT — configurare broker IoT pentru senzori temperatură
   - Tab **Notificări** (`/settings?tab=notifications`) — Secțiunea Notificări — configurare alerte push, email, SMS
   - Tab **Automatizări Clienți** (`/settings?tab=customer-automations`) — Secțiunea Automatizări — reguli automate pentru marketing (zi naștere, client inactiv)

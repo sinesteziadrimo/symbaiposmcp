@@ -21,9 +21,18 @@
 | **D700** | Modificări/mențiuni privind înregistrarea fiscală. |
 | **Situații financiare anuale** | Bilanț + cont de profit și pierdere + note (OMFP 1802/2014); termen legal anual. |
 
+## Cum se pregătesc D300, D394 și D406 în Symbai
+1. **Datele lunii sunt complete.** Dacă firma lucrează cu Symbai POS, luna trebuie predată integral din POS (vânzări, achiziții, plăți, stocuri, note) și închisă în Accounting. Un import parțial sau o lună deschisă blochează calculul oficial cu un mesaj clar; nu se „completează” manual.
+2. **Profilul perioadei e confirmat** de contabil: regimul TVA, scutirile, deducerea pe fiecare achiziție (integrală / limitată / fără), iar la D300 eventualele regularizări pentru recepții corectate după ce luna lor a fost declarată. La D394 se atestă dosarul perioadei.
+3. **Previzualizarea oficială** (`preview_d300_official`, `preview_d394_official`, `preview_d406_official`) arată totalurile, concordanța documente ↔ note și blocajele cu pasul de urmat. Repetarea ei nu schimbă nimic.
+4. **Generarea, semnarea și depunerea** se fac din aplicație, de om. Nimic nu se depune automat.
+
+Corecțiile ulterioare ale unei facturi sau recepții nu rescriu luna deja declarată: luna veche rămâne pe datele de atunci, iar diferența intră în luna corecției (regularizare). D406 Stocuri fără nicio poziție și D406 Active cu registrul anual confirmat gol nu se generează ca fișier gol — dovada rămâne păstrată, fără stocuri sau active inventate. **D177, D700 și situațiile financiare (bilanțul) sunt previzualizări/fișe de lucru**, nu fișiere oficiale gata de depunere.
+
 ## Reguli pentru asistent
 - Pentru „ce declarații am de depus / când" — orientează-te după tabel + datele firmei (regim TVA lunar/trimestrial, are salariați → D112, are operațiuni intra-UE → D390). Confirmă termenele exacte cu calendarul fiscal din aplicație/ANAF.
-- Pentru DATELE unei declarații: D300 → `get_vat_summary`; restul → din rapoarte (`get_profit_loss`, `get_trial_balance`) + datele din module. Generarea XML oficială + depunerea în SPV/ANAF se fac în aplicație (acțiuni oficiale, ireversibile) — tu pregătești și verifici.
+- Pentru DATELE unei declarații: D300 → `get_vat_summary` (orientativ) și `preview_d300_official` (oficial); D394/D406 → previzualizările lor; restul → din rapoarte (`get_profit_loss`, `get_trial_balance`) + datele din module. Generarea XML oficială + depunerea în SPV/ANAF se fac în aplicație (acțiuni oficiale, ireversibile) — tu pregătești și verifici.
+- Un blocaj de previzualizare („luna nu e închisă”, „lipsește confirmarea”, „predarea POS incompletă”) se rezolvă la sursă, nu prin atestări date fără verificare.
 - NU declara „depus" decât după confirmarea în SPV. Depunerea e ireversibilă.
 
 ## Surse oficiale (pentru actualizare)

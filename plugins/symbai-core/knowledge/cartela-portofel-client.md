@@ -57,6 +57,16 @@ Poți întreba asistentul direct: *„cât are pe cartelă Ion Popescu"*, *„ci
 
 Un părinte poate avea portofel comun cu copiii (grup de clienți). Copilul plătește cu brățara lui, iar suma scade din portofelul familiei. Util la parcuri și la petreceri.
 
+## Portofelul în aplicația clienților (portal web și aplicația Portal)
+
+Același sold se poate folosi și din contul clientului din portal:
+
+- **Plata comenzilor din sold** — clientul autentificat plătește din bani (nu din credite de joc) coșul de la masă (QR) sau o comandă de acasă (livrare/ridicare). Funcția e **oprită implicit**: o pornești în Configurare Portal Clienți (`/menu/platforms`) → General → „Plata comenzilor din sold”. Un canal de comenzi de acasă poate accepta și doar plata din sold; atunci clientul trebuie să intre în cont.
+- **Ce vede clientul dacă ceva se întrerupe** — banii se rețin abia când confirmă suma afișată. Dacă restaurantul refuză sau anulează comanda înainte de predare, ori comanda expiră, suma revine automat în portofel. În „Comenzile mele” clientul vede comenzile plătite din sold și eventualele sume luate fără o comandă primită de restaurant — chiar și pe alt telefon — cu butoanele Verifică, Reia sau Anulează (restituire). O sumă reținută nu înseamnă că restaurantul a primit comanda: confirmarea e comanda apărută în Livrări.
+- **Intrare cu credit (parcuri)** — oferta „Intrare părinte”: clientul plătește intrarea, iar toată suma rămâne în cont pentru consumație în locație. Se vinde online din portal (plată cu cardul) sau la recepție, din pagina cartelelor. Creditul apare o singură dată, doar după plata confirmată; o plată refuzată sau anulată nu creditează. La recepție plata se salvează înainte să apropii telefonul sau cartela, deci un refresh nu pierde banii.
+- **Codul virtual** — în profilul din aplicație clientul are un cod QR de plată legat de contul lui și de locație; la casă se scanează ca o cartelă. Codul se ascunde când clientul închide fereastra.
+- **Vizita în parc** — pentru misiunile de tip „vizită”, recepția confirmă sosirea scanând cartela sau codul clientului („Confirmă vizita în parc”); se numără cel mult o vizită pe zi, iar o plată online singură nu o numără.
+
 ## Ce trebuie setat o singură dată
 
 **1. Metoda de plată „Cartelă"** (Setări → Metode de plată). Trebuie marcată ca metodă care scade din portofel, iar restul bifelor:

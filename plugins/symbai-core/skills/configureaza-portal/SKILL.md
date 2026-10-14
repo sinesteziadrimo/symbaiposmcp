@@ -90,7 +90,7 @@ Userul nu vede conexiunea ta. După o schimbare (mai ales de aspect — culori, 
 - **Upload de imagini** (logo portal, banner hero al meniului dacă nu ai deja un URL) — încarci fișierul în dialog/pagină; tool-ul ia doar URL-ul (`menuHeroImage`). Dacă ai deja URL-ul imaginii, mergi pe MCP.
 - **Generarea/tipărirea codurilor QR de masă** (`/qr-codes`) — generare/descărcare PNG/SVG/PDF e acțiune de pagină. (Setările de comportament QR — nivel, plată, câmpuri — le faci prin `configure_portal_qr`; preseturile per zonă/raion în Program Salon.)
 - **Preseturi QR per zonă/raion** — când `qrLevel` e `zona`/`raion`, presetul efectiv se alege în Program Salon (`/staff?tab=floor-schedule`); `set_qr_field_preset_fields` editează un preset existent.
-- **Misiuni & recompense / gamificare avansată** (`/portal-missions`) — configurarea fină a misiunilor e în pagină; din MCP doar PORNEȘTI modulul (`gamification: true`).
+- **Misiuni & recompense / gamificare avansată** (`/portal-missions`) — pornești modulul (`gamification: true`); misiunile le poți crea și activa și prin `create_portal_mission` / `set_portal_mission_active` (inclusiv tipul „vizită”, numărat doar când personalul confirmă vizita la recepție, max o dată pe zi). Insignele și recompensele fine rămân în pagină.
 - Pentru orice click: citește pagina întâi, găsește elementul după text/`data-testid`, click pe ELEMENT, nu pe pixeli (vezi `condu-chrome.md`).
 
 ## Reguli (cele care contează)

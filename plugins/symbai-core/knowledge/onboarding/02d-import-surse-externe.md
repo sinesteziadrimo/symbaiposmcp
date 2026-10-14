@@ -51,7 +51,7 @@ Reguli pentru slug:
 
 Verificare după import: deschide `/produs/<slug>` (sau preview `?page=/produs/<id>`) și confirmă că URL-ul are denumire lizibilă, nu doar `id=`. La categorii, `list_menu_categories` arată `slug`-ul fiecărei categorii.
 
-## Sursa 3 — Marketplace livrări (Glovo / Wolt / Tazz / Bolt Food / eMAG)
+## Sursa 3 — Marketplace livrări (Glovo / Wolt / Bolt Food / eMAG)
 
 Marketplace-urile **NU se scrapează** (prețuri per-zonă, se schimbă des, fragil). În schimb:
 - Cere userului să **exporte** meniul/catalogul din panoul lor de admin (CSV) și ți-l dă.

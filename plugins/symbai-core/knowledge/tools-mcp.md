@@ -62,6 +62,8 @@ Ghid complet: skills/inchidere-zi-casa/SKILL.md. Pentru delegare: cash.read, cas
 
 Ghid comun: [corectare-receptii-mcp.md](corectare-receptii-mcp.md). **Document existent: data intrării → `set_reception_operational_date`; prețul de achiziție → `update_incoming_invoice_line` + `correct_confirmed_reception`.** Pentru aceste corecții nu anula NIR-ul, nu retrage factura și nu cere confirmarea consumului ori activarea stocului negativ. Citește apoi `get_reception_cost_recalculation` pe ID-ul facturii, separat de `get_reception_accounting_status` pe ID-ul NIR-ului. Cantitatea facturată nu înlocuiește numărătoarea fizică. Retragerea facturii (`preview_received_invoice_retraction` → `retract_received_invoice`) privește numai o retragere fiscală necesară și autorizată, cu drepturile ei; nu este pasul implicit pentru orice factură contabilizată. Acordul deja dat acoperă operația cerută.
 
+**Factură din poză sau introdusă manual, înainte de eFactura:** `compare_invoice_with_efactura` (citire, modul `financiar`) compară antetul și liniile facturii cu eFactura oficială primită; `get_reception_invoice_status` spune stadiul recepției față de factura oficială — așteaptă eFactura, trebuie legată (cu legarea propusă și previzualizare), gata de finalizat sau finalizată. Legarea și finalizarea rămân pași separați, cu acordul omului.
+
 ## ⚠ De știut la scrieri prin MCP (gotcha-uri confirmate)
 
 - **Interfața NU se actualizează instant după o scriere prin MCP.** Aplicația ține date în cache; modificarea apare după refresh. **Dacă tool-ul a întors succes, e salvat** — verifică cu un tool de CITIRE, NU repeta scrierea, NU raporta bug.
@@ -86,7 +88,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 
 **TOTAL: 2921 tool-uri** — Citire publică 14 · Citire pe module 1279 · Speciale 5 · SQL citire 5 · SQL scriere admin 11 · Scriere per modul 1607 (pe 22 module).
 
-## Citire publică minimă (`readModule: null`) — 14 tool-uri
+## Citire publică minimă (`readModule: null`) — 15 tool-uri
 
 - `explain_feature` — Întoarce PAGINA în care se administrează o funcționalitate Symbai. (necesită: feature) [citire: `public minim`]
 - `get_location_context` — Context ambiental REUTILIZABIL pentru o locație: vreme (curent + prognoză), sărbători publice, vacanțe școlare, sezon și perioade (weekend, ajun de sărbătoare). (parametri opționali: locationId, date, days) [citire: `public minim`]
@@ -94,6 +96,7 @@ Dacă un tool întoarce „Plafon depășit", spune-i utilizatorului că poate m
 - `ghid_symbai` — Întoarce ghidul oficial de folosire a platformei Symbai pe un subiect (manualul livrat clienților: navigare, module, fluxuri de lucru, glosar de rapoarte). (parametri opționali: subiect, slug) [citire: `public minim`]
 - `list_brands` — Listează toate brandurile contului (id, nume, tip business, culori). [citire: `public minim`]
 - `list_locations` — Listează toate locațiile (unitățile) contului: adresă, oraș, brandurile asociate. [citire: `public minim`]
+- `list_my_symbai_tickets` — Tichetele FIRMEI la echipa Symbai: ce e deschis, în lucru, rezolvat sau închis, cu ultimul răspuns al echipei; cu `publicId`, un tichet cu toate mesajele lui. Citește-l înainte de un tichet nou, ca să nu dublezi o problemă deja raportată. [citire: `public minim`]
 - `list_work_warehouses` — Alege magazia sau gestiunea de lucru pentru producție, achiziții și stocuri. (parametri opționali: brandId, locationId, afterId, limit) [citire: `public minim`]
 - `memorie_citeste` — Citește memoria despre business, ținută pe server și comună conexiunilor autorizate. (parametri opționali: fel, cauta, persoana, stare) [citire: `public minim`]
 - `memorie_scrie` — Ține minte ceva durabil despre business, o persoană, o observație, o decizie, o preferință a userului, o sarcină primită sau rezumatul unui briefing — pe server, cu vizibilitate după fel (private / eu (necesită: fel, titlu, continut) [citire: `public minim`]
@@ -286,7 +289,7 @@ Un tool din această secțiune apare și rulează numai dacă tokenul are modulu
 - `gaseste_in_aplicatie` — Găsește o pagină sau funcție în aplicația Symbai după ce vrea utilizatorul (unde văd rapoartele, cum ajung la setări imprimante, unde adaug un produs). (necesită: intrebare) [citire: `public minim`]
 - `list_social_accounts` — Listează conturile social media conectate per brand, inclusiv platformAccountId (ID-ul paginii/contului), numele și URL-ul public, fără tokenuri. (parametri opționali: brandId) [citire: `marketing_social` (Marketing & Social Media)]
 - `list_social_posts` — Listează postările social media (draft, programate, publicate) cu status, starea de aprobare și data programării (scheduledAt/publishedAt sunt UTC; ora firmei e în scheduledAtLocal/publishedAtLocal). (parametri opționali: brandId, status, approvalStatus, limit) [citire: `marketing_social` (Marketing & Social Media)]
-- `trimite_ticket_symbai` 🌐 — Trimite un ticket către ECHIPA SYMBAI (dezvoltatorii platformei): problemă tehnică, reclamație, sugestie de îmbunătățire sau cerere de suport tehnic. (necesită: tip, titlu, descriere) [citire: `public minim`]
+- `trimite_ticket_symbai` 🌐 — Trimite un ticket către ECHIPA SYMBAI (dezvoltatorii platformei): problemă tehnică, reclamație, sugestie de îmbunătățire sau cerere de suport tehnic. (necesită: tip, titlu, descriere; opțional `appendTo` = referința unui tichet existent al firmei, ex. SYM-00042 din `list_my_symbai_tickets` — descrierea se adaugă ca mesaj nou pe el, în loc de un tichet nou) [citire: `public minim`]
 - `verifica_integrare` 🌐 — Diagnostichează integrarea unui brand: meta, facebook, instagram, tiktok, youtube, linkedin sau google_business. (parametri opționali: serviciu, brandId, expectedFacebookPageId) [citire: `setari` (Setări & Configurare)]
 
 ## Resurse (resources) — date read-only pe URI

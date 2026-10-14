@@ -72,7 +72,7 @@ Aplicația are propriul wizard la `/onboarding` (pași ghidați, cu asistent AI 
 | Legarea etichetelor de imprimante/ecrane (rutarea) | 04 | wizard pasul „Imprimante & ecrane", tab rutare |
 | Aranjarea vizuală a sălii (poziții mese, decor) | 06 | Designer-ul de sală; tu creezi structura |
 | Generarea/printarea QR-urilor de masă | 06 | pagina de coduri QR |
-| Conectări la terți: Viva, Glovo/Wolt/Bolt/Tazz, conturi sociale (OAuth-ul îl face userul) | 05/11/12 | fișierele fazelor; la social ai `genereaza_link_conectare` |
+| Conectări la terți: Viva, Glovo/Wolt/Bolt, conturi sociale (OAuth-ul îl face userul) | 05/11/12 | fișierele fazelor; la social ai `genereaza_link_conectare` |
 | Designer website, design meniu fizic, aspect portal | 12 | builder-ele vizuale din aplicație |
 | Ștergeri de entități | toate | pagina entității respective |
 

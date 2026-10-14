@@ -109,7 +109,10 @@ Optimizarea o faci TU, din cifre — nu întreba asistentul Symbai „cum optimi
 ## Reguli (IMPORTANT — bani reali)
 
 - **Mereu confirmă bugetul + postarea înainte de `boost_post`/`resume`/`set_campaign_budget`/`set_ad_set_budget`**, iar modificarea/copierea înainte de `update_ad`/`duplicate_ad_set`/`duplicate_ad` (pune `confirm:true` doar după „da"-ul utilizatorului). Pauza NU cere confirmare.
-- **Respectă plafonul**: dacă proprietarul a setat un buget max/zi sau max/campanie pe token (Hub → Acces AI), tool-ul refuză sumele peste plafon cu un mesaj clar. Nu insista — propune o sumă ≤ plafon sau roagă proprietarul să mărească plafonul din portal.
+- **Respectă plafonul**: dacă proprietarul a setat un buget max/zi sau max/campanie pe token (Hub → Acces AI), tool-ul refuză sumele peste plafon cu un mesaj clar. Nu insista — propune o sumă ≤ plafon sau roagă proprietarul să mărească plafonul din portal (Acces AI → Permisiuni → Plafoane de siguranță).
+- **Plafon per campanie și campanie fără limită totală pe Meta**: `resume_ad_campaign`, `set_campaign_budget` și `set_ad_set_budget` refuză până când campania are o limită totală. Explică-i omului că, dacă e de acord, pui limita totală egală cu plafonul conexiunii (`setSpendCap:true`) și campania se oprește singură când îl atinge. Fără acordul lui, nu pune limita.
+- **Materialul trebuie confirmat de Meta**: o reclamă nu se salvează cu o poză sau un video pe care Meta nu a confirmat încă încărcarea; reîncarcă fișierul. La promovarea unui eveniment poți pune media proprie; fără ea, reclama folosește coperta evenimentului. Textul reclamei nu mai e tăiat la 500 de caractere, iar variantele de text merg pe orice reclamă cu material propriu (nu pe boost și nici pe formatul cu mai multe media).
+- **Campanii „Ștearsă în Meta” / fără set**: lista arată campaniile șterse sau arhivate direct în Meta și pe cele active la Meta fără set ori reclamă. Nu le republica orb; întreabă omul ce a schimbat în Ads Manager.
 - **Durată**: pentru un buget total mărginit, dă `durationDays` (≥2). Altfel campania rulează cu buget zilnic până o pui pe pauză — spune-i clar utilizatorului.
 - **Minim 5 RON/zi** (cerința Meta).
 - Dacă boost-ul dă eroare (status `error` + subcode), tool-ul îți dă detaliul — nu raporta „merge" dacă statusul nu e `pending_review`/`active`.

@@ -81,7 +81,7 @@ Pagina de administrare: **Meniul Zilei** (folosește `gaseste_in_aplicatie("meni
 **Configurare** (editorul de meniu al zilei):
 - **Unitatea** — meniul e pe brand, opțional restrâns la o locație („Toate locațiile brandului").
 - **Preț în sală + TVA** — prețul fix al meniului. Poți seta **preț diferit pe fiecare canal** (ex. 35 lei în sală, 45 lei pe Glovo/Wolt — acoperă comisionul).
-- **Unde e vizibil** — grilă de canale cu comutator: POS Ospătar/Mobil/Bar/Vânzare rapidă, Kiosk, Platforma Clienți, QR la masă, Website, Glovo, Wolt (Bolt/Tazz au doar preț — vizibilitatea lor se controlează din portalul platformei).
+- **Unde e vizibil** — grilă de canale cu comutator: POS Ospătar/Mobil/Bar/Vânzare rapidă, Kiosk, Platforma Clienți, QR la masă, Website, Glovo, Wolt (Bolt are doar preț — vizibilitatea lor se controlează din portalul platformei).
 - **Feluri** — fiecare fel are nume, câte opțiuni se aleg (min/max) și comutatorul **„obligatoriu"**. Un fel neobligatoriu poate fi sărit de client (ex. desertul e opțional). Cel puțin UN fel trebuie să fie obligatoriu — altfel salvarea e respinsă (altfel s-ar putea vinde meniul „gol").
 - **Opțiuni pe fel** — fiecare opțiune e un produs real (cu rețetă!): poți pune **supliment de preț** (ex. +5 lei pentru somon), pondere de profit pentru rapoarte și o poți face temporar indisponibilă (fără s-o ștergi). Opțiunile fără rețetă sunt marcate — completează rețeta ca stocul și food cost-ul să fie corecte.
 - **Program** — zile din săptămână, interval orar, interval de date (ex. doar Lu–Vi 11:00–16:00). În afara programului meniul nu se poate comanda.

@@ -55,7 +55,7 @@ Lipsa uneltelor din sesiune nu dovedește că agentul este vechi sau oprit. Caut
 
 ## Fluxul unic pentru angajat
 
-1. Proprietarul intră în Hub → **Acces AI**, alege angajatul și locația POS exacte, selectează permisiunile și acordă accesul.
+1. Proprietarul intră în Hub → **Acces AI**, alege angajatul și locația POS exacte, selectează permisiunile și acordă accesul. Pe instanțele actualizate, accesul se poate da și din POS de un **administrator** (rol cu acces complet): pe propria fișă primește automat citirea întregii firme (Read all), fără expirare, cât timp are rolul complet; pentru un coleg, Symbai trimite un cod de confirmare pe emailul fișei POS a administratorului, care îl introduce ca să acorde accesul. Dacă fișa lui nu are email, îl completează întâi din Personal.
 2. Angajatul intră în POS cu propriul cont și deschide **Conectează un asistent AI**. Dialogul îi arată starea calculatorului lui: legat, oprit (cu motiv) sau cu un pachet descărcat și neinstalat.
 3. Descarcă ultimul **Pachet personalizat Symbai Connect** pentru sistemul său și îl instalează pe calculatorul pe care va lucra.
 4. În panoul Symbai Connect apasă **Conectează** lângă Codex sau Claude Code — sau lasă asistentul să cheme `connect_repair`.
@@ -120,5 +120,6 @@ Le folosești **după** ce ai citit `stare` și `explicatie`, ca să traduci —
 - **Calculator schimbat:** instalează Pachetul personalizat pe noul calculator; îl înlocuiește automat pe cel vechi.
 - **Configurație manuală veche detectată:** folosește remediul oferit de Symbai Connect pentru intrarea identificată exact și verifică ulterior identitatea nominală. Nu șterge conexiuni după presupuneri sau după numele `symbai-vechi`. Nu afișa utilizatorului comenzi ori configurații.
 - **Doar PIN disponibil:** utilizatorul își setează parola contului din Personal, apoi reia conectarea.
+- **Autorizarea firmei se oprește imediat și panoul numește un antivirus:** antivirusul activ a blocat pasul de autorizare al aplicației asistentului (Codex sau Claude). Spune-i omului ce produs a fost numit și să permită aplicația asistentului în acel antivirus (sau să-l roage pe cel care administrează calculatorul), apoi să apese din nou „Conectează”. Nu dezactiva tu protecția și nu reinstala pachetul pe presupuneri.
 
 Accesul POS nu înlocuiește grantul proprietarului. Accesul final este intersecția dintre grant, consimțământul din browser, rolul POS live și alocările live. Nu ocoli o permisiune lipsă prin SQL sau clickuri riscante.

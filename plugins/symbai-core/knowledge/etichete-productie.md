@@ -88,6 +88,11 @@ Când nu ești sigur, **cere explicația planului** („ce șablon și ce imprim
 
 Tot ce ține de asta (cum legi șabloane pe magazie/tip de container, cum ceri explicația unei etichete deja ieșite, cele două cauze ale unei etichete mici/sărace) → **`eticheta-container-rutare.md`**.
 
+### Etichetele la finalul operației (tabletă și Symbai Staff)
+- În Symbai Staff, etichetele marcate obligatorii sau cu tipărire automată, încă netipărite, țin lucrarea „în curs”; imprimanta aleasă și retipărirea se păstrează după repornirea aplicației. Fără imprimantă implicită, operatorul o alege.
+- Pe tabletă, dacă recipientul s-a schimbat după tipărire sau un job a eșuat, următoarea apăsare trimite o cerere nouă — nu mai primește același refuz. O operație cu eticheta setată „niciodată” nu arată butonul; marfa între operații fără lot de stoc este semnalată ca atare.
+- Un recipient aflat în carantină sau blocat la calitate poate primi etichetă, dar tipărirea și confirmarea etichetei **nu îl eliberează** — eliberarea rămâne decizia QC.
+
 ### Etichetă de palet cu QR mare
 Pentru palet: desenează în Materiale Grafice un șablon de etichetă cu un **QR/cod de bare MARE** (legat de `{{lot}}`), alege-l ca șablon pe operația de ambalare și pune **copii = 4** (câte una pe fiecare față a paletului → ușor de identificat din orice parte). Sau o singură etichetă mare, cum preferi.
 
@@ -126,6 +131,7 @@ Pentru palet: desenează în Materiale Grafice un șablon de etichetă cu un **Q
   Dacă un rând iese gol, întâi verifică dacă marfa are chiar acea informație.
 - **Desenat ≠ legat.** Un șablon frumos desenat în Materiale grafice, dar nelegat de nicio rețetă/operație/regulă, nu iese niciodată singur la print. E cel mai frecvent motiv pentru „am etichete, dar tot cea urâtă îmi iese".
 - **Rola imprimantei se declară, nu se ghicește.** Dacă imprimanta de etichete n-are declarată dimensiunea reală a rolei (lățime × înălțime în mm) sau o are greșită după o schimbare de rolă, designul nu încape pe hârtie: conținut înghesuit într-un colț, text tăiat, sau o etichetă mică pe o rolă lată. **La eticheta de container fără șablon legat primești un avertisment că s-a presupus coala; cu un șablon legat nu primești niciun semnal** — de aceea verifici rola chiar și când totul pare în regulă pe ecran. Vezi `eticheta-container-rutare.md`.
+- **QR-ul de verificare și codul de bare.** Pe etichetele de container Symbai adaugă singur un QR de verificare. Dacă pătratul lui ar acoperi codul de bare din șablon, codul de bare e micșorat întreg în spațiul rămas; dacă nu încape, avertismentul spune că e „tăiat, nu se poate scana". Când apare acest avertisment, mută sau micșorează codul de bare în Materiale Grafice și tipărește o probă. Ambele coduri (QR și cod de bare) deschid același container la scanare, inclusiv în inventar.
 - **Nu promite „cine câștigă" din memorie.** La etichetele de container, ordinea axelor ține de profilul de fabrică al brandului, șablonul are altă precedență decât imprimanta, iar regulile se adună. Cere explicația planului. Vezi `eticheta-container-rutare.md`.
 - **Nu inventa** loturi/date/alergeni — ele vin din lotul și rețeta reale; tu doar alegi șablonul și imprimanta.
 

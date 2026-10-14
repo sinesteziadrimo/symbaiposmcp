@@ -26,6 +26,13 @@
 **Cumpărare mărfuri (TVA deductibilă):**
 - `% = 401 Furnizori` (total) · `371 Mărfuri` (bază) · `4426 TVA deductibilă` (TVA).
 
+**Cumpărare cu deducere limitată (ex. 50%):**
+- `% = 401` (total) · contul de stoc/cheltuială (bază + TVA nedeductibilă) · `4426` (doar partea deductibilă). Exemplu: bază 100, TVA 21 → 110,50 pe cost, 10,50 pe 4426.
+
+**Bon fiscal de la furnizor plătit cash:**
+- Achiziția: ca mai sus (`% = 401`), cu TVA pe 4426 numai dacă bonul e factură simplificată (CUI-ul firmei, ≤ 100 €); altfel TVA intră în cost.
+- Plata: `401 = 5311` — în Symbai se înregistrează odată cu postarea bonului, dacă alegi plata numerar din casierie.
+
 **Încasare client / plată furnizor:**
 - `5121 = 4111` (încasare în bancă) · `401 = 5121` (plată din bancă). Casa: 5311.
 

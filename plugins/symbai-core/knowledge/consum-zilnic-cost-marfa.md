@@ -11,7 +11,7 @@ Fișiere-frate care completează acest ghid: `stocuri-inventar-furnizori.md` (ma
 
 Vânzarea **nu** scade stocul în secunda în care încasezi. O dată pe zi, automat, sistemul ia notele **închise** din zilele deja încheiate, desface fiecare produs vândut în ingredientele din rețeta lui și scade cantitățile din gestiunea și loturile potrivite. La restaurante, costul financiar FIFO se actualizează separat după corectarea unei recepții, păstrând cantitățile și trasabilitatea fizică. O valoare estimată la cost mediu pentru marfa neacoperită nu dovedește costul definitiv: sursele/prețurile lipsă pot rămâne în așteptare. Regenerarea consumului schimbă cantități după corecții de rețete/reguli; nu o porni pentru simpla schimbare a datei sau prețului recepției.
 
-Două excepții de reținut din prima: **comenzile de livrare (Glovo/Wolt/Bolt/Tazz) scad stocul imediat ce comanda e livrată**, iar **ziua de azi se procesează abia mâine**.
+Două excepții de reținut din prima: **comenzile de livrare (Glovo/Wolt/Bolt) scad stocul imediat ce comanda e livrată**, iar **ziua de azi se procesează abia mâine**.
 
 ## Concepte
 
@@ -80,7 +80,8 @@ Se decide **pentru fiecare ingredient în parte** (nu pentru rețetă), în func
 
 ## Din ce lot scade și cât costă
 
-- Alegerea fizică a loturilor poate prioritiza **„expiră primul”**; la termene egale sau fără termen, cel **intrat primul**. La restaurante, evaluarea financiară FIFO urmărește separat cronologia intrărilor și ieșirilor, păstrând trasabilitatea loturilor fizice.
+- Alegerea fizică a loturilor: la fabrici și la firmele care țin marfa pe loturi, **„expiră primul”**; la restaurantele fără urmărire pe loturi, lotul **sosit primul** (loturile expirate rămân la coadă). La restaurante, evaluarea financiară FIFO urmărește separat cronologia intrărilor și ieșirilor, păstrând trasabilitatea loturilor fizice.
+- ⚠ **Costul FIFO nu este prețul ultimei facturi.** O ieșire ia valoarea celei mai vechi intrări încă neconsumate din gestiunea respectivă, în ordinea datei documentelor: întâi stocul inițial, apoi recepțiile cele mai vechi. De aceea, după o scumpire sau o ieftinire, costul consumului se schimbă abia după ce se termină marfa veche. Pentru o întrebare de tipul „cât costă rețeta acum”, spune din ce intrări vine costul (`get_product_fifo_cost`, `list_lots`), nu „din ultimele intrări”.
 - ⚠ „Metoda de evaluare" din Setări → Stocuri (FIFO / LIFO / medie) **nu schimbă din ce lot iese marfa** — ea influențează doar costul estimativ afișat înainte de a exista consum real.
 - Pentru cantitatea neacoperită de loturi se poate afișa o estimare la costul mediu al gestiunii. Nu o prezenta drept cost financiar definitiv: în FIFO financiar, sursele sau prețurile nedovedite pot rămâne în așteptare până sunt completate datele reale.
 - **Cost zero la recepție**: poate fi justificat de factura sursă, de exemplu marfă gratuită. Verifică documentul cu `get_product_reception_history` și, pentru triere, `scan_suspect_reception_costs`. Un cost fizic original zero poate avea deja o evaluare financiară actualizată; citește costul curent înainte să declari marfa fără valoare. Nu schimba un preț justificat și nu regenera cantitățile doar pentru un avertisment vechi.
@@ -97,11 +98,11 @@ Iar un caz care NU oprește consumul global, dar îl golește tăcut pe un produ
 
 5. **Rețetă existentă, dar FĂRĂ ingrediente.** Produsul „are rețetă", deci nu apare în nicio listă de „produse fără rețetă". La vânzare, rețeta se desface în zero linii: nu scade nimic din stoc, iar costul mărfii vândute rămâne 0 pentru el, la nesfârșit. Se creează cel mai des la importuri în masă de rețetar, unde rețeta se creează dar liniile de ingrediente nu se mai atașează. Cum îl prinzi: `analyze_food_costs` raportează separat câte produse au **rețetă goală** (distinct de „fără rețetă"); alertele îl numesc pe fiecare. La fel de tăcute: rețeta legată de produs **doar prin nume** (se rupe la prima redenumire a produsului) și rețeta rămasă **ciornă sau arhivată** — ambele apar acum ca rânduri separate în același raport. Repararea e simplă odată văzută: completezi ingredientele, apoi reprocesezi perioada afectată ca să se recalculeze costul.
 
-## Livrările (Glovo / Wolt / Bolt / Tazz)
+## Livrările (Glovo / Wolt / Bolt)
 
 - Scad stocul **imediat** ce comanda e marcată livrată/ridicată, cu bon de consum propriu — nu așteaptă rularea zilnică.
 - Descarcă aceleași loturi reale și același registru de stoc ca restul consumului; costul realizat rezultat este vizibil în P&L. Nota contabilă de consum nu se dublează pe fluxul de livrare (`skipGl`), dar asta nu transformă costul în unul teoretic.
-- **Recalcularea pe perioadă include acum și comenzile de livrare finalizate** din interval. Reprocesarea pe un singur produs le include de asemenea, când produsul apare pe linia comenzii sau ca opțiune legată canonic.
+- **Recalcularea pe perioadă include acum și comenzile de livrare finalizate** din interval. Reprocesarea pornită din meniul unui produs reface tot intervalul, deci include și ea livrările.
 - Dacă regenerarea unei livrări eșuează, jobul trebuie să se încheie `completed_with_errors` și să arate comanda, motivul și liniile de rutare rămase; nu considera intervalul complet reparat până nu dispar aceste erori.
 
 ## Consum Temporar (produse vândute fără rețetă)
@@ -111,7 +112,9 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 1. **Creează rețetă nouă** sau **Asociază o rețetă existentă** (`associate_recipe_to_product`, `link_recipe_products`);
 2. sau **Transformă în alt tip** — dacă e marfă revândută ca atare (`change_product_type`);
 3. sau **mută-l în Mese Servite**, dacă e o masă de personal (`move_product_to_served_meal`);
-4. apoi apasă **„Reprocesează acest produs"** ca să se descarce corect și retroactiv.
+4. vânzările din zilele încă neprocesate primesc automat rețeta nouă la rularea zilnică. Pentru zilele deja procesate, vezi mai jos.
+
+**Zilele trecute vândute fără rețetă.** La firmele unde Symbai a activat **refacerea automată pentru rețete adăugate ulterior** (are o dată de început), sistemul găsește singur zilele în care produsul s-a vândut fără rețetă și le reface **una câte una, în ordine**, doar pentru acea rețetă, cu formula de atunci, la aproximativ 15 minute după ultima editare a rețetei și numai în intervalul orar permis. Cât rulează altă reprocesare sau o refacere de stoc, așteaptă; vânzările au mereu prioritate. Starea apare în `get_consumption_problems` („Rețete adăugate ulterior — … în așteptare / în lucru / de verificat”). O zi oprită se reia, după ce cauza e reparată, cu `retry_missing_recipe_replay` 🔒 (previzualizare întâi); intervalul orar se schimbă cu `configure_missing_recipe_replay_window` 🔒; câteva rețete anume se pot retrimite la verificare cu `request_missing_recipe_rediscovery` 🔒. Activarea și data de început le face echipa Symbai, la cerere. Dacă funcția nu e activă, refacerea zilelor trecute se face prin reprocesare (secțiunea următoare), cu acordul omului.
 
 ## Recalcularea consumului (reprocesare)
 
@@ -119,11 +122,13 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 
 **Cele două forme:**
 - **Pe perioadă** — din `/daily-consumption` → „Reprocesare Vânzări", cu preseturi (30 zile / 3 luni / 6 luni) sau interval liber. Rulează ca job pe fundal, cu progres. Poți alege rețetele „de atunci" (istoric fidel) sau cele de azi (corectură retroactivă).
-- **Pe un singur produs** — „Reprocesează acest produs", chirurgical: atinge doar produsul ales, inclusiv aparițiile lui din livrări.
+- **Din meniul unui produs** — „Reprocesează acest produs". ⚠ Nu atinge doar produsul ales: pornește reprocesarea **întregii perioade alese, pentru toate produsele, cu rețetele de azi** (un produs împarte documentul de consum cu celelalte, iar refacerea doar a lui ar fi schimbat loturile și costul celorlalte). Spune-i omului asta înainte și alege perioada cât mai scurtă.
+
+**Ce se reface:** unitatea de lucru este **documentul de consum al zilei pe fiecare gestiune**, nu un produs sau o rețetă. Nu există reprocesare limitată la o singură rețetă prin conexiune. După ce cantitățile sunt refăcute, costurile tuturor produselor din acele documente se recalculează în fundal; faza aceasta (`valuating`) se încheie abia când nu mai e nicio recalculare de cost în lucru pe produsele zilei, deci poate dura ore sau zile, iar vânzările și recepțiile noi pe aceleași produse o pot prelungi.
 
 **Ce se întâmplă:** consumul vechi este scos temporar din stoc, dar documentele lui rămân păstrate până când toate zilele noi au fost postate corect. Sistemul recalculează cronologic și rescrie costul. Dacă o singură zi eșuează, retrage toate documentele noi și restaurează documentele vechi în ordinea lor; nu lasă intervalul pe jumătate.
 
-**Ce o blochează:** lună închisă contabil; „Scădere automată din stoc" oprită; un job deja pornit pe aceeași locație.
+**Ce o blochează:** lună închisă contabil; „Scădere automată din stoc" oprită; o altă reprocesare încă în lucru; un job care își calculează încă costurile (`valuating`) pe oricare dintre zilele alese (în versiunile din 14.10.2026 încolo) — refuzul numește jobul care lucrează.
 
 ⚠ **După recalculare verifică soldurile pe gestiuni.** Recalcularea folosește aceeași cascadă canonică de rutare ca generarea inițială, inclusiv gestiunea produsului din locația vânzării. Totuși, folosește configurația de **azi**; dacă ai schimbat între timp o asignare sau un override, rezultatul istoric se poate muta legitim.
 ⚠ **Un job poate termina `completed_with_errors`.** Dacă eroarea este pe o zi de consum, starea zilnică veche a întregului interval este restaurată. Dacă eroarea este doar pe o livrare, zilele pot fi refăcute, iar livrarea veche rămâne păstrată prin swap-ul sigur. Nu trata rezultatul ca succes complet: citește problemele structurate (zi, comandă, produs, motiv), repară-le și reia numai după corectarea cauzei.
@@ -156,15 +161,17 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 - `scan_recipe_unit_mismatches` — ingredientele a căror unitate NU se poate traduce în unitatea produsului („25 g" pe un produs ținut la „buc"). Exact cazul în care cantitatea se folosește ca atare și scade 25 de borcane. Întoarce separat ce se poate corecta automat și ce cere decizie umană.
 - `scan_suspect_reception_costs` / `get_product_reception_history` — loturi intrate cu preț greșit.
 - `analyze_food_costs` (modul `produse_meniu`), `generate_report` cu tipul `food_cost` sau `stock_value`.
+- `get_food_cost_overview` — pentru fiecare preparat: prețul, costul pe porție, food cost % și starea (`ok`, `estimated`, `missing_costs`, `recipe_problem`, `no_recipe`), plus ingredientele cu sursa costului (factură, manual sau lipsă), întâi cele fără cost. Costul manual („cost de achiziție”, același câmp ca `set_standard_costs`) e doar rezervă până la prima factură și nu se pune pe produsele cu rețetă. Verifică în catalogul live că unealta există.
 - `list_recipes` / `get_recipe_details` (modul `retete`), `get_product_details` — rețeta legată, randamentul, unitatea produsului.
 - `exec_trace_lot_destination` (modul `productie`) — unde a plecat un lot.
 
 **Scriere (cer modulul de permisiune pe token):**
 - `generate_daily_consumption` 🔒 (modul `inventar`) — generează consumul unei zile.
-- `reprocess_daily_consumption` 🔒 (modul `financiar`) — recalcularea pe perioadă; progresul se citește cu `get_reprocess_job_status`.
+- `reprocess_daily_consumption` 🔒 (modul `financiar`) — recalcularea pe perioadă; progresul se citește cu `get_reprocess_job_status`. Unde costul e calculat de FIFO financiar, un interval de mai multe zile rulează **zi cu zi** (previzualizarea arată `dayByDay`). Un job pornește pentru prima zi, iar următoarele pornesc singure după ce precedenta și-a publicat cantitățile. O zi căzută pe o blocare temporară se reia după o pauză. Orice altă eroare oprește lanțul și spune ziua de reluat. Unealta refuză zilele pe care un alt job încă își calculează costurile.
 - Pentru preț greșit pe o factură existentă: `update_incoming_invoice_line` → `correct_confirmed_reception`; pentru data intrării: `set_reception_operational_date`. Urmează [ghidul de corecții](corectare-receptii-mcp.md), păstrează cantitățile și verifică FIFO separat. Nu porni reprocesarea consumului doar pentru aceste corecții. `fix_reception_costs` 🔒 (modul `financiar`) este o unealtă de reparare a costului loturilor dovedite, nu primul pas al editării unei facturi și nu impune singură refacerea consumului.
 - `fix_recipe_ingredient` 🔒, `update_recipe`, `set_ingredient_purchase_prices` 🔒, `set_product_manual_cost` 🔒, `set_standard_costs` — reparațiile de rețetă și de cost.
 - `associate_recipe_to_product` 🔒, `link_recipe_products`, `change_product_type` 🔒, `move_product_to_served_meal` 🔒 — rezolvarea Consumului Temporar.
+- `retry_missing_recipe_replay` 🔒, `configure_missing_recipe_replay_window` 🔒, `request_missing_recipe_rediscovery` 🔒 (modul `financiar`) — refacerea automată a zilelor vândute fără rețetă, doar unde funcția e activă (vezi Consum Temporar).
 - `assign_product_warehouses`, `update_product` — fixarea gestiunii din care se scade.
 
 ⚠ **`generate_daily_consumption` generează consumul întregii zile pentru unitatea aleasă.** `warehouseId` **nu** restrânge generarea la o singură gestiune (e doar gestiunea de rezervă când produsul n-are una) — nu-l folosi ca filtru. Dacă ziua e deja generată, tool-ul refuză; ștergerea și refacerea rulării se fac din pagina Consum Zilnic.
@@ -180,12 +187,12 @@ Când muți produse între gestiuni sau repari rețete, recalcularea singură nu
 3. `scan_recipe_consumption_gaps` + `scan_recipe_unit_mismatches` — verifici formula efectiv aplicabilă produsului și brandului. Un ingredient nelegat poate opri generarea dacă formula lui este folosită; o formulă arhivată sau înlocuită de o variantă validă nu dovedește blocaj. Corectezi defectele demonstrate înainte de recalculare.
 4. `reprocess_daily_consumption` 🔒 pe perioada afectată.
 5. `get_reprocess_job_status` — **aștepți să se termine**. Cât rulează, documentele vechi sunt de-postate temporar, iar un audit făcut atunci arată probleme care nu există.
-   Starea `valuating` înseamnă că, la jobul acela, cantitățile sunt deja refăcute, iar costurile și verificarea finală continuă automat; poate dura ore sau zile pe o firmă cu istoric mare. Citește `waitingFor` și spune-i omului ce așteaptă jobul acum: zilele cu rețete completate încă de refăcut, documentele de cost oprite după căderea calculului, coada de costuri sau verificări care pică, fiecare cu pasul următor. Nu porni o reprocesare paralelă și nu o relua pe aceeași perioadă. Dacă `waitingFor` nu explică așteptarea și `convergence.nextAttemptAt` nu mai avansează, cere suport cu ID-ul jobului. Dacă unealta instalată nu întoarce încă `waitingFor`, spune doar starea și ultima încercare (`convergence`), fără să ghicești cauza.
+   Starea `valuating` înseamnă că, la jobul acela, cantitățile sunt deja refăcute, iar costurile și verificarea finală continuă automat; poate dura ore sau zile pe o firmă cu istoric mare. Citește `waitingFor` și spune-i omului ce așteaptă jobul acum: zilele cu rețete completate încă de refăcut, documentele de cost oprite după căderea calculului, coada de costuri sau verificări care pică, fiecare cu pasul următor. Nu porni o reprocesare paralelă și nu o relua pe aceeași perioadă: unealta o refuză și numește jobul care încă lucrează. La o reprocesare zi cu zi, `dayChain` arată ziua curentă, joburile pornite, de ce așteaptă ziua următoare sau unde s-a oprit; mesajul de eroare al unei zile este cel original al jobului. Dacă `waitingFor` nu explică așteptarea și `convergence.nextAttemptAt` nu mai avansează, cere suport cu ID-ul jobului. Dacă unealta instalată nu întoarce încă `waitingFor`, spune doar starea și ultima încercare (`convergence`), fără să ghicești cauza.
 6. `audit_consumption_chain` + `get_consumption_breakdown` — confirmi că stocurile au ieșit corecte.
 
 ⚠ **Documentele rămase ciornă nu se postează la întâmplare.** Dacă pe aceeași zi și gestiune mai există documente de consum, postarea unei ciorne scade stocul a doua oară. `audit_consumption_chain` le separă: îți dă id-urile sigur postabile și, separat, pe cele nepostabile, cu motivul.
 
-⚠ **Ce rămâne doar din aplicație:** ștergerea unei rulări de consum, recalcularea pe un singur produs și detaliul istoric „ce produs vândut a consumat ce ingredient". Lista zilelor lipsă pe interval se citește prin `get_daily_consumption_status(dateFrom, dateTo, locationId?)`, iar rutarea viitoare pe ingredient prin `diagnose_consumption_warehouse_routing`.
+⚠ **Ce rămâne doar din aplicație:** ștergerea unei rulări de consum, butonul „Reprocesează acest produs” (care reface tot intervalul, vezi mai sus) și detaliul istoric „ce produs vândut a consumat ce ingredient". Lista zilelor lipsă pe interval se citește prin `get_daily_consumption_status(dateFrom, dateTo, locationId?)`, iar rutarea viitoare pe ingredient prin `diagnose_consumption_warehouse_routing`.
 
 ## Întrebări frecvente și capcane
 

@@ -46,6 +46,8 @@ Programul de loialitate îți răsplătește clienții fideli: ei acumulează pu
 - **Expiră punctele?** Da, dacă ai setat expirare. `expire_loyalty_points` aplică expirarea; o poți rula și manual.
 - **Pot da puncte „din mână" unui client?** Da. Pentru POS: `award_customer_loyalty_points(customerId, points, reason)`. Pentru hotel: `award_loyalty_points(guestProfileId, points, reason)`. Motivul rămâne în istoric, auditat.
 - **Loialitatea hotelului e aceeași cu cea de la restaurant?** NU. Hotelul are program separat (pe nopți), în /hotel/crm. Punctele nu se amestecă decât dacă ai configurat explicit.
+- **Cine primește punctele când nota e plătită de mai mulți sau din portofel?** Plătitorul, nu destinatarul: la o comandă de acasă plătită din portofelul unui părinte, punctele merg la titularul portofelului. Fiecare plătitor primește punctele părții lui; bacșișul nu intră în calcul. Punctele se calculează după reduceri și produsele excluse. O notă cu plăți mixte primește punctele abia după ce plățile sunt reconciliate, deci pot apărea cu întârziere.
+- **Ce se întâmplă cu punctele la retur?** Se retrag proporțional de la toți cei care au plătit nota inițială, chiar dacă între timp programul a fost oprit. O notă returnată integral nu păstrează nivelul obținut prin ea.
 - **Ce e RFM și de ce-mi trebuie?** Îți spune automat cine-s clienții valoroși (cheltuie des și mult, recent) ca să-i tratezi preferențial, și cine pleacă, ca să-i reactivezi.
 
 ## Capcane

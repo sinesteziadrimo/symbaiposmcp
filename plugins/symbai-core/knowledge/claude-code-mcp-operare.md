@@ -205,6 +205,12 @@ Tool-urile de citire merg de obicei fara modul de scriere. Tool-urile de scriere
 - spune modulul probabil: Comunicare, Stocuri, Setari, Rezervari & Clienti, Marketing, Livrari etc.;
 - nu incerca sa ocolesti permisiunea cu SQL sau clickuri riscante.
 
+Un refuz poate veni și din **abonamentul firmei**, nu din acces: pe planul Smart, publicarea și conectarea rețelelor sociale cer modulul Social Media, iar livrările și website-ul modulele lor. Spune-i omului că funcția se deblochează automat după ce modulul e activ pe abonament (portalul Hub sau Setări → Module & Facturare); nu e o problemă de conexiune.
+
+`cauta_tool` dă schema completă doar pentru primele câteva rezultate; restul vin marcate `schemaOmisa`. Înainte de apel cere schema exactă (caută după numele exact al uneltei) — nu ghici parametrii. `execute_sql_query` acceptă un singur `SELECT` pe apel; `*` nu se poate combina cu `UNION` sau cu un CTE care redenumește coloanele — scrie coloanele explicit acolo.
+
+Pentru tichetele către echipa Symbai, verifică întâi `list_my_symbai_tickets` (tichetele firmei, cu răspunsurile echipei) și completează un tichet existent cu `appendTo` în loc să deschizi unul nou; vezi skill-ul `trimite-ticket-suport`.
+
 Dacă lipsesc module dintr-o conexiune POS care răspunde, rulează `verifica_conexiune` și citește identitatea, `arieAngajat`, modulele și profilul. Dacă lipsește întreg serverul sau tocmai a fost conectat, verifică încărcarea lui în conversația curentă; WhatsApp și Google locale au servere separate. Urmează [alege-conexiunea.md](alege-conexiunea.md), apoi skill-ul `conecteaza-symbai`. Nu declara o limită a platformei sau deconectarea contului doar din absența uneltelor.
 
 Catalogul complet este in `tools-mcp.md`. Daca lista live din MCP difera de catalog, lista live castiga; `tools-mcp.md` este orientativ si generat.

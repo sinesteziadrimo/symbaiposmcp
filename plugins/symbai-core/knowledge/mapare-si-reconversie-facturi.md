@@ -96,6 +96,8 @@ Aceasta e distincția cea mai importantă din tot fișierul.
 
 Contul de pe linie decide nota contabilă doar la **liniile de cheltuială** (servicii, utilități, transport, chirii) și la facturile pur contabile, fără intrare pe stoc.
 
+**Deductibilitatea TVA aleasă pe factură se vede în notă.** La deducere limitată sau fără deducere, partea de TVA care nu se deduce intră în costul mărfii sau al cheltuielii (inclusiv în cheltuiala în avans), nu în TVA deductibilă. Pro-rata trebuie declarată înainte de contabilizare. Deductibilitatea cheltuielii (protocol, sponsorizare etc.) e informație fiscală pentru contabil și nu schimbă nota din POS.
+
 **Exemplu.** O factură de mentenanță a fost legată greșit de un produs stocabil. Citește naturile disponibile cu `list_expense_destination_types` și remapează linia pe natura de cheltuială potrivită, apoi finalizează sau corectează recepția existentă prin fluxul nominal. Verifică nota contabilă. Nu modifica tipul produsului comun pentru o singură mapare greșită; schimbarea globală se face doar dacă produsul însuși este clasificat greșit și acesta este scopul cerut.
 
 Și încă un motiv să repari la sursă: o regulă greșită se reaplică automat la următoarele facturi ale **aceluiași furnizor** cu aceeași descriere. Pentru marfa stocabilă, repară și tipul produsului când nota contabilă este greșită; contul de mapare al liniei nu rescrie singur contul de stoc.
@@ -146,7 +148,7 @@ Când asistentul nu găsește produsul în catalog, îl **propune** — nu îl c
 Pe lângă mapare, poți lucra liniile din aplicație sau prin tool-urile nominale din [corectare-receptii-mcp.md](corectare-receptii-mcp.md):
 
 - **Spargere linie** — o linie se împarte în mai multe sub-linii, pe cantități (același rând conține două produse reale, sau marfa merge în locuri diferite). Sumele se împart automat; se poate anula.
-- **Absorbție linie** — costul unei linii (transport, ambalaj, taxă) se repartizează peste liniile de marfă: egal, proporțional cu valoarea, sau pe o singură linie. **Se mută doar valoarea, nu cantitatea** — așa transportul intră în costul mărfii.
+- **Absorbție linie** — costul unei linii (transport, ambalaj, taxă) se repartizează peste liniile de marfă: egal, proporțional cu valoarea, sau pe o singură linie. **Se mută doar valoarea, nu cantitatea** — așa transportul intră în costul mărfii. Dacă transportul are altă cotă de TVA decât marfa (ex. marfă 11%, transport 21%), costul se adună în marfă, dar fiecare parte își păstrează baza și TVA-ul pe cota ei, în nota contabilă și în declarații. Exemplu: marfă 100 + TVA 11, transport 20 + TVA 4,20 → stoc 120, TVA deductibilă 15,20, datorie 135,20.
 - **Împărțire pe gestiuni** — o linie se poate primi în mai multe depozite (40 kg la Magazie, 60 kg la Bucătărie). Folosește operația dedicată din ghidul de corecții și recitește alocările salvate înainte de recepție; nu te baza numai pe starea ecranului.
 - **Recepție pe loturi** — aceeași linie împărțită pe mai multe loturi de furnizor, cu termene și origini diferite (`set_reception_lot_allocations`). Detalii în `intrari-marfa-receptie.md`.
 
@@ -193,6 +195,7 @@ După spargere sau absorbție, recitește factura și folosește `create_receive
 ## Întrebări frecvente și capcane
 
 - **După recepție cantitatea e de 24 de ori mai mare (sau mult prea mică).** Factorul de pachet: fie s-a aplicat unul greșit, fie lipsește. Valoarea liniei rămâne mereu cea din factură — se schimbă doar cantitatea și prețul unitar. Verifici cu `get_received_efactura_details` (cantitatea și prețul originale ale furnizorului vs cele mapate și factorul aplicat) și în Reguli de Mapare. Dacă NIR-ul **nu** e făcut, remapezi cu factorul corect (numărul de bucăți din pachet) sau fără factor; dacă NIR-ul e postat, pregătești maparea prin `correct_invoice_line_mapping` și aplici `correct_confirmed_reception`. Cantitatea fizică se corectează numai cu numărătoare verificată și parametrii ei expliciți. **Obligatoriu corectează și regula învățată**, altfel se reaplică la următoarea factură.
+- **Valoarea pe stoc e mai mare decât baza de pe factură.** Verifică deductibilitatea TVA aleasă pe factură: la deducere limitată sau fără deducere, TVA nedeductibilă face parte din cost. Nu e o dublare.
 - **Am schimbat contul pe linia de factură și nota contabilă e la fel.** Corect — vezi capitolul „Contul: ce se vede vs ce se înregistrează". La marfa care intră pe stoc, nota vine din **tipul produsului**. Repari tipul, nu linia.
 - **De ce se mapează singură a doua factură de la același furnizor?** Pentru că prima a fost confirmată și sistemul a memorat perechea descriere → produs + cont + factor. Asta e comportamentul dorit. Dacă memoria e greșită, o repari o singură dată în Reguli de Mapare — nu linie cu linie.
 - **De ce mi-a schimbat cantitatea după ce am mapat?** Reconversia: produsul e ținut în altă unitate decât cea de pe factură. Cantitatea s-a înmulțit, prețul unitar s-a împărțit, valoarea liniei a rămas neatinsă. Verifică factorul afișat pe linie; dacă e greșit, repară-l acum, înainte de NIR.
