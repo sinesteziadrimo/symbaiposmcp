@@ -50,9 +50,12 @@ Fiecare livrare are o cheie stabilă, derivată din sarcină + destinatar + peri
 Aceleași reguli se aplică și sarcinilor programate din aplicația Claude sau Codex.
 
 - **Fereastra de timp.** După ce PC-ul a stat oprit sau în repaus, rulările ratate pot porni toate odată, la trezire. Scrie în obiectiv fereastra în care mesajul are sens, de exemplu „mementoul de seară: 18:00–21:00”. În afara ferestrei executorul nu trimite nimic și notează rularea ca sărită.
+- **Fără aprobări în rulare.** Nimeni nu aprobă unelte într-o rulare automată din aplicația Claude sau Codex. O unealtă care cere aprobare oprește rularea, de exemplu PowerShell, `update_scheduled_task` sau `list_scheduled_tasks`. Rularea rămâne agățată sau este refuzată. Pe 15.10.2026, la Drunken, refacerea formularelor de producție s-a oprit la `build_prod.ps1` și formularul de dimineață a plecat cu lista veche. Înainte să programezi sarcina, rulează pașii o dată cu omul de față. Cere-i atunci să aprobe permanent comenzile exacte. Dacă nu se poate, mută pasul într-o rutină Connect.
 - **Fără dubluri.** Înainte de trimitere citește conversația sau `routine_activity`. Dacă livrarea cu aceeași cheie a plecat deja (raportul aceleiași zile, același anunț), executorul se oprește fără mesaj.
 - **„Anunță-mă când se termină X”.** Nu programa o verificare la câteva minute care trebuie să se oprească singură. Obiectivul spune ce faci în fiecare caz:
   - X nu e gata: rularea se încheie fără mesaj;
   - X e gata și anunțul nu a plecat: trimite o singură dată.
 
   În Connect, rularea care a trimis anunțul întoarce `"finished":true` lângă `complete:true`, iar Connect pune sarcina pe pauză. Versiunile mai vechi nu fac asta, de aceea obiectivul verifică întotdeauna conversația înainte de trimitere. Sarcinile programate din aplicația Claude sau Codex nu se pot opri singure. La creare spune omului că o sarcină rămasă activă o oprește el, din panoul Connect sau din aplicație. Când revii în conversație și X s-a terminat, pune-o tu pe pauză cu `set_routine_active`.
+
+  Pentru „anunță-mă când X e gata” alege rutina Connect (`schedule_routine`), nu sarcina programată din aplicația Claude sau Codex. Rularea automată din aplicație nu-și poate da singură aprobarea pentru `update_scheduled_task`. După anunț continuă la fiecare termen, consumă rulări și poate retrimite mesajul. Exemplu: pe 14.10.2026, o sarcină la 30 de minute a rulat de 13 ori după ce anunțul plecase.

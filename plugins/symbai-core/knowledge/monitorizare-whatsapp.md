@@ -41,6 +41,7 @@ Mesajele proprietarului scrise de pe telefonul lui nu pornesc rulări (el se des
 
 - **Sesiunea asistentului ales** se reia la fiecare rulare: își amintește ce a făcut în aceeași conversație. `update_watch {clear_session: true}` o resetează. Schimbarea Claude ↔ Codex păstrează obiectivul și notițele, dar resetează sesiunea internă și modelul; este permisă doar între rulări.
 - **Notițele monitorizării** (`notes`): decizii și convenții aflate pe parcurs, scrise de asistentul automat cu `note_watch`, câte o secțiune odată. Rularea automată primește o listă explicită de unelte (răspuns, citire, media, `note_contact`, `note_watch`, `check_new_messages` și instanțele Symbai) — nu poate porni, opri sau rescrie monitorizări și nu poate schimba încrederea oamenilor.
+- **O regulă a proprietarului se notează cu cuvintele lui**, cu ID-ul mesajului, pe produsul sau categoria pe care a numit-o. Nu o extinde la produse înrudite („santalul se consumă direct de pe bar” nu devine „sucurile de bar”); la un caz nou, întreabă.
 - **Profilurile oamenilor**: nume, rol, încredere, limbă, preferințe — citite la fiecare rulare în care omul apare. Proprietarul le scrie cu `remember_contact`, asistentul automat cu `note_contact` (fără încredere). De aici „știe cum și ce să răspundă fiecăruia".
 
 ## Urmărire live din asistentul interactiv
