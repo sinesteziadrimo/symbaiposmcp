@@ -1,6 +1,6 @@
 ---
 name: conecteaza-symbai
-description: Configurează sau repară conexiunea MCP Symbai (Claude Code / Codex) prin Symbai Connect + OAuth nominal și explică DE CE lipsesc tool-uri. La „nu apar tool-urile Symbai", „văd puține tool-uri / lipsesc furnizorii, meniurile", „acces refuzat", „401", „am schimbat calculatorul".
+description: Configurează sau repară conexiunea MCP Symbai (Claude Code / Codex) prin Symbai Connect + OAuth nominal și explică DE CE lipsesc tool-uri. La „nu apar tool-urile Symbai", „văd puține tool-uri / lipsesc furnizorii, meniurile", „acces refuzat", „401", „am schimbat calculatorul", „echipa Symbai nu poate intra pe PC", „suport tehnic", „antivirusul a scos agentul".
 ---
 
 # Conectează sau repară Symbai
@@ -121,5 +121,13 @@ Le folosești **după** ce ai citit `stare` și `explicatie`, ca să traduci —
 - **Configurație manuală veche detectată:** folosește remediul oferit de Symbai Connect pentru intrarea identificată exact și verifică ulterior identitatea nominală. Nu șterge conexiuni după presupuneri sau după numele `symbai-vechi`. Nu afișa utilizatorului comenzi ori configurații.
 - **Doar PIN disponibil:** utilizatorul își setează parola contului din Personal, apoi reia conectarea.
 - **Autorizarea firmei se oprește imediat și panoul numește un antivirus:** antivirusul activ a blocat pasul de autorizare al aplicației asistentului (Codex sau Claude). Spune-i omului ce produs a fost numit și să permită aplicația asistentului în acel antivirus (sau să-l roage pe cel care administrează calculatorul), apoi să apese din nou „Conectează”. Nu dezactiva tu protecția și nu reinstala pachetul pe presupuneri.
+- **Toate legăturile expiră, nu doar firma, sau asistenții nu mai răspund deloc:** [depaneaza-connect](../depaneaza-connect/SKILL.md).
+- **Echipa Symbai nu poate intra pe calculator (Suport tehnic):** panoul Symbai Connect → **Suport tehnic**.
+  - Întâi excepția în antivirus pentru dosarul agentului, `C:\SymbaiRemoteSupport\*`, altfel antivirusul îl scoate din nou. La Avast și AVG: Meniu → Setări → General → Excepții → Adaugă excepție. La Reason Cybersecurity și la celelalte antivirusuri: în setări, la Excepții. Pentru Windows Defender, versiunile noi de Connect pun singure excepția.
+  - „Acord retras” (poate apărea și după ce antivirusul a scos agentul) → alegi firma la „Firma pentru suport” și apeși **Activează acordul**. PC-ul apare la firma aleasă, cu regulile ei de aprobare a conexiunilor.
+  - Pe versiunile care arată „Agent lipsă” sau „Agent blocat”: adaugi excepția (calea se ia cu **Copiază calea**), apoi apeși **Repară acum**.
+  - La intrarea echipei apare pe ecran o cerere de accept, deși firma are acces aprobat → verifici întâi firma aleasă; la nevoie, **Mută la firma aleasă**.
+  - Nu ceri omului fișierele agentului și nu promiți o reinstalare: `connect_repair` repară accesul asistentului la Symbai, nu agentul de suport.
+  - Agentul instalat odată cu Symbai POS se administrează din POS.
 
 Accesul POS nu înlocuiește grantul proprietarului. Accesul final este intersecția dintre grant, consimțământul din browser, rolul POS live și alocările live. Nu ocoli o permisiune lipsă prin SQL sau clickuri riscante.

@@ -135,6 +135,7 @@ Modificări, anulări și refaceri: citește [Corectarea recepțiilor prin MCP](
 | Simptom | Întâi | Apoi |
 |---|---|---|
 | „Văd puține tool-uri", „lipsesc furnizorii/meniurile" | `verifica_conexiune` → `arieAngajat`, module, profil | skill `conecteaza-symbai`, secțiunea „Văd puține tool-uri" |
+| „Asistenții nu mai răspund", „toate legăturile Symbai expiră" | `connection_status`; în Claude Code, `claude mcp list` | skill `depaneaza-connect` |
 | „Există un tool care face X?" | `cauta_tool(«ce vrei să faci»)` | dacă nu există: `trimite_ticket_symbai` (sugestie) |
 | „Cât am configurat din instanță?" | `get_config_status` | skill `onboarding-symbai` |
 | „Instanța e lentă" | `diagnose_index_health` (necesită modulul Setări) | trimite raportul echipei Symbai prin ticket |

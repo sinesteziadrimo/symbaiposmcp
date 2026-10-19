@@ -55,11 +55,11 @@ O **gestiune** (sau magazie) e locul în care ții evidența mărfii: Bar, Bucă
 
 **Transfer între gestiuni** = document de sine stătător. Apare în istoricul de mișcări și intră automat în contabilitate.
 - Din aplicație: **Operațiuni Stoc** → transfer, alegi gestiunea sursă și destinație.
-- Prin conexiune: `create_inventory_document` 🔒 cu tipul `TRANSFER`, `warehouseFromId` + `warehouseToId` (cu `autoPost` sau urmat de `post_inventory_document` 🔒).
-- Transferul e **instantaneu și integral**: în secunda confirmării marfa dispare din sursă și apare în destinație. Nu există starea „marfa e pe drum". Dacă vrei să vezi transportul, fă-ți o gestiune numită „În tranzit" și două transferuri.
+- Prin conexiune: `create_stock_transfer` 🔒 (după `get_stock_transfer_route`), cu aceeași `clientRequestId` la reluare. `list_stock_transfers` arată dacă transferul s-a făcut deja.
+- Politica firmei decide dacă marfa ajunge direct sau stă „pe drum” (`IN_TRANSIT`) până la `confirm_stock_transfer`. Transferul pe drum nu înseamnă marfă primită.
 - Sistemul mută **loturile reale**, cu termen de valabilitate, lot de furnizor și proveniență. De aceea un transfer poate fi refuzat: marfa e rezervată pentru o comandă sau pentru producție, lotul e în carantină de calitate, e expirat, sau altcineva tocmai a mișcat același stoc. Nu se mișcă nimic pe jumătate — ori tot, ori nimic.
-- ⚠ **Transferul se face în interiorul aceleiași locații.** Prin conexiune, un transfer care atinge gestiuni din locații diferite e refuzat ca ambiguu contabil (fie pentru că locația nu poate fi dedusă, fie pentru că nu se potrivește cu toate gestiunile documentului). Marfa care chiar circulă între orașe se înregistrează ca ieșire dintr-o parte și intrare în cealaltă, pe documente.
-- Un transfer confirmat greșit **nu se șterge, se anulează** din aplicație sau prin `void_inventory_document`. Citește întâi diagnosticul fără `confirm:true`; execută anularea autorizată cu documentul și motivul exacte. Respectă refuzurile privind consumul ulterior, inventarul sau perioada contabilă. Verifică și corecțiile deja postate, ca să nu inversezi aceeași mișcare de două ori. O diferență între antetul NIR-ului și gestiunea unui produs nu dovedește un transfer necesar: vezi `intrari-marfa-receptie.md`.
+- `create_stock_transfer` funcționează și între gestiuni din locații sau branduri diferite; costul vine din sursă. Documentul generic `create_inventory_document` refuză un transfer între locații diferite ca ambiguu contabil, deci nu-l folosi pentru transferuri.
+- Un transfer greșit **nu se șterge**. Cât e „pe drum”, îl anulează din aplicație cel care l-a trimis sau un gestionar, iar marfa revine în sursă. După primire, corectura e un transfer nou, în sens invers. Un transfer vechi, făcut ca document de inventar, se anulează prin `void_inventory_document`: citește întâi diagnosticul fără `confirm:true`; execută anularea autorizată cu documentul și motivul exacte. Respectă refuzurile privind consumul ulterior, inventarul sau perioada contabilă. Verifică și corecțiile deja postate, ca să nu inversezi aceeași mișcare de două ori. O diferență între antetul NIR-ului și gestiunea unui produs nu dovedește un transfer necesar: vezi `intrari-marfa-receptie.md`.
 - ⚠ Gestiunile de vehicul nu se încarcă și nu se descarcă prin transfer manual — doar din cursa de distribuție.
 
 **Gestiunea produsului greșită (nu stocul)** — de ex. o materie primă de bucătărie apare la bar. Nu face transfer dacă omul vrea ca produsul să nu fi stat niciodată pe bar:
@@ -100,7 +100,7 @@ Schimbarea global ↔ zonal se face din configurarea magaziei. Revenirea la glob
 
 **2. Mut marfă din depozit în bar**
 1. `get_stock_levels` cu `warehouseId`-ul depozitului — confirmi ce ai efectiv.
-2. Operațiuni Stoc → transfer, sau `create_inventory_document` 🔒 tip `TRANSFER` cu `warehouseFromId` și `warehouseToId`; dacă nu l-ai postat automat, `post_inventory_document` 🔒.
+2. Operațiuni Stoc → transfer, sau `create_stock_transfer` 🔒 (după `list_stock_transfers` și `get_stock_transfer_route`). Dacă politica firmei îl lasă „pe drum”, primirea se confirmă la bar cu `confirm_stock_transfer` 🔒.
 3. Recitește stocul pe ambele gestiuni. Dacă transferul a fost refuzat, citește motivul: marfă rezervată, lot expirat sau în carantină, lună închisă.
 
 **3. Închid o gestiune care nu se mai folosește**
@@ -142,10 +142,10 @@ Schimbarea global ↔ zonal se face din configurarea magaziei. Revenirea la glob
 
 **Scriere:**
 - Modul `produse_meniu`: `create_warehouse`, `update_warehouse`, `create_storage_zone`, `update_storage_zone`, `bulk_create_storage_zones`, `set_initial_stock`.
-- Modul `inventar`: `assign_product_warehouses` (produsul are stoc și în gestiunea X), `apply_material_warehouse_plan` (aplică în masă planul calculat mai sus), `assign_product_storage_zones`, `assign_unzoned_products`, `rename_storage_zone`, `merge_storage_zones` 🔒, `delete_empty_storage_zone`, `create_inventory_document` 🔒 (transferul), `post_inventory_document` 🔒.
+- Modul `inventar`: `assign_product_warehouses` (produsul are stoc și în gestiunea X), `apply_material_warehouse_plan` (aplică în masă planul calculat mai sus), `assign_product_storage_zones`, `assign_unzoned_products`, `rename_storage_zone`, `merge_storage_zones` 🔒, `delete_empty_storage_zone`, `create_stock_transfer` 🔒 și `confirm_stock_transfer` 🔒 (transferul).
 - Modul `productie`: `map_zone_ingredient_warehouse` — leagă un ingredient de gestiunea din care se consumă pentru o anumită zonă de producție.
 
-**Ce rămâne doar din aplicație:** transferul între zone; pornirea/oprirea urmăririi pe zone; alegerea zonei de intrare; legarea unei zone de sală la o zonă de depozitare; pragurile de stoc minim/maxim pe gestiune; ștergerea și restaurarea unei gestiuni; anularea unui transfer deja confirmat; rafturile și etichetele QR. Dacă lipsa unuia dintre ele te blochează efectiv, trimite o cerere cu `trimite_ticket_symbai`, tip „sugestie".
+**Ce rămâne doar din aplicație:** transferul între zone; pornirea/oprirea urmăririi pe zone; alegerea zonei de intrare; legarea unei zone de sală la o zonă de depozitare; pragurile de stoc minim/maxim pe gestiune; ștergerea și restaurarea unei gestiuni; anularea unui transfer aflat „pe drum”; rafturile și etichetele QR. Dacă lipsa unuia dintre ele te blochează efectiv, trimite o cerere cu `trimite_ticket_symbai`, tip „sugestie".
 
 ## Pune materiile prime pe gestiunile corecte, în masă
 
@@ -170,7 +170,7 @@ Detalii care contează:
 
 Regula, în trei rânduri:
 
-- **Fabrica = brand × locație.** Nu gestiune. „Senneville la Călan" e o fabrică; depozitele ei de materii prime și de semipreparate sunt magazii din aceeași fabrică, nu fabrici diferite.
+- **Fabrica = brand × locație.** Nu gestiune. „Fabrica X la locația Y" e o fabrică; depozitele ei de materii prime și de semipreparate sunt magazii din aceeași fabrică, nu fabrici diferite.
 - **Ce muncă vezi pe tabletă** se decide de **stație** — zonele și utilajele configurate pe ea. Un lot al aceleiași fabrici apare pe tableta care îi execută pașii, indiferent de magazia pe care a fost creat.
 - **Gestiunea contează unde chiar contează**: din ce magazii se ia materialul și în care se postează ce ai produs.
 

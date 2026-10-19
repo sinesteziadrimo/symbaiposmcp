@@ -2,7 +2,7 @@
 
 > Citește-l când owner-ul spune „vreau brățări/cartele la eveniment", „să-și încarce bani și să plătească cu cardul ăla", „cum fac la parc să nu umble copiii cu bani", „credite pentru jocuri", „clientul vrea banii înapoi de pe brățară".
 > Pentru linkul exact către pagină folosește `gaseste_in_aplicatie`.
-> Vecini: `loialitate-fidelizare.md` (puncte, ≠ portofel), `jocuri-activitati.md` (unde se consumă creditele), `inchidere-zi-casa.md` (predarea turei), `contabilitate-legaturi.md` (ce ajunge în contabilitate).
+> Vecini: `loialitate-fidelizare.md` (puncte, ≠ portofel), `jocuri-activitati.md` (unde se consumă creditele), `inchidere-zi-casa.md` (predarea turei), `contabilitate-legaturi.md` (ce ajunge în contabilitate). Brățările unui festival cu vendori: skill-ul `organizeaza-festival`.
 
 ## Pe scurt
 
@@ -106,8 +106,19 @@ Restituirea cere permisiune **separată** intenționat: la încărcare intră ba
 | Restituire fără metodă de plată | nu se știe pe unde au ieșit banii | alege întotdeauna cum îi dai |
 | Tratarea soldului ca venit | îți umfli cifra de afaceri cu bani neconsumați | e datorie până la consum |
 
-## Modelul cu vendori (evenimente cu mai multe firme)
+## Festivaluri cu vendori și brățări
 
-La festivaluri, deseori **organizatorul încasează** pe brățară, iar **marfa o dau alți vendori**. Acolo regula e alta: banii nu sunt ai organizatorului, ci încasați *în numele* vendorului; **bonul fiscal îl emite vendorul** care dă produsul, iar organizatorul îi decontează banii, minus comision.
+Festivalurile cu mai mulți vendori și brățări au model propriu: **portofelul evenimentului**, cu bilete, standuri și decont cu vendorii. Îl găsești în skill-ul [organizeaza-festival](../skills/organizeaza-festival/SKILL.md). Uneltele cartelei de mai jos nu se folosesc pentru brățările de festival.
 
-Symbai acoperă azi **modelul în care încasezi și vinzi tu**. Dacă lucrezi cu vendori terți, spune-i asta clientului explicit — e alt flux contabil (datorie față de vendor, nu față de client) și se tratează separat.
+## Cartela prin conexiune (MCP)
+
+| Omul vrea… | Unealta |
+|---|---|
+| „Cât are pe cartelă X” | `get_card_balance` |
+| „Cine i-a încărcat cartela / ce a consumat” | `get_card_wallet_history` |
+| „Cât am încasat pe cartele azi / cât le datorez clienților” | `get_card_wallet_summary` |
+| „Încarcă 100 lei pe cartela lui X” | `top_up_card` — metoda de plată obligatorie la bani; prin asistent doar numerar, de pe tura unui casier; cheie anti-dublare nouă la fiecare încărcare |
+| „Dă-i banii înapoi / stinge soldul” | `refund_card_balance` — `refund` cere metoda; `expire` cere motiv și `confirm:true` |
+| „Leagă cardul de client” | `link_card_to_client` — refuză un card care e deja al altcuiva; reasocierea se face din pagina Acces Carduri |
+
+Încărcarea și restituirea mută bani: cere acordul pe sumă și metodă înainte.

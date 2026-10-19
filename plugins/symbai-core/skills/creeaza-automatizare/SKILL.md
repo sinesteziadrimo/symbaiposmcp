@@ -16,11 +16,23 @@ Userul vrea ca platforma să reacționeze SINGURĂ la ce se întâmplă în busi
 ## Fluxul standard (orice cerere)
 
 1. **Tradu cererea** în: eveniment (declanșator) + praguri (triggerConfig) + acțiuni (efecte) + ritm (cooldown).
+   **Eveniment, nu interval.** „Anunță-mă când apare X / după raportul Z / la un retur” se face cu declanșatorul evenimentului și un efect de notificare. Verifici în `list_automation_triggers`, de ex. `daily_report_ready` cu `reportType: "Z"`, `refund_processed`, `high_value_void`, `cash_drawer_over_short`. Nu crea pentru asta o sarcină de asistent care verifică la câteva minute. Dacă evenimentul lipsește → `request_automation_capability` și, până atunci, o verificare rară la ore fixe. Pentru o cerere de aprobare care stă și pentru rezumatul de după Z (oprire după trimitere, fără rulări goale), vezi [Cereri care stau și rezumatul de după Z](../gestioneaza-asistentii/SKILL.md#cereri-care-stau-și-rezumatul-de-după-z).
 2. **Alege din catalog** declanșatorul + efectele. Rețetă potrivită? → `apply_automation_recipe` (mai rapid și testat).
 3. **Creează**: `create_automation_rule` — primești rezumatul în română («Când X → Y, Z») + avertismente. Combinațiile care ar produce bucle sunt REFUZATE de server (nu insista — recompune).
 4. **Testează**: `test_automation_rule(id)` — simulare fără efecte reale; îți spune dacă s-ar declanșa și de ce nu (config nepotrivit vs cooldown). Ajustează până se potrivește.
 5. **Confirmă clientului** cu rezumatul + unde vede regula (pagina `/actions`) + cum o oprește (îi poți spune că o dezactivezi oricând cu un mesaj).
 6. **La „de ce nu a mers?"**: `test_automation_rule` + `list_automation_executions(ruleId)` — vezi execuțiile reale, efectele rulate și erorile.
+
+## Sarcină pe calculatorul omului (Symbai Connect)
+
+Când cererea nu e o regulă a platformei, ci o verificare făcută de Codex sau Claude Code pe calculatorul omului (emailuri, un raport, „anunță-mă când X e gata”), folosești sarcinile Connect: [Programare în Symbai Connect](../../knowledge/emailuri-si-sarcini-personale.md#programare-în-symbai-connect-pentru-codex-sau-claude-code). Pe Connect 1.2.106 sau mai nou (Windows):
+
+- mai multe ore pe zi într-o singură sarcină: `schedule.times`; verificări doar ziua: `everyMinutes` cu `schedule.activeWindow`; cât de târziu mai poate porni o rulare reluată: `schedule.catchUpMinutes`;
+- `model` și `effort` pe fiecare sarcină; pentru verificări repetate ajunge de obicei un model mai ieftin;
+- „anunță-mă când X e gata”: rularea care a trimis anunțul întoarce `finished:true`, iar Connect pune sarcina pe pauză;
+- după o cădere de internet sau limita contului, Connect reia singur rularea și îl anunță pe proprietar pe WhatsApp la pauză sau la o așteptare lungă. Nu crea sarcini-paznic care verifică alte sarcini.
+
+„Amintește-mi la…”, „dacă nu răspunde în 30 de minute…” și „spune-mi când citește” nu sunt sarcini: sunt [memento-urile Connect](../../knowledge/monitorizare-whatsapp.md#proprietarul-rulări-la-cerere-probe-și-memento-uri).
 
 ## Chestii complexe — compune liber (tiparele complete în knowledge)
 

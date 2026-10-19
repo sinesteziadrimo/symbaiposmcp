@@ -33,6 +33,13 @@ Tu, asistentul interactiv, pornești monitorizarea cu scop și destinatari clari
 | `note_contact` | varianta asistentului automat: rol, limbă, notițe, **fără** încredere |
 | `check_new_messages` | asistentul automat citește ce s-a scris cât lucra (înaintea unei scrieri greu de întors) |
 | `contact_profiles` | profilurile notate |
+| `assistant_reporting` | unde merg raportările; `set_owner` stabilește proprietarul numărului |
+| `run_watch_now` | rulare acum, la cererea proprietarului; rezultatul îl primește doar el |
+| `simulate_watch` | probă cu un mesaj închipuit: nimic nu pleacă, nimic nu se scrie în Symbai |
+| `watch_health`, `owner_watch_control` | starea celorlalte monitorizări și pauză / reluare / mod, numai din conversația privată a proprietarului, după „da”-ul lui |
+| `schedule_reminder`, `followup_if_unanswered`, `notify_when_read`, `list_reminders`, `cancel_reminder` | memento-uri pe care Connect le trimite singur, fără model |
+
+Ultimele cinci rânduri cer Symbai Connect 1.2.106 sau mai nou (Windows). Regulile lor (proprietarul numărului, rularea la cerere, proba, memento-urile, mesajele corectate, conversațiile preluate de Asistenții mei, trimiterea aceluiași mesaj de două ori): [Proprietarul, rulări la cerere, probe și memento-uri](../../knowledge/monitorizare-whatsapp.md#proprietarul-rulări-la-cerere-probe-și-memento-uri).
 
 Pe un calculator cu mai multe numere, fiecare număr are serverul lui (`symbai-whatsapp-livrari`, `symbai-whatsapp-receptie`): monitorizarea trăiește pe numărul de pe care se răspunde. Alege serverul potrivit ÎNAINTE de `watch_chat`.
 
@@ -64,7 +71,23 @@ Precizează separat citirea și modificarea: „membrii acestui grup pot întreb
 **Contact 1-la-1** (mod `always`):
 > Mihai e furnizorul de legume. Când îmi scrie, răspunzi în numele meu: confirmi comenzile pe care i le-am trimis, îi spui ce cantități mai avem nevoie (verifică stocul în Symbai), stabilești ziua livrării. Nu negociezi prețuri și nu confirmi plăți — la astea îmi scrii mie.
 
+**Grup de sală** (mod `mention` sau `always`, după cererea proprietarului; un singur restaurant):
+> Lucrezi pentru restaurantul <brand>, locația <locație>. „Nu mai avem X” sau „Nu este X” de la un coleg înseamnă X indisponibil doar în meniurile acestui restaurant. Îl oprești cu `set_product_86` și `brandIds: [<brandId-ul restaurantului>]`, iar la „avem iar X” îl repornești cu `restore_product_86`, cu aceleași `brandIds`. Nu trimiți `everywhere` și nu lași `brandIds` gol. Dacă schema lui `set_product_86` nu are `brandIds` (instanță neactualizată), pui `available: false` cu `update_menu_item` pe fiecare articol al restaurantului din `get_product_details` → `menuPlacements` (`brandId` + `menuItemId`), notezi în notițe ce ai oprit și la „avem iar X” repornești exact aceleași articole. Nu întrebi de alte restaurante. Confirmi într-un rând.
+
+**Produs nou cerut de personal** (proprietarul aprobă):
+> Când un coleg cere un produs care nu există (de ex. un meniu de eveniment cu preț fix):
+> 1. Cauți întâi produsul (`search_products_db`). Dacă există, îi spui numele lui din aplicație.
+> 2. Păstrezi numele exact cum l-a scris colegul și prețul spus de el. Nu scurtezi și nu adaugi cuvinte.
+> 3. Îi pui o singură întrebare: „Ai nevoie de produsul «Meniu Eveniment 70», 70 lei? Răspunde: «da» sau «nu»”. Nu ceri alte detalii dacă numele și prețul sunt clare.
+> 4. După „da”, îi trimiți proprietarului cererea de aprobare: numele, prețul, categoria și TVA-ul propuse, restaurantul. Dacă se potrivesc două categorii, le dai cu literă: «a» sau «b» e aprobarea.
+> 5. Creezi produsul numai după aprobarea lui, după [adauga-produs-reteta](../adauga-produs-reteta/SKILL.md). Verifici că apare în meniu și îi spui colegului într-un rând.
+> 6. Fără aprobare nu creezi nimic; colegului îi spui doar că cererea așteaptă aprobarea.
+
 Pune ce s-a decis deja în `notes` (convenții: „transferurile de seară intră pe gestiunea Bar"). Asistentul automat le citește la fiecare rulare și le completează singur cu `note_watch`, pe secțiuni („## Decizii”, „## Lucru deschis”) — atât are voie să schimbe la propria monitorizare; obiectivul, modul și oamenii de încredere rămân ale proprietarului, prin `update_watch` din asistentul lui.
+
+O regulă de stil sau format cerută „pentru toți asistenții” se aplică fiecărei monitorizări, nu doar celei din conversație: urmează [Regulă pentru toți asistenții](../gestioneaza-asistentii/SKILL.md#regulă-pentru-toți-asistenții) și scoate din `notes` regulile vechi care o contrazic.
+
+**Cum scriu asistenții:** formatul pe telefon și regulile comune sunt într-un singur loc: [Formatul mesajelor pe telefon](../../knowledge/monitorizare-whatsapp.md#formatul-mesajelor-pe-telefon) și [Reguli comune](../../knowledge/monitorizare-whatsapp.md#reguli-comune-pentru-asistenții-care-scriu-oamenilor). Pe scurt: rând cu rând, puncte 1-2-3 cu subpuncte a-b-c pe rând nou, *titlu* cu o stea, rând liber între puncte, fără tabele și coduri; emoji și linii despărțitoare doar la cererea proprietarului; stil scurt în grupurile de lucru. Copiezi blocul de acolo, nu îl rescrii.
 
 ## Facturi și acte primite în grup
 
@@ -76,6 +99,16 @@ Obiectiv adaptabil la mandatul deja dat:
 Dacă proprietarul a cerut numai ciorne sau analiză, adaptează finalizarea din exemplu la acea limită. Citește [Documente, oferte și costuri](../../knowledge/documente-oferte-si-costuri.md) și [recepție factură furnizor](../receptie-factura-furnizor/SKILL.md); pentru asistenții numiți ghidul live este `invoice_documents`. La lipsa textului PDF verifică `view_document_page` și vederea nativă disponibilă; numele fișierului nu dovedește conținutul. Alte acte folosesc fluxul lor (bancă, casă, cheltuieli, transferuri), nu se transformă toate în facturi. O factură și chitanța ei descriu achiziția și plata, nu două achiziții.
 
 Ține în `notes`/memoria participării cazurile deschise, paginile lipsă, documentele create și rezultatele incerte. Oprește-te numai pe ambiguitatea reală, nu pe întregul lot. Prima rulare verifică documentele și efectele reale, nu doar starea „activ”. Nu trimite facturi ori mesaje artificiale în grup pentru probă.
+
+**Grup „facturi și stoc”** (personalul trimite poze cu facturi și avize, transferuri și cutii desfăcute; modul `silent` sau `mention`, după cererea proprietarului):
+> Personalul scrie aici facturi, avize, transferuri și desfaceri de cutii. Pentru fiecare mesaj nou:
+> 1. Poză sau PDF cu factură sau aviz → recepție din poză: `prepare_reception_photo_transfer` (pe firmă; `fileType: pdf` la PDF), `upload_media_to_symbai`, apoi `analyze_reception_photo_transfer` cu brandul, locația și gestiunea. Verifici liniile și pui marfa pe stoc cu `create_received_invoice_reception`. Nu tastezi factura de mână.
+> 2. Transfer („am mutat 5 kg din magazie la bar”) → `list_stock_transfers`, ca să nu dublezi, apoi `create_stock_transfer`.
+> 3. Cutie sau bax desfăcut în plicuri sau bucăți → skill-ul `transforma-produs`.
+> 4. Produs, gestiune sau cantitate neclare → întrebi o dată omul care a scris. Ce nu poți înregistra îi scrii proprietarului. Nu folosești inventarul ca ocolire.
+> 5. Răspunzi în stilul scurt al grupurilor de lucru: un rând «de unde → unde», câte un rând pe produs, «Gata». Fără stoc rămas, calcule, prețuri sau coduri. Ce nu s-a putut înregistra: un singur rând, cu ce îți trebuie de la om.
+
+Înainte de pornire, verifică pe un mesaj cu poză deja primit că `download_media` îl deschide. Rularea are nevoie de `upload_media_to_symbai` și de accesul la firmă. La un asistent numit, partajarea conversației trebuie să permită copierea fișierelor primite (`shareIncomingMedia`); altfel pozele nu ajung la asistent.
 
 ## Pasul 3 — Descrie oamenii cu `remember_contact`
 
@@ -100,17 +133,17 @@ Răspunsul are `pregatire` și `urmatoriiPasi` pentru executorul ales. `list_wat
 - **ChatGPT Codex nu e instalat** — instalează aplicația Codex și conecteaz-o din Symbai Connect. Aplicația ChatGPT obișnuită, fără Codex, nu este suficientă. Nu este necesar Claude Code.
 
 - **Claude Code nu e autentificat** (contul desktop nu e același cu CLI-ul). Spune-i omului exact: „Deschide panoul Symbai Connect (pictograma din bara de jos sau `http://127.0.0.1:5196`), secțiunea *Monitorizări WhatsApp*, apasă **Autentifică Claude Code** și loghează-te în browserul care se deschide. O singură dată." Până atunci monitorizarea există, dar la primul mesaj se oprește singură cu acest motiv; după login, reia cu `update_watch {active: true}`.
-- **Claude Code nu e instalat** — se instalează din panou, secțiunea *Unelte*.
+- **Claude Code nu e instalat** — se instalează din panou, *Modele AI* → Claude Code → **Instalează**.
 
 **Loginul AI și accesul la firmă sunt verificări diferite.** `loggedIn: true`, licența Connect validă și monitorizarea activă nu dovedesc că firma acceptă conexiunea MCP. Verifică separat Connect → Firme → acces Codex pentru firmele folosite de executor. Dacă versiunea expune `connectionsVerified` și `connections`, cere rezultat verificat pentru toate conexiunile necesare; `checking`, `unverified` sau câmp lipsă nu reprezintă succes. La refuzul unei firme repară acea conexiune prin fluxul oficial, păstrând loginul ChatGPT valid. Nu copia tokenuri și nu folosi alt tenant pentru a evita refuzul.
 
-Verifică prima rulare reală cu `watch_activity` înainte să declari continuitatea confirmată. Până atunci spune „configurată, prima rulare încă neverificată”. O verificare read-only a identității firmei în același executor este o dovadă mai bună decât starea din altă conversație. Nu trimite mesaje artificiale către contact pentru test. Pentru o intervenție cu așteptare, folosește supravegherea autorizată a taskului operatorului, dacă este disponibilă, ca o eroare să fie observată fără o nouă solicitare a utilizatorului.
+Verifică prima rulare reală cu `watch_activity` înainte să declari continuitatea confirmată. Până atunci spune „configurată, prima rulare încă neverificată”. O verificare read-only a identității firmei în același executor este o dovadă mai bună decât starea din altă conversație. Nu trimite mesaje artificiale către contact pentru test; pe Connect 1.2.106 sau mai nou probezi obiectivul cu `simulate_watch`, care nu trimite și nu scrie nimic. Pentru o intervenție cu așteptare, folosește supravegherea autorizată a taskului operatorului, dacă este disponibilă, ca o eroare să fie observată fără o nouă solicitare a utilizatorului.
 
 Calculatorul trebuie să rămână pornit, cu utilizatorul conectat și internet; fereastra Codex nu trebuie să stea deschisă. Alegerea asistentului se poate schimba din panou sau prin `update_watch dispatch` doar între rulări: notițele, obiectivul și istoricul rămân, sesiunea internă și modelul se resetează. Nu există trecere automată între furnizori la erori ori limite de cont. În Codex, `max_turns` limitează apelurile de unelte; există și plafon de timp. Nu promite paritate pentru orice atașament: dacă un fișier nu poate fi citit de uneltele disponibile, raportează și cere o formă accesibilă, fără să inventezi conținutul.
 
 ## Când omul întreabă „ce s-a întâmplat"
 
-`watch_activity` pe conversație: fiecare rulare are ora, ce a declanșat-o, câte mesaje a primit, **rezumatul lăsat de asistent** („am adăugat Limonada la 18 lei în Băuturi; Andrei a cerut și un tort, am transmis proprietarului”) și erorile. Spune-i omului rezumatele, nu structura. Dacă o rulare a eșuat de trei ori la rând, monitorizarea s-a oprit singură cu motivul în `motivOprire` — citește-l, repară cauza, reia.
+`watch_activity` pe conversație: fiecare rulare are ora, ce a declanșat-o, câte mesaje a primit, **rezumatul lăsat de asistent** („am adăugat Limonada la 18 lei în Băuturi; Andrei a cerut și un tort, am transmis proprietarului”) și erorile. Spune-i omului rezumatele, nu structura. Dacă o rulare a eșuat de trei ori la rând, monitorizarea s-a oprit singură cu motivul în `motivOprire` — citește-l, repară cauza, reia. Pentru „uită-te acum în grup și spune-mi…” folosește `run_watch_now` (Connect 1.2.106 sau mai nou; rezultatul vine doar la proprietar), nu citiri repetate.
 
 Stările pe care le vezi acolo:
 - `step_limit` — rularea s-a oprit la plafonul de pași; conversația a primit deja un mesaj „răspunde cu continuă” (în modul silent îl primește proprietarul). Ce a apucat să facă rămâne făcut.
@@ -125,7 +158,7 @@ Executorul WhatsApp are numai uneltele expuse în acea rulare. Nu îi promite ac
 
 Dacă asistentul răspunde greșit, citește întâi mesajele și dovezile pe care le-a avut. Corectează notițele factuale prin `note_watch`/`update_watch notes`; schimbă obiectivul numai dacă delegarea este neclară și proprietarul a autorizat schimbarea. Un răspuns greșit nu justifică modificarea încrederii contactului. Pentru istoric foarte lung preferă compactarea furnizorului, păstrând deciziile, ID-urile, mesajele tratate și operațiile incerte. `clear_session:true` este ultima soluție autorizată, după salvarea continuității și verificarea rulării în curs; nu garantează un răspuns mai corect.
 
-**Aprobări care ajung la executor:** înainte să promiți „scrie da și pornesc”, verifică `includeOwnerMessages`/`include_owner_messages`, modul și `trigger_words`. În always/silent, mesajele obișnuite ale proprietarului pornesc monitorizarea numai dacă opțiunea este activă; un cuvânt declanșator configurat poate porni și mesajele lui. Notificarea în conversația cu sine nu creează automat monitorizarea acelui fir. Indică același chat și mecanismul efectiv disponibil sau continuarea din asistentul proprietarului. Leagă răspunsul de operația concretă și verifică autorul; nu transforma relatarea interlocutorului sau tăcerea în aprobare. Nu activa automat opțiunea și nu extinde persoanele de încredere fără autorizarea configurării.
+**Aprobări care ajung la executor:** înainte să promiți „scrie da și pornesc”, verifică `includeOwnerMessages`/`include_owner_messages`, modul și `trigger_words`. În always/silent, mesajele obișnuite ale proprietarului pornesc monitorizarea numai dacă opțiunea este activă; un cuvânt declanșator configurat poate porni și mesajele lui. Notificarea în conversația cu sine nu creează automat monitorizarea acelui fir. Indică același chat și mecanismul efectiv disponibil sau continuarea din asistentul proprietarului. Leagă răspunsul de operația concretă și verifică autorul; nu transforma relatarea interlocutorului în aprobare. Tăcerea contează numai la aprobările din POS pentru care omul a cerut explicit aprobarea automată (regula de mai jos). Nu activa automat opțiunea și nu extinde persoanele de încredere fără autorizarea configurării.
 
 ## Urmărire live din sesiunea asta (fără asistent automat)
 
@@ -134,6 +167,8 @@ Când omul vrea ca **tu, aici**, să reacționezi („urmărește chatul cu Miha
 ## Reguli pe care nu le încalci
 
 - **Nu porni o monitorizare cu obiectiv vag** („răspunde la ce te întreabă"). Fără limite scrise, asistentul automat le va inventa.
+- **Corecturile de stoc propuse de asistent se scriu numai după „da” la cifra exactă**; „nu” sau tăcerea nu sunt acord, iar după fiecare scriere asistentul spune ce a scris (documentul, cifra). Inventarul nu ține loc de transfer și nu ocolește o scădere refuzată. Detalii: [Reguli comune, 11–12](../../knowledge/monitorizare-whatsapp.md#reguli-comune-pentru-asistenții-care-scriu-oamenilor) și [gestioneaza-stocuri](../gestioneaza-stocuri/SKILL.md#corecturi-cerute-pe-grup-și-scăderi-refuzate).
+- **Aprobările din POS le decide omul.** Anunți cererea și aștepți răspunsul lui. Aprobi singur numai după regula cerută explicit de el pentru acel tip de cerere, cu condițiile din [stilul de lucru, §3](../../knowledge/stil-de-lucru.md#3-banii-trimiterile-în-masă-și-ireversibilul-cer-acord-explicit).
 - **Nu pune două numere pe același grup în `always`** — își răspund unul altuia. Plafonul de rulări pe oră oprește bucla, dar după ce s-au trimis deja mesaje.
 - **Nu promite viteză**: rularea pornește după câteva secunde de liniște (8 implicit, ca oamenii să termine de scris) și durează cât durează acțiunea în Symbai — de regulă sub două minute.
 - Mesajele mai vechi de 12 ore (sosite cât calculatorul a fost oprit) nu primesc răspuns automat; asistentul le pomenește în rezumat.

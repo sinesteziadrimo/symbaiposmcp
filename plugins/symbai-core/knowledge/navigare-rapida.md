@@ -229,6 +229,14 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: pentru rezervări restaurant (tab-uri host/listă/disponibilități) → /reservations; pentru evenimente cu P&L → /events; pentru planificarea turelor → /staff?tab=scheduler
 - **Contracte** `/contracts` — Contracte pentru evenimente/nunți: 2 tab-uri (Șabloane, Contracte Active), urmărire expirare și status.
 · NU aici: pentru fișa completă a evenimentului (inclusiv tab Contract) → /event/:id
+- **Operațiuni eveniment (festival)** `/event-operations` — Centrul de comandă al organizatorului de festival. Taburi (`?tab=`): Live `overview`, Bilete `tickets`, Recepție `check-in`, Vendori `vendors`, Aplicări vendori `vendor-applications`, Meniuri standuri `vendor-menus`, Recenzii vendori `vendor-reviews`, Cashless `cashless`, Tranzacții `transactions`, Acces `access`, Rapoarte `reports`, P&L `pnl`, Decontări `settlements`, Incidente `incidents`, Alimentări anulate `wallet-reconciliation`, Pagina publică `public-page`, Setări `settings`. La restaurant, `?connect=vendor` conectează standul la festivalul altcuiva. [Skill](../skills/organizeaza-festival/SKILL.md).
+· NU aici: pentru nunți/petreceri cu P&L → /events; pentru cartela RFID a restaurantului → /access-cards; pentru P&L-ul tuturor edițiilor → /event-pnl
+- **Hartă festival 3D** `/festival-map` — Planul terenului festivalului la scară: scene, standuri, porți, zone, analiza de capacitate și evacuare, publicarea pentru vizitatori.
+· NU aici: pentru săli, hoteluri și parcuri desenate la scară → /event-studio
+- **P&L festivaluri** `/event-pnl` — Bugetul și profitul fiecărei ediții de festival: venituri, cheltuieli, plăți, facturi legate, publicul.
+- **Meniuri la festivaluri** `/event-vendor` și **Aplicări la festivaluri** `/festival-applications` — La restaurantul care vinde la festivalul altcuiva: meniul trimis organizatorului, invitațiile, aplicările, documentele și contractul.
+· NU aici: pentru organizatorul festivalului → /event-operations
+- **Site-ul festivalurilor** festival.symbai.app — Pagina publică a fiecărei ediții (line-up, FAQ, bilete) și profilul organizatorului; se completează din Operațiuni eveniment → Pagina publică.
 - **Chestionare** `/questionnaires` — Chestionare de satisfacție pentru clienți: 3 tab-uri (Șabloane cu builder, Răspunsuri, Statistici Personal).
 · NU aici: pentru recenzii Google/Facebook + declanșatoare → /feedback; pentru NPS hotel → /hotel/guest-feedback
 - **Comenzi B2B** `/b2b-orders` — Comenzile clienților pe firmă (B2B): clienți firmă, contracte cadru, prețuri negociate.

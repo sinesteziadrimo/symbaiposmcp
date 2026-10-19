@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-personal
-description: Personalul — angajați (PIN/parolă), roluri & permisiuni, ture cu raionul corect pentru rutarea QR, Program Salon, contracte și salarizare, beneficii de masă cu buget, schimbarea unității. La „adaugă angajat", „programează tură", „pune ospătarul pe raion", „de ce nu intră comanda QR la ospătar", „fă contract", „masa personalului / beneficiu personal", „de ce nu se aplică beneficiul".
+description: Personalul — angajați (PIN/parolă), roluri & permisiuni, ture cu raionul corect pentru rutarea QR, Program Salon, contracte și salarizare, beneficii de masă cu buget, schimbarea unității. La „adaugă angajat", „programează tură", „pune ospătarul pe raion", „de ce nu intră comanda QR la ospătar", „fă contract", „masa personalului / beneficiu personal", „de ce nu se aplică beneficiul", „trimite programul pe categorii”.
 ---
 
 # Gestionează personalul — angajați, roluri, ture, raioane, contracte
@@ -96,6 +96,19 @@ Detaliile complete (discovery cu owner, configurare câmp-cu-câmp, cum aplică 
 4. **MCP** (dacă tool-urile sunt active pe instanță): citire `list_staff_benefit_rules`, `diagnose_staff_benefit_rule` („de ce nu se aplică"), `get_staff_benefit_budget`, `get_staff_benefit_report`; scriere `create_staff_benefit_rule`, `update_staff_benefit_rule`, `set_staff_benefit_employee_budget`, `toggle_staff_benefits`, `set_staff_benefit_accounting_mode`. Regulile acceptă și excluderi (`excludedProductIds`, `excludedTagIds`, `excludedProductTypeCodes`) plus `requiresApproval`; aprobarea/respingerea unei cereri se face în POS/UI dacă nu vezi tool dedicat în sesiune. Înainte de `set_staff_benefit_accounting_mode`, explică owner-ului diferența: `internal_only` rămâne intern/P&L, `separate_benefit` trimite valoarea distinctă către contabilitate ca avantaj în natură, fără să dubleze COGS. Dacă tool-urile lipsesc din sesiune → **fallback la pagină** `/staff` → tab „Beneficii Personal" (vechiul `/settings/staff-benefits` doar redirecționează).
 5. **Aplicarea pe o notă rămâne în POS** (acțiune de ospătar: masă → 3 puncte → „Beneficiu Personal"); prin conexiune o explici, n-o faci.
 6. **„Nu se aplică" = aproape mereu CONFIG, nu defect.** Verifică în panoul „Stare regulă" / cu `diagnose_staff_benefit_rule`: rol beneficiar ∈ permise, la lucru dacă se cere, produs în scope și nu în excluderi, buget neepuizat, aplicator permis, iar dacă `requiresApproval` este activ vezi cererea în așteptare.
+
+## (h) Programul trimis pe grup, pe categorii
+
+Când managerul cere programul pe categorii, de ex. „ospătarii pe un rând, apoi ajutor ospătar, șef bar, barman, ajutor bar”:
+
+1. **Categoria vine din fișa omului.** Folosești rolul lui din `get_staff_overview` sau grupa lui din grila Planificatorului (`get_staff_schedule_layout`), nu o ghicești din nume. Pe cine nu poți încadra îl pui la sfârșit, sub „Alții”, și întrebi o dată unde îl pui.
+2. **Păstrezi ordinea cerută.** Categoriile vin exact în ordinea managerului, fiecare cu oamenii ei și ora lor. O categorie fără nimeni apare cu „nimeni”, ca să se vadă golul.
+3. **Salvezi preferința înainte să spui „de acum fac așa”.** Preferința trebuie să ajungă acolo unde o citește rularea de mâine:
+   - dacă programul îl trimite o sarcină sau o rutină, în instrucțiunile ei (`asistent_sarcina`, `update_routine`, din conversația proprietarului);
+   - dacă îl trimite asistentul din grup, în memoria lui (`remember_lesson` cu mesajul managerului ca sursă sau, pe o monitorizare Connect, `note_watch`).
+
+   Apoi îi spui managerului, într-un rând, unde ai salvat-o. Dacă lecția așteaptă aprobarea proprietarului, îi spui și asta. O promisiune fără salvare se pierde la următoarea rulare. Regula generală: [Reguli comune, 10](../../knowledge/monitorizare-whatsapp.md#reguli-comune-pentru-asistenții-care-scriu-oamenilor).
+4. Programul arătat pe grup e cel din Planificator. Dacă lipsește o categorie întreagă (de ex. barul nu are ture), spui asta; nu completezi din presupuneri.
 
 ## Click-paths în aplicație (extensia Chrome, când MCP nu acoperă)
 

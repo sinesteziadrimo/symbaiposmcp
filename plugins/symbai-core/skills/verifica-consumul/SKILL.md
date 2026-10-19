@@ -40,6 +40,7 @@ La un minus de stoc sau „am folosit alt ingredient câteva ore”, verifică �
 La `find_consumption_gap_days`, citește clasificarea rândurilor înainte de total: `consumedWithoutRun` înseamnă consum deja POSTAT cu evidență de rulare incompletă și nu se regenerează; `ambiguous` cere verificarea domeniului. Numai `missingScopes` pot fi candidate în simulare, iar `would_attempt` nu promite recuperare. Unele versiuni vechi includ greșit toate aceste categorii în rezumatul „fără consum”; dacă mesajul contrazice rândurile, explică diferența. Valoarea vânzărilor nu este cost de stoc sau pierdere confirmată. Separă ziua curentă și, la meniul zilei, părintele cu preț de componentele care consumă ingrediente.
 
 **A. „Nu mi-a scăzut stocul"**
+0. `get_consumption_problems` (unitatea, perioada): aceeași listă ca **Consum zilnic → Probleme**, cu cauza și unealta pentru fiecare problemă. Pornești de aici la orice „nu s-a generat”.
 1. `get_daily_consumption_status` pe **ziua încheiată** (ieri), nu pe azi.
 2. Dacă nu s-a generat: verific cu clientul comutatorul **Setări → Stocuri → „Scădere automată din stoc"** și dacă luna e închisă contabil. ⚠ Cu comutatorul oprit, rularea automată se raportează liniștit ca terminată — deci „a rulat" nu înseamnă „a scăzut". Apoi propun `generate_daily_consumption` cu `date` (+ `locationId` dacă are mai multe unități), 🔒 după confirmare.
 3. Dacă s-a generat dar produsul lipsește din consum: `get_product_details` + `list_recipes` (căutare pe nume) și `get_recipe_details` → are produsul o **rețetă legată** de el, nu doar o rețetă cu nume asemănător?
@@ -48,6 +49,25 @@ La `find_consumption_gap_days`, citește clasificarea rândurilor înainte de to
 6. Dacă produsul e comun mai multor locații sau „scade din barul greșit", rulez `diagnose_consumption_warehouse_routing({ productId, brandId, locationId })`. Citesc fiecare ingredient, `resolutionSource` și avertismentele. **Tagurile nu aleg gestiunea**; ele controlează meniul/imprimanta/KDS.
 7. Dacă totul e în regulă și diferența e doar de moment, explic **stocul live**: în cursul zilei platforma arată stocul pe documente minus consumul estimat al vânzărilor **trimise la producție/bucătărie**, iar cifra se așază definitiv după procesarea zilei. ⚠ La bar sau retail, unde se vinde fără trimitere la bucătărie, estimarea din cursul zilei nu prinde vânzarea — stocul live pare mai mare până a doua zi. Nu e pierdere de consum, e doar estimarea intermediară.
 8. Confirm efectul cu `get_stock_levels` pe numele produsului și explic clientului, în lei și cantități, ce s-a schimbat.
+
+**A2. Codul din eroare → ce faci**
+
+| Cod | Ce înseamnă | Ce faci |
+|---|---|---|
+| `SOURCE_CONTAINER_BRAND_MISMATCH` | un recipient vechi n-are brandul scris, sau recipientul e al altui brand | `check_container_brand_drift`, apoi `repair_container_brands` (previzualizare → confirmare); completează doar recipientele cu dovadă. Pentru unul rămas fără dovadă sau cu brand greșit: `set_container_brand`, la cererea omului, numai cu un brand al gestiunii în care stă recipientul: previzualizare, acordul lui, apoi `confirm:true` cu `previewDigest` și `reason` (cine a cerut și de ce). Nu ghici brandul. Dacă alt brand trebuie să consume marfa, nu schimbi eticheta: `diagnose_consumption_warehouse_routing` și rutarea corectă (fluxul D din `gestioneaza-stocuri`). Dacă `set_container_brand` lipsește (instanță neactualizată), tichet cu recipientul și lotul din eroare. |
+| `SOURCE_CONTAINER_PLACEMENT_MISMATCH` | recipientele declară mai multă marfă decât are lotul | `check_container_placement_drift`, apoi `repair_container_placements` (previzualizare → confirmare). |
+| `SOURCE_CONTAINER_UOM_MISMATCH` | recipientul ține marfa în altă unitate decât lotul | `repair_container_content_unit` (previzualizare, apoi `confirm:true` cu `contentIds` aprobate): schimbă doar unitatea, acolo unde dovada e clară; îi arăți omului cifra în unitatea nouă. Dacă cifra trebuie convertită, `convert_container_content_unit` cu factorul spus de om: previzualizare, acordul lui, apoi `confirm:true` cu `previewDigest` și `reason`. Dacă uneltele lipsesc, tichet cu recipientul și lotul. Nu ocoli prin inventar. |
+| `STOCK_COUNT_REBASE_PHYSICAL_IDENTITY_REQUIRED` | un inventar ulterior pe aceeași gestiune are loturi, greutăți sau zone care nu se recalculează singure | găsești inventarul cu `list_stock_count_sessions`. Cantitatea greșită o corectezi cu `correct_completed_stock_count`; altfel faci un inventar nou pe produsele de corectat. Dacă mesajul cere „Mișcări de stoc fără zonă”, reparația e în Setări → Reparații. |
+| `REPROCESS_RANGE_HAS_RUNLESS_CONSUMPTION` | consum postat fără rândul lui de rulare | `rebuild_consumption_run_registry` (simulare → confirmare), apoi reprocesarea. |
+| `ECOMMERCE_OPERATIONAL_STOCK_CHANGED` | stocul unei poziții cere reverificare | `get_stock_background_activity` (e o refacere sau o reprocesare în curs?) și `check_stock_health` pe zi. Loturi peste stoc → `repara_loturi_peste_stoc`. Dacă se repetă fără cauză găsită, tichet cu ziua, unitatea și jobul. |
+| `ingredient_unlinked` / `ingredient_missing_or_deleted` | rețetă cu ingredient fără produs | `fix_recipe_ingredient`. |
+| `valuation_attention` | costurile oprite la un document | `retry_inventory_document_valuation` din `mcpNextStep`, nu tichet. |
+
+- O eroare de date nu se reîncearcă: repari cauza, apoi reiei ziua o singură dată.
+- Omului îi spui produsul, gestiunea și cauza în cuvinte simple, nu codul.
+- Corecturile de recipient (`set_container_brand`, `convert_container_content_unit`, `repair_container_content_unit`) le poate face și managerul unei unități, numai pe gestiunile din aria lui (POS 19.3.820 sau mai nou). Fiecare cere previzualizare și acordul omului; brandul și conversia cer și motivul, care rămâne în jurnal.
+- Produs vândut prin rețetă care are totuși stoc ce nu scade (halba, cu marfa din butoi intrată pe ea): `list_recipe_products_with_own_stock`, apoi mapezi recepția pe ingredient (avertismentul `RECIPE_SOLD_PRODUCT_RECEIVED` din `receptie-factura-furnizor`). Nu-l ascunde cu un inventar.
+- Dacă vrea să afle dimineața când consumul n-a mers, propui o sarcină zilnică (`schedule`) care citește `get_consumption_problems` și scrie doar când găsește ceva.
 
 **B. „Produsul apare la Consum Temporar"**
 1. Stabilesc cu clientul ce este de fapt produsul: are rețetă, e marfă revândută ca atare, sau e masă servită/protocol.

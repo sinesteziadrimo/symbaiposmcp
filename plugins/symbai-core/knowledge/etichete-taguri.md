@@ -9,7 +9,7 @@ O **etichetă** (tag) e o grupare reutilizabilă atașată produselor (și, mai 
 O etichetă poate fi legată de un brand (și, mai fin, de o locație), dar **nu e obligatoriu**:
 
 - **fără `brandId`** = eticheta se aplică în **toate unitățile** firmei. Ăsta e default-ul și e ce vrei pentru taxonomie: „Lactate", „Vegan", alergeni, cote TVA, „Recomandat".
-- **cu `brandId`** = eticheta e a acelui brand: apare doar în rapoartele lui și poate primi rutare doar pe imprimantele/ecranele lui. Ăsta e cazul etichetelor de rutare, unde fiecare local are bucătăria și barul lui — „BAR ASTUR", „BUCĂTĂRIE DRUNKEN".
+- **cu `brandId`** = eticheta e a acelui brand: apare doar în rapoartele lui și poate primi rutare doar pe imprimantele/ecranele lui. Ăsta e cazul etichetelor de rutare, unde fiecare local are bucătăria și barul lui — „BAR LOCAL A", „BUCĂTĂRIE LOCAL B".
 - **cu `brandId` + `locationId`** (doar din aplicație) = îngustare peste brand, când eticheta e a unui singur local al unui brand cu mai multe locații.
 
 Lipsa brandului nu e o „scăpare" și nu e rezervată administratorului: e sensul implicit. Nimic nu completează brandul în locul tău — ce lași gol rămâne gol. Dacă firma are mai multe branduri și utilizatorul n-a spus al cui e eticheta, **întreabă-l** în loc să ghicești: o etichetă de rutare pusă pe brandul greșit nu poate fi legată de imprimanta celuilalt local („unități incompatibile" la salvarea regulii).

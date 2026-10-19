@@ -46,7 +46,22 @@ Clarifică rezultatul urmărit, colegii și grupurile, când intervine, informa�
 - limitele, când cere ajutor și cum raportează o problemă;
 - ce merită ținut minte și cum folosește corecțiile.
 
+**Cum scriu asistenții:** formatul pe telefon și regulile comune sunt într-un singur loc: [Formatul mesajelor pe telefon](../../knowledge/monitorizare-whatsapp.md#formatul-mesajelor-pe-telefon) și [Reguli comune](../../knowledge/monitorizare-whatsapp.md#reguli-comune-pentru-asistenții-care-scriu-oamenilor). Pe scurt: rând cu rând, puncte 1-2-3 cu subpuncte a-b-c pe rând nou, *titlu* cu o stea, rând liber între puncte, fără tabele și coduri; emoji și linii despărțitoare doar la cererea proprietarului; stil scurt în grupurile de lucru. Copiezi blocul de acolo, nu îl rescrii.
+
 `asistent_creeaza` primește un UUID stabil, definiția și motivul. La reîncercare păstrează UUID-ul; nu crea duplicate. Pornește în pauză dacă grupul, accesul sau sarcina nu sunt încă stabilite. Alege numai un calculator, model și nivel de efort din lista live. Funcționarea continuă cere calculatorul pornit, conectat și contul Codex/Claude disponibil.
+
+## Verifică înainte de activare (asistent pe WhatsApp)
+
+Verifică în această ordine:
+
+1. **Scopul**: ce face, ce nu face, când a terminat și cui raportează, în cuvintele proprietarului.
+2. **Brandul**: numărul e partajat pe brandul pe care lucrează asistentul și participarea. La refuzul „Numărul WhatsApp este partajat pe brandul…” faci ce spune mesajul: partajezi numărul pe brandul asistentului sau adaugi brandul numărului la participare.
+3. **Declanșatorul**: mesajul nou (`always`, `mention` cu numele de apel sau `silent`), nu un interval.
+4. **Conversația partajată** cu firma, cu toate scopurile de la început: răspunsuri, notificări individuale și, dacă primește poze sau acte, copierea fișierelor primite. Un scop uitat nu se adaugă ulterior: partajarea se oprește și se reface. `connect_whatsapp_canale` arată ce are.
+5. **Accesul**: modulele sau pachetele pentru ce i se cere și toate unitățile la care trebuie să răspundă (de ex. casieriile lor). Listele goale înseamnă zero date.
+6. **Modelul și calculatorul**: un model din `asistenti_lista` pentru acel calculator sau implicitul; calculatorul pornit, cu Codex sau Claude autentificat.
+
+Apoi recitești cu `asistent_citeste`, activezi și verifici prima rulare reală în activitate. Fără mesaj de probă în grup.
 
 ## Acces: module și pachete
 
@@ -82,7 +97,7 @@ Pentru asistentul financiar, modulul «Financiar & Contabilitate» dă uneltele 
 
 `asistent_grup` cere asistentul, grupul, bindingId UUID stabil și expectedRevision (`null` numai la creare). Proprietarul trebuie să fie membru și să aibă drept de administrare. Identificatorul trebuie să fie unic între asistenții grupului.
 
-Moduri: `mention` la @mențiune, `always` după mesajele colegilor, `periodic` la intervalul ales sau `manual` la cererea proprietarului. Setează limitele orare/zilnice, intervalul, așteptarea mesajelor consecutive și eventual orele de liniște cu fusul orar. Asistenții nu se declanșează reciproc. Instrucțiunile grupului descriu sarcina locală; permisiunile pot fi doar restrânse aici.
+Moduri: `mention` la @mențiune, `always` după mesajele colegilor, `periodic` la intervalul ales (nu pentru a afla dacă s-a întâmplat ceva) sau `manual` la cererea proprietarului. Setează limitele orare/zilnice, intervalul, așteptarea mesajelor consecutive și eventual orele de liniște cu fusul orar. Asistenții nu se declanșează reciproc. Instrucțiunile grupului descriu sarcina locală; permisiunile pot fi doar restrânse aici.
 
 ## Dă-i sarcini fără grup
 
@@ -93,13 +108,28 @@ Pentru Planificatorul de Ture, verifică în plafonul live accesul distinct `tea
 O sarcină independentă rulează fără niciun grup: raportul de dimineață la 08:00, marketingul între 09:00 și 21:00, urmărirea unei adrese de email, preluarea facturilor din email, verificarea eFactura. Rulează pe același calculator Connect, cu identitatea și memoria asistentului, iar răspunsul final este livrabilul.
 
 1. Citește `asistenti_lista`: `taskTemplates` (indexul șabloanelor) și `taskTargets` (adresa proprietarului, emailurile personale conectate, numerele WhatsApp partajate prin Connect cu conversațiile lor). Dacă un șablon oferă `nextArguments` și nu are `config`, repetă apelul cu acel `templateId` pentru declanșatorul și instrucțiunile complete. Nu transforma descrierea scurtă din index în configurația de executare. Pe versiuni mai vechi, configurația poate fi deja inclusă; nu cere din nou toate șabloanele. Sursele și destinațiile se aleg NUMAI din `taskTargets`.
-2. Alege declanșatorul: `schedule` (oră fixă + zile), `interval` (la N minute, opțional într-o fereastră orară, de ex. 09:00–21:00), `monitor` pentru email (surse noi, minimum 5 minute) sau `manual`. Fusul orar implicit este Europe/Bucharest.
+2. Alege declanșatorul: `schedule` (oră fixă + zile), `interval` (la N minute, opțional într-o fereastră orară, de ex. 09:00–21:00), `monitor` pentru email (surse noi, minimum 5 minute) sau `manual`. Fusul orar implicit este Europe/Bucharest. `interval` doar pentru lucru care chiar cere un ritm. Pentru „când apare o cerere de aprobare / după raportul Z / la o mișcare de casă” folosești întâi un declanșator de eveniment ([creeaza-automatizare](../creeaza-automatizare/SKILL.md)); dacă nu există, o sarcină `schedule` la orele utile. Cererile de aprobare se citesc într-un singur apel, `list_operation_requests(status:"pending")` fără `type`, nu câte unul pe tip. O sarcină care întoarce aproape mereu `[NO_REPLY]` consumă degeaba: rărește-o. La `schedule`, `recoverMissed: true` face ca un termen ratat cu calculatorul oprit să ruleze o singură dată când calculatorul revine, în cel mult 20 de ore de la termen; rezultatul spune că vine cu întârziere. Fără el, termenul ratat se sare (POS 19.3.820 sau mai nou).
 3. Alege accesul prin `envelope.capabilities`: modulele (`data.<modul>.read` / `data.<modul>.write`) și pachetele specializate, de ex. `reports.read` (vânzări, P&L, casă, stocuri, echipă și rapoartele peste toate modulele), `marketing.read`/`marketing.operate`, `team.read`/`team.operate`, `email.read`/`email.send`, `whatsapp.read`/`whatsapp.send`, `invoices.read`/`invoices.write`, `knowledge.read`, `learning.propose`, `sales.read`, `tasks.draft` și `analysis.sql` (numai când rezultatul ajunge doar la proprietar, sarcina nu urmărește surse și nu are drepturi de modificare sau de trimitere). Pot fi cel mult cele ale asistentului; uneltele rulează cu drepturile proprietarului (rol + Acces AI), pe brandurile și unitățile bifate. Nu porni scrieri fără cererea explicită a proprietarului.
 4. Scrie instrucțiuni pentru o singură rulare: ce verifică, ce criterii aplică, ce are voie să facă și cum arată răspunsul final. `[NO_REPLY]` înseamnă „nimic de raportat” și nu se livrează.
 5. Alege livrarea (`deliver`): push pe telefonul proprietarului, email (null = adresa lui), mesaj într-un grup de echipă administrat de el, WhatsApp prin numărul lui partajat (doar conversații cu notificări permise). Livrată într-un grup, sarcina folosește doar ce pot vedea toți membrii; pe WhatsApp sau la alt email, fără SQL, iar inboxul, conversațiile și memoria proprietarului cer pachetul lor. Rezultatul rămâne oricum în Activitate.
 6. Salvează cu `asistent_sarcina` (taskId UUID stabil, `expectedRevision` null la creare). Monitoarele pornesc de la mesajele de după salvare. Reia/pune în pauză/șterge cu `asistent_comanda` (`resume-task`, `pause-task`, `delete-task`), pornește imediat cu `run-task`. Citește starea cu `asistent_citeste` (`sectiune: sarcini` sau `taskId`): următoarea rulare, ultima rulare, `lastError` și livrarea fiecărei rulări.
 
+### Cereri care stau și rezumatul de după Z
+
+Fiecare rulare costă, chiar și una care întoarce `[NO_REPLY]`: asistentul citește din nou instrucțiunile și contextul. Verificarea la câteva minute e cea mai scumpă formă.
+
+- **O cerere de aprobare care așteaptă răspuns.** Anunțul pleacă din evenimentul cererii, unde există: o regulă pe declanșatorul ei ([creeaza-automatizare](../creeaza-automatizare/SKILL.md)) sau participarea care primește deja mesajul cererii. Nu pune o sarcină la câteva minute doar ca să vadă dacă s-a răspuns. Dacă regula managerului are o oră fixă (de ex. „la 22:00 aprobi ce n-a primit răspuns”), ajunge o sarcină `schedule` la ora aceea. Un termen socotit de la fiecare cerere cere o verificare rară, cu cel mai mare interval pe care îl permite termenul. Regula de aprobare rămâne cum a cerut-o managerul; costul nu e motiv s-o schimbi.
+- **Rezumatul de după raportul Z.** Dacă nu găsești un declanșator care să pornească asistentul la emiterea Z-ului, sarcina rulează la interval, într-o fereastră strânsă (de la ora obișnuită a Z-ului până dimineața) și cu `maxRunsPerDay` mic. În instrucțiuni scrii: „După ce ai trimis rezumatul pentru Z-ul de azi, te oprești.”
+  - Dacă schema live a sarcinii are o unealtă de tip „gata pe azi” (vine cu o actualizare), rularea care a trimis rezumatul o cheamă, iar sarcina nu mai rulează până a doua zi.
+  - Până atunci, rulările de după trimitere văd în context ce a livrat deja sarcina și întorc imediat `[NO_REPLY]`, fără alte citiri.
+  - La o sarcină Connect zilnică nu folosi `finished:true` pentru asta: pune sarcina pe pauză de tot, nu doar până mâine.
+- O sarcină care întoarce aproape mereu `[NO_REPLY]` (vezi Activitate) o rărești sau o muți pe eveniment.
+
 Vechiul „marketing autonom” (obiectivele agentului de marketing) nu mai rulează: înlocuiește-l cu șablonul „Marketing de zi” pe un asistent numit.
+
+## Aprobări din POS: decide omul
+
+O sarcină sau o participare care anunță cereri de aprobare (reduceri, retururi, din partea casei) urmează [regula aprobărilor](../../knowledge/stil-de-lucru.md#3-banii-trimiterile-în-masă-și-ireversibilul-cer-acord-explicit): anunță, aplică decizia explicită a omului și aprobă singură numai după regula cerută explicit de el pentru acel tip de cerere, cu condițiile de acolo. Scrie regula în instrucțiunile sarcinii, cu cuvintele lui și data. Aprobarea se face pe numele titularului conexiunii; cu `decidedBy: "assistant"`, Jurnalul cererilor arată că a decis asistentul.
 
 ## Când proprietarul îți scrie ȚIE, în chatul privat: „monitorizează…”, „vezi ce a zis…”, „intră în grupul…”
 
@@ -122,8 +152,24 @@ La „învață-l să…” sau „îmbunătățește-l”:
 
 `review` păstrează lecțiile ca propuneri până la aprobarea proprietarului. `group-notes` permite memorarea automată numai în grupul sursă. Asistentul poate propune schimbări ale instrucțiunilor de bază prin `propose_core_improvement`; aplicarea lor rămâne o modificare explicită a proprietarului. Memoria nu poate extinde permisiuni. Nu modifica direct copiile locale ca metodă de administrare: serverul păstrează versiunea autoritară, sursa și istoricul.
 
+## Regulă pentru toți asistenții
+
+O regulă cerută „pentru toți asistenții mei” (stil, format, limbă) se aplică fiecărui executor care scrie în numele proprietarului, nu doar celui din conversație.
+
+**Stilul comun (POS 19.3.820 sau mai nou).** Stilul de scriere al tuturor asistenților numiți se salvează o singură dată: `asistenti_stil_citeste`, apoi `asistenti_stil_salveaza` cu textul complet și `expectedRevision` citit. Fără `confirm` primești previzualizarea; după acordul proprietarului reapelezi cu `confirm:true`. Stilul se aplică de la următoarea rulare, în mesajele către proprietar și echipă, nu și în conversațiile cu clienții. Nu schimbă instrucțiunile asistenților: la pasul 2 scoți din ele doar regulile vechi care îl contrazic. Monitorizările Connect îl urmează dacă `asistenti_stil_citeste` e în catalogul conexiunii lor; notițele lor și sarcinile Connect le verifici tot după pașii de mai jos.
+
+1. Fă lista: `asistenti_lista` pe fiecare firmă unde are asistenți; pe fiecare număr din Connect, `list_watches` și `list_routines`.
+2. Pentru fiecare asistent: `asistent_citeste` → `asistent_actualizeaza` cu definiția completă și `expectedRevision`. Schimbi doar textul regulii; modelul, efortul și accesul rămân. Motivul reviziei descrie schimbarea reală din text, nu cererea.
+3. Participări (`asistent_grup`, sarcinile), monitorizări (notițele, cu `update_watch` sau `note_watch`) și rutine (`update_routine`): scoate regulile vechi care o contrazic (alt format, altă regulă despre emoji sau linii despărțitoare). Cererea explicită a proprietarului autorizează aceste modificări.
+4. Recitește fiecare element. Arată-i proprietarului lista: nume → actualizat / eșuat, cu motivul. Nu spune „toți” înainte de această verificare.
+5. Ce nu poți atinge din sesiunea asta numești explicit, cu pasul care rezolvă: alt calculator, alt număr, altă firmă.
+
+Dacă salvarea doar a textului e refuzată cu „Modelul ales nu mai este disponibil…” (versiunile noi o salvează și dau doar un avertisment), modelul salvat nu mai e pe acel calculator. Spune-i omului asta și întreabă-l dacă alege alt model din `asistenti_lista` sau implicitul (`model: null`). Nu schimba modelul fără răspunsul lui.
+
+Formatul de pus este cel din [Formatul mesajelor pe telefon](../../knowledge/monitorizare-whatsapp.md#formatul-mesajelor-pe-telefon).
+
 ## Control și recuperare
 
-`asistent_comanda` permite pauză, retragere din grup, rulare manuală, oprirea unei rulări, aprobarea/respingerea/arhivarea unui document și restaurarea unei versiuni. Restaurarea comportamentului pune asistentul în pauză și păstrează permisiunile curente. La răspuns întrerupt verifică rezultatul și activitatea înainte de o nouă rulare. O limită de abonament, lipsa calculatorului sau o eroare de model nu înseamnă că asistentul lucrează în continuare.
+`asistent_comanda` permite pauză, retragere din grup, rulare manuală, oprirea unei rulări, aprobarea/respingerea/arhivarea unui document și restaurarea unei versiuni. Restaurarea comportamentului pune asistentul în pauză și păstrează permisiunile curente. La răspuns întrerupt verifică rezultatul și activitatea înainte de o nouă rulare. O limită de abonament, lipsa calculatorului sau o eroare de model nu înseamnă că asistentul lucrează în continuare. Sarcinile locale din Symbai Connect (`schedule_routine`) se reiau singure după o cădere de internet sau limita contului și îl anunță pe proprietar pe WhatsApp la pauză sau la o așteptare lungă (Connect 1.2.106 sau mai nou, Windows); nu crea sarcini-paznic pentru ele. Programul cu mai multe ore (`times`), fereastra (`activeWindow`), `catchUpMinutes`, `model`/`effort` și `finished:true`: [Programare în Symbai Connect](../../knowledge/emailuri-si-sarcini-personale.md#programare-în-symbai-connect-pentru-codex-sau-claude-code).
 
 Pentru liste de ingrediente din grupuri, mese pentru personal/client/owner, bufet fără modulul dedicat, producții și transferuri, citește [Consumuri din mesaje](../../knowledge/consumuri-din-mesaje.md). Orice asistent autorizat poate folosi ghidul live stock_operations; catalogul conexiunii stabilește capabilitățile efectiv disponibile. Execută și confirmă scurt; întreabă numai lipsurile decisive după verificare.

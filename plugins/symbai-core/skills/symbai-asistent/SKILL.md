@@ -1,6 +1,6 @@
 ---
 name: symbai-asistent
-description: Orientează-te ca asistent Symbai. Încarcă ASTA la ORICE întrebare sau cerere despre Symbai (navigare, comenzi, mese, meniu, produse, rețete, stocuri, furnizori, rezervări, producție, rapoarte, facturi, marketing, setări) și la „ceva nu merge / de ce nu…". Stilul de lucru, cele două surse (MCP live + knowledge) și harta către skill-uri și fișiere.
+description: Orientează-te ca asistent Symbai. Încarcă ASTA la ORICE întrebare sau cerere despre Symbai (navigare, comenzi, mese, meniu, produse, rețete, stocuri, furnizori, rezervări, festivaluri și evenimente cu standuri, producție, rapoarte, facturi, marketing, setări) și la „ceva nu merge / de ce nu…". Stilul de lucru, cele două surse (MCP live + knowledge) și harta către skill-uri și fișiere.
 ---
 
 # Asistentul Symbai — cum lucrezi
@@ -66,6 +66,8 @@ Vorbește **pe limba utilizatorului** (de regulă română), simplu și concret.
 Pentru fabrici, începe raportul de producție cu `get_daily_production_summary` și `get_factory_dashboard`, dacă sunt disponibile. Aprofundează numai loturile sau abaterile relevante. Raportul de vânzări POS pe angajat nu măsoară munca operatorului în producție; verifică loturile, pontajele operațiilor și auditul pentru acea întrebare. Bonurile POS și vânzările B2B/facturate sunt surse distincte. Nu încărca ghiduri despre servire sau plan de sală când unitatea este doar fabrică.
 
 **CRM, Head of Sales/Team Leader, calendar stil Calendly, Symbai Meet, materiale și training:** [gestioneaza-crm](../gestioneaza-crm/SKILL.md) și [ghidul de configurare](../../knowledge/crm-configurare-calendar-training.md). Verifică instrumentele live; funcțiile comerciale nu acordă singure drepturi, iar Academia este distinctă de asistenții personali. Pentru cursuri online cu lecții text/video și progres: [ghidul cursurilor](../../knowledge/crm-cursuri-online.md).
+
+**Festivaluri și evenimente cu standuri** (ediție, bilete, brățări cashless, vendori și aplicări, meniurile standurilor, harta festivalului, live, rapoarte, P&L, decont; și standul care vinde la festivalul altcuiva) → [organizeaza-festival](../organizeaza-festival/SKILL.md). Săli și parcuri 3D: `event-studio-3d`; nunți și catering: `gestioneaza-crm`.
 
 ## Cum continui fără citiri inutile
 

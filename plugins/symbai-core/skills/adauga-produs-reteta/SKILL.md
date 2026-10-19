@@ -49,6 +49,15 @@ Un produs scos din vânzare poate avea nevoie de rețetă pentru consumul istori
 
 Nu încărca alte manuale generale dacă procedura este deja clară. Pentru un flux nou/neclar citește secțiunea necesară din `knowledge/agent-operare-avansata.md`, `knowledge/produse-meniu-retete.md` sau `knowledge/tools-mcp.md`. Catalogul live stabilește uneltele, argumentele și drepturile efective.
 
+## Oprit la vânzare (86) și schimbări în masă pe meniu
+
+Pe POS 19.3.820 sau mai nou; verifică schema înainte de apel.
+
+- **„Nu mai avem X” doar la un restaurant sau pe un canal:** `set_product_86` cu aria: `brandIds`, `menuIds` sau `channels` (de ex. `livrari`, `qr`, `sala`); `everywhere: true` numai când omul vrea X oprit peste tot. Pentru un produs aflat pe mai multe branduri, fără arie primești doar previzualizarea cu meniurile atinse și nu se oprește nimic. Cererea venită din grupul unui restaurant înseamnă de regulă doar acel restaurant. Termenul de revenire automată (`until`) merge doar la oprirea peste tot.
+- **„Avem iar X”:** `restore_product_86`, cu aceeași arie. Repornește exact ce a oprit 86-ul; pozițiile oprite separat înainte rămân oprite și sunt numite în răspuns (`includePreviouslyUnavailable: true` le repornește și pe ele, la cererea omului). Pozițiile scoase din meniu se pun înapoi doar cu `activateMenuIds`. `list_unavailable_products` arată separat și produsele oprite doar pe unele meniuri.
+- **Multe articole deodată** (scoase din meniu sau puse înapoi, epuizate sau disponibile, mutate în altă categorie, aceeași ordine): `bulk_update_menu_items` pe un singur brand, după `menuItemIds` sau după filtru (meniu, categorie cu subcategoriile, produse, nume). Primul apel e previzualizarea, cu o amprentă; aplici cu `confirm:true` și `expectedFingerprint`, după acordul omului. Prețurile nu se schimbă aici.
+- **O categorie scoasă dintr-un singur meniu** (de ex. spirtoasele din meniul de livrări): `remove_category_from_menu(menuId, categoryId)`, cu subcategoriile. Celelalte meniuri și categoria rămân neatinse. Tot previzualizare, apoi `confirm:true` cu `expectedFingerprint`. Pentru ștergerea categoriei peste tot: `delete_menu_category`.
+
 ## Reguli de aur
 
 - Prețul de vânzare = meniu. Costul = rețetă + recepții (NIR). P&L = tipul de produs. Rutarea bonurilor = taguri. Nu le amesteca.

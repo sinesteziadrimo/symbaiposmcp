@@ -1,6 +1,6 @@
 ---
 name: configureaza-aplicatie-staff
-description: Configurează Aplicația Staff (Symbai Staff) — cardul „În Aplicație Staff" din /menu/platforms, profiluri livrator/agent teren/CRM/task-uri/producție, preview telefon și legătura cu rolurile reale. La „configurează Aplicație Staff", „ce vede livratorul", „ascunde CRM pentru livratori", „container QR pe mobil".
+description: Configurează Aplicația Staff (Symbai Staff) — cardul „În Aplicație Staff" din /menu/platforms, profiluri livrator/agent teren/CRM/task-uri/producție, preview telefon și legătura cu rolurile reale. La „configurează Aplicație Staff", „ce vede livratorul", „ascunde CRM pentru livratori", „container QR pe mobil", „unde descarc aplicația Staff".
 ---
 
 # Configurează Aplicația Staff
@@ -11,6 +11,13 @@ Nu confunda:
 - **Platforma Clienți / Portalul clienților** = ce vede clientul public → skill `configureaza-portal`, tool-uri `configure_portal_*`.
 - **În Aplicație Staff / Symbai Staff** = ce vede angajatul în aplicația staff, profiluri și preview → acest skill.
 - **Aplicația mobilă în sine** (cea instalată pe telefonul angajatului) se actualizează ca orice aplicație de telefon — nu se modifică din acest dialog.
+
+## Unde se descarcă aplicația
+
+- Android: https://play.google.com/store/apps/details?id=com.symbai.staff
+- iPhone: https://apps.apple.com/ro/app/id6786682868
+
+La prima pornire, angajatul scrie adresa firmei (aceeași ca în browser, de forma numefirma.symbai.app), apoi intră cu contul lui de angajat. Ce vede după login decid rolul lui și configurarea de mai jos. Dacă un link nu se deschide, caută „Symbai Staff” în magazin.
 
 ## Înainte de orice
 

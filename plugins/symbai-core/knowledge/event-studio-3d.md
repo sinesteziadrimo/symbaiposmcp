@@ -4,6 +4,8 @@ Event Studio reprezintă complexul la scară, cu etaje, săli, camere de hotel, 
 
 Disponibilitatea se verifică în catalogul MCP al instanței. Ghidul public nu dovedește că funcția este deja instalată pe fiecare firmă.
 
+Harta festivalului (uneltele `*_festival_map`, pagina `/festival-map`) NU e Event Studio: urmează skill-ul [organizeaza-festival](../skills/organizeaza-festival/SKILL.md).
+
 ## Instrumente la cerere
 
 Începe cu `cauta_tool` pentru „event studio 3d” și acțiunea necesară. Toolurile nu trebuie încărcate toate în contextul inițial. `get_event_studio_guide` livrează numai tema selectată: `start`, `geometry`, `objects`, `design`, `decor`, `operations`, `buyer`, `plans`, `navigation`, `rooms` sau `website`. Pentru flori, textile și colț foto, citește la nevoie [colecțiile de decor](../skills/event-studio-3d/references/decor.md).

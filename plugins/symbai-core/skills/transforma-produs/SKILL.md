@@ -1,6 +1,6 @@
 ---
 name: transforma-produs
-description: Transformare rapidă (producție rapidă) dintr-un produs în altul — consumă ce s-a folosit, pune pe stoc ce s-a obținut, cu cost FIFO și lot trasabil. La „transformă-mi din X în Y", „am dezosat 5 kg pulpe", „am stors lămâi", „am făcut zeamă din lămâi", „s-a terminat X și l-am făcut din Y", „fă o producție rapidă", „pulpele dezosate sunt pe minus deși le-am dezosat noi". Produsul obținut poate fi o materie primă folosită în rețete.
+description: Transformare rapidă (producție rapidă) dintr-un produs în altul — consumă ce s-a folosit, pune pe stoc ce s-a obținut, cu cost FIFO și lot trasabil. La „transformă-mi din X în Y", „am dezosat 5 kg pulpe", „am stors lămâi", „am făcut zeamă din lămâi", „s-a terminat X și l-am făcut din Y", „fă o producție rapidă", „pulpele dezosate sunt pe minus deși le-am dezosat noi", „am desfăcut cutia/baxul în plicuri sau bucăți", „din bax am scos doze". Produsul obținut poate fi o materie primă folosită în rețete.
 ---
 
 # Transformare rapidă — „din X am făcut Y"
@@ -14,6 +14,13 @@ Transformarea rapidă înregistrează exact ce s-a întâmplat, într-un singur 
 - **Transformare** (acest skill): s-a obținut fizic un produs din altul — pulpe dezosate DIN pulpe cu os. Stocul produsului obținut crește.
 - **Înlocuire temporară** → skill-ul `inlocuieste-ingredient-temporar`: preparatul a folosit ALT ingredient în locul celui din rețetă (sirop lipsă → lămâi), fără să se producă ceva nou.
 - **Producție planificată cu etape, echipamente, etichete** → skill-ul `productie-flux` (lot normal). Fabricile (flux tehnologic, stații) nu folosesc transformarea rapidă.
+
+## Cutie sau bax desfăcut în plicuri ori bucăți
+
+1. **Vezi cum se ține produsul pe stoc.** Dacă stocul e deja pe plic sau bucată, iar cutia e doar ambalajul de cumpărare („1 cutie = 20 plicuri” la recepție), nu e transformare. Dacă a intrat greșit, corectezi factorul la recepție (skill-ul `receptie-factura-furnizor`).
+2. **Cutia și plicul sunt produse diferite pe stoc** → `quick_transform_product`: folosit 1 cutie, obținut 20 plicuri, în gestiunea în care s-a desfăcut.
+3. **Cutia e în magazie, plicurile ajung la bar** → întâi `create_stock_transfer` pentru cutie, apoi transformarea în bar. Sau invers: transformi în magazie și transferi plicurile. Sunt două operații legate.
+4. **Nu folosi inventarul ca să ocolești un transfer, o transformare sau o ajustare.** Inventarul mută registrul și loturile cu aceeași cantitate: nu repară nepotrivirea dintre ele și ascunde mișcarea reală. La un refuz „…RECONCILIATION_REQUIRED”, urmează `nextTool` din răspuns (de ex. `repara_loturi_peste_stoc`, întâi previzualizare). Pe POS 19.3.820 sau mai nou, `diagnose_product_stock_reconciliation(warehouseId, productId)` arată de ce nu se potrivesc loturile, registrul și recipientele și ce unealtă repară fiecare cauză; un recipient cu unitatea greșită se corectează după tabelul de coduri din `verifica-consumul`. Dacă nu găsești cauza, trimite tichet cu produsul, gestiunea și codul.
 
 ## Pași
 

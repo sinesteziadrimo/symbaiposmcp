@@ -112,6 +112,21 @@
   - Tab **Listă Rezervări** (`/reservations?tab=bookings`) — Tab Listă Rezervări — toate rezervările, calendar, confirmare, anulare
   - Tab **Analiză Rezervări** (`/reservations?tab=analytics`) — Tab Analiză — timpi rotație, rată ocupare, ore de vârf
 - **Configurare Rezervări** (`/reservations/config`) — Regulile sistemului de rezervări — activare, fereastră de timp, persoane min/max, inventar și zone, controlul fluxului (pacing, câți clienți pot sosi per interval) și câmpurile formularului
+## FESTIVALURI (EVENT OS)
+
+- **Operațiuni eveniment** (`/event-operations`) — Centrul de comandă al organizatorului de festival, pe ediție. La restaurantul care vinde la festivalul altcuiva, `?connect=vendor` importă invitația. Fluxul complet: skill-ul `organizeaza-festival`.
+  - Tab **Live** (`/event-operations?tab=overview`) — vânzări cu brățara, standuri, incidente deschise, acces pe zone, bilete
+  - Tab **Bilete** (`/event-operations?tab=tickets`) și **Recepție** (`?tab=check-in`) — comenzi de bilete, import de pe alte platforme, căutarea la intrare, legarea brățării
+  - Tab **Vendori** (`?tab=vendors`), **Aplicări vendori** (`?tab=vendor-applications`), **Meniuri standuri** (`?tab=vendor-menus`), **Recenzii vendori** (`?tab=vendor-reviews`) — standurile, contractele, aplicările, aprobarea produselor, recenziile
+  - Tab **Cashless** (`?tab=cashless`), **Tranzacții** (`?tab=transactions`), **Alimentări anulate** (`?tab=wallet-reconciliation`) — brățările, plățile, chargeback-urile pe reîncărcări
+  - Tab **Acces** (`?tab=access`) — zone, porți, modul pază
+  - Tab **Rapoarte** (`?tab=reports`), **P&L** (`?tab=pnl`), **Decontări** (`?tab=settlements`) — bilete pe tip/canal/zi, decontul de spectacole, profitul ediției, decontul cu vendorii
+  - Tab **Incidente** (`?tab=incidents`), **Pagina publică** (`?tab=public-page`), **Setări** (`?tab=settings`)
+- **P&L festivaluri** (`/event-pnl`) — Bugetul și profitul pe toate edițiile.
+- **Hartă festival 3D** (`/festival-map`) — Planul terenului la scară, analiza de capacitate și evacuare, publicarea pentru vizitatori. NU e Event Studio (`/event-studio`).
+- **Meniuri la festivaluri** (`/event-vendor`) — La stand: meniul trimis organizatorului.
+- **Aplicări la festivaluri** (`/festival-applications`) — La stand: invitații, aplicări, documente, contract.
+- **Site-ul public** (festival.symbai.app) — Pagina fiecărei ediții și profilul organizatorului.
 ## PLAN SALĂ & BUCĂTĂRIE
 
 - **Plan Sală** (`/floorplan`) — Viewer LIVE „Operațiuni Live' (3 tab-uri: Vedere Live / Istoric / Jurnal Audit): mese pe zone cu statistici (Total Restaurant, Total Zonă, Oaspeți Activi, Ocupare %), selector configurație. Click pe masă → detalii + „Gestionează Comanda' (duce în POS).

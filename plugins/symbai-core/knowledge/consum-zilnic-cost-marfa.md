@@ -173,7 +173,7 @@ Tabul **Consum Temporar** listează produsele vândute care n-au rețetă legat�
 - `fix_recipe_ingredient` 🔒, `update_recipe`, `set_ingredient_purchase_prices` 🔒, `set_product_manual_cost` 🔒, `set_standard_costs` — reparațiile de rețetă și de cost.
 - `associate_recipe_to_product` 🔒, `link_recipe_products`, `change_product_type` 🔒, `move_product_to_served_meal` 🔒 — rezolvarea Consumului Temporar.
 - `retry_missing_recipe_replay` 🔒, `configure_missing_recipe_replay_window` 🔒, `request_missing_recipe_rediscovery` 🔒 (modul `financiar`) — refacerea automată a zilelor vândute fără rețetă, doar unde funcția e activă (vezi Consum Temporar).
-- `assign_product_warehouses`, `update_product` — fixarea gestiunii din care se scade.
+- `assign_product_warehouses` — fixarea gestiunii din care se scade, inclusiv gestiunea de casă (`update_product` nu o schimbă).
 
 ⚠ **`generate_daily_consumption` generează consumul întregii zile pentru unitatea aleasă.** `warehouseId` **nu** restrânge generarea la o singură gestiune (e doar gestiunea de rezervă când produsul n-are una) — nu-l folosi ca filtru. Dacă ziua e deja generată, tool-ul refuză; ștergerea și refacerea rulării se fac din pagina Consum Zilnic.
 
@@ -251,7 +251,7 @@ Factorul de pachet: fie a fost aplicat unul greșit, fie lipsește. Valoarea lin
 **11. „Stocul pe gestiuni nu bate / marfa a scăzut din altă gestiune decât mă așteptam."**
 Două lucruri diferite. (a) Ecranul principal de Stocuri arată **totalul pe toate gestiunile**, grupat sub gestiunea de casă a produsului — nu e o eroare de date. (b) Gestiunea din care se scade se alege per ingredient, după cei 4 pași de mai sus.
 *Verifici:* `get_stock_levels` pe produs (defalcarea) și pe gestiune; `get_product_details` (gestiunea de casă); `list_warehouses_full`.
-*Repari:* fixezi gestiunea cu `assign_product_warehouses` și/sau gestiunea de casă (`update_product`); dacă marfa e fizic în altă parte, faci **transfer** (`create_inventory_document` 🔒), nu ajustare. Notă: gestiunea de bucătărie folosită ca rezervă se recunoaște după numele scris **fără diacritice**.
+*Repari:* fixezi gestiunile din fișă și gestiunea de casă cu `assign_product_warehouses` (`homeWarehouseId` + `expectedHomeWarehouseId`; `update_product` nu schimbă gestiunea); dacă marfa e fizic în altă parte, faci **transfer** (`create_stock_transfer` 🔒), nu ajustare. Notă: gestiunea de bucătărie folosită ca rezervă se recunoaște după numele scris **fără diacritice**.
 
 **12. „Am schimbat contul pe linia de factură și nota contabilă e la fel."**
 Corect. La marfa care intră pe stoc, nota contabilă se face **din tipul produsului** (și din conturile personalizate pe tip/unitate). Contul de pe linie se vede în mapare și în rapoarte și decide nota doar la liniile de **cheltuială** (servicii, utilități, transport). Excepție: la liniile cu **taxare inversă**, nota se face după regula fiscală, nu după conturile tipului.

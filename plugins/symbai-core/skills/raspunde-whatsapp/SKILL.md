@@ -242,6 +242,8 @@ El scrie în 19 caractere, tu ai de transmis o explicație. Treci la pasul urmă
 
 **Ce nu faci niciodată ca să încapă informația:** liste cu liniuțe, rânduri noi, titluri, „1)…2)…", fraze rupte în cinci mesaje ca să pară scurte. Un mesaj structurat ca un document e semnătura de asistent — te dă de gol mai sigur decât orice altceva.
 
+**Excepție:** când scrii ca asistent (de pe numărul asistenților, ca asistent numit sau ca monitorizare care se prezintă drept asistent) ori îi scrii chiar proprietarului, urmezi [Formatul mesajelor pe telefon](../../knowledge/monitorizare-whatsapp.md#formatul-mesajelor-pe-telefon). Regula de mai sus rămâne pentru mesajele trimise în numele omului, de pe numărul lui, ca și cum le-ar scrie el.
+
 ### Când răspunzi citând un mesaj
 
 `reply_to_message` face exact ce face butonul de reply din aplicație: destinatarul vede la ce anume răspunzi. Folosit la locul lui, îți **economisește** mesaje — nu mai trebuie să repeți despre ce vorbești.

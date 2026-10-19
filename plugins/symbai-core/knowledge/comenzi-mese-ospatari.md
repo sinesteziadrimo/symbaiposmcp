@@ -110,7 +110,7 @@ Capcane:
 **Citire (read-only; cere grantul `readModule` al domeniului pe token):**
 - `raport_vanzari` — încasări pe perioadă: total, nr. bonuri, bon mediu, bacșiș, reduceri, defalcare pe metodă de plată + comparație cu perioada anterioară. Pentru „cât am vândut azi", „cash vs card".
 - `performanta_ospatari` — vânzări per ospătar: nr. bonuri, încasări, bon mediu, bacșiș. Cu `peSectii: true` (dacă apare în schema live) dă și vânzarea fiecăruia pe bar/bucătărie, cu și fără TVA, fără bacșiș. Pentru „X% din bucătărie pe ospătari” folosește-l pe acesta, fără SQL. Meniul zilei și platourile compuse intră la secția felurilor lor (`dinProduseCompuseBrut`). Dacă omul vrea bucătăria fără meniul zilei, scade acea sumă și spune că ai scăzut-o.
-- Liniile cu `daily_menu_role='parent'` nu sunt doar meniul zilei: tot așa se vând și platourile compuse (ex. „Platou de 2 persoane”, Drunken 14.10.2026). Când numeri meniul zilei, filtrează după produs și nu numai după rol. Altfel apare o „neconcordanță” falsă.
+- Liniile cu `daily_menu_role='parent'` nu sunt doar meniul zilei: tot așa se vând și platourile compuse (ex. „Platou de 2 persoane”). Când numeri meniul zilei, filtrează după produs și nu numai după rol. Altfel apare o „neconcordanță” falsă.
 - `vanzari_in_timp` — orele/zilele de vârf (grupare pe zi / oră / zi a săptămânii).
 - `top_produse` — cele mai vândute produse (exclude itemii anulați/returnați).
 - `get_table_status` — „ce e pe masa X ACUM" într-un apel: ospătar, zonă, comenzi active cu produsele (cu etichetă de status, ex. „RETUR în așteptare"), rămas de plată, cereri de aprobare în așteptare pe masă. Dai numărul/numele mesei (nu un id).

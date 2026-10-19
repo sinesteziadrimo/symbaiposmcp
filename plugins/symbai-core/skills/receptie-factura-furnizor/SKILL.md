@@ -171,6 +171,10 @@ Alternativ, din aplicație: Intrări Marfă → tab Recepții (NIR) → „Recep
 
 **Corectarea unei recepții postate:** citește [ghidul comun pentru ChatGPT, Codex și Claude Code](../../knowledge/corectare-receptii-mcp.md). Pe conexiuni nominale folosește `update_incoming_invoice_line` / `correct_invoice_line_mapping` și `correct_confirmed_reception`; cantitatea fizică se transmite separat de cantitatea facturată. Ghidul acoperă și anularea, ciornele, abandonarea corecției, legarea facturii și verificarea contabilității. Folosește acordul deja dat pentru operația verificată; nu cere o a doua confirmare formală. Dacă marfa a fost consumată, explică numai efectele suplimentare încă neautorizate.
 
+**Avertismente la recepție și la corecturi (POS 19.3.820 sau mai nou).** Nu blochează nimic, dar le spui omului:
+- `RECIPE_SOLD_PRODUCT_RECEIVED`: linia intră pe un produs vândut prin rețetă (de ex. halba de bere). La vânzare se scad ingredientele, deci marfa primită pe produs nu scade niciodată și rămâne stoc în plus. Răspunsul propune ingredientul și, când îl recunoaște, factorul (de ex. 1 butoi = 30 l). Mapezi linia pe ingredient: `map_invoice_line` înainte de NIR, `correct_invoice_line_mapping` după; corectezi și regula furnizorului (`update_mapping_rule`), ca să nu se repete.
+- „Corectura atinge o perioadă deja inventariată”: corectezi o recepție (mapare, cantitate, dată) pe un produs numărat după data ei, în aceeași gestiune. Diferența acelui inventar se recalculează singură, iar stocul de după inventar rămâne cel numărat. Faci astfel de corecturi doar când proprietarul le-a cerut pentru acea factură.
+
 
 
 ⚠ NU folosi `create_inventory_document` pe Calea B: el nu primește `invoiceId`, deci ar crea o recepție SEPARATĂ, nelegată de factură (marfa s-ar dubla, factura rămâne „fără NIR"). Pentru o factură care există deja în sistem, folosește MEREU `create_received_invoice_reception`.

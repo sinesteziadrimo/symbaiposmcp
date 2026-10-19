@@ -1,6 +1,6 @@
 ---
 name: event-studio-3d
-description: Construiește în Event Studio 3D hoteluri, restaurante, săli, grădini și parcuri de activități, inclusiv din PDF, imagini și planuri ISU atașate; cote, etaje, subpante, mobilier real, tururi și variante pentru buyeri legate de CRM. Încarcă ghidurile de planuri sau camere numai la nevoie.
+description: Construiește în Event Studio 3D hoteluri, restaurante, săli, grădini și parcuri de activități, inclusiv din PDF, imagini și planuri ISU atașate; cote, etaje, subpante, mobilier real, tururi și variante pentru buyeri legate de CRM. Încarcă ghidurile de planuri sau camere numai la nevoie. Harta 3D a unui festival nu e aici (organizeaza-festival).
 ---
 
 # Event Studio 3D
@@ -10,6 +10,8 @@ Lucrează cu locația reală, la scară, și arată clientului o propunere verif
 Descoperă prin `cauta_tool` cu „event studio 3d” și operația dorită. Încarcă `get_event_studio_guide({topic:"start"})` o singură dată, apoi numai tema necesară. Citește prin `citeste_tool`, modifică prin `ruleaza_tool` când instrumentele nu sunt expuse direct. Nu cere catalogul complet și nu încărca ghidurile Fabricii 3D pentru o sală de evenimente.
 
 Verifică disponibilitatea instrumentelor în instanța conectată. Un ghid disponibil în plugin nu dovedește că acea instanță are deja funcția. Dacă lipsește, spune concret ce nu poți salva prin conexiunea curentă; nu pretinde că ai construit locația folosind alt tip de plan.
+
+Harta festivalului (uneltele `*_festival_map`, pagina `/festival-map`) NU e Event Studio: urmează skill-ul [organizeaza-festival](../organizeaza-festival/SKILL.md).
 
 Pentru un restaurant care are mese și configurații în `/plan-sala`, folosește [sala restaurantului 2D/3D](references/restaurante.md). Este aceeași amenajare operațională, cu detalii 3D suplimentare. Nu crea un proiect separat doar pentru a-i arăta mesele în 3D.
 
