@@ -20,6 +20,16 @@
             "statusMessage": "Verific actualizările Symbai..."
           }
         ]
+      },
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/model-freshness.mjs\"",
+            "timeout": 5
+          }
+        ]
       }
     ]
   }

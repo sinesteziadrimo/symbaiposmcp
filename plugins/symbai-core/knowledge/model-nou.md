@@ -1,0 +1,2 @@
+Modelul acestei sesiuni este {current} (`{currentId}`). În aceeași gamă există un model mai nou: {newer}.
+La începutul primului tău răspuns spune-i omului asta într-o singură frază și întreabă-l dacă vrea să treacă pe {newer}; apoi continuă cu cererea lui. Dacă spune da: în aplicația Claude alege {newer} din meniul de model de lângă câmpul de mesaj; în terminal scrie `/model {newerId}`. Tu nu poți schimba modelul propriei sesiuni. Nu insista și nu repeta întrebarea în această sesiune.

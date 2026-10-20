@@ -62,6 +62,14 @@ Se bifează separat, sub grilă, și au reguli proprii (ce citesc, ce pot modifi
 
 Bifele pe module nu deschid rapoartele peste toate modulele (`list_entities`, `generate_report`, `jurnal_activitate`): ele vin numai cu `reports.read`. Memoria comună (`memorie_citeste`) vine numai cu `knowledge.read`.
 
+## Uneltele noi și dreptul care le deschide
+
+- **Modulele includ automat orice unealtă nouă a modulului.** Lista lor se calculează din catalogul MCP live: o unealtă apărută după update intră la `data.<modul>.read` (citirile) și `data.<modul>.write` (scrierile și citirile), fără altă bifă.
+- **Pachetele specializate sunt liste alese.** O unealtă nouă intră într-un pachet numai când e adăugată în el. Singure se completează doar cu citirile din aceeași zonă la care trimit uneltele pachetului (ex. „previzualizează cu…”), fără email, WhatsApp, hotel și datele de personal. Pachetul de modificare include citirea aceleiași zone: `stock.operate` → `stock.read`, `invoices.write` → `invoices.read`, `outgoing-invoices.write` → `outgoing-invoices.read`, `finance.operate` → `finance.read`, `production.operate`/`production.plan` → `production.read`, `quality.operate` → `quality.read`, `contracts.prepare` → `contracts.read`, `team.operate`/`team.schedule` → `team.read`, `marketing.draft`/`marketing.operate` → `marketing.read`, `automations.manage` → `automations.read`, `automations.crm.manage` → `automations.crm.read`, `creative.design`/`creative.media`/`menu.design` → `creative.read`, iar `products.operate`, `menu.operate`, `menu.daily`, `products.tags` și `recipes.operate` → `menu.read`. Trimiterea pe email sau WhatsApp nu deschide inboxul.
+- Pachetele care lucrează pe datele firmei primesc și contextul (ghidul, navigarea, brandurile, unitățile și gestiunile de lucru). Tichetele firmei la Symbai, memoria proprietarului și pagina live nu intră prin pachete.
+- **Verifică înainte de salvare**: găsește uneltele cu `cauta_tool`, apoi `asistenti_lista` cu `unelte:[numele exacte]`. Răspunsul `toolAccess` arată pentru fiecare unealtă `rights` (dreptul care o deschide și `inCeiling`), `recommended` (cel mai îngust drept din plafon) și `privateOnly`. Pune `recommended` în `envelope.capabilities` ale asistentului și ale participării sau sarcinii. Fără `recommended`, rolul sau Acces AI nu permite unealta; proprietarul schimbă plafonul, nu instrucțiunile.
+- În rulare, asistentul caută operația cu `assistant_tools_search`; `unavailable.reason` numește dreptul sau limita (grup, arie, audiență) care o oprește.
+
 Modul **„Doar raportează”** (`stockMode: report`) al asistentului sau al sarcinii blochează orice modificare, nu doar stocul; `operate` permite numai scrierile acordate.
 
 ## Cine vede rezultatul

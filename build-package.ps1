@@ -165,6 +165,20 @@ try {
 }
 '@
                 }
+                # Newer model in the same family: the same check in native PowerShell (model-freshness.ps1).
+                # A scriptblock from the file text is not subject to the execution policy of .ps1 files.
+                if ($hook.command -eq 'node "${CLAUDE_PLUGIN_ROOT}/scripts/model-freshness.mjs"') {
+                    $hook | Add-Member -NotePropertyName shell -NotePropertyValue 'powershell' -Force
+                    $hook.command = @'
+# model-freshness: newer model in the same family, no runtime dependency
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+try {
+    & ([scriptblock]::Create([IO.File]::ReadAllText((Join-Path $env:CLAUDE_PLUGIN_ROOT 'scripts/model-freshness.ps1'), [Text.Encoding]::UTF8)))
+} catch {
+    '{"continue":true}'
+}
+'@
+                }
             }
             if ($group.hooks.Count -gt 0) { $sessionGroups += $group }
         }
