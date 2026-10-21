@@ -27,6 +27,6 @@ Obiectivul programat precizează:
 
 ## Programează și urmărește
 
-Verifică `routine_connections` și `list_routines`, apoi `schedule_routine` cu executorul ales și programul concret. Pentru modificări trimite specificația completă cu `update_routine`, păstrând preferințele neschimbate. Confirmă următoarea rulare prin recitire și explică o singură dată că PC-ul și Connect trebuie să rămână pornite.
+Verifică `routine_connections` și `list_routines`, apoi `schedule_routine` cu executorul ales și programul concret. Pentru modificări trimite specificația completă cu `update_routine`, păstrând preferințele neschimbate. Confirmă următoarea rulare prin recitire și explică o singură dată că PC-ul și Connect trebuie să rămână pornite. Dacă omul vrea să vadă raportul pregătit în Claude Code deschis, pe versiunile Connect care au uneltele de sesiune pune `session: "interactive"` și alege `sessionFallback`; raportul final se trimite atunci cu `report_session_task`, în aceeași formă JSON. Pașii sunt în [sesiune-interactiva.md](../../knowledge/sesiune-interactiva.md).
 
 La fiecare execuție, citește datele actuale și validează totalurile înainte de trimitere. Un email acceptat de furnizor nu este dovadă de livrare. Incertitudinea de trimitere oprește reluarea automată până la verificare; folosește `routine_activity` și referințele păstrate. În rezumat spune perioada, firmele, destinatarii și rezultatul efectiv, fără date financiare ale altui tenant.

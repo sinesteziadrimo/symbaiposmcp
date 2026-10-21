@@ -50,6 +50,8 @@ Clarifică rezultatul urmărit, colegii și grupurile, când intervine, informa�
 
 `asistent_creeaza` primește un UUID stabil, definiția și motivul. La reîncercare păstrează UUID-ul; nu crea duplicate. Pornește în pauză dacă grupul, accesul sau sarcina nu sunt încă stabilite. Alege numai un calculator, model și nivel de efort din lista live. Funcționarea continuă cere calculatorul pornit, conectat și contul Codex/Claude disponibil.
 
+**Unde lucrează (pe versiunile POS și Connect care au câmpul `session`).** Implicit asistentul lucrează în fundal. Cu `definition.session` = `{mode: "interactive", fallback, waitMinutes, timeoutMinutes}` sarcinile lui ajung în Claude Code deschis pe calculatorul ales: omul vede ce gândește și îi poate scrie. Cere `executor: "claude"` și calculatorul propriu (nu unul partajat); sarcinile cu mesaje de la clienți sau emailuri primite rămân în fundal. `fallback: "wait"` (implicit) așteaptă o sesiune și îl anunță pe proprietar; `"background"` rulează în fundal după `waitMinutes` (implicit 30). Omul pornește sesiunea spunând în Claude Code „ascultă sarcinile lui @handle”; atunci folosești `session_listen` și pașii din [sesiune-interactiva.md](../../knowledge/sesiune-interactiva.md). Dacă salvarea e refuzată pentru că Connect nu e actualizat, spune-i asta; nu schimba calculatorul sau executorul fără acordul lui.
+
 ## Verifică înainte de activare (asistent pe WhatsApp)
 
 Verifică în această ordine:

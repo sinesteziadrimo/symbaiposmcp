@@ -64,6 +64,15 @@ Ghid comun: [corectare-receptii-mcp.md](corectare-receptii-mcp.md). **Document e
 
 **Factură din poză sau introdusă manual, înainte de eFactura:** `compare_invoice_with_efactura` (citire, modul `financiar`) compară antetul și liniile facturii cu eFactura oficială primită; `get_reception_invoice_status` spune stadiul recepției față de factura oficială — așteaptă eFactura, trebuie legată (cu legarea propusă și previzualizare), gata de finalizat sau finalizată. Legarea și finalizarea rămân pași separați, cu acordul omului.
 
+## Sesiune Claude Code deschisă (serverul local Symbai Connect)
+
+Nu sunt unelte ale conexiunii `symbai`: apar pe serverul local Symbai Connect, lângă `schedule_routine`, numai pe versiunile care le au. Ghid: [sesiune-interactiva.md](sesiune-interactiva.md).
+
+- `session_listen` — `target`: `routines` sau `assistant:<assistantId>`; comanda exactă `--listen … --once`, câte sesiuni ascultă și ce sarcini așteaptă.
+- `claim_session_task` — `deliveryId` și `key` din bloc; preia sarcina (prima sesiune câștigă) și întoarce `claimToken`, termenul, instrucțiunile, intrarea, `allowedTools` și forma raportului.
+- `assistant_runtime_call` — `deliveryId`, `claimToken`, `method` (`tools/list` / `tools/call`), `name`, `arguments`; singura cale spre datele firmei când lucrezi ca asistent numit.
+- `report_session_task` — `deliveryId`, `claimToken` și `routine` `{complete, needsReview, finished, summary, checkpoint}` sau `assistant` `{status, answer}`; același raport de două ori = același rezultat.
+
 ## ⚠ De știut la scrieri prin MCP (gotcha-uri confirmate)
 
 - **Interfața NU se actualizează instant după o scriere prin MCP.** Aplicația ține date în cache; modificarea apare după refresh. **Dacă tool-ul a întors succes, e salvat** — verifică cu un tool de CITIRE, NU repeta scrierea, NU raporta bug.
