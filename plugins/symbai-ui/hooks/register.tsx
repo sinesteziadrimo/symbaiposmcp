@@ -1,6 +1,10 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface as Api, McpToolResult, Register } from 'claude-code'
 
+import { EDIT_MARK, causeOf, countOf, findServers, loadDetail, loadPos, loadWhatsApp, plural, problemOf, refresh, splitMcpName, startTextEdit, statusText, toAssistant, toDetail, toMachine } from './core'
+import type { Problem, Servers } from './core'
+import { closeEditor, drawEditor, openEditor, saveText } from './editor'
+import { errorOf, jsonOf, shortTime, splitWords, str, strings, textOf } from './util'
 import type { Assistant, AssistantDetail, Bound, Confirm, Editing, Machine, PosLine, Selected, Snapshot, WhatsAppLine } from '../types'
 
 const PANE = 'symbai-asistenti'
@@ -41,9 +45,6 @@ const RUNNERS = [
   },
 ]
 
-// The first line of the prompt box while a prompt is being edited there. Enter saves the rest;
-// a submission without it is a normal prompt again.
-const EDIT_MARK = '✎ PROMPT '
 
 const snapshot = atom({ plugin: 'symbai-ui', key: 'snapshot' } as const, null)
 const isLoading = atom({ plugin: 'symbai-ui', key: 'isLoading' } as const, false)
@@ -62,275 +63,7 @@ const busyId = atom({ plugin: 'symbai-ui', key: 'busyId' } as const, null)
 const confirming = atom({ plugin: 'symbai-ui', key: 'confirming' } as const, null)
 const boundChat = atom({ plugin: 'symbai-ui', key: 'boundChat' } as const, null)
 const isChatBandHidden = atom({ plugin: 'symbai-ui', key: 'isChatBandHidden' } as const, false)
-
-type Servers = { whatsapp: string[]; pos: string[] }
-
-function splitMcpName(name: string): { server: string; tool: string } | null {
-  if (!name.startsWith('mcp__')) return null
-  const cut = name.lastIndexOf('__')
-  if (cut <= 5) return null
-  return { server: name.slice(5, cut), tool: name.slice(cut + 2) }
-}
-
-function textOf(result: McpToolResult): string {
-  return result.content
-    .map(block => (block.type === 'text' && typeof block.text === 'string' ? block.text : ''))
-    .join('')
-}
-
-function jsonOf(result: McpToolResult): Record<string, any> | null {
-  if (result.structuredContent && typeof result.structuredContent === 'object') {
-    return result.structuredContent as Record<string, any>
-  }
-  try {
-    return JSON.parse(textOf(result))
-  } catch {
-    return null
-  }
-}
-
-function errorOf(cause: unknown): string {
-  return cause instanceof Error ? cause.message : String(cause)
-}
-
-const str = (value: unknown): string | null =>
-  typeof value === 'string' && value.length > 0 ? value : null
-
-const strings = (value: unknown): string[] =>
-  Array.isArray(value) ? value.filter((one): one is string => typeof one === 'string') : []
-
-async function findServers($: Api): Promise<Servers> {
-  const servers: Servers = { whatsapp: [], pos: [] }
-  for (const tool of await $.tool.list()) {
-    if (!tool.mcp) continue
-    const parts = splitMcpName(tool.name)
-    if (!parts || !parts.server.startsWith('symbai')) continue
-    if (parts.tool === 'list_watches') servers.whatsapp.push(parts.server)
-    if (parts.tool === 'verifica_conexiune') servers.pos.push(parts.server)
-  }
-  return servers
-}
-
-function toAssistant(server: string, raw: Record<string, any>): Assistant {
-  const chat = raw.conversatie ?? {}
-  const run = raw.ultimaRulare ?? null
-  return {
-    id: String(raw.id ?? ''),
-    server,
-    name: str(chat.nume) ?? str(chat.jid) ?? 'fără nume',
-    kind: chat.tip === 'grup' ? 'grup' : 'contact',
-    isActive: raw.activa === true,
-    mode: str(raw.mod) ?? '',
-    runner: str(raw.dispatch) ?? '',
-    lastRunState: run ? str(run.stare) : null,
-    lastRunAt: run ? str(run.la) : null,
-    lastRunSummary: run ? str(run.rezumat) : null,
-    lastMessageAt: str(raw.ultimulMesaj),
-    stopReason: str(raw.motivOprire),
-    tip: str(raw.sfat),
-    runs: typeof raw.rulari === 'number' ? raw.rulari : 0,
-  }
-}
-
-function toMachine(body: Record<string, any> | null): Machine {
-  const claude = body?.pregatire ?? null
-  const codex = body?.pregatireCodex ?? null
-  // Not ready: not installed (cliFound false) or not logged in.
-  const ready = (one: any): boolean | null =>
-    one && typeof one.loggedIn === 'boolean' ? one.loggedIn && one.cliFound !== false : null
-  const problems = [...strings(claude?.problems)]
-  // A company Codex cannot reach is said once, by name; the raw line repeats it.
-  const blocked = Array.isArray(codex?.connections)
-    ? codex.connections.filter((one: any) => one?.state === 'blocked').map((one: any) => String(one.name))
-    : []
-  for (const name of blocked) problems.push(`Codex nu poate intra în firma „${name}”. Asistenții Codex care lucrează acolo vor da eroare.`)
-  if (codex && codex.loggedIn === false) problems.push('Codex nu este autentificat pe acest calculator.')
-  return { claudeReady: ready(claude), codexReady: ready(codex), problems }
-}
-
-export type Problem = {
-  title: string
-  explain: string
-  // reset: forget the lost conversation; rerun: try again now; resume: start it again.
-  fix: 'reset' | 'rerun' | 'resume' | null
-}
-
-function causeOf(text: string): Problem {
-  const first = text.split('\n')[0].trim()
-  if (/no rollout found/i.test(text)) {
-    return {
-      title: 'Și-a pierdut conversația salvată',
-      explain: 'Codex nu mai găsește discuția lui de dinainte, așa că nu poate continua. „Repară” o ia de la zero; promptul și notițele rămân.',
-      fix: 'reset',
-    }
-  }
-  if (/limit/i.test(text)) {
-    return {
-      title: 'Contul a atins limita de folosire',
-      explain: 'Încearcă din nou după ce se resetează limita sau schimbă cine lucrează (Codex / Claude Code).',
-      fix: 'rerun',
-    }
-  }
-  if (/not logged|login|autentific/i.test(text)) {
-    return {
-      title: 'Programul care îl rulează nu e autentificat',
-      explain: 'Autentifică-l din Symbai Connect (secțiunea Monitorizări), apoi încearcă din nou.',
-      fix: 'rerun',
-    }
-  }
-  return { title: 'Ultima rulare a eșuat', explain: first || 'Fără detalii de la Connect.', fix: 'rerun' }
-}
-
-// What needs the person now, in plain words; null when nothing does.
-export function problemOf(one: Assistant, machine: Machine | null): Problem | null {
-  // Active, or stopped by its failures: it cannot work until the computer is ready, so no start is offered.
-  const isWaiting = one.isActive || one.stopReason !== null
-  if (isWaiting && one.runner === 'claude' && machine?.claudeReady === false) {
-    return {
-      title: 'Nu poate lucra: Claude Code nu e pregătit pe calculator',
-      explain: 'Apasă „Autentifică Claude Code” în Symbai Connect (Monitorizări) sau mută-l pe Codex.',
-      fix: null,
-    }
-  }
-  if (isWaiting && one.runner === 'codex' && machine?.codexReady === false) {
-    return {
-      title: 'Nu poate lucra: Codex nu e pregătit pe calculator',
-      explain: 'Autentifică Codex pe acest calculator sau mută-l pe Claude Code.',
-      fix: null,
-    }
-  }
-  if (!one.isActive) {
-    if (!one.stopReason) return null
-    const cause = causeOf(one.stopReason)
-    return {
-      title: 'S-a oprit singur după mai multe erori',
-      explain: `${cause.title}. ${cause.fix === 'reset' ? '„Repară” îl ia de la zero și îl pornește; ' : '„Pornește” îl reia; '}preia și mesajele venite cât a stat oprit.`,
-      fix: cause.fix === 'reset' ? 'reset' : 'resume',
-    }
-  }
-  // „Sesiunea Claude” has no automatic runs: a failed one is from before it moved there.
-  if (one.lastRunState === 'failed' && one.runner !== 'stream') return causeOf(one.lastRunSummary ?? '')
-  return null
-}
-
-function toDetail(server: string, raw: Record<string, any>): AssistantDetail {
-  return {
-    ...toAssistant(server, raw),
-    objective: str(raw.obiectiv) ?? '',
-    triggerWords: strings(raw.cuvinteDeclansare),
-    callNames: strings(raw.numeDeApel),
-    ownerStart: str(raw.pornireProprietar),
-    includeOwnerMessages: raw.includeOwnerMessages === true,
-    maxRunsPerHour: typeof raw.plafonOrar === 'number' ? raw.plafonOrar : null,
-    notesLength:
-      typeof raw.notite === 'string'
-        ? raw.notite.length
-        : typeof raw.notiteCaractere === 'number'
-          ? raw.notiteCaractere
-          : 0,
-    trustedCount: strings(raw.persoaneDeIncredere).length,
-    senders: strings(raw.doarDeLa),
-  }
-}
-
-async function loadWhatsApp($: Api, server: string): Promise<WhatsAppLine> {
-  const line: WhatsAppLine = {
-    server,
-    number: null,
-    name: null,
-    isConnected: false,
-    organization: null,
-    licence: null,
-    assistants: [],
-    machine: { claudeReady: null, codexReady: null, problems: [] },
-    error: null,
-  }
-  try {
-    const status = jsonOf(await $.mcp.call(server, 'connection_status'))
-    line.number = str(status?.whatsapp?.numar)
-    line.name = str(status?.numarul?.nume) ?? str(status?.whatsapp?.nume)
-    line.isConnected = status?.whatsapp?.conectat === true
-    line.organization = str(status?.licenta?.organizatie)
-    line.licence = str(status?.licenta?.stare)
-    const watches = jsonOf(await $.mcp.call(server, 'list_watches'))
-    const list = Array.isArray(watches?.monitorizari) ? watches.monitorizari : []
-    line.assistants = list.map((raw: Record<string, any>) => toAssistant(server, raw))
-    line.machine = toMachine(watches)
-  } catch (cause) {
-    line.error = errorOf(cause)
-  }
-  return line
-}
-
-async function loadPos($: Api, server: string): Promise<PosLine> {
-  try {
-    const result = await $.mcp.call(server, 'verifica_conexiune')
-    const body = jsonOf(result)
-    return {
-      server,
-      employee: str(body?.data?.angajat?.nume),
-      version: str(body?.data?.versiuneInstanta),
-      isOk: !result.isError && body?.success === true,
-      error: result.isError ? textOf(result).slice(0, 200) : null,
-    }
-  } catch (cause) {
-    return { server, employee: null, version: null, isOk: false, error: errorOf(cause) }
-  }
-}
-
-function countOf(snap: Snapshot) {
-  const all = snap.whatsapp.flatMap(line => line.assistants.map(one => ({ one, machine: line.machine })))
-  const active = all.filter(({ one }) => one.isActive)
-  const failed = all.filter(({ one, machine }) => problemOf(one, machine) !== null)
-  return { all: all.length, active: active.length, stopped: all.length - active.length, failed: failed.length }
-}
-
-function plural(count: number, one: string, many: string): string {
-  return count === 1 ? `1 ${one}` : `${count} ${many}`
-}
-
-function statusText(snap: Snapshot): string {
-  const counts = countOf(snap)
-  const failed = counts.failed > 0 ? `, ${counts.failed} de reparat` : ''
-  return `Symbai: ${plural(counts.active, 'asistent activ', 'asistenți activi')}${failed}`
-}
-
-// A refresh asked while one runs runs once more after it, so a change is never shown stale.
-let isRefreshAgain = false
-
-async function refresh($: Api): Promise<void> {
-  if (await read($, isLoading)) {
-    isRefreshAgain = true
-    return
-  }
-  await update($, isLoading, () => true)
-  try {
-    const servers = await findServers($)
-    const [whatsapp, pos] = await Promise.all([
-      Promise.all(servers.whatsapp.map(server => loadWhatsApp($, server))),
-      Promise.all(servers.pos.map(server => loadPos($, server))),
-    ])
-    const snap: Snapshot = { refreshedAt: await $.clock.now(), whatsapp, pos }
-    await update($, snapshot, () => snap)
-    if (whatsapp.length > 0 || pos.length > 0) $.ui.status(statusText(snap))
-  } finally {
-    await update($, isLoading, () => false)
-  }
-  if (isRefreshAgain) {
-    isRefreshAgain = false
-    await refresh($)
-  }
-}
-
-async function loadDetail($: Api, target: Selected): Promise<AssistantDetail | null> {
-  const body = jsonOf(await $.mcp.call(target.server, 'list_watches', { watch: target.id }))
-  const raw = Array.isArray(body?.monitorizari) ? body.monitorizari.find((one: any) => one?.id === target.id) : null
-  const found = raw ? toDetail(target.server, raw) : null
-  // A late answer for an assistant the person already left must not replace the one shown.
-  const now = await read($, selected)
-  if (now?.id === target.id && now.server === target.server) await update($, detail, () => found)
-  return found
-}
+const editorOpen = atom({ plugin: 'symbai-ui', key: 'editor' } as const, null)
 
 async function openDetail($: Api, target: Selected): Promise<void> {
   await update($, confirming, () => null)
@@ -349,6 +82,7 @@ async function openDetail($: Api, target: Selected): Promise<void> {
 }
 
 async function closeDetail($: Api): Promise<void> {
+  await closeEditor($)
   await update($, confirming, () => null)
   await update($, selected, () => null)
   await update($, detail, () => null)
@@ -524,27 +258,7 @@ async function loadRole($: Api, one: AssistantDetail, force: boolean): Promise<v
 async function startEdit($: Api): Promise<void> {
   const one = await read($, detail)
   if (!one) return
-  const draft = await $.prompt.read()
-  if (draft.text.trim().length > 0 && !draft.text.startsWith(EDIT_MARK)) {
-    await update($, notice, () => ({
-      text: 'Ai un text început în caseta de scris. Trimite-l sau golește caseta, apoi apasă din nou „Editează promptul”.',
-      isError: true,
-    }))
-    return
-  }
-  const filled = await $.prompt.fill({
-    text: `${EDIT_MARK}„${one.name}” — schimbă textul de mai jos și apasă Enter ca să-l salvezi. Ca să renunți, apasă „Renunță la editare” în panou.\n${one.objective}`,
-  })
-  if (!filled.isFilled) {
-    await update($, notice, () => ({
-      text: 'Caseta de scris e ocupată acum. Închide fereastra deschisă și încearcă din nou.',
-      isError: true,
-    }))
-    return
-  }
-  const next: Editing = { server: one.server, id: one.id, name: one.name, previous: one.objective }
-  await update($, editing, () => next)
-  await update($, notice, () => null)
+  await startTextEdit($, { server: one.server, id: one.id, name: one.name, previous: one.objective, field: 'objective' }, one.objective, 'promptul')
 }
 
 async function cancelEdit($: Api): Promise<void> {
@@ -571,6 +285,26 @@ async function saveEdit($: Api, text: string): Promise<string> {
     return 'Nu mai știu ce asistent editezi. Textul e înapoi în casetă: deschide asistentul și apasă din nou „Editează promptul”.'
   }
   const cut = text.indexOf('\n')
+  if (target.field && target.field !== 'objective') {
+    const body = cut < 0 ? '' : text.slice(cut + 1).trim()
+    if (body === target.previous.trim()) {
+      await update($, editing, () => null)
+      return `Textul lui „${target.name}” e neschimbat.`
+    }
+    if (target.field !== 'notes' && body.length < 10) {
+      await $.prompt.fill({ text })
+      return 'Textul e prea scurt (cel puțin 10 caractere). Nu am salvat nimic.'
+    }
+    const failure = await saveText($, target, body).catch(cause => errorOf(cause))
+    if (failure) {
+      await $.prompt.fill({ text })
+      await update($, notice, () => ({ text: `Nu s-a salvat: ${failure}`, isError: true }))
+      return `Nu s-a salvat: ${failure}`
+    }
+    await update($, editing, () => null)
+    await update($, notice, () => ({ text: 'Textul e salvat și recitit.', isError: false }))
+    return `Textul lui „${target.name}” e salvat. Nu s-a trimis lui Claude.`
+  }
   const objective = cut < 0 ? '' : text.slice(cut + 1).trim()
   if (objective.length === 0) {
     await $.prompt.fill({ text })
@@ -627,13 +361,6 @@ async function undoEdit($: Api): Promise<void> {
   } finally {
     await update($, isBusy, () => false)
   }
-}
-
-function shortTime(value: string | null): string {
-  if (!value) return '—'
-  // "2026-10-20 13:40:39" → "20.10 13:40"
-  const match = /^\d{4}-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(value)
-  return match ? `${match[2]}.${match[1]} ${match[3]}:${match[4]}` : value
 }
 
 function runnerLabel(runner: string): string {
@@ -756,12 +483,6 @@ async function syncBandHidden($: Api): Promise<void> {
   if ((await read($, isBandHidden)) !== hidden) await update($, isBandHidden, () => hidden)
 }
 
-function splitWords(value: string): string[] {
-  return value
-    .split(',')
-    .map(one => one.trim())
-    .filter(one => one.length > 0)
-}
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
@@ -968,6 +689,15 @@ export const register: Register = on => {
                 })
               }
             />
+            <Button
+              key="chat-edit"
+              label="✎ Modifică"
+              variant="primary"
+              onPress={async () => {
+                await showAssistant($, target)
+                await openEditor($, target)
+              }}
+            />
             <Button key="chat-card" label="Fișa" dimColor onPress={() => showAssistant($, target)} />
             <Button key="chat-all" label="Toți asistenții" dimColor onPress={openPane} />
             <Button key="chat-hide" label="Ascunde" dimColor onPress={() => setChatBandHidden($, true)} />
@@ -1029,7 +759,7 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Button, Input, Text } = $.ui.resolve(e)
+    const { Box, Button, Input, Link, Select, Text } = $.ui.resolve(e)
     const snap = await read($, snapshot)
     const loading = await read($, isLoading)
     const withInactive = await read($, showInactive)
@@ -1101,6 +831,26 @@ export const register: Register = on => {
         )
       }
 
+      // The full editor of this assistant, opened with „Modifică”.
+      const ed = await read($, editorOpen)
+      if (ed && ed.id === one.id && ed.server === one.server) {
+        const isEditingHere = edit !== null && edit.id === one.id && edit.server === one.server
+        return (
+          <Box flexDirection="column" gap={1}>
+            {isEditingHere && (
+              <Box flexDirection="column" borderStyle="round" borderColor="warning" paddingX={1}>
+                <Text color="warning" bold>
+                  Editezi un text în caseta de scris de jos
+                </Text>
+                <Text>Schimbă-l acolo și apasă Enter. Se salvează la asistent și nu se trimite lui Claude.</Text>
+                <Button key="edit-cancel" label="Renunță la editare" dimColor onPress={() => cancelEdit($)} />
+              </Box>
+            )}
+            {(await drawEditor($, { Box, Button, Input, Text, Select, Link }, one)) as any}
+          </Box>
+        )
+      }
+
       const problem = problemOf(one, machineOf(one.server))
       const status = statusOf(one, problem)
       const pause = pauseOf(one)
@@ -1138,6 +888,12 @@ export const register: Register = on => {
           </Box>
 
           <Box flexDirection="row" gap={1} flexWrap="wrap">
+            <Button
+              key="edit-all"
+              label="✎ Modifică tot"
+              variant="primary"
+              onPress={() => openEditor($, { server: one.server, id: one.id })}
+            />
             <Button
               key="pause"
               label={busy ? 'Se salvează…' : one.isActive ? 'Oprește' : 'Pornește'}

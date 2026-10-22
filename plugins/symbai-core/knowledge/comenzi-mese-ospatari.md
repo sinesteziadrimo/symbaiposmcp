@@ -78,6 +78,18 @@ Implicit, ORICE reducere a unui angajat fără drept de reduceri merge la manage
 - **Cine NU e afectat:** rolurile care au dreptul de reduceri (ex. șef de sală, manager, admin) aplică oricum direct — politica restrânge doar angajații fără acest drept.
 - **Prin conexiune (asistent AI):** `get_discount_policy` (vezi politica actuală) și `set_discount_policy` (o modifici; cere confirmare). Ex.: „lasă ospătarii să dea singuri până la 10% dar maxim 30 de lei, peste asta să ceară aprobare".
 
+**4c. „Setează prețul manual” — ospătarul scrie prețul final al produsului**
+
+Pentru localurile unde prețul se stabilește la final („îl pun la plată”), fără procente sau aprobări.
+
+- **Unde se pornește:** Meniu → **Configurare Afișaj** (`/menu/display`) → profilul platformei (POS Ospătar, POS Bar, POS, POS Mobil) → cardul **„Structură & Grid”** → **„Setează prețul manual”**. La **„Cine poate schimba prețul”**: toți angajații de pe platformă sau doar cei cu drept de reducere. Pe **Ecran Livrări** aceeași opțiune lasă operatorul să treacă prețul primit de la platformă.
+- **Cum se folosește:** pe notă, prețul produsului devine buton cu creion — atingi, scrii prețul final pe bucată, **Salvează**. Merge pe produsele netrimise și pe cele **deja trimise și neîncasate**, inclusiv din ecranul de plată; totalul de încasat se actualizează imediat.
+- **Banii:** prețul din meniu rămâne referință, deci diferența apare în rapoarte ca **reducere pe produs**; TVA-ul și totalul notei se recalculează.
+- **Nu merge pe:** produse deja încasate (chiar parțial), cu beneficiu de personal, meniul zilei, consum de eveniment, produse cântărite, garanția SGR, credite RFID, notă cu plata pornită (inclusiv la terminal/portal) și un preț care ar coborî nota sub suma deja încasată — POS-ul spune explicit de ce.
+- ⚠ **Configurația unei locații înlocuiește complet pe cea de brand.** Dacă locația are configurație proprie pentru profil, opțiunea se pornește și acolo.
+- **Prin conexiune (asistent AI):** `get_manual_price_settings` (unde e pornită, pentru cine, ce locații au configurație proprie), `set_manual_price_settings` (o pornești/oprești; cere confirmare) și `set_pos_item_price` (schimbi prețul unei linii trimise de pe notă, cu identitatea angajatului — vezi mai jos). Ex.: „pornește prețul manual pe POS Bar pentru toți” sau „pune shaorma de la masa 3 la 25 de lei”.
+- **„Nu apare creionul pe preț”** → opțiunea e oprită pe platforma acelui POS, angajatul nu se încadrează la „cine poate”, locația are configurație proprie fără opțiune, sau produsul e într-unul din cazurile de mai sus.
+
 Capcane:
 - **„Cere aprobare la orice reducere"** → politica e dezactivată (starea implicită) sau ambele praguri sunt 0. Activeaz-o și pune cel puțin un prag.
 - **„Am pus 20% dar tot cere aprobare"** → verifică pragul în lei: dacă e mic, o notă mare depășește suma chiar sub procentul permis.
@@ -124,12 +136,13 @@ Capcane:
 - `list_floor_zones` — zonele de salon per locație.
 - `gaseste_in_aplicatie` — link direct către orice pagină din aplicație.
 
-**Scriere — modul `setari`:** `create_floor_zone`, `update_floor_zone`, `create_floor_table`, `update_floor_table`, `bulk_create_floor_tables`, `bulk_assign_tables_to_zone`, `create_floor_config`, `duplicate_floor_config`, `create_floor_config_schedule`, `add_sections_to_config`, `assign_tables_to_section`, `add_zones_to_config` (construcția planului de sală); `create_payment_method` (metode de plată); `create_menu_display_config` / `update_menu_display_config` (cum arată meniul în POS Ospătar/Bar/Recepție/Kiosk).
+**Scriere — modul `setari`:** `create_floor_zone`, `update_floor_zone`, `create_floor_table`, `update_floor_table`, `bulk_create_floor_tables`, `bulk_assign_tables_to_zone`, `create_floor_config`, `duplicate_floor_config`, `create_floor_config_schedule`, `add_sections_to_config`, `assign_tables_to_section`, `add_zones_to_config` (construcția planului de sală); `create_payment_method` (metode de plată); `create_menu_display_config` / `update_menu_display_config` (cum arată meniul în POS Ospătar/Bar/Recepție/Kiosk; profilurile sunt `pos-waiter`, `pos-mobile`, `pos-bar`, `pos-reception`, `kiosk`, `website`, `portal-web`, `table-clients`, `delivery-cockpit`). Pentru o singură setare folosește unealta ei: `set_discount_policy`, `set_manual_price_settings` — `update_menu_display_config` înlocuiește toată configurația.
 
 **Scriere — modul `personal`:** `create_shift` (tura ospătarului; include secțiunea/raionul pentru rutarea comenzilor QR), `update_shift`, `bulk_create_shifts`.
 
 **Operațiuni prin MCP — modul `comenzi_pos`, conexiune nominală:** verifică întâi catalogul live; instrumentele noi sunt disponibile după actualizarea instanței.
-- `get_pos_operation_context(orderId)` citește nota, identificatorii liniilor, cantitățile, prețurile și cererile existente în unitățile permise operatorului.
+- `get_pos_operation_context(orderId)` citește nota, identificatorii liniilor, cantitățile, prețurile (pe bucată și din meniu) și cererile existente în unitățile permise operatorului.
+- `set_pos_item_price(orderId, orderItemId, unitPrice, profileType)` schimbă prețul final pe bucată al unei linii trimise și neîncasate („Setează prețul manual”), prin aceeași rută ca POS-ul: merge doar cu opțiunea pornită pe platforma pe care lucrează angajatul și dacă el se încadrează la „cine poate”. Pentru reducere în procente/lei folosește `create_pos_operation` type=discount; pentru gratuit, type=house.
 - `create_pos_operation` creează retur, din partea casei, discount sau atribuire client. Pentru retur/casă se trimit liniile și cantitățile exacte. Discountul se aplică pe linii întregi sau pe întreaga notă; pentru o parte din cantitate, împarte nota înainte. `applyDirect:true` cere aplicarea imediată cu drepturile operatorului; starea returnată arată dacă s-a aplicat sau a rămas la aprobare.
 - `transfer_pos_items` mută selecția pe altă masă. `scope:"table"` înseamnă toată masa, inclusiv produsele adăugate între timp. La timeout sau rezultat necunoscut, reia cu același `localId` și aceleași argumente: transferul deja făcut este recunoscut (`alreadyApplied`) și nu se mută nimic a doua oară. `transfer_pos_employee` transferă direct către alt ospătar cu dreptul corespunzător.
 - `request_pos_transfer` cere preluarea mesei sau a produselor de către destinatar. Crearea cererii nu dovedește transferul.
