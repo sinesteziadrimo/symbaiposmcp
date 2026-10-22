@@ -85,7 +85,7 @@ test('panoul și banda arată asistenții și conexiunile', async ($, on) => {
   }))
 
   const ran = await $.command.run({ command: 'symbai', args: '', origin: { kind: 'composer' } } as any)
-  expect(JSON.stringify(ran)).toContain('2 asistenți activi, 1 cu eroare')
+  expect(JSON.stringify(ran)).toContain('2 asistenți activi, 1 de reparat')
 
   for (const surface of ['terminal', 'desktop'] as const) {
     const pane = await $.ui.mount({
@@ -96,7 +96,7 @@ test('panoul și banda arată asistenții și conexiunile', async ($, on) => {
       props: PANE_PROPS,
     })
     expect(await pane.find({ type: 'Button', text: /Grup Comenzi/ })).toBeDefined()
-    expect(await pane.find({ type: 'Text', text: /eșuată/ })).toBeDefined()
+    expect(await pane.find({ type: 'Text', text: /Ultima rulare a eșuat/ })).toBeDefined()
     expect(await pane.find({ type: 'Button', text: /Ana/ })).toBeDefined()
     expect(await pane.find({ type: 'Button', text: /Vechi/ })).toBeUndefined()
     expect(await pane.find({ type: 'Text', text: /v19\.3\.842/ })).toBeDefined()
@@ -108,13 +108,55 @@ test('panoul și banda arată asistenții și conexiunile', async ($, on) => {
 
     const band = await $.ui.mount({ plugin: 'symbai-ui', surface, component: 'AbovePrompt', props: BAND_PROPS })
     expect(await band.find({ type: 'Text', text: /40700000000/ })).toBeDefined()
-    expect(await band.find({ type: 'Text', text: /1 cu eroare/ })).toBeDefined()
+    expect(await band.find({ type: 'Text', text: /1 de reparat/ })).toBeDefined()
     await band.press({ key: 'hide' })
     expect(await band.find({ type: 'Text', text: /40700000000/ })).toBeUndefined()
+    // Hidden, the band keeps one small button that brings it back.
+    expect(await band.find({ type: 'Button', key: 'show' } as any)).toBeDefined()
+    await band.press({ key: 'show' })
+    expect(await band.find({ type: 'Text', text: /40700000000/ })).toBeDefined()
     await band.unmount()
-
-    await $.command.run({ command: 'symbai', args: '', origin: { kind: 'composer' } } as any)
   }
+})
+
+test('panoul nu se deschide singur; banda ascunsă rămâne ascunsă în alt chat', async ($, on) => {
+  const opened: unknown[] = []
+  const store = new Map<string, unknown>([['isBandHidden', true]])
+  on('ui.open', ($, e) => {
+    opened.push(e)
+    return { value: { isPlaced: true } }
+  })
+  on('ui.status', () => ({ value: undefined }))
+  on('clock.now', () => ({ value: 1_760_000_000_000 }))
+  on('ui.render', () => ({ type: 'Box', props: {}, children: [] }))
+  on('store.get', ($, e) => ({ value: store.get(e.key) }))
+  on('store.set', ($, e) => {
+    store.set(e.key, e.value)
+    return { value: undefined }
+  })
+  on('tool.list', () => ({
+    value: [
+      { name: `mcp__${WA}__list_watches`, description: '', mcp: true },
+      { name: `mcp__${WA}__connection_status`, description: '', mcp: true },
+    ],
+  }))
+  on('mcp.call', ($, e) => ({
+    value: { content: [{ type: 'text', text: JSON.stringify(answers[e.tool] ?? {}) }], isError: false },
+  }))
+
+  on('command.register', () => ({ value: undefined }))
+  on('session.start', ($, e) => ({ cwd: e.cwd }))
+  await $.session.start({ source: 'startup', cwd: 'D:/x' } as any)
+  expect(opened.length).toBe(0)
+
+  await $.command.run({ command: 'symbai', args: '', origin: { kind: 'composer' } } as any)
+  expect(opened.length).toBe(1)
+  const band = await $.ui.mount({ plugin: 'symbai-ui', surface: 'desktop', component: 'AbovePrompt', props: BAND_PROPS })
+  expect(await band.find({ type: 'Text', text: /40700000000/ })).toBeUndefined()
+  await band.press({ key: 'show' })
+  expect(store.get('isBandHidden')).toBe(false)
+  expect(await band.find({ type: 'Text', text: /40700000000/ })).toBeDefined()
+  await band.unmount()
 })
 
 test('fără conexiuni Symbai banda nu apare', async ($, on) => {
@@ -200,11 +242,15 @@ test('un asistent se deschide și se modifică din panou', async ($, on) => {
     expect(updates[2]).toEqual({ watch: 'c', mode: 'silent' })
     state.c.mod = 'always'
 
-    await pane.press({ key: 'resume' })
+    await pane.press({ key: 'pause' })
+    expect(updates.length).toBe(3)
+    expect(await pane.find({ type: 'Text', text: /Pornești „Vechi”/ })).toBeDefined()
+    await pane.press({ key: 'start-confirm-c' })
     expect(updates[3]).toEqual({ watch: 'c', active: true })
     state.c.activa = false
 
     await pane.press({ key: 'back' })
+    await pane.press({ key: 'refresh' })
     await pane.press({ key: 'inactive' })
     await pane.unmount()
   }
@@ -343,4 +389,112 @@ test('o notificare în timpul editării nu pierde promptul; ciorna omului nu e s
   expect(updates.length).toBe(1)
   expect(await pane.find({ type: 'Text', text: /s-a schimbat între timp/ })).toBeDefined()
   await pane.unmount()
+})
+
+test('din listă: oprești, repari și ștergi un asistent; erorile vechi nu se arată', async ($, on) => {
+  host(on)
+  const calls: { tool: string; args: Record<string, unknown> }[] = []
+  const state: Record<string, Record<string, any>> = {}
+  const reset = () => {
+    for (const key of Object.keys(state)) delete state[key]
+    Object.assign(state, {
+      lost: {
+        id: 'lost', activa: true, mod: 'always', dispatch: 'codex', conversatie: { nume: 'Alex', tip: 'contact' }, obiectiv: 'Ești Sym.',
+        ultimaRulare: { la: '2026-10-20 02:06:15', stare: 'failed', rezumat: 'ChatGPT Codex: Error: thread/resume failed: no rollout found for thread id x' },
+      },
+      old: {
+        id: 'old', activa: true, mod: 'always', dispatch: 'stream', conversatie: { nume: 'Simina', tip: 'contact' }, obiectiv: 'Ești Sym.',
+        ultimaRulare: { la: '2026-10-08 11:24:23', stare: 'failed', rezumat: 'ChatGPT Codex: exit status 0xffffffff' },
+      },
+      tired: {
+        id: 'tired', activa: false, mod: 'always', dispatch: 'codex', conversatie: { nume: 'Dejan', tip: 'contact' }, obiectiv: 'Ești Sym.',
+        motivOprire: '3 rulări eșuate la rând; ultima: ChatGPT Codex: Error: thread/resume failed: no rollout found',
+      },
+      video: { id: 'video', activa: true, mod: 'always', dispatch: 'claude', conversatie: { nume: 'Video', tip: 'grup' }, obiectiv: 'Video.' },
+      claudeTired: {
+        id: 'claudeTired', activa: false, mod: 'always', dispatch: 'claude', conversatie: { nume: 'Restaurant', tip: 'grup' }, obiectiv: 'R.',
+        motivOprire: '3 rulări eșuate la rând; ultima: Claude Code: not logged in',
+      },
+      paused: { id: 'paused', activa: false, mod: 'always', dispatch: 'codex', conversatie: { nume: 'Ovidiu', tip: 'contact' }, obiectiv: 'O.', ultimulMesaj: '2026-10-21 10:00:00' },
+    })
+  }
+  on('tool.list', () => ({
+    value: [
+      { name: `mcp__${WA}__list_watches`, description: '', mcp: true },
+      { name: `mcp__${WA}__connection_status`, description: '', mcp: true },
+    ],
+  }))
+  on('mcp.call', ($, e) => {
+    let body: unknown = answers[e.tool] ?? {}
+    if (e.tool === 'list_watches') {
+      const id = e.args.watch as string | undefined
+      body = {
+        monitorizari: id ? [state[id]].filter(Boolean) : Object.values(state),
+        pregatire: { cliFound: true, loggedIn: false, problems: ['Claude Code nu este autentificat pe acest calculator'] },
+        pregatireCodex: { cliFound: true, loggedIn: true, connections: [{ name: 'symbai-hello', state: 'blocked' }] },
+      }
+    }
+    if (e.tool === 'update_watch' || e.tool === 'stop_watch') {
+      calls.push({ tool: e.tool, args: e.args })
+      const one = state[e.args.watch as string]
+      if (e.tool === 'stop_watch' && e.args.delete === true) delete state[e.args.watch as string]
+      else if (one && typeof e.args.active === 'boolean') {
+        one.activa = e.args.active
+        if (e.args.active) delete one.motivOprire
+      }
+      if (one && e.args.clear_session === true) delete one.ultimaRulare
+      body = { success: true }
+    }
+    return { value: { content: [{ type: 'text', text: JSON.stringify(body) }], isError: false } }
+  })
+
+  for (const surface of ['terminal', 'desktop'] as const) {
+    reset()
+    calls.length = 0
+    await $.command.run({ command: 'symbai', args: '', origin: { kind: 'composer' } } as any)
+    const pane = await $.ui.mount({ plugin: 'symbai-ui', surface, component: 'Pane', requestId: 'symbai-asistenti', props: PANE_PROPS })
+
+    // Calculator problems are said once, in words.
+    expect(await pane.find({ type: 'Text', text: /Claude Code nu este autentificat/ })).toBeDefined()
+    expect(await pane.find({ type: 'Text', text: /Codex nu poate intra în firma „symbai-hello”/ })).toBeDefined()
+    // Lost conversation, stopped after failures and Claude not logged in need the person; the old stream failure does not.
+    expect(await pane.find({ type: 'Text', text: /Și-a pierdut conversația salvată/ })).toBeDefined()
+    expect(await pane.find({ type: 'Text', text: /S-a oprit singur/ })).toBeDefined()
+    expect(await pane.find({ type: 'Text', text: /Claude Code nu e pregătit pe calculator/ })).toBeDefined()
+    expect(await pane.find({ key: 'fix-old' })).toBeUndefined()
+    expect(await pane.find({ type: 'Text', text: /4 de reparat/ })).toBeDefined()
+    // Stopped by failures but its program is not ready on this computer: no start offered.
+    expect(await pane.find({ key: 'fix-claudeTired' })).toBeUndefined()
+
+    await pane.press({ key: 'fix-lost' })
+    expect(calls[0]).toEqual({ tool: 'update_watch', args: { watch: 'lost', clear_session: true } })
+    await pane.press({ key: 'fix-tired' })
+    expect(calls[1]).toEqual({ tool: 'update_watch', args: { watch: 'tired', clear_session: true, active: true } })
+    expect(await pane.find({ type: 'Text', text: /2 de reparat/ })).toBeDefined()
+
+    // Starting from the list asks first: it answers what piled up.
+    await pane.press({ key: 'inactive' })
+    await pane.press({ key: 'toggle-paused' })
+    expect(calls.length).toBe(2)
+    expect(await pane.find({ type: 'Text', text: /Pornești „Ovidiu”/ })).toBeDefined()
+    await pane.press({ key: 'start-cancel-paused' })
+    expect(calls.length).toBe(2)
+    await pane.press({ key: 'inactive' })
+
+    // Stop straight from the list.
+    await pane.press({ key: 'toggle-old' })
+    expect(calls[2]).toEqual({ tool: 'update_watch', args: { watch: 'old', active: false } })
+    expect(await pane.find({ type: 'Text', text: /„Simina” e oprit/ })).toBeDefined()
+
+    // Delete asks first, then removes for good.
+    await pane.press({ key: 'open-lost' })
+    await pane.press({ key: 'delete-ask' })
+    expect(await pane.find({ type: 'Text', text: /Ștergi definitiv „Alex”/ })).toBeDefined()
+    expect(calls.length).toBe(3)
+    await pane.press({ key: 'delete-confirm' })
+    expect(calls[3]).toEqual({ tool: 'stop_watch', args: { watch: 'lost', delete: true } })
+    expect(await pane.find({ type: 'Text', text: /„Alex” a fost șters/ })).toBeDefined()
+    expect(await pane.find({ key: 'open-lost' })).toBeUndefined()
+    await pane.unmount()
+  }
 })

@@ -10,6 +10,9 @@ export type Assistant = {
   lastRunAt: string | null
   lastRunSummary: string | null
   lastMessageAt: string | null
+  stopReason: string | null
+  tip: string | null
+  runs: number
 }
 
 export type AssistantDetail = Assistant & {
@@ -24,6 +27,13 @@ export type AssistantDetail = Assistant & {
   senders: string[]
 }
 
+// What this computer can run: null when Connect did not say.
+export type Machine = {
+  claudeReady: boolean | null
+  codexReady: boolean | null
+  problems: string[]
+}
+
 export type WhatsAppLine = {
   server: string
   number: string | null
@@ -32,6 +42,7 @@ export type WhatsAppLine = {
   organization: string | null
   licence: string | null
   assistants: Assistant[]
+  machine: Machine
   error: string | null
 }
 
@@ -57,6 +68,9 @@ export type Editing = { server: string; id: string; name: string; previous: stri
 
 export type Undo = { server: string; id: string; objective: string; saved: string }
 
+// A step the person confirms first: deleting, or starting one that will answer what piled up.
+export type Confirm = Selected & { action: 'delete' | 'start' }
+
 export type Role = { id: string; text: string | null; error: string | null }
 
 declare module 'claude-code' {
@@ -75,6 +89,8 @@ declare module 'claude-code' {
       undo: Undo | null
       role: Role | null
       isRoleLoading: boolean
+      busyId: string | null
+      confirming: Confirm | null
     }
   }
 }

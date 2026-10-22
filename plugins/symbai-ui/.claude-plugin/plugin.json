@@ -1,7 +1,7 @@
 {
   "name": "symbai-ui",
-  "version": "0.1.0",
-  "description": "Symbai în Claude Code: panoul cu asistenții WhatsApp (rolul pe scurt, promptul complet editabil, setări), banda de stare a conexiunilor și comanda /symbai.",
+  "version": "0.1.1",
+  "description": "Symbai în Claude Code: panoul cu asistenții WhatsApp (oprește, pornește, repară și șterge; rolul pe scurt, promptul complet editabil, setări), banda de stare a conexiunilor și comanda /symbai.",
   "author": {
     "name": "Symbai",
     "email": "support@symbai.app"
