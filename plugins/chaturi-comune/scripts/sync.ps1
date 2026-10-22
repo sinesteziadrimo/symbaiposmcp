@@ -15,7 +15,10 @@
 # - the account logged in now only receives new chats: the app holds its
 #   list in memory, so its existing files are left alone;
 # - other accounts also get newer versions of chats they have, unless they
-#   archived them.
+#   archived them;
+# - with no account known as logged in (a terminal or `claude -p` session,
+#   such as a Symbai Connect monitor), any of them may be the one open in the
+#   app, so nothing is updated: only new chats are added.
 #
 # Prints one line of JSON. -DryRun reports without writing anything. Each
 # added copy is listed in %USERPROFILE%\.claude\chaturi-comune\copii-adaugate.txt.
@@ -242,7 +245,7 @@ try {
                     if (-not $DryRun) { Copy-Chat $source $destination }
                     [void]$copies.Add($destination)
                     $added++
-                } elseif (-not $target.isActive -and
+                } elseif ($activeAccount -and -not $target.isActive -and
                     $source.LastWriteTimeUtc -gt $current.LastWriteTimeUtc.AddSeconds(2) -and
                     -not (Test-Archived $current)) {
                     if (-not $DryRun) { Copy-Chat $source $current.FullName }

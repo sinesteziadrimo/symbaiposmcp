@@ -1,6 +1,6 @@
 {
   "name": "chaturi-comune",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Toate conturile Claude logate pe același PC văd aceleași chat-uri Code din aplicația desktop.",
   "author": {
     "name": "Symbai",
