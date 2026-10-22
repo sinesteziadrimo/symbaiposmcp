@@ -12,7 +12,7 @@
       "name": "symbai-core",
       "source": "./plugins/symbai-core",
       "description": "Asistentul Symbai: ghiduri pas-cu-pas + cunoștințe despre modulele Symbai, aplicațiile native Expo și catalogul MCP live. Lucrează MCP-first cu confirmări sigure și verificare prin citire.",
-      "version": "0.45.94",
+      "version": "0.45.95",
       "author": {
         "name": "Symbai"
       },
@@ -49,6 +49,20 @@
       "source": "./plugins/symbai-ui",
       "description": "Symbai în Claude Code: panoul cu asistenții WhatsApp (oprește, pornește, repară și șterge; rolul pe scurt, promptul complet editabil, setări), banda de stare a conexiunilor și comanda /symbai. Doar Claude Code; Codex nu are mod-uri.",
       "version": "0.1.1",
+      "category": "mod",
+      "author": {
+        "name": "Symbai"
+      },
+      "homepage": "https://github.com/sinesteziadrimo/symbaimemory",
+      "repository": "https://github.com/sinesteziadrimo/symbaimemory",
+      "license": "MIT"
+    },
+    {
+      "name": "chaturi-comune",
+      "source": "./plugins/chaturi-comune",
+      "description": "Toate conturile Claude logate pe același PC văd aceleași chat-uri Code din aplicația desktop: lista se completează singură la pornire și după fiecare răspuns, iar /chaturi-comune o face pe loc. Doar Windows și Claude Code.",
+      "version": "0.1.2",
+      "category": "mod",
       "author": {
         "name": "Symbai"
       },

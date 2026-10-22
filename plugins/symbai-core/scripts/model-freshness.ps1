@@ -4,7 +4,9 @@
 # Claude tells the person and asks whether to switch. Riverside, 20.10.2026: Simina's posting sessions stayed on
 # Opus 5 / Sonnet 5 for weeks and nobody knew.
 # The catalog comes from the CLI picker (`initialize`, no AI prompt, no MCP, no hooks), cached 12 hours in
-# <config>\symbai\model-catalog.json and refreshed in the background, so the session start never waits for the CLI.
+# <config>\symbai\model-catalog.json. A stale catalog is read again inside the hook, capped at 3 seconds: with the
+# background-only refresh, a PC showed the lock written on 21.10.2026 but never a catalog. If the CLI is slower (a busy
+# PC answered in 19 s), the background refresh still runs, for the next session.
 # Each session is asked once per newer model. Any failure = the session starts without a notice.
 # Keep this file ASCII-only: PowerShell 5.1 reads a BOM-less file as ANSI. The Romanian text lives in
 # knowledge\model-nou.md and is read as UTF-8.
@@ -75,9 +77,24 @@ function Get-NewerModel([string]$current, $models) {
     return $best
 }
 
-function Update-Catalog {
+# The CLI that runs this session, else the newest one installed by the Claude app (as Symbai Connect looks it up).
+function Find-ClaudeCli {
     $cli = $env:CLAUDE_CODE_EXECPATH
-    if (-not $cli -or -not (Test-Path -LiteralPath $cli)) { return }
+    if ($cli -and (Test-Path -LiteralPath $cli)) { return $cli }
+    $roots = @(Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Packages') -Directory -Filter 'Claude_*' -ErrorAction SilentlyContinue |
+        ForEach-Object { Join-Path $_.FullName 'LocalCache\Roaming\Claude\claude-code' }) + @(Join-Path $env:APPDATA 'Claude\claude-code')
+    $found = @($roots | Where-Object { Test-Path -LiteralPath $_ } | ForEach-Object { Get-ChildItem -LiteralPath $_ -Recurse -Filter 'claude.exe' -ErrorAction SilentlyContinue } |
+        Sort-Object LastWriteTime -Descending | Select-Object -First 1)
+    if ($found.Count) { return $found[0].FullName }
+    # Only a real executable: Process.Start refuses claude.ps1, and Kill() on claude.cmd stops only cmd.exe.
+    $command = @(Get-Command claude -CommandType Application -ErrorAction SilentlyContinue | Where-Object { $_.Source -like '*.exe' } | Select-Object -First 1)
+    if ($command.Count) { return $command[0].Source }
+    return ''
+}
+
+function Update-Catalog([int]$waitMs = 20000) {
+    $cli = Find-ClaudeCli
+    if (-not $cli) { return $false }
     $psi = New-Object System.Diagnostics.ProcessStartInfo $cli
     $psi.Arguments = '-p --input-format stream-json --output-format stream-json --verbose --strict-mcp-config --mcp-config "{""mcpServers"":{}}" --tools "" --disable-slash-commands --setting-sources "" --settings "{""disableAllHooks"":true}" --no-session-persistence'
     $psi.UseShellExecute = $false; $psi.CreateNoWindow = $true
@@ -88,28 +105,42 @@ function Update-Catalog {
         if ($name -like 'CLAUDE_CODE_*' -or $name -eq 'CLAUDECODE') { $psi.EnvironmentVariables.Remove($name) }
     }
     $process = [System.Diagnostics.Process]::Start($psi)
-    $stdout = $process.StandardOutput.ReadToEndAsync()
     $null = $process.StandardError.ReadToEndAsync()
     $process.StandardInput.WriteLine('{"type":"control_request","request_id":"symbai-models","request":{"subtype":"initialize"}}')
     $process.StandardInput.Close()
-    if (-not $process.WaitForExit(20000)) { try { $process.Kill() } catch { }; return }
-    foreach ($line in ($stdout.Result -split "`n")) {
-        try { $message = $line | ConvertFrom-Json } catch { continue }
-        if ($message.type -ne 'control_response' -or $message.response.request_id -ne 'symbai-models' -or $message.response.subtype -ne 'success') { continue }
-        $models = @($message.response.response.models | Where-Object { $_.value -is [string] -and $_.value -ne 'default' } |
-            Select-Object -First 80 | ForEach-Object { [ordered]@{ value = $_.value; displayName = "$($_.displayName)" } })
-        if ($models.Count) { Write-JsonFile $catalogFile ([ordered]@{ at = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds(); models = $models }) }
-        return
-    }
+    # The answer comes in about a second, but the CLI (or its children) can take seconds to exit: read line by line
+    # until the answer or the cap, then stop the CLI without waiting for it.
+    $deadline = [DateTime]::UtcNow.AddMilliseconds($waitMs)
+    $message = $null
+    try {
+        while (-not $message) {
+            $left = [int]($deadline - [DateTime]::UtcNow).TotalMilliseconds
+            if ($left -le 0) { break }
+            $next = $process.StandardOutput.ReadLineAsync()
+            if (-not $next.Wait($left)) { break }
+            $line = $next.Result
+            if ($null -eq $line) { break }
+            try { $candidate = $line | ConvertFrom-Json } catch { continue }
+            if ($candidate.type -eq 'control_response' -and $candidate.response.request_id -eq 'symbai-models') { $message = $candidate }
+        }
+    } finally { try { if (-not $process.HasExited) { $process.Kill() } } catch { } }
+    if (-not $message -or $message.response.subtype -ne 'success') { return $false }
+    $models = @($message.response.response.models | Where-Object { $_.value -is [string] -and $_.value -ne 'default' } |
+        Select-Object -First 80 | ForEach-Object { [ordered]@{ value = $_.value; displayName = "$($_.displayName)" } })
+    if (-not $models.Count) { return $false }
+    Write-JsonFile $catalogFile ([ordered]@{ at = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds(); models = $models })
+    return $true
 }
 
-function Start-CatalogRefresh {
+# Once per 12 hours (and at most every 10 minutes after a failure): the official picker, read now.
+function Update-CatalogNow {
     try {
         if ((Test-Path -LiteralPath $lockFile) -and ((Get-Date) - (Get-Item -LiteralPath $lockFile).LastWriteTime).TotalMinutes -lt 10) { return }
         [void][IO.Directory]::CreateDirectory($dataDir)
         [IO.File]::WriteAllText($lockFile, "$([DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds())", $utf8)
-        # Same PowerShell as this hook (5.1 or 7) and the same scriptblock trick as the hook itself: no -File, so an
-        # execution policy set by GPO does not apply, and -EncodedCommand needs no quoting for paths with spaces or '.
+        if (Update-Catalog 3000) { return }
+        # A busy PC can take 20 s to answer: try again in the background, for the next session. Same PowerShell and the
+        # same scriptblock trick as the hook (no -File, so a GPO execution policy does not apply; no path quoting).
         $script = (Join-Path $env:CLAUDE_PLUGIN_ROOT 'scripts\model-freshness.ps1') -replace "'", "''"
         $command = "& ([scriptblock]::Create([IO.File]::ReadAllText('$script', [Text.Encoding]::UTF8))) -Refresh"
         $encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($command))
@@ -118,15 +149,34 @@ function Start-CatalogRefresh {
     } catch { }
 }
 
-if ($Refresh) { try { Update-Catalog } catch { }; return }
+# Long desktop sessions resume or compact without a `model` field: the last assistant message names it.
+function Get-TranscriptModel([string]$path) {
+    try {
+        if (-not $path -or -not (Test-Path -LiteralPath $path)) { return '' }
+        $stream = [IO.File]::Open($path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::ReadWrite)
+        try {
+            $length = [Math]::Min($stream.Length, 262144)
+            [void]$stream.Seek(-$length, [IO.SeekOrigin]::End)
+            $buffer = New-Object byte[] $length
+            $read = $stream.Read($buffer, 0, $length)
+            $tail = [Text.Encoding]::UTF8.GetString($buffer, 0, $read)
+        } finally { $stream.Dispose() }
+        $found = [regex]::Matches($tail, '"model":"(claude-[a-z0-9.\-]+(?:\[[a-z0-9]{1,8}\])?)","id":"msg_')
+        if ($found.Count) { return $found[$found.Count - 1].Groups[1].Value }
+    } catch { }
+    return ''
+}
+
+if ($Refresh) { try { $null = Update-Catalog 30000 } catch { }; return }
 
 $result = '{"continue":true}'
 try {
     $hookInput = [Console]::In.ReadToEnd() | ConvertFrom-Json
     $catalog = Read-JsonFile $catalogFile
     $now = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
-    if (-not $catalog -or -not ($now - [double]$catalog.at -lt 43200000)) { Start-CatalogRefresh }
+    if (-not $catalog -or -not ($now - [double]$catalog.at -lt 43200000)) { Update-CatalogNow; $fresh = Read-JsonFile $catalogFile; if ($fresh) { $catalog = $fresh } }
     $current = if ($hookInput.model -is [string]) { $hookInput.model.Trim() } else { '' }
+    if (-not $current) { $current = Get-TranscriptModel "$($hookInput.transcript_path)" }
     $models = @(if ($catalog) { $catalog.models })
     $better = Get-NewerModel $current $models
     if ($better) {

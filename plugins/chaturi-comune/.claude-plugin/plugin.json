@@ -1,0 +1,13 @@
+{
+  "name": "chaturi-comune",
+  "version": "0.1.2",
+  "description": "Toate conturile Claude logate pe același PC văd aceleași chat-uri Code din aplicația desktop.",
+  "author": {
+    "name": "Symbai",
+    "email": "support@symbai.app"
+  },
+  "homepage": "https://github.com/sinesteziadrimo/symbaimemory#readme",
+  "repository": "https://github.com/sinesteziadrimo/symbaimemory",
+  "license": "MIT",
+  "keywords": ["symbai", "chat-uri", "conturi", "desktop"]
+}

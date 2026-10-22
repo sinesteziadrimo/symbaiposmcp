@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot -Parent
 $testRoot = Join-Path $env:TEMP ('symbai-model-test-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $testRoot | Out-Null
-$saved = @{ PATH = $env:PATH; CLAUDE_PLUGIN_ROOT = $env:CLAUDE_PLUGIN_ROOT; CLAUDE_CONFIG_DIR = $env:CLAUDE_CONFIG_DIR; CLAUDE_CODE_EXECPATH = $env:CLAUDE_CODE_EXECPATH }
+$saved = @{ PATH = $env:PATH; CLAUDE_PLUGIN_ROOT = $env:CLAUDE_PLUGIN_ROOT; CLAUDE_CONFIG_DIR = $env:CLAUDE_CONFIG_DIR; CLAUDE_CODE_EXECPATH = $env:CLAUDE_CODE_EXECPATH; LOCALAPPDATA = $env:LOCALAPPDATA; APPDATA = $env:APPDATA }
 try {
     $archive = Join-Path $testRoot 'plugin.zip'
     & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Join-Path $repo 'build-package.ps1') -Output $archive
@@ -14,7 +14,8 @@ try {
     $plugin = Join-Path $unpacked 'plugins\symbai-core'
     $hooks = Get-Content (Join-Path $plugin 'hooks\hooks.json') -Raw | ConvertFrom-Json
     $groups = @($hooks.hooks.SessionStart | Where-Object { @($_.hooks | Where-Object { $_.command -like '*model-freshness*' }).Count })
-    if ($groups.Count -ne 1 -or $groups[0].matcher -ne 'startup|resume') { throw 'The model hook must run once, on startup and resume' }
+    # No matcher: long desktop sessions reach it on resume and after compaction too.
+    if ($groups.Count -ne 1 -or $groups[0].matcher) { throw 'The model hook must run once, on every session start' }
     $hook = @($groups[0].hooks | Where-Object { $_.command -like '*model-freshness*' })[0]
     if ($hook.shell -ne 'powershell' -or $hook.command -like 'node *') { throw 'The model hook must run in native PowerShell without Node' }
     $driver = Join-Path $testRoot 'invoke.ps1'
@@ -34,6 +35,8 @@ try {
     $env:CLAUDE_PLUGIN_ROOT = $plugin
     $env:CLAUDE_CONFIG_DIR = $config
     $env:CLAUDE_CODE_EXECPATH = $null
+    # The CLI lookup must not find the real Claude app of this PC.
+    $env:LOCALAPPDATA = Join-Path $testRoot 'local'; $env:APPDATA = Join-Path $testRoot 'roaming'
     function Read-JsonFileForTest([string]$file) {
         try { if (Test-Path -LiteralPath $file) { return [IO.File]::ReadAllText($file, [Text.Encoding]::UTF8) | ConvertFrom-Json } } catch { }
         return $null
@@ -60,25 +63,30 @@ try {
         if ((Invoke-Hook $case).continue -ne $true) { throw "No notice expected for $case" }
     }
 
-    # A stale catalog starts a background refresh (here without a CLI, so it writes nothing) and still answers.
+    # Without `model` (resume, compaction) the last assistant message of the transcript names it.
+    $transcript = Join-Path $testRoot 'session.jsonl'
+    [IO.File]::WriteAllText($transcript, '{"type":"assistant","message":{"model":"claude-sonnet-4-6","id":"msg_1","role":"assistant"}}' + "`n" + '{"type":"assistant","message":{"model":"claude-opus-5","id":"msg_2","role":"assistant"}}' + "`n", [Text.UTF8Encoding]::new($false))
+    $fromTranscript = Invoke-Hook ('{"session_id":"s11","source":"compact","transcript_path":' + (ConvertTo-Json $transcript) + '}')
+    if ($fromTranscript.hookSpecificOutput.additionalContext -notlike '*Opus 5 (*Opus 5.5*') { throw 'The model must be read from the transcript when the input has none' }
+
+    # A stale catalog without any CLI on the PC: one attempt (lock) and the old catalog still answers.
     $catalog.at = $now - 13 * 3600 * 1000
     [IO.File]::WriteAllText((Join-Path $data 'model-catalog.json'), ($catalog | ConvertTo-Json -Depth 4), [Text.UTF8Encoding]::new($false))
     if ((Invoke-Hook '{"session_id":"s7","model":"claude-opus-5"}').hookSpecificOutput.additionalContext -notlike '*Opus 5.5*') { throw 'A stale catalog still answers' }
     if (-not (Test-Path -LiteralPath (Join-Path $data 'model-catalog.refresh'))) { throw 'A stale catalog must start one refresh' }
-    Start-Sleep -Seconds 3
 
-    # The background refresh, end to end, with a fake CLI answering `initialize` like the official picker.
+    # The refresh inside the hook, end to end, with a fake CLI answering `initialize` like the official picker.
     $fake = Join-Path $testRoot 'fake claude.cmd'
     $response = '{"type":"control_response","response":{"subtype":"success","request_id":"symbai-models","response":{"models":[{"value":"default","displayName":"Default"},{"value":"opus","displayName":"Opus 6"},{"value":"claude-opus-5-5","displayName":"Opus 5.5"}]}}}'
     [IO.File]::WriteAllText($fake, "@echo off`r`necho $response`r`n", [Text.Encoding]::ASCII)
     $env:CLAUDE_CODE_EXECPATH = $fake
     Remove-Item -LiteralPath (Join-Path $data 'model-catalog.json'), (Join-Path $data 'model-catalog.refresh') -Force
-    if ((Invoke-Hook '{"session_id":"s10","model":"claude-opus-5-5"}').continue -ne $true) { throw 'Without a catalog the session starts silently' }
-    $written = $null
-    for ($i = 0; $i -lt 30 -and -not $written; $i++) { Start-Sleep -Milliseconds 500; $written = Read-JsonFileForTest (Join-Path $data 'model-catalog.json') }
+    $timer = [Diagnostics.Stopwatch]::StartNew()
+    if ((Invoke-Hook '{"session_id":"s10","model":"claude-opus-5-5"}').hookSpecificOutput.additionalContext -notlike '*Opus 6*') { throw 'The first session must read the picker and announce Opus 6 at once' }
+    if ($timer.ElapsedMilliseconds -gt 8000) { throw "The hook took $($timer.ElapsedMilliseconds) ms; the cap is 4 s for the CLI" }
+    $written = Read-JsonFileForTest (Join-Path $data 'model-catalog.json')
     if (-not $written -or @($written.models).Count -ne 2 -or @($written.models | Where-Object { $_.value -eq 'default' }).Count) { throw 'The refresh must write the picker catalog without "default"' }
-    if ((Invoke-Hook '{"session_id":"s10","model":"claude-opus-5-5"}').hookSpecificOutput.additionalContext -notlike '*Opus 6*') { throw 'The refreshed catalog must announce Opus 6' }
-    Write-Host 'PASS: packaged native hook, no Node, notice once per session, other families and current models silent, stale catalog refresh, background refresh writes the picker catalog, 1M variant kept.'
+    Write-Host 'PASS: packaged native hook, no Node, notice once per session, other families and current models silent, model from the transcript, stale catalog kept, picker read inside the hook, 1M variant kept.'
 } finally {
     foreach ($name in $saved.Keys) { Set-Item -Path "env:$name" -Value $saved[$name] -ErrorAction SilentlyContinue; if ($null -eq $saved[$name]) { Remove-Item -Path "env:$name" -ErrorAction SilentlyContinue } }
     $resolved = [IO.Path]::GetFullPath($testRoot)

@@ -5,7 +5,10 @@
  * trece. Riverside, 20.10.2026: sesiunile de postări ale Siminei rămăseseră pe Opus 5 / Sonnet 5 și nimeni nu știa.
  *
  * Catalogul vine din selectorul oficial al CLI-ului (`initialize`, fără prompt AI, fără MCP și fără hook-uri), ținut
- * minte 12 ore în <config>/symbai/model-catalog.json și reîmprospătat în fundal: pornirea sesiunii nu așteaptă CLI-ul.
+ * minte 12 ore în <config>/symbai/model-catalog.json. Catalogul expirat se recitește chiar în hook, cel mult 3 secunde;
+ * dacă CLI-ul e mai lent (un PC ocupat a răspuns în 19 s), încă o dată în fundal, pentru sesiunea următoare. Cu
+ * reîmprospătarea doar în fundal, un PC avea lacătul scris pe 21.10.2026, dar catalogul niciodată.
+ * Sesiunile lungi din aplicație se reiau sau se compactează fără câmpul `model`: îl dă ultimul mesaj al asistentului.
  * Gama = treapta (Opus, Sonnet, Haiku, Fable); versiunea din ID sau, la aliasuri, din eticheta oficială („Opus 5.5”).
  * O sesiune e întrebată o singură dată pe același model nou. Varianta Windows din pachetul Connect: model-freshness.ps1.
  *
@@ -75,46 +78,108 @@ export function newerModel(current, models) {
   return best;
 }
 
-/** Fundal: citește selectorul oficial și scrie catalogul. Nu atinge sesiunea care l-a pornit. */
-async function refresh() {
-  const cli = process.env.CLAUDE_CODE_EXECPATH;
-  if (!cli || !fs.existsSync(cli)) return;
+/** CLI-ul sesiunii, altfel cel mai nou instalat de aplicația Claude (cum îl caută Symbai Connect). */
+function findClaudeCli() {
+  const own = process.env.CLAUDE_CODE_EXECPATH;
+  if (own && fs.existsSync(own)) return own;
+  const roots = [];
+  try {
+    const packages = path.join(process.env.LOCALAPPDATA || "", "Packages");
+    for (const name of fs.readdirSync(packages)) if (name.startsWith("Claude_")) roots.push(path.join(packages, name, "LocalCache", "Roaming", "Claude", "claude-code"));
+  } catch { /* nu e aplicația din Store */ }
+  if (process.env.APPDATA) roots.push(path.join(process.env.APPDATA, "Claude", "claude-code"));
+  let best = null;
+  const visit = (dir, depth) => {
+    let entries = [];
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory() && depth < 3) visit(full, depth + 1);
+      else if (entry.isFile() && /^claude(\.exe)?$/i.test(entry.name)) {
+        const time = fs.statSync(full).mtimeMs;
+        if (!best || time > best.time) best = { full, time };
+      }
+    }
+  };
+  for (const root of roots) visit(root, 0);
+  return best?.full ?? null;
+}
+
+/** Citește selectorul oficial și scrie catalogul. `waitMs` plafonează CLI-ul (în hook: 3 s). `true` = catalog scris. */
+async function refresh(waitMs = 20000) {
+  const cli = findClaudeCli();
+  if (!cli) return false;
   const env = { ...process.env };
   for (const name of Object.keys(env)) if (name.startsWith("CLAUDE_CODE_") || name === "CLAUDECODE") delete env[name];
   const child = spawn(cli, ["-p", "--input-format", "stream-json", "--output-format", "stream-json", "--verbose", "--strict-mcp-config",
     "--mcp-config", '{"mcpServers":{}}', "--tools", "", "--disable-slash-commands", "--setting-sources", "", "--settings", '{"disableAllHooks":true}',
     "--no-session-persistence"], { cwd: os.homedir(), env, windowsHide: true, stdio: ["pipe", "pipe", "ignore"] });
-  let output = "";
-  child.stdout.on("data", (chunk) => { if (output.length < 1 << 20) output += chunk; });
-  child.stdin.end('{"type":"control_request","request_id":"symbai-models","request":{"subtype":"initialize"}}\n');
-  const timer = setTimeout(() => child.kill(), 20000);
-  await new Promise((resolve) => child.on("close", resolve).on("error", resolve));
-  clearTimeout(timer);
-  for (const line of output.split("\n")) {
-    let message;
-    try { message = JSON.parse(line); } catch { continue; }
-    if (message?.type !== "control_response" || message.response?.request_id !== "symbai-models" || message.response?.subtype !== "success") continue;
-    const models = (message.response.response?.models ?? []).filter((m) => typeof m?.value === "string" && m.value !== "default")
-      .map((m) => ({ value: m.value, displayName: String(m.displayName ?? "") })).slice(0, 80);
-    if (models.length) writeJson(catalogFile, { at: Date.now(), models });
-    return;
-  }
+  // Răspunsul la `initialize` vine în ~1 s, dar CLI-ul (sau copiii lui) poate întârzia secunde bune la închidere:
+  // se termină la prima linie de răspuns sau la plafon, apoi CLI-ul se oprește fără să fie așteptat.
+  const models = await new Promise((resolve) => {
+    let output = "", settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true; clearTimeout(timer);
+      try { child.kill(); } catch { /* deja oprit */ }
+      child.stdout?.destroy(); child.unref();
+      resolve(value);
+    };
+    const timer = setTimeout(() => finish(null), waitMs);
+    child.stdout.on("data", (chunk) => {
+      if (output.length < 1 << 20) output += chunk;
+      for (const line of output.split("\n")) {
+        let message;
+        try { message = JSON.parse(line); } catch { continue; }
+        if (message?.type === "control_response" && message.response?.request_id === "symbai-models") {
+          finish(message.response?.subtype === "success" ? message.response.response?.models ?? [] : null);
+          return;
+        }
+      }
+    });
+    child.on("close", () => finish(null)).on("error", () => finish(null));
+    child.stdin.on("error", () => { /* CLI oprit înainte de cerere */ });
+    child.stdin.end('{"type":"control_request","request_id":"symbai-models","request":{"subtype":"initialize"}}\n');
+  });
+  const usable = (Array.isArray(models) ? models : []).filter((m) => typeof m?.value === "string" && m.value !== "default")
+    .map((m) => ({ value: m.value, displayName: String(m.displayName ?? "") })).slice(0, 80);
+  if (!usable.length) return false;
+  writeJson(catalogFile, { at: Date.now(), models: usable });
+  return true;
 }
 
-function startRefresh() {
+/** O dată la 12 ore (și cel mult la 10 minute după un eșec): selectorul oficial, citit acum. */
+async function refreshNow() {
   try {
     const lock = fs.statSync(lockFile, { throwIfNoEntry: false });
     if (lock && Date.now() - lock.mtimeMs < REFRESH_LOCK_MS) return;
     fs.mkdirSync(dataDir, { recursive: true });
     fs.writeFileSync(lockFile, String(Date.now()));
+    if (await refresh(3000)) return;
+    // Un PC ocupat a răspuns în 19 s: încă o încercare în fundal, pentru sesiunea următoare.
     spawn(process.execPath, [fileURLToPath(import.meta.url), "--refresh"], { detached: true, stdio: "ignore", windowsHide: true }).unref();
   } catch { /* fără catalog nou: anunțul rămâne pe cel vechi */ }
 }
 
-function announcement(input) {
-  const catalog = readJson(catalogFile);
-  if (!catalog || !(Date.now() - Number(catalog.at) < CATALOG_TTL_MS)) startRefresh();
-  const current = typeof input?.model === "string" ? input.model.trim() : "";
+/** Modelul ultimului mesaj al asistentului din transcriere (ultimii 256 KB). */
+export function transcriptModel(file) {
+  try {
+    if (!file) return "";
+    const handle = fs.openSync(file, "r");
+    try {
+      const size = fs.fstatSync(handle).size, length = Math.min(size, 262144);
+      const buffer = Buffer.alloc(length);
+      fs.readSync(handle, buffer, 0, length, size - length);
+      const found = [...buffer.toString("utf8").matchAll(/"model":"(claude-[a-z0-9.\-]+(?:\[[a-z0-9]{1,8}\])?)","id":"msg_/g)];
+      return found.length ? found[found.length - 1][1] : "";
+    } finally { fs.closeSync(handle); }
+  } catch { return ""; }
+}
+
+async function announcement(input) {
+  let catalog = readJson(catalogFile);
+  if (!catalog || !(Date.now() - Number(catalog.at) < CATALOG_TTL_MS)) { await refreshNow(); catalog = readJson(catalogFile) ?? catalog; }
+  const current = (typeof input?.model === "string" ? input.model.trim() : "") || transcriptModel(input?.transcript_path);
   const models = Array.isArray(catalog?.models) ? catalog.models : [];
   const better = newerModel(current, models);
   if (!better) return null;
@@ -144,12 +209,12 @@ function isMain() {
 }
 
 if (process.argv.includes("--refresh")) {
-  await refresh().catch(() => {});
+  await refresh(30000).catch(() => false);
 } else if (isMain()) {
   let text = "";
   try {
     if (!process.stdin.isTTY) for await (const chunk of process.stdin) text += chunk;
-    const context = announcement(JSON.parse(text || "{}"));
+    const context = await announcement(JSON.parse(text || "{}"));
     process.stdout.write(JSON.stringify(context ? { hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: context } } : { continue: true }));
   } catch {
     process.stdout.write(JSON.stringify({ continue: true }));
