@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface as Api, McpToolResult, Register } from 'claude-code'
 
-import type { Assistant, AssistantDetail, Confirm, Editing, Machine, PosLine, Selected, Snapshot, WhatsAppLine } from '../types'
+import type { Assistant, AssistantDetail, Bound, Confirm, Editing, Machine, PosLine, Selected, Snapshot, WhatsAppLine } from '../types'
 
 const PANE = 'symbai-asistenti'
 const PANE_TITLE = 'Symbai · Asistenți'
@@ -60,6 +60,8 @@ const role = atom({ plugin: 'symbai-ui', key: 'role' } as const, null)
 const isRoleLoading = atom({ plugin: 'symbai-ui', key: 'isRoleLoading' } as const, false)
 const busyId = atom({ plugin: 'symbai-ui', key: 'busyId' } as const, null)
 const confirming = atom({ plugin: 'symbai-ui', key: 'confirming' } as const, null)
+const boundChat = atom({ plugin: 'symbai-ui', key: 'boundChat' } as const, null)
+const isChatBandHidden = atom({ plugin: 'symbai-ui', key: 'isChatBandHidden' } as const, false)
 
 type Servers = { whatsapp: string[]; pos: string[] }
 
@@ -657,6 +659,97 @@ async function setBandHidden($: Api, value: boolean): Promise<void> {
   await update($, isBandHidden, () => value)
 }
 
+// A command chat in the sidebar starts with this mark: ⟦asistent-symbai <server> <id> <name>⟧.
+// The chat then shows that assistant's own band; the mark is kept per session id.
+const CHAT_MARK = /^⟦asistent-symbai ([\w-]+) ([0-9a-f-]{8,64}) ([^⟧]{1,120})⟧/
+// Text that reaches a chat from elsewhere (a report, another session, a channel) never binds it,
+// even when it quotes a mark.
+const NOT_BINDING = new Set([
+  'task-notification',
+  'peer',
+  'peer-send-message',
+  'channel',
+  'scheduled-trigger',
+  'auto-continuation',
+  'coordinator',
+  'observer',
+  'observer-activity',
+  'slack-ping',
+  'projects-relay',
+])
+
+async function mayBind($: Api, text: string, kind: string | undefined): Promise<boolean> {
+  if (kind && NOT_BINDING.has(kind)) return false
+  if (text.startsWith(EDIT_MARK) || !CHAT_MARK.test(text.trimStart())) return false
+  return (await read($, boundChat)) === null
+}
+
+async function saveBound($: Api, bound: Bound): Promise<void> {
+  await update($, boundChat, () => bound)
+  await $.store.set(`chat:${await $.session.id()}`, bound).catch(() => undefined)
+}
+
+async function bindChat($: Api, text: string): Promise<void> {
+  const found = CHAT_MARK.exec(text.trimStart())
+  if (!found) return
+  await saveBound($, { server: found[1], id: found[2], name: found[3].trim() })
+}
+
+// The desktop app hands a new chat its first message without prompt.submit: the chat's own
+// first message is read instead, once per process. Only that first message binds.
+let isChatLookedUp = false
+
+async function discoverChat($: Api): Promise<void> {
+  if (isChatLookedUp || (await read($, boundChat))) return
+  const messages = await $.session.messages()
+  if (!Array.isArray(messages)) return
+  const first = messages.find(one => one.role === 'user' && typeof one.text === 'string' && one.text.trim().length > 0)
+  // Not there yet (a new chat at its start): the end of its first turn looks again.
+  if (!first || typeof first.text !== 'string') return
+  isChatLookedUp = true
+  await bindChat($, first.text)
+}
+
+// A chat's Claude can also bind it by calling this tool once.
+const BIND_TOOL = 'leaga_chat_asistent'
+const BIND_TOOL_FULL = `mcp__symbai-ui__${BIND_TOOL}`
+
+async function serveBind($: Api, input: Record<string, unknown>): Promise<{ result: unknown } | { deny: string }> {
+  const server = typeof input.server === 'string' ? input.server.trim() : ''
+  const id = typeof input.watch === 'string' ? input.watch.trim() : ''
+  const name = typeof input.name === 'string' ? input.name.trim().slice(0, 120) : ''
+  if (!/^[\w-]{1,64}$/.test(server) || !/^[0-9a-f-]{8,64}$/.test(id) || name.length === 0) {
+    return { deny: 'Trimite server, watch (id-ul monitorizării) și name, exact ca în primul mesaj al chatului.' }
+  }
+  const current = await read($, boundChat)
+  if (current && (current.id !== id || current.server !== server)) {
+    return { deny: `Chatul e deja legat de „${current.name}”. Un chat de comandă rămâne la asistentul lui.` }
+  }
+  await saveBound($, { server, id, name })
+  void refresh($).catch(() => undefined)
+  return { result: { legat: true, asistent: name, watch: id, server } }
+}
+
+async function restoreChat($: Api): Promise<void> {
+  const saved = (await $.store.get(`chat:${await $.session.id()}`).catch(() => undefined)) as Bound | undefined
+  if (saved && typeof saved.server === 'string' && typeof saved.id === 'string') {
+    await update($, boundChat, () => ({ server: saved.server, id: saved.id, name: String(saved.name ?? '') }))
+  }
+  const hidden = (await $.store.get(`chatHidden:${await $.session.id()}`).catch(() => undefined)) === true
+  await update($, isChatBandHidden, () => hidden)
+}
+
+async function setChatBandHidden($: Api, value: boolean): Promise<void> {
+  await $.store.set(`chatHidden:${await $.session.id()}`, value).catch(() => undefined)
+  await update($, isChatBandHidden, () => value)
+}
+
+// The assistant's page in the pane, from its chat's band.
+async function showAssistant($: Api, target: Selected): Promise<void> {
+  await $.ui.open({ id: PANE, title: PANE_TITLE, focus: true })
+  await openDetail($, target)
+}
+
 // A chat already open picks up the choice made in another one.
 async function syncBandHidden($: Api): Promise<void> {
   const hidden = (await $.store.get(BAND_HIDDEN_KEY).catch(() => undefined)) === true
@@ -677,6 +770,26 @@ export const register: Register = on => {
       description: 'Deschide panoul Symbai cu asistenții și conexiunile',
     })
     await syncBandHidden($)
+    await restoreChat($).catch(() => undefined)
+    isChatLookedUp = false
+    await $.tool
+      .register({
+        name: BIND_TOOL,
+        description:
+          'Leagă acest chat de comandă de asistentul WhatsApp al lui, ca deasupra casetei să apară banda asistentului. ' +
+          'Se apelează o singură dată, la începutul unui chat de comandă, cu datele din marcajul ⟦asistent-symbai <server> <watch> <name>⟧ din primul mesaj.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            server: { type: 'string', description: 'Serverul MCP al numărului WhatsApp, ex. symbai-whatsapp-numarul-meu.' },
+            watch: { type: 'string', description: 'Id-ul monitorizării (asistentului).' },
+            name: { type: 'string', description: 'Numele asistentului.' },
+          },
+          required: ['server', 'watch', 'name'],
+        },
+      })
+      .catch(() => undefined)
+    await discoverChat($).catch(() => undefined)
     void refresh($).catch(() => undefined)
     // The pane opens only when asked (/symbai or „Asistenți”), never by itself in a new chat.
 
@@ -694,6 +807,7 @@ export const register: Register = on => {
   // MCP servers may still be connecting at session start: try again on the next prompt.
   on('prompt.submit', async ($, e, next) => {
     const fromPerson = !e.origin || e.origin.kind === 'composer' || e.origin.kind === 'bridge'
+    if (await mayBind($, e.text, e.origin?.kind).catch(() => false)) await bindChat($, e.text).catch(() => undefined)
     if (fromPerson && e.text.startsWith(EDIT_MARK) && !e.command) {
       return { drop: await saveEdit($, e.text) }
     }
@@ -701,7 +815,9 @@ export const register: Register = on => {
     if (fromPerson && (await read($, editing))) await update($, editing, () => null)
     void syncBandHidden($).catch(() => undefined)
     const snap = await read($, snapshot)
-    if (!snap || (snap.whatsapp.length === 0 && snap.pos.length === 0)) {
+    const bound = await read($, boundChat)
+    const boundLine = bound ? snap?.whatsapp.find(line => line.server === bound.server) : undefined
+    if (!snap || (snap.whatsapp.length === 0 && snap.pos.length === 0) || (bound && (!boundLine || boundLine.error))) {
       void refresh($).catch(() => undefined)
     }
 
@@ -713,7 +829,15 @@ export const register: Register = on => {
     return { drop: 'Promptul nu s-a salvat. Textul e înapoi în casetă.' }
   })
 
+  // A brand-new chat: its first message is in place once its first turn ends.
+  on('turn.complete', async ($, e, next) => {
+    const done = await next(e)
+    if (!isChatLookedUp) await discoverChat($).catch(() => undefined)
+    return done
+  }).catch(($, e, next) => next(e))
+
   on('tool.call', async ($, e, next) => {
+    if (e.tool === BIND_TOOL_FULL) return serveBind($, (e.input ?? {}) as Record<string, unknown>)
     const ran = await next(e)
     const parts = splitMcpName(e.tool)
     if (parts && parts.server.startsWith('symbai') && WATCH_TOOLS.has(parts.tool)) {
@@ -733,6 +857,130 @@ export const register: Register = on => {
     const { Box, Button, Text } = $.ui.resolve(e)
     const openPane = () => $.ui.open({ id: PANE, title: PANE_TITLE, focus: true })
     const counts = countOf(snap)
+
+    // ── A command chat: this assistant's own band ───────────────────────
+    const bound = await read($, boundChat)
+    if (bound) {
+      const phone = snap.whatsapp.find(line => line.server === bound.server)
+      const one = phone?.assistants.find(item => item.id === bound.id) ?? null
+      const target = { server: bound.server, id: bound.id }
+      if (await read($, isChatBandHidden)) {
+        return (
+          <Box flexDirection="row">
+            <Button key="chat-show" plain dimColor onPress={() => setChatBandHidden($, false)}>
+              <Text color={BRAND} bold>
+                🤖 {one?.name ?? bound.name} ▸
+              </Text>
+            </Button>
+          </Box>
+        )
+      }
+      if (!one) {
+        // Not read yet, Connect not answering, or really gone: three different things to say.
+        const why = !phone
+          ? 'Se conectează la WhatsApp…'
+          : phone.error
+            ? `Connect nu răspunde: ${phone.error}`
+            : 'nu mai apare în Connect (șters sau pe alt număr)'
+        return (
+          <Box flexDirection="row" gap={1} flexWrap="wrap">
+            <Text color={BRAND} bold>
+              🤖 {bound.name}
+            </Text>
+            <Text color={phone && !phone.error ? 'warning' : undefined} dimColor={!phone}>
+              {why}
+            </Text>
+            <Button key="chat-refresh" label="Reîmprospătează" dimColor onPress={() => refresh($)} />
+          </Box>
+        )
+      }
+      const problem = problemOf(one, phone?.machine ?? null)
+      const busy = await read($, isBusy)
+      const info = await read($, notice)
+      const state = problem
+        ? { mark: '▲', color: 'warning', label: problem.title }
+        : one.isActive
+          ? { mark: '●', color: 'success', label: 'activ' }
+          : { mark: '○', color: 'inactive', label: 'oprit' }
+      const repair =
+        problem?.fix === 'reset'
+          ? 'Repară'
+          : problem?.fix === 'resume'
+            ? 'Pornește din nou'
+            : problem?.fix === 'rerun'
+              ? 'Încearcă din nou'
+              : null
+      return (
+        <Box flexDirection="column">
+          <Box flexDirection="row" gap={1} flexWrap="wrap">
+            <Text color={BRAND} bold>
+              🤖 {one.name}
+            </Text>
+            <Text color={state.color} bold>
+              {state.mark} {state.label}
+            </Text>
+            <Text dimColor>
+              · {one.kind === 'grup' ? 'grup' : 'direct'} · {modeLabel(one.mode)} · {runnerLabel(one.runner)} · ultimul
+              mesaj {shortTime(one.lastMessageAt)}
+            </Text>
+          </Box>
+          <Box flexDirection="row" gap={1} flexWrap="wrap">
+            {problem && repair && (
+              <Button
+                key="chat-fix"
+                label={busy ? 'Se repară…' : repair}
+                variant="primary"
+                onPress={() => (busy ? undefined : fix($, one, problem))}
+              />
+            )}
+            {one.isActive ? (
+              <Button key="chat-pause" label="Oprește" dimColor onPress={() => (busy ? undefined : toggle($, one))} />
+            ) : (
+              <Button
+                key="chat-start"
+                label="Pornește…"
+                dimColor
+                onPress={async () => {
+                  await showAssistant($, target)
+                  await toggle($, one)
+                }}
+              />
+            )}
+            {one.isActive && one.runner !== 'stream' && (
+              <Button
+                key="chat-run"
+                label="Rulează acum"
+                dimColor
+                onPress={() =>
+                  busy
+                    ? undefined
+                    : act($, target, 'update_watch', { check_now: true }, `Am pornit o rulare pentru „${one.name}”.`)
+                }
+              />
+            )}
+            <Button
+              key="chat-today"
+              label="Ce a făcut azi?"
+              dimColor
+              onPress={() =>
+                $.prompt.submit({
+                  text: `Ce a făcut azi asistentul „${one.name}” (monitorizarea ${one.id}, ${one.server})? Citește watch_activity și mesajele noi din conversația lui, apoi spune-mi pe scurt: ce a primit, ce a răspuns, ce a rămas deschis.`,
+                })
+              }
+            />
+            <Button key="chat-card" label="Fișa" dimColor onPress={() => showAssistant($, target)} />
+            <Button key="chat-all" label="Toți asistenții" dimColor onPress={openPane} />
+            <Button key="chat-hide" label="Ascunde" dimColor onPress={() => setChatBandHidden($, true)} />
+          </Box>
+          {info && (
+            <Text color={info.isError ? 'error' : 'success'}>
+              {info.isError ? '✗ ' : '✓ '}
+              {info.text}
+            </Text>
+          )}
+        </Box>
+      )
+    }
     if (await read($, isBandHidden)) {
       return (
         <Box flexDirection="row">

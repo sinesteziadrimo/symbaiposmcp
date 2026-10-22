@@ -53,6 +53,22 @@ Echipa Symbai urcă fișiere noi de skill/knowledge în acest repo (pe `main`) �
 
 > **Bumpul de versiune e obligatoriu la fiecare livrare.** Claude Code servește pluginul dintr-un folder fixat pe versiune (`cache/symbai/symbai-core/<versiune>/`); dacă `version` nu se schimbă, clienții rămân pe copia veche din cache chiar dacă au tras commit-uri noi.
 
+### Mod-uri Claude Code: pornire și retragere din `marketplace.json`
+
+Câmpul `category` al unei intrări din `.claude-plugin/marketplace.json` îi spune lui Symbai Connect ce să facă cu pluginul pe PC-urile clienților. Ajunge la ei doar cu un pachet nou: numărul pachetului e versiunea `symbai-core`, deci se bumpează și ea, apoi `build-package.ps1 -Publish`.
+
+| `category` | Ce face Connect în Claude Code (Codex nu primește mod-uri) |
+|---|---|
+| `"mod"` | Pornește modul (`<nume>@symbai: true` în `~/.claude/settings.json` + `claude plugin install`), fără versiune nouă de Connect. Un `false` pus de om rămâne. |
+| `"mod-retras"` | Oprirea centrală: scrie `false` și rulează `claude plugin uninstall <nume>@symbai`, care scoate cheia și copia din cache. |
+
+Scoaterea unui mod din pachet **nu** îl oprește: intrarea `true` și copia din cache rămân. Un mod care se poartă rău se retrage cu `"mod-retras"`:
+
+- Se atinge numai un `true` de sub `@symbai`. Un `false` pus de om rămâne, iar un plugin cu același nume din alt marketplace nu se atinge.
+- Intrarea rămâne în manifest cu dosarul și versiunea ei: `build-package.ps1` cere `plugin.json` pentru fiecare intrare. `symbai-core` nu se poate retrage.
+- Marcajul pus înapoi pe `"mod"` repornește modul acolo unde dezinstalarea a reușit. Unde a eșuat, a rămas `false`, care nu se mai deosebește de alegerea omului, deci modul rămâne oprit.
+- Connect 1.2.113 nu cunoaște marcajul: nu mai pornește un mod retras (în afară de `symbai-ui`, pe care îl are într-o listă fixă), dar nici nu-l oprește. Oprirea propriu-zisă vine cu versiunea de Connect de după 1.2.113.
+
 ## Structură
 
 ```

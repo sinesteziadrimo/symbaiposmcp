@@ -71,6 +71,9 @@ export type Undo = { server: string; id: string; objective: string; saved: strin
 // A step the person confirms first: deleting, or starting one that will answer what piled up.
 export type Confirm = Selected & { action: 'delete' | 'start' }
 
+// The assistant a command chat in the sidebar belongs to.
+export type Bound = { server: string; id: string; name: string }
+
 export type Role = { id: string; text: string | null; error: string | null }
 
 declare module 'claude-code' {
@@ -91,6 +94,8 @@ declare module 'claude-code' {
       isRoleLoading: boolean
       busyId: string | null
       confirming: Confirm | null
+      boundChat: Bound | null
+      isChatBandHidden: boolean
     }
   }
 }

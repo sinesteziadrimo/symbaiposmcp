@@ -498,3 +498,142 @@ test('din listă: oprești, repari și ștergi un asistent; erorile vechi nu se 
     await pane.unmount()
   }
 })
+
+test('chatul de comandă al unui asistent are banda lui și o păstrează la redeschidere', async ($, on) => {
+  host(on)
+  const store = new Map<string, unknown>()
+  const calls: Record<string, unknown>[] = []
+  const state: Record<string, Record<string, any>> = {
+    abcd1234: { id: 'abcd1234', activa: true, mod: 'always', dispatch: 'codex', conversatie: { nume: 'Comenzi Fabrica', tip: 'grup' }, obiectiv: 'Ești Sym.', ultimulMesaj: '2026-10-21 14:34:23' },
+  }
+  on('session.id', () => ({ value: 'sesiune-1' }))
+  on('store.get', ($, e) => ({ value: store.get(e.key) }))
+  on('store.set', ($, e) => {
+    store.set(e.key, e.value)
+    return { value: undefined }
+  })
+  on('command.register', () => ({ value: undefined }))
+  on('session.start', ($, e) => ({ cwd: e.cwd }))
+  on('prompt.submit', ($, e) => ({ text: e.text }))
+  on('tool.list', () => ({
+    value: [
+      { name: `mcp__${WA}__list_watches`, description: '', mcp: true },
+      { name: `mcp__${WA}__connection_status`, description: '', mcp: true },
+    ],
+  }))
+  on('mcp.call', ($, e) => {
+    let body: unknown = answers[e.tool] ?? {}
+    if (e.tool === 'list_watches') body = { monitorizari: Object.values(state) }
+    if (e.tool === 'update_watch') {
+      calls.push(e.args)
+      if (typeof e.args.active === 'boolean') state[e.args.watch as string].activa = e.args.active
+      body = { success: true }
+    }
+    return { value: { content: [{ type: 'text', text: JSON.stringify(body) }], isError: false } }
+  })
+
+  // A report or a quote of the mark binds nothing.
+  await $.prompt.submit({ text: `⟦asistent-symbai ${WA} abcd1234 Comenzi Fabrica⟧ pornit`, origin: { kind: 'task-notification' } } as any)
+  await $.prompt.submit({ text: `am pornit ⟦asistent-symbai ${WA} abcd1234 Comenzi Fabrica⟧`, origin: { kind: 'composer' } } as any)
+  expect(store.get('chat:sesiune-1')).toBeUndefined()
+
+  await $.prompt.submit({ text: `⟦asistent-symbai ${WA} abcd1234 Comenzi Fabrica⟧\nEști chatul de comandă al asistentului.`, origin: { kind: 'composer' } } as any)
+  expect(store.get('chat:sesiune-1')).toEqual({ server: WA, id: 'abcd1234', name: 'Comenzi Fabrica' })
+  // A bound chat stays with its assistant.
+  await $.prompt.submit({ text: `⟦asistent-symbai ${WA} ffff0000 Alt asistent⟧`, origin: { kind: 'composer' } } as any)
+  expect(store.get('chat:sesiune-1')).toEqual({ server: WA, id: 'abcd1234', name: 'Comenzi Fabrica' })
+  await $.command.run({ command: 'symbai', args: '', origin: { kind: 'composer' } } as any)
+
+  for (const surface of ['terminal', 'desktop'] as const) {
+    const band = await $.ui.mount({ plugin: 'symbai-ui', surface, component: 'AbovePrompt', props: BAND_PROPS })
+    expect(await band.find({ type: 'Text', text: /🤖 Comenzi Fabrica/ })).toBeDefined()
+    expect(await band.find({ key: 'chat-today' })).toBeDefined()
+    // Not the general band with every assistant.
+    expect(await band.find({ key: 'open' })).toBeUndefined()
+    await band.press({ key: 'chat-pause' })
+    expect(calls.at(-1)).toEqual({ watch: 'abcd1234', active: false })
+    expect(await band.find({ type: 'Text', text: /oprit/ })).toBeDefined()
+    state.abcd1234.activa = true
+    await band.unmount()
+    await $.command.run({ command: 'symbai', args: '', origin: { kind: 'composer' } } as any)
+  }
+
+  // Reopened later (a new process): the band comes back from the store.
+  await $.session.start({ source: 'resume', cwd: 'D:/x' } as any)
+  const again = await $.ui.mount({ plugin: 'symbai-ui', surface: 'desktop', component: 'AbovePrompt', props: BAND_PROPS })
+  expect(await again.find({ type: 'Text', text: /🤖 Comenzi Fabrica/ })).toBeDefined()
+  await again.unmount()
+})
+
+test('chatul din bara aplicației se leagă prin unealta lui, o singură dată', async ($, on) => {
+  host(on)
+  const store = new Map<string, unknown>()
+  on('session.id', () => ({ value: 'sesiune-2' }))
+  on('store.get', ($, e) => ({ value: store.get(e.key) }))
+  on('store.set', ($, e) => {
+    store.set(e.key, e.value)
+    return { value: undefined }
+  })
+  on('command.register', () => ({ value: undefined }))
+  on('tool.register', ($, e) => ({ value: { tool: `mcp__symbai-ui__${e.name}` } }))
+  on('session.start', ($, e) => ({ cwd: e.cwd }))
+  on('tool.list', () => ({ value: [{ name: `mcp__${WA}__list_watches`, description: '', mcp: true }] }))
+  on('mcp.call', () => ({
+    value: { content: [{ type: 'text', text: JSON.stringify({ monitorizari: [{ id: 'abcd1234', activa: true, mod: 'always', dispatch: 'codex', conversatie: { nume: 'Oferte', tip: 'grup' } }] }) }], isError: false },
+  }))
+  await $.session.start({ source: 'startup', cwd: 'D:/x' } as any)
+
+  const bad = await $.tool.call({ tool: 'mcp__symbai-ui__leaga_chat_asistent', input: { server: WA, watch: 'nu e id', name: 'Oferte' } } as any)
+  expect(JSON.stringify(bad)).toContain('Trimite server')
+  expect(store.get('chat:sesiune-2')).toBeUndefined()
+
+  await $.tool.call({ tool: 'mcp__symbai-ui__leaga_chat_asistent', input: { server: WA, watch: 'abcd1234', name: 'Oferte' } } as any)
+  expect(store.get('chat:sesiune-2')).toEqual({ server: WA, id: 'abcd1234', name: 'Oferte' })
+  const other = await $.tool.call({ tool: 'mcp__symbai-ui__leaga_chat_asistent', input: { server: WA, watch: 'ffff0000', name: 'Alt' } } as any)
+  expect(JSON.stringify(other)).toContain('deja legat')
+  expect(store.get('chat:sesiune-2')).toEqual({ server: WA, id: 'abcd1234', name: 'Oferte' })
+
+  await $.command.run({ command: 'symbai', args: '', origin: { kind: 'composer' } } as any)
+  const band = await $.ui.mount({ plugin: 'symbai-ui', surface: 'desktop', component: 'AbovePrompt', props: BAND_PROPS })
+  expect(await band.find({ type: 'Text', text: /🤖 Oferte/ })).toBeDefined()
+  await band.unmount()
+})
+
+test('la pornire, chatul se leagă singur după primul lui mesaj; un marcaj citat mai târziu nu contează', async ($, on) => {
+  host(on)
+  const store = new Map<string, unknown>()
+  let messages: { role: string; text: string }[] = []
+  on('session.id', () => ({ value: 'sesiune-3' }))
+  on('session.messages', () => ({ value: messages }))
+  on('store.get', ($, e) => ({ value: store.get(e.key) }))
+  on('store.set', ($, e) => {
+    store.set(e.key, e.value)
+    return { value: undefined }
+  })
+  on('command.register', () => ({ value: undefined }))
+  on('tool.register', ($, e) => ({ value: { tool: `mcp__symbai-ui__${e.name}` } }))
+  on('session.start', ($, e) => ({ cwd: e.cwd }))
+  on('tool.list', () => ({ value: [] }))
+  on('turn.complete', ($, e) => ({ text: 'Fișa e gata.' }))
+
+  // An ordinary chat whose later message quotes a mark stays unbound.
+  messages = [
+    { role: 'user', text: 'Salut, verifică panoul.' },
+    { role: 'user', text: `⟦asistent-symbai ${WA} abcd1234 Oferte⟧` },
+  ]
+  await $.session.start({ source: 'startup', cwd: 'D:/x' } as any)
+  expect(store.get('chat:sesiune-3')).toBeUndefined()
+
+  // A new chat: nothing at its start, its first message is there once the first turn ends.
+  messages = []
+  await $.session.start({ source: 'startup', cwd: 'D:/x' } as any)
+  messages = [{ role: 'user', text: `⟦asistent-symbai ${WA} abcd1234 Oferte⟧
+Ești chatul de comandă.` }]
+  await $.turn.complete({ reason: 'answer', answer: 'Fișa e gata.', text: 'Fișa e gata.' } as any).catch(() => undefined)
+  expect(store.get('chat:sesiune-3')).toEqual({ server: WA, id: 'abcd1234', name: 'Oferte' })
+
+  // A command chat: its very first message carries the mark.
+  messages = [{ role: 'user', text: `⟦asistent-symbai ${WA} abcd1234 Oferte⟧\nEști chatul de comandă.` }]
+  await $.session.start({ source: 'resume', cwd: 'D:/x' } as any)
+  expect(store.get('chat:sesiune-3')).toEqual({ server: WA, id: 'abcd1234', name: 'Oferte' })
+})
