@@ -118,6 +118,8 @@ Reguli:
 
 **E. Transfer între depozite (ex. Magazie Centrală → Bucătărie)**
 1. `list_stock_transfers` (s-a făcut deja?) → `get_stock_transfer_route(fromWarehouseId, toWarehouseId, productIds)` → `create_stock_transfer` cu `clientRequestId` UUID stabil, `lines` (`productId`+`qty`, opțional `lotId`) și `confirm:true` după acordul omului. Răspunsul conține transferul salvat. Dacă politica firmei îl lasă „pe drum”, primirea se confirmă la destinație cu `confirm_stock_transfer`. La refuzul `TRANSFER_*_RECONCILIATION_REQUIRED` urmezi `nextTool` din răspuns (`repara_loturi_peste_stoc` sau `check_stock_health`); `diagnose_product_stock_reconciliation(warehouseId, productId)` explică poziția (POS 19.3.820 sau mai nou). Dacă nici așa nu găsești cauza, trimiți tichet; nu faci inventar ca să treacă transferul.
+   - **Citește soldul cu semn, nu `onHand`.** În `get_stock_transfer_route`, `onHand` e tăiat la 0; soldul real e `scripticOnHand`. Când sursa e pe minus (`sourceBelowZero`, ex. −46), spui „e pe minus −46”, nu „nu e stoc (0)”, și verifici producția sau recepția lipsă. Același lucru în `list_operational_stock` și `get_stock_block_workspace`.
+   - **O poziție cu `requiresReconciliation` vine cu motivul și pasul.** `reconciliationReason` spune ce nu se potrivește (stoc față de loturi, loturi anulate cu rest, rezervări, proveniență), iar `nextTool` e `repara_loturi_peste_stoc` (întâi fără `confirm`) sau `check_stock_health`. Urmezi pasul; un inventar fizic nu înlocuiește reparația.
 2. Verific cu `get_stock_levels`: sursa scade, iar destinația crește la sosire directă sau după confirmarea primirii.
 
 **F. Sumar/raport pe gestiune**

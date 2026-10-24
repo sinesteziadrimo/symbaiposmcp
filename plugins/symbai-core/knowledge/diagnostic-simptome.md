@@ -74,6 +74,7 @@ Modificări, anulări și refaceri: citește [Corectarea recepțiilor prin MCP](
 | „Nu a ieșit bonul de retur la bucătărie", „e pornit bonul de retur?" | `diagnose_return_bon` (pe comandă: de ce nu a ieșit; fără argumente: pe ce imprimante e pornit) | pornire: `update_printer` cu `printReturnBon`; bon eșuat: `retry_print_job` |
 | „Bonul a ieșit de două ori", „marfa e de două ori pe notă" | `get_order_timeline` | `repair_duplicated_order_items` 🔒 |
 | „Nota încasată apare neîncasată în administrare" | `list_shadow_order_conflicts` | `force_edge_resync` (doar rol complet) — repune în coadă rândurile blocate pe serverul local |
+| „Bannerul «Plată în așteptare» nu dispare pe niciun telefon", „masa e ocupată, dar nota e închisă" | `get_edge_sync_backlog` (`noteVechiPeServerLocal`), apoi `align_edge_stale_orders` fără `confirm` (previzualizare) | `align_edge_stale_orders` cu `confirm`, `orderIds`, `reason` — aliniază copia de pe serverul local la administrare, fără bani și fără bon |
 | „Ce e pe masa 12 / ce s-a întâmplat cu nota X" | `get_table_status`, `get_order_timeline` | audit: `jurnal_activitate` |
 | „Cine a schimbat meniul zilei?" | `jurnal_activitate(tipEntitate: "daily_menu")` | felurile înainte → după, din aplicație sau prin asistent; ID-ul meniului din `list_daily_menus` |
 | „Ultima sincronizare cu Glovo/Wolt e veche" | `get_delivery_channel(id)` — `lastSyncAt`, `menuConfirmedAt`, `lastOrderAt`, erori | o publicare veche cu comenzi recente și fără erori = meniu neschimbat; diagnostic complet: `glovo_integration_status` / `wolt_integration_status` |

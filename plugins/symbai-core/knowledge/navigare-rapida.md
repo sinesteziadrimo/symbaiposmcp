@@ -6,7 +6,7 @@
 > Dacă intenția nu e aici sau e ambiguă → `gaseste_in_aplicatie(termen scurt)`. Cum DESCHIZI pagina prin Chrome + cum SCHIMBI unitatea: `navigare.md`.
 > Rute relative la subdomeniul clientului. Ce nu vede userul = rol/modul lipsă (vezi `00-overview.md`).
 
-Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Cardul **Configurare Platforma Clienti** este portalul public al clientilor si merge cu skill `configureaza-portal` + tool-uri `configure_portal_*`. Cardul **In Aplicatie Staff** este preview/config pentru **Symbai Staff** (livratori, agenti teren, task-uri, CRM) si merge cu skill `configureaza-aplicatie-staff`; nu folosi tool-urile de portal pentru el.
+Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Cardul **Configurare Platforma Clienti** este portalul public al clientilor si merge cu skill `configureaza-portal` + tool-uri `configure_portal_*`. Cardul **In Aplicatie Staff** este preview/config pentru **Symbai Staff** (livratori, agenti teren, task-uri, CRM) si merge cu skill `configureaza-aplicatie-staff`; nu folosi tool-urile de portal pentru el. Cardul **Bara de platforme** (comutatorul Livrari / POS / Comenzi Client / Rezervari pe web/tableta si in POS mobil, pe roluri) merge cu skill `configureaza-bara-platforme` + `get_operations_bar_config` / `configure_operations_bar`.
 
 ## Operațiuni & POS
 - **Panou de Control** `/` — Dashboard generic: KPI (nr. produse, stoc redus, valoare stoc, de plătit furnizori), grafic facturi, top produse, sugestie AI, facturi recente. Buton Raport + AI Insights.
