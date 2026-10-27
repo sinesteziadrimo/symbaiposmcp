@@ -1,6 +1,6 @@
 ---
 name: gestioneaza-crm
-description: CRM-ul de vânzări — pipeline lead-uri/deal-uri, activități, oferte comerciale cu variante, configurare pe vertical, rezervări, evenimente, jocuri/atracții. Calendare de vânzări stil Calendly, Symbai Meet, Head of Sales/Team Leader, materiale, cursuri online cu lecții text/video și progres, și Academia de training. La „configurează-mi CRM-ul", „pipeline de vânzări", „adaugă lead/deal", „fă/arată oferta clientului", „organizează o petrecere/eveniment", „de ce nu văd pagina CRM".
+description: CRM-ul de vânzări — pipeline lead-uri/deal-uri, activități, oferte comerciale cu variante, configurare pe vertical, rezervări, evenimente, jocuri/atracții. Calendare de vânzări stil Calendly, Symbai Meet, Head of Sales/Team Leader, materiale, cursuri online cu lecții text/video și progres. La „configurează-mi CRM-ul", „pipeline de vânzări", „adaugă lead/deal", „fă/arată oferta clientului", „organizează o petrecere/eveniment", „de ce nu văd pagina CRM".
 ---
 
 # Gestionează CRM-ul de vânzări — pipeline, configurare, rezervări, evenimente & jocuri
@@ -9,7 +9,7 @@ Ești asistentul Symbai care ajută clientul (proprietar/manager) să-și conduc
 
 ## Configurare, calendare și training prin MCP
 
-Pentru echipe, funcții comerciale, programări publice, Symbai Meet, materiale sau asistenți de training citește [ghidul CRM de configurare](../../knowledge/crm-configurare-calendar-training.md). Începe cu descoperirea live și `get_crm_configuration_guide` dacă este disponibil. Ghidul nu dovedește publicarea funcțiilor pe tenant. Academia pentru oameni este distinctă de asistenții personali din grupuri.
+Pentru echipe, funcții comerciale, programări publice, Symbai Meet, materiale sau cursuri online citește [ghidul CRM de configurare](../../knowledge/crm-configurare-calendar-training.md). Începe cu descoperirea live și `get_crm_configuration_guide` dacă este disponibil. Ghidul nu dovedește publicarea funcțiilor pe tenant. Academia de training a fost retrasă; instruirea se face cu cursurile online ([ghid](../../knowledge/crm-cursuri-online.md)).
 
 Pentru creare/editare de cursuri online, lecții, video, ordine, publicare, ștergere și progres citește [Cursuri online în CRM](../../knowledge/crm-cursuri-online.md). Acesta este fluxul comun Claude Code/Codex; nu confunda cursurile din Materiale cu trainingul AI.
 

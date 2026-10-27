@@ -139,7 +139,7 @@ Obligatorii: `name`, `locationId`. `frequency`: `daily | weekly | monthly | shif
 
 ## Echivalentul în wizard-ul din aplicație
 
-Pașii **15, 16 și 17** din `/onboarding`: pasul 15 „DSV Chef — HACCP & Conformitate" (ghidare către HACCP Dashboard + asistentul AI de legislație), pasul 16 „Finanțe — setup de bază" (casierii, solduri inițiale, închidere de zi; chat-ul pasului e „Sym Contabilitate", care face exact tipurile de produs + conturile din această fază), pasul 17 „Legal — Contracte & AI Legal". Toți trei pașii sunt marcabili „Sari acest pas" — sunt pași de familiarizare, nu de blocare. Entitățile create prin conexiune (tipuri, senzori, sarcini) APAR în aplicație, dar **progresul wizard-ului (bifa de pas) NU se actualizează prin conexiune** — utilizatorul apasă singur „Următorul pas".
+Pașii **15, 16 și 17** din `/onboarding/welcome` (pașii la `/onboarding/step/N`): pasul 15 „DSV Chef — HACCP & Conformitate" (ghidare către HACCP Dashboard + asistentul AI de legislație), pasul 16 „Finanțe — setup de bază" (casierii, solduri inițiale, închidere de zi; chat-ul pasului e „Sym Contabilitate", care face exact tipurile de produs + conturile din această fază), pasul 17 „Legal — Contracte & AI Legal". Toți trei pașii sunt marcabili „Sari acest pas" — sunt pași de familiarizare, nu de blocare. Entitățile create prin conexiune (tipuri, senzori, sarcini) APAR în aplicație, dar **progresul wizard-ului (bifa de pas) NU se actualizează prin conexiune** — utilizatorul apasă singur „Următorul pas".
 
 ## Verificare la final
 

@@ -46,7 +46,7 @@ Fiecare ZONĂ poate avea o rutare de hardware: ce imprimantă fiscală / de not�
 
 - programul recurent (ce configurație e activă în fiecare zi) se creează cu `create_floor_config_schedule` (`dayOfWeek`: **0=Duminică** … 6=Sâmbătă) — vezi `06-sala-qr.md`.
 - excepții pentru zile speciale (Revelion → layout de eveniment): `set_floor_config_date_override(date YYYY-MM-DD, floorConfigId)` — upsert pe (dată+locație+brand).
-- vezi calendarul curent: `list_floor_config_schedules`; șterge sub-entități cu `delete_floor_config_schedule` / `delete_floor_config_date_override` (NU se șterg configurații întregi prin MCP).
+- vezi calendarul curent: `list_floor_config_schedules`; șterge sub-entități cu `delete_floor_config_schedule` / `delete_floor_config_date_override` (NU se șterg configurații întregi prin MCP). **Plan nou, copie, săli și mese de scos** — prin conexiune, nu din click-uri: plan nou `create_floor_config(name, brandId, locationId, zoneIds?)` (o așezare peste zonele și mesele fizice existente); copie a unui plan `duplicate_floor_plan(sourceFloorConfigId, name, previewOnly?)`; o sală dublată sau nefolosită se șterge din designerul planului (zonele sunt PARTAJATE între planuri: o sală desenată și pe alte planuri dispare din toate); mese care nu se mai folosesc `retire_floor_tables(tableIds, previewOnly?)` — le scoate din uz fără să le ștergă (notele, QR-ul și istoricul rămân). Configurațiile întregi nu se șterg prin conexiune.
 
 ## Cele două sisteme de QR — SEPARATE, nu le amesteca
 

@@ -21,16 +21,16 @@ Faci research ca un analist SEO senior: găsești cuvintele potrivite, înțeleg
 | „cum stau la SEO în general" | `get_seo_overview` |
 | „ce cuvinte urmăresc / pe ce poziție sunt" | `list_seo_keywords`, `get_keyword_rankings(id)` |
 | „cine sunt concurenții mei" | `list_seo_competitors`, `suggest_seo_competitors` (din capturile SERP) |
-| „ce fac concurenții / ce acoperă ei" | `seo_web_research(query, jobType:"competitor_audit", competitors:[...])` |
-| „cercetează piața/orașul/tendințele" | `seo_web_research(query, jobType:"blog_research" sau "trend_scan", countryCode:"ro")` |
-| „dă-mi idei de articole" | `seo_web_research(jobType:"post_ideas")` + brief-uri pe cele bune |
+| „ce fac concurenții / ce acoperă ei" | `list_seo_competitors` (share of voice) + citești tu site-urile și SERP-ul lor (căutare/Chrome), cu linkuri |
+| „cercetează piața/orașul/tendințele" | cercetezi tu pe web (căutare/Chrome), cu surse citate; volumele din `seo_keyword_research` |
+| „dă-mi idei de articole" | `get_search_performance` (striking distance) + `seo_keyword_research` + întrebările din SERP; brief-ul îl scrii tu |
 
 ## Fluxul tipic
 
 1. **Vezi ce surse ai:** `get_seo_provider_status`. Spune userului dacă volumele vor fi exacte (provider plătit) sau estimative (gratuit) — nu prezenta estimări drept cifre Google.
 2. **Pornește de la trafic real:** `get_search_performance` → cuvinte la poziția ~8-20 cu impresii = „striking distance" (cele mai rapide câștiguri).
 3. **Extinde:** `seo_keyword_research(seed)` pentru fiecare temă; clasifică intenția citind SERP-ul (vezi knowledge). Pentru local, ține minte: cuvintele cu Map Pack cer GBP, nu articol.
-4. **Concurenți:** `add_seo_competitor(domain)` pentru rivalii LOCALI reali → `list_seo_competitors` (share of voice) → `seo_web_research(competitor_audit)` ca să vezi ce acoperă. Caută gap-uri (ei rankează / sunt citați AI, tu nu).
+4. **Concurenți:** `add_seo_competitor(domain)` pentru rivalii LOCALI reali → `list_seo_competitors` (share of voice) → citești tu site-urile și SERP-ul lor ca să vezi ce acoperă. Caută gap-uri (ei rankează / sunt citați AI, tu nu).
 5. **Pune pe urmărire + măsoară:** `track_seo_keyword(keywords[...])` (cu `targetPosition`, `intent`) → `run_rank_tracker` (necesită provider SERP) → vezi pozițiile cu `list_seo_keywords`.
 6. **Propune un plan:** prezintă userului 5-10 „quick wins" (volum decent, dificultate mică, intenție potrivită) + idei de articole grupate pe pillar/cluster. Cere-i să confirme prioritățile.
 
@@ -38,5 +38,4 @@ Faci research ca un analist SEO senior: găsești cuvintele potrivite, înțeleg
 - **Onest despre surse** — `get_seo_provider_status` întâi; nu inventa volume.
 - **Concurenți LOCALI reali**, nu lanțuri naționale (au autoritate de neegalat și alt SERP).
 - **Long-tail pentru site-uri mici** — KD < 30; cuvintele cu volum mic aduc clienți în local.
-- **Research web costă** din bugetul brandului — refolosește cu `list_research_jobs` în loc să repeți.
-- Citirile merg oricum; `seo_keyword_research`/`seo_web_research`/`track_seo_keyword`/`run_rank_tracker` cer modulul „Marketing & Social Media".
+- Citirile merg oricum; `seo_keyword_research`/`track_seo_keyword`/`run_rank_tracker` cer modulul „Marketing & Social Media".

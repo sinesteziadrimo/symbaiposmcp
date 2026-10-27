@@ -20,11 +20,13 @@ Modulul de Conformitate ține actele într-un singur loc, cu data lor de expirar
 
 ## Paginile modulului
 
-- **Panou Conformitate** (`/compliance`) — ce e rezolvat, ce e restant, ce urmează.
-- **Documentele firmei** (`/compliance/company-documents`) — dosarul cu acte, cu expirări.
-- **Formulare** (`/compliance/forms`) — formularele oficiale precompletabile.
-- **Registrul de deșeuri** (`/compliance/waste-register`) — evidența lunară pe coduri.
-- **Autorizări autorități** (`/compliance/authority-authorizations`) — ce poate face platforma în numele firmei.
+- **Panou Conformitate** (`/conformitate`) — ce e rezolvat, ce e restant, ce urmează.
+- **Documentele firmei** (`/documente-firma`) — dosarul cu acte, cu expirări.
+- **Formulare** (`/formulare-conformitate`) — formularele oficiale precompletabile.
+- **Registrul de deșeuri** (`/deseuri`) — evidența lunară pe coduri.
+- **Registrul SGR** (`/conformitate/sgr`) — garanția-returul ambalajelor.
+- **Autorizări autorități** (`/autorizatii-autoritati`) — ce poate face platforma în numele firmei.
+- **Trimiteri către autorități** (`/trimiteri-autoritati`) — setările trimiterilor automate.
 
 ## Prin conexiune (MCP)
 

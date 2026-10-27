@@ -38,7 +38,7 @@ CUI, GLN), punctul de livrare (nume, adresă, GLN, cod), și pentru fiecare lini
 articolului la client, EAN-ul, codul tău dacă apare, denumirea **copiată literal**, cantitatea (cu
 unitatea ei), câte bucăți intră într-un bax dacă scrie, prețul unitar.
 
-> Denumirea se copiază, nu se „curăță". `ARCA FRESH ECLER CR AR VANILIE2X90G` trimis așa cum e se
+> Denumirea se copiază, nu se „curăță". `PRODUS EXEMPLU VANILIE 2X90G` trimis așa cum e se
 > potrivește; „corectat" de tine în „Ecler cu vanilie" pierde gramajul și devine ambiguu.
 
 ## Pasul 2 — preview

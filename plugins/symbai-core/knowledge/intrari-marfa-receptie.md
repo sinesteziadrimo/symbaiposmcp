@@ -34,7 +34,7 @@ Prin `create_nir_from_invoice`, `warehouseId` reprezintă gestiunea principală,
 
 Fiecare linie de factură are descrierea **furnizorului** (ex. „TABLA CUTATA WTB W60"). Trebuie legată de:
 - **Produsul tău intern** (din catalog) — ca să intre pe stocul corect.
-- **Contul contabil de cost/stoc** (ex. 371 mărfuri, 301 materii prime, 628 servicii) — se completează **automat din tipul produsului**; îl poți schimba.
+- **Contul contabil de cost/stoc** (ex. 371 mărfuri, 301 materii prime, 628 servicii) — se completează **automat din tipul produsului**; îl poți schimba. La o firmă pe inventar intermitent linia rămâne tot pe contul de stoc, iar registrul o arată pe perechea de cheltuială — vezi „Firmă pe inventar intermitent” mai jos.
 - **Contul de TVA** (de regulă 4426 TVA deductibilă).
 
 > ⚠ **Contul de pe linie ≠ contul din nota contabilă, la marfa care intră pe stoc.** Pentru o linie care intră pe stoc, nota contabilă se face **din tipul produsului** (și din eventualele conturi personalizate pe tip / pe unitate). Contul pus pe linie se vede în ecranul de mapare și în rapoarte, dar **nu schimbă nota**. Contul de pe linie decide nota contabilă doar la **liniile de cheltuială** (servicii, utilități, transport) și la facturile pur contabile. Deci: dacă nota iese pe cont greșit, **repari tipul produsului**, nu contul de pe linie.
@@ -91,6 +91,16 @@ Când toate liniile sunt mapate și acceptate: alegi **depozitul (magazia)** și
 
 ### Contul vine din tipul produsului (chiar fără configurare)
 Nota contabilă la postare derivă contul de stoc din TIPUL canonic al produsului: raw_material→301, merchandise→371, consumable→302, packaging→381, service→628. Asta funcționează și dacă brandul are 0 tipuri de produs configurate (mapare implicită). Tipurile configurate în „Conturi pe Tip Produs" sunt pentru CONTURI PERSONALIZATE / override-uri, nu pentru cazul de bază. ⚠ La `map_invoice_line` (Calea B), dacă tipul nu permite derivarea, contul cade implicit pe 371 — de aceea produsul trebuie să aibă tipul corect.
+
+### Firmă pe inventar intermitent: 301 pe linie, 601 în registru
+Metoda se alege în **Setări → Inventar și stoc → „Metoda contabilă a stocurilor”** și pornește din prima zi a unei luni. Implicit firma e pe inventar permanent. Pe inventar intermitent (periodic):
+- **Linia și maparea rămân pe contul de stoc** al tipului (301, 302x, 303, 371, 381). Contul acesta ține cantitățile, loturile și costul FIFO. **Nu remapa produsele pe 601/607** și nu le transforma în servicii ca să „iasă” cheltuiala: motorul face singur înregistrarea.
+- **Registrul contabil și balanța arată achiziția direct pe cheltuială**, pe perechea contului de stoc: 301→601, 302x→602x, 303→603, 371→607, 381→608. Analiticul unității trece pe pereche când există (371.X→607.X). Nota e 601 = 401, fără rulaj prin 301.
+- **Ecranele recepției arată contul din registru**: „Detalii Factură” (coloana „Mapat la”), NIR-ul pe ecran și tipărit, factura deschisă din P&L. O firmă pe inventar permanent vede în continuare 301/371.
+- Pe NIR-ul de mărfuri, adaosul (378) și TVA neexigibilă (4428) rămân evidența prețului de raft; nu sunt suma de pe 607.
+- La sfârșitul lunii, inventarul fizic complet stabilește stocul rămas, care trece pe 3xx; la începutul lunii următoare se reia automat pe cheltuială. Închiderea se face din același card de setări, nu cu note manuale.
+
+Prin conexiune: `get_inventory_accounting_policy` cu `asOf` = data NIR-ului spune metoda și perechile exacte. `get_received_efactura_details` (`metodaStocuri`) și `get_incoming_invoice_workflow_details` (`inventoryMethod`) dau, pe fiecare linie, `ledgerAccountCode` (contul din registru, calculat din contul de stoc al tipului produsului, ca pe ecran) lângă `mappedAccountCode` (contul mapat). La „pe ce cont a intrat” răspunde cu `ledgerAccountCode`. Dacă o firmă e pe intermitent și câmpurile lipsesc, versiunea instalată e mai veche: citește politica și numește perechea.
 
 ## Recepția prin poze — poți fotografia oricâte pagini, PDF-uri, facturi mari
 

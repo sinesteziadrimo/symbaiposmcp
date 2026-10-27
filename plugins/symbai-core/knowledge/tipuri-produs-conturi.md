@@ -9,6 +9,8 @@
 
 > Dacă schimbi contul pe o linie de factură și nota contabilă iese la fel — e normal. Corectura se face pe **tip**, nu pe linie.
 
+> **Inventar intermitent** (Setări → Inventar și stoc → „Metoda contabilă a stocurilor”): tipul păstrează contul de stoc (301, 371…), iar registrul arată achiziția pe perechea de cheltuială (601, 607…). Nu schimba tipul sau contul pe 6xx ca să obții cheltuiala — o face motorul. Detalii în `intrari-marfa-receptie.md`, secțiunea „Firmă pe inventar intermitent”.
+
 Pagina se cheamă **Conturi pe Tip Produs**. Are un mod **Simplu** (semafor: Gata / De completat / De verificat, cu un buton „Completează automat") și un mod **Avansat** (fiecare cont, pe fiecare moment).
 
 ## Momentele — când se aplică o regulă

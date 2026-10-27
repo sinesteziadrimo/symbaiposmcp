@@ -65,7 +65,7 @@ Fiecare flux de mai jos il construiesti ca secventa cu `create_email_sequence` (
 **6. Sunset (apus listei) — igiena trimestriala**
 - Declansator: inactivi 90-180 de zile (`get_customer_email_segments`).
 - Pasi: o ultima campanie „we miss you" + scurt sondaj/incentiv; cine nu reactioneaza in fereastra → suprimare.
-- Tool: `add_email_suppression({ confirm:true })` pe non-responderi; apoi reverifica reputatia.
+- Tool: `add_email_suppression({ email, reason })` pe non-responderi — se aplica din primul apel (fara `confirm`), deci ceri acordul omului pe lista inainte; apoi reverifica reputatia.
 - KPI tinta: crestere sanatoasa a listei 8-15%/luna NET de pierderi; plangeri sub 0,1%, bounce sub 2%.
 
 ### Retail (magazin online)
@@ -144,7 +144,7 @@ Fiecare flux de mai jos il construiesti ca secventa cu `create_email_sequence` (
 **Baza (sa nu ajungi in spam)** [citire]
 - `get_email_account_health`, `get_brand_email_reputation`, `get_sender_domain_status` — autentificare domeniu + reputatie inainte de orice flux.
 - `check_email_campaign_deliverability`, `analyze_email_deliverability_plan` — scor continut + plan de trimitere.
-- `add_email_suppression` [marketing] — suprima la sunset (`confirm:true`); `get_email_suppression_list` [citire].
+- `add_email_suppression` [marketing] — suprima la sunset (fara `confirm`: acordul omului inainte de apel); `get_email_suppression_list` [citire].
 
 **Oferta din flux** [marketing]
 - `create_offer` — reducere care chiar scade nota la POS. **Important: poti seta fereastra de timp** — `timeStart`+`timeEnd`+`daysOfWeek` pentru happy-hour recurent, sau `startsAt`/`expiresAt` pentru oferta cu termen (LTO). **Fara fereastra de timp, oferta merge non-stop (24/7).** Ruleaza intai `preview_offer_margin` ca sa stii unde esti pe marja — verdictul e informativ, nu blocheaza publicarea (din 31 iulie 2026).

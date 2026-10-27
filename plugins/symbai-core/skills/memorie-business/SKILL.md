@@ -12,7 +12,7 @@ O notă locală nu înlocuiește citirea confirmărilor relevante din memoria co
 ## Ritualul de sesiune
 
 1. **La început sau reluare**, dacă nu sunt deja în context, citește preferințele prin `memorie_citeste(fel: "preferinta")`, apoi recuperează numai deciziile și notele relevante cererii prin `cauta`, `fel` ori `persoana`. Nu încărca automat toate observațiile și sarcinile și nu le executa doar fiindcă sunt memorate. Citirea fără filtre este utilă când userul cere o privire generală asupra memoriei. Reutilizează contextul neschimbat; memoria goală nu blochează lucrul și nu trebuie umplută artificial. O căutare fără rezultate nu dovedește absența unei note: la nevoie reformulează termenul sau lărgește filtrul.
-2. **Înainte de a lucra în numele cuiva sau despre cineva** (WhatsApp, sarcini, evaluări): `memorie_citeste(fel: "persoana", persoana: "Mihai")`.
+2. **Înainte de a lucra în numele cuiva sau despre cineva** (WhatsApp, sarcini, evaluări): `memorie_citeste(fel: "persoana", persoana: "Andrei")`.
 3. **La finalul unui task semnificativ**: te întrebi „e ceva durabil aici?" — o preferință exprimată, o regulă a casei, o decizie, o observație cu propunere, un om cu care ai lucrat. Dacă da, `memorie_scrie`. O propoziție bună bate un paragraf.
 4. **Când userul spune „ține minte că…"**: scrii pe loc, în felul potrivit, și confirmi într-o linie ce ai memorat și cine o vede.
 
@@ -44,7 +44,7 @@ Schema live și [ghidul de căutare și citire completă](../../knowledge/cautar
 
 ## Consimțământ
 
-Despre o persoană scrii DOAR după ce userul a văzut ce urmează să memorezi („Rețin despre Mihai: preferă sarcinile pe WhatsApp dimineața, confirmă cu poză. Ok?"). Despre firmă și despre userul însuși poți scrie când el spune ceva clar durabil; confirmi într-o linie ce ai reținut. Dacă userul cere „uită asta", `memorie_sterge` sau `stare: rezolvata`, imediat.
+Despre o persoană scrii DOAR după ce userul a văzut ce urmează să memorezi („Rețin despre Andrei: preferă sarcinile pe WhatsApp dimineața, confirmă cu poză. Ok?"). Despre firmă și despre userul însuși poți scrie când el spune ceva clar durabil; confirmi într-o linie ce ai reținut. Dacă userul cere „uită asta", `memorie_sterge` sau `stare: rezolvata`, imediat.
 
 ## Bucla care te face mai deștept
 
@@ -61,6 +61,6 @@ Folosește `cheie` pentru lucruri care se actualizează: `preferinte-briefing`, 
 ## Exemple bune
 
 - `memorie_scrie(fel: "preferinta", cheie: "preferinte-briefing", titlu: "Briefing — cum îl vrea", continut: "Zilnic la 9, pe WhatsApp-ul lui, maxim 8 rânduri: încasări ieri vs săptămâna trecută, zile de casă deschise, rezervări azi, ce lipsește din stoc. Fără marketing zilnic; marketing doar luni.")`
-- `memorie_scrie(fel: "persoana", persoanaId: 14, persoana: "Mihai Ionescu", cheie: "persoana-mihai-ionescu", titlu: "Mihai — bucătar-șef", continut: "Decide comenzile de marfă; îi dai sarcinile dimineața, pe scurt, confirmă cu poză. Nu discută salarii pe grup. Patronul aprobă tot ce trece de 1.500 lei la furnizori.")`
+- `memorie_scrie(fel: "persoana", persoanaId: 14, persoana: "Andrei Popescu", cheie: "persoana-andrei-popescu", titlu: "Andrei — bucătar-șef", continut: "Decide comenzile de marfă; îi dai sarcinile dimineața, pe scurt, confirmă cu poză. Nu discută salarii pe grup. Patronul aprobă tot ce trece de 1.500 lei la furnizori.")`
 - `memorie_scrie(fel: "observatie", titlu: "Reduceri mari la un ospătar", continut: "Ana: 11 % reduceri din vânzări în august (media echipei 3 %), 14 anulări. Propus 3 sept.: politica de reduceri cu prag de aprobare peste 10 %. Dovadă: performanta_ospatari(luna_aceasta), get_employee_activity.", importanta: 4)`
 - `memorie_scrie(fel: "decizie", titlu: "Fără reduceri pe livrări", continut: "Decis 3 sept.: nicio promoție pe Glovo/Wolt până se renegociază comisionul (35 %). Reevaluare în noiembrie.", expiraLa: "2026-11-30")`

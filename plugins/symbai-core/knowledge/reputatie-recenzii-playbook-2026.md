@@ -26,13 +26,13 @@ Trei numere de pus pe perete: rată de răspuns 100%, viteză sub 4h la negative
 1. `gbp_reviews_summary` [citire] + `list_retail_reviews` (filtrează pe rating mic, ex. maxRating=3) [citire] — izolează negativele noi, sortate pe recency.
 2. Pentru fiecare: rezumă problema + propune un răspuns de tip service-recovery (asumare → mutare offline → compensație țintită).
 3. **Confirmă textul cu proprietarul** înainte de publicare.
-4. Publică: pe Google `gbp_reply_review(confirm:true)` [marketing]; pe restul platformelor `reply_to_retail_review(confirm:true)` [marketing] ȘI dă-i linkul direct la recenzie pe platforma respectivă (vezi capcana de mai jos — pe unele platforme răspunsul se salvează doar local).
+4. Publică DOAR după acordul explicit al proprietarului pe text: pe Google `gbp_reply_review(reviewId, comment, confirm:true)` [marketing]; pe restul platformelor `reply_to_retail_review(reviewId, replyText)` [marketing] — fără `confirm`, se salvează din primul apel — ȘI dă-i linkul direct la recenzie pe platforma respectivă (vezi capcana de mai jos — pe unele platforme răspunsul se salvează doar local).
 5. Raportează clar: ce ai publicat efectiv pe Google și ce trebuie postat manual pe celelalte.
 
 ### 2. Răspuns la pozitive (în lot, țintă 100% rată de răspuns)
 1. `list_retail_reviews` (rating mare, ex. minRating=4, fără răspuns) [citire] + `gbp_reviews_summary` [citire].
 2. Pentru fiecare: răspuns scurt personalizat = mulțumire + UN detaliu specific din textul recenziei + invitație de revenire. (Nu copy-paste identic — sunt detectabile.)
-3. Confirmă lotul cu proprietarul → publică (`gbp_reply_review` / `reply_to_retail_review`, `confirm:true`).
+3. Confirmă lotul cu proprietarul → abia apoi publici (`gbp_reply_review` cu `confirm:true`; `reply_to_retail_review` n-are `confirm` și scrie din primul apel).
 4. Țintă: 100% rată de răspuns; sub 24h la pozitive.
 
 ### 3. Campanie de velocity lunară (3-5 recenzii noi/lună, ANTI-GATING)
@@ -59,10 +59,10 @@ Trei numere de pus pe perete: rată de răspuns 100%, viteză sub 4h la negative
 - `get_retail_reviews_summary` [citire] — sumarul reputației pe magazin/retail (rating, număr, tendință) pe care îl pui în raport.
 - `list_retail_reviews` [citire] — lista recenziilor cu text; filtrează pe rating (minRating/maxRating) ca să separi pozitivele de negative și citește temele.
 - `sync_retail_reviews(confirm:true)` [marketing] — sincronizează recenziile de pe platforme înainte de un raport, ca să lucrezi pe date la zi.
-- `reply_to_retail_review(confirm:true)` [marketing] — salvează/postează răspunsul la o recenzie de magazin. ATENȚIE: pe unele platforme doar salvează răspunsul local — vezi capcana de mai jos.
+- `reply_to_retail_review(reviewId, replyText, replyAuthor?)` [marketing] — salvează răspunsul la o recenzie externă din PRIMUL apel (nu are `confirm`): cere acordul omului pe text ÎNAINTE de apel. ATENȚIE: pe unele platforme doar salvează răspunsul local — vezi capcana de mai jos.
 - `dispatch_review_invitations_for_order(confirm:true)` [marketing] — trimite invitația de recenzie după o comandă (SMS preferat). Motorul campaniei de velocity.
 - `gbp_reviews_summary` [citire] — sumarul recenziilor de pe Google Business Profile (rating, volum, fără-răspuns).
-- `gbp_reply_review(confirm:true)` [marketing] — publică răspunsul direct pe Google la o recenzie GBP.
+- `gbp_reply_review(reviewId, comment, confirm:true)` [marketing] — publică răspunsul direct pe Google; `confirm:true` doar după acordul omului pe text.
 - `gbp_rank_summary` [citire] — poziția locală / share-of-voice, util ca să legi velocity de mișcarea în harta locală.
 - `check_marketing_allowed` [citire] + `comms_get_status` [citire] — verifică permisiunea de trimitere și starea canalelor înainte de invitații.
 

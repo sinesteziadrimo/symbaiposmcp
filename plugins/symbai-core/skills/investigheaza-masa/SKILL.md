@@ -46,6 +46,15 @@ Descoperă schema live a instrumentului înainte de apel. Dacă instanța nu are
 
 Folosește `confirm:true` și, unde este cazul, `applyDirect:true` în baza mandatului explicit deja primit, fără reconfirmări inutile. Aplicarea directă respectă drepturile și politica unității; verifică starea returnată. Pentru aceeași intenție păstrează UUID-ul `localId`. După timeout, `transfer_pos_items` se reia cu același `localId` și aceleași argumente: transferul deja făcut este recunoscut (`alreadyApplied`), fără a doua mutare. Pentru `transfer_pos_employee` și `request_pos_transfer` verifică întâi cererea și ambele note; pe acestea nu le retrimite automat. `paymentMethod` se folosește numai la aprobarea unei confirmări de plată încă deschise; dacă pașii se opresc, raportează și notele a căror metodă s-a schimbat deja. Pentru fiscal, plăți și anularea unei note folosește instrumentele dedicate din catalog, nu o modificare generică de status.
 
+### 4b. Plăți agățate, mese blocate, metodă greșită, copie de notă
+Începe mereu cu `list_stuck_payments(locationId?)` (doar citire): note rămase „plată în curs”, sesiuni de card nerezolvate sau incerte, mese ocupate cu nota închisă — fiecare caz vine cu unealta care îl rezolvă.
+- **Metoda de plată greșită** pe o notă deja încasată („s-a apăsat Card BT, dar banii au intrat pe Viva”) → `change_order_payment_method(orderId, paymentMethod, reason, vivaTransactionId?)`. Nu mută bani și nu re-emite bonul fiscal.
+- **Masa a rămas ocupată** deși nota e închisă → `release_stuck_table(tableId, reason)`, doar după ce `list_stuck_payments` confirmă că masa n-are notă activă.
+- **Nota agățată de o plată care n-a avut loc** („scrie că plata e în curs”) → `release_payment_lock(orderId, reason)` (motiv de minim 10 caractere). Serverul refuză dacă găsește dovezi că s-au luat bani.
+- **Sesiune de card GP incertă** (`gps_…`) → verifici FIZIC pe terminal sau în aplicația băncii, apoi `resolve_uncertain_card_payment(sessionId, outcome:"charged"|"not_charged", reason)`. O alegere ghicită încasează de două ori sau lasă nota neplătită — nu ghici.
+- **Copie a notei de plată** → `reprint_order_bill(orderId | orderNumber, printerId?)`: copie nefiscală a ultimei note tipărite, nu bon fiscal nou. Pentru un bon care n-a ieșit deloc: `retry_print_job` / `reprint_print_job_elsewhere`.
+Toate cer acordul omului înainte de apel (se aplică direct) și apar în jurnal.
+
 ### 5. „De ce s-a anulat nota X / ce s-a întâmplat cu comanda" → `get_order_timeline`
 `get_order_timeline(orderId: 1234)` — povestea completă a unei comenzi: antet (masă, ospătar, client, totaluri), produsele cu statusul fiecărei linii (activ/anulat/returnat/transferat), plățile (metode, bacșiș, fiscal), cererile de aprobare legate și jurnalul de audit (cine ce a făcut, când).
 

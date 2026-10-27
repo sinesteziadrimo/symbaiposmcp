@@ -49,7 +49,7 @@ Nu pune un formular. Din ce a spus omul deduci, și întrebi doar ce lipsește �
 
 1. **Ce conversație.** Nume de grup, nume de contact sau număr. `watch_chat` rezolvă numele singur; dacă sunt mai multe potriviri, îți întoarce lista și alegi cu omul.
 2. **Când să intervină** → modul:
-   - `always` — fiecare mesaj primit e pentru asistent. Conversații 1-la-1 („chatul cu Mihai"). E implicit pentru contacte.
+   - `always` — fiecare mesaj primit e pentru asistent. Conversații 1-la-1 („chatul cu Andrei"). E implicit pentru contacte.
    - `mention` — doar când e chemat: @mențiune, răspuns la un mesaj al lui, sau un cuvânt din `trigger_words` (dă-i mereu unul scurt, ex. „Sym"). Grupuri cu mulți oameni. E implicit pentru grupuri.
    - `silent` — vede tot, execută în Symbai, **nu scrie în grup**; îl anunță pe proprietar când e nevoie. Grupul de angajați cu transferuri și producții, unde nimeni nu vrea un robot care comentează.
 3. **Ce are voie să facă** → obiectivul (pasul 2).
@@ -69,7 +69,7 @@ Precizează separat citirea și modificarea: „membrii acestui grup pot întreb
 > Angajații scriu în grup transferurile de marfă între gestiuni („am mutat 5 kg cașcaval de la depozit la bar") și producțiile („am făcut 40 porții de ciorbă"). Le înregistrezi în Symbai exact cum sunt scrise (gestiunea, produsul, cantitatea, ora mesajului), fără să răspunzi în grup. Dacă un produs sau o gestiune nu există sau cantitatea e neclară, NU inventezi: îi scrii proprietarului ce n-ai putut înregistra. Poze cu bonuri de transfer le citești și le tratezi la fel.
 
 **Contact 1-la-1** (mod `always`):
-> Mihai e furnizorul de legume. Când îmi scrie, răspunzi în numele meu: confirmi comenzile pe care i le-am trimis, îi spui ce cantități mai avem nevoie (verifică stocul în Symbai), stabilești ziua livrării. Nu negociezi prețuri și nu confirmi plăți — la astea îmi scrii mie.
+> Andrei e furnizorul de legume. Când îmi scrie, răspunzi în numele meu: confirmi comenzile pe care i le-am trimis, îi spui ce cantități mai avem nevoie (verifică stocul în Symbai), stabilești ziua livrării. Nu negociezi prețuri și nu confirmi plăți — la astea îmi scrii mie.
 
 **Grup de sală** (mod `mention` sau `always`, după cererea proprietarului; un singur restaurant):
 > Lucrezi pentru restaurantul <brand>, locația <locație>. „Nu mai avem X” sau „Nu este X” de la un coleg înseamnă X indisponibil doar în meniurile acestui restaurant. Îl oprești cu `set_product_86` și `brandIds: [<brandId-ul restaurantului>]`, iar la „avem iar X” îl repornești cu `restore_product_86`, cu aceleași `brandIds`. Nu trimiți `everywhere` și nu lași `brandIds` gol. Dacă schema lui `set_product_86` nu are `brandIds` (instanță neactualizată), pui `available: false` cu `update_menu_item` pe fiecare articol al restaurantului din `get_product_details` → `menuPlacements` (`brandId` + `menuItemId`), notezi în notițe ce ai oprit și la „avem iar X” repornești exact aceleași articole. Nu întrebi de alte restaurante. Confirmi într-un rând.
@@ -164,7 +164,7 @@ Dacă asistentul răspunde greșit, citește întâi mesajele și dovezile pe ca
 
 ## Urmărire live din sesiunea asta (fără asistent automat)
 
-Când omul vrea ca **tu, aici**, să reacționezi („urmărește chatul cu Mihai cât lucrăm și spune-mi când răspunde"), poți folosi `dispatch: "stream"` numai dacă sesiunea are o unealtă capabilă să asculte continuu fluxul. Nimic nu rulează singur: agentul publică evenimentele local; în Claude Code fluxul se poate asculta cu `Monitor`, dacă este disponibil, folosind `flux.comanda`. Nu presupune că există `Monitor` și în Codex. Fără listener, folosește executorul automat Connect (`codex` sau `claude`) conform alegerii proprietarului, niciodată heartbeat/polling ca înlocuitor. Când închizi sesiunea stream, se închide acoperirea: spune-i omului asta și folosește executorul automat dacă vrea continuitate. Același mecanism (`--listen … --once` în fundal, repornit după fiecare răspuns) aduce, pe versiunile Connect care îl au, și sarcinile programate sau sarcinile unui asistent numit într-o sesiune deschisă: [sesiune-interactiva.md](../../knowledge/sesiune-interactiva.md). Monitorizările de WhatsApp cu mesaje de la clienți nu trec prin acest mod.
+Când omul vrea ca **tu, aici**, să reacționezi („urmărește chatul cu Andrei cât lucrăm și spune-mi când răspunde"), poți folosi `dispatch: "stream"` numai dacă sesiunea are o unealtă capabilă să asculte continuu fluxul. Nimic nu rulează singur: agentul publică evenimentele local; în Claude Code fluxul se poate asculta cu `Monitor`, dacă este disponibil, folosind `flux.comanda`. Nu presupune că există `Monitor` și în Codex. Fără listener, folosește executorul automat Connect (`codex` sau `claude`) conform alegerii proprietarului, niciodată heartbeat/polling ca înlocuitor. Când închizi sesiunea stream, se închide acoperirea: spune-i omului asta și folosește executorul automat dacă vrea continuitate. Același mecanism (`--listen … --once` în fundal, repornit după fiecare răspuns) aduce, pe versiunile Connect care îl au, și sarcinile programate sau sarcinile unui asistent numit într-o sesiune deschisă: [sesiune-interactiva.md](../../knowledge/sesiune-interactiva.md). Monitorizările de WhatsApp cu mesaje de la clienți nu trec prin acest mod.
 
 ## Reguli pe care nu le încalci
 

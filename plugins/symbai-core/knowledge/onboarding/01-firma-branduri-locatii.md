@@ -79,14 +79,14 @@ create_vat_rate(name: "TVA 11% Alimente", rate: 11)
 
 ## Ce se face DOAR din aplicație
 
-- **Ștergerea unui brand sau a unei locații** — nu există tool-uri de ștergere prin conexiune (politică de siguranță). Ghidează: `gaseste_in_aplicatie(intrebare: "setări locații și branduri")` și lasă utilizatorul să șteargă din pagina de setări. Verifică apoi cu `list_brands`/`list_locations`.
+- **Ștergerea unui brand sau a unei locații** — `delete_brand(brandId, deleteAssociatedMenus?, confirm)` / `delete_location(locationId, confirm)`, doar pentru administrator. Primul apel fără `confirm` arată ce se întâmplă (cu istoric = dezactivare, fără istoric = ștergere); `confirm:true` doar după acordul explicit. Verifică apoi cu `list_brands`/`list_locations`.
 - **Logo-ul brandului și pozele** — nu există upload de fișiere prin conexiune. `gaseste_in_aplicatie(intrebare: "setări brand logo")`; verifică ulterior cu `list_brands` (sau lasă-l pe mai târziu — nu blochează nimic).
 - **Țara și moneda firmei** (pentru firme non-RO sau corecturi) — nu există parametri de țară/monedă pe tool-uri. `gaseste_in_aplicatie(intrebare: "date companie setări")`.
 - **Programul de funcționare** (pe perechea brand × locație) — se setează din Setări, nu prin conexiune.
 
 ## Echivalentul în wizard-ul din aplicație
 
-**Pasul 1 din wizard** (`/onboarding`, „Firma & Brand") acoperă exact această fază: panou informativ (firmă / branduri & locații) + chat cu agentul „Sym Setup". Entitățile create prin conexiune APAR în wizard (pasul citește direct brandurile/locațiile din sistem și afișează „Ai N branduri configurate"), iar butonul „Următorul pas" se deblochează când există minim **1 brand + 1 locație + 1 asociere** între ele. Atenție: **progresul wizard-ului (bifa de pas finalizat) NU se actualizează prin conexiune** — utilizatorul apasă singur „Următorul pas" în aplicație. Datele firmei NU sunt obligatorii pentru deblocarea pasului, dar fă-le oricum primele (regula CUI ÎNTÂI).
+**Pasul 1 din wizard** (`/onboarding/welcome` (pașii la `/onboarding/step/N`), „Firma & Brand") acoperă exact această fază: panou informativ (firmă / branduri & locații) + chat cu agentul „Sym Setup". Entitățile create prin conexiune APAR în wizard (pasul citește direct brandurile/locațiile din sistem și afișează „Ai N branduri configurate"), iar butonul „Următorul pas" se deblochează când există minim **1 brand + 1 locație + 1 asociere** între ele. Atenție: **progresul wizard-ului (bifa de pas finalizat) NU se actualizează prin conexiune** — utilizatorul apasă singur „Următorul pas" în aplicație. Datele firmei NU sunt obligatorii pentru deblocarea pasului, dar fă-le oricum primele (regula CUI ÎNTÂI).
 
 ## Verificare la final
 
@@ -107,4 +107,4 @@ create_vat_rate(name: "TVA 11% Alimente", rate: 11)
 - **Mutare brand = unlink + link.** Doar `link_brand_location` pe locația nouă lasă brandul legat și la cea veche.
 - **`update_brand` ÎMBINĂ, nu înlocuiește**: `socialMedia`/`colors` se contopesc cu ce există — câmpurile netrimise rămân. Sigur pentru completări incrementale.
 - **Interfața nu se actualizează instant** după scrieri prin conexiune — cache în browser. Confirmă prin citire; spune-i utilizatorului să dea refresh ca să vadă.
-- **Ștergerile nu există prin conexiune** — nu promite utilizatorului că „șterg eu brandul"; ghidează-l în aplicație.
+- **Ștergeri** — ștergerile au unelte dedicate, cu previzualizare: primul apel fără `confirm` arată efectul, apoi `confirm:true` doar după acordul explicit al omului. `delete_brand` / `delete_location` — doar pentru administrator (brandul/locația cu istoric se DEZACTIVEAZĂ, nu se șterg; ultimul brand/locație activă nu se atinge; `restore_brand` reactivează); `bulk_delete_products` (implicit reversibil, refacere cu `restore_products`); `delete_menu_category`; `delete_recipe`. Gestiunile și turele nu se șterg prin conexiune.

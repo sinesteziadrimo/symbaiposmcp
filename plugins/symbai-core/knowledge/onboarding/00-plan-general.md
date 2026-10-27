@@ -14,7 +14,7 @@ Onboarding = configurarea de la zero (sau completarea) unei instanțe Symbai pen
 6. **După FIECARE scriere, verifici printr-o CITIRE** (`list_*`/`get_*`), nu prin interfață — aplicația are cache în browser și arată datele noi abia după refresh. Succes la tool = date salvate; nu repeta scrierea, nu raporta bug.
 7. **Zero jargon cu utilizatorul** (om de business): „PC-ul care gestionează imprimantele" nu „Print Agent", „ecran de bucătărie" nu „KDS", „server local" nu „edge", niciodată „tool/endpoint/JSON". Numele tehnice rămân între tine și aceste fișiere.
 8. **Lista de tool-uri din sesiunea TA e sursa de adevăr.** Instanțele se actualizează în valuri: dacă un tool menționat în aceste fișiere lipsește la tine, instanța clientului nu are încă versiunea aceea — folosește alternativa UI indicată. Dacă ai tool-uri noi nemenționate aici, folosește-le conform descrierii lor.
-9. **Ștergeri nu există prin conexiune** — nu promite că „ștergi tu"; ghidează în aplicație (`gaseste_in_aplicatie`).
+9. **Ștergeri** — ștergerile au unelte dedicate, cu previzualizare: primul apel fără `confirm` arată efectul, apoi `confirm:true` doar după acordul explicit al omului. `delete_brand` / `delete_location` — doar pentru administrator (brandul/locația cu istoric se DEZACTIVEAZĂ, nu se șterg; ultimul brand/locație activă nu se atinge; `restore_brand` reactivează); `bulk_delete_products` (implicit reversibil, refacere cu `restore_products`); `delete_menu_category`; `delete_recipe`. Gestiunile și turele nu se șterg prin conexiune.
 10. **Fricțiune văzută = sugestie trimisă**: dacă un tool lipsă sau o limitare te încetinește vizibil, trimite o sugestie cu `trimite_ticket_symbai` (tip `sugestie`, cu `dedupeKey`) și mergi mai departe.
 11. **Pachetul de cunoștințe se ține singur la zi.** Pluginul `symbai-core` se instalează cu actualizarea automată pornită și își re-sincronizează cunoștințele la pornire — clientul NU rămâne blocat pe ghiduri vechi. Dacă totuși observi că ești pe o versiune veche (lipsesc skill-uri/ghiduri pe care le aștepți), invocă skill-ul `symbai-update` (diagnostichează + repară instalarea). Nu cere clientului pași manuali înainte să încerci asta.
 
@@ -57,7 +57,7 @@ Aplicația își adaptează wizard-ul după domeniul de business (restaurant/caf
 
 ## Coexistența cu wizard-ul din aplicație
 
-Aplicația are propriul wizard la `/onboarding` (pași ghidați, cu asistent AI per pas). Relația cu munca ta:
+Aplicația are propriul wizard la `/onboarding/welcome` (pașii la `/onboarding/step/N`) (pași ghidați, cu asistent AI per pas). Relația cu munca ta:
 - **Datele scrise prin conexiune apar instant în wizard** — pașii detectează entitățile existente („Ai 3 branduri configurate"), deci pașii devin de facto „făcuți".
 - **Bara de progres a wizard-ului NU se bifează prin conexiune** — utilizatorul apasă singur „Următorul pas" în aplicație dacă vrea wizard-ul „verde". Nu e o problemă: progresul real e `get_config_status`.
 - Pentru părțile UI-only (mai jos), cel mai bun loc de trimis utilizatorul e de regulă chiar **pasul de wizard echivalent** — fiecare fișier de fază are secțiunea „Echivalentul în wizard".

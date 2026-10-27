@@ -2,7 +2,7 @@
 /**
  * La pornirea sau reluarea unei sesiuni Claude Code: dacă sesiunea rulează pe un model fixat mai vechi decât cel
  * mai nou din aceeași gamă (Opus 5 când selectorul oferă Opus 5.5), Claude spune asta omului și îl întreabă dacă
- * trece. Riverside, 20.10.2026: sesiunile de postări ale Siminei rămăseseră pe Opus 5 / Sonnet 5 și nimeni nu știa.
+ * trece. Caz real: sesiunile de postări ale unei colege de marketing rămăseseră pe Opus 5 / Sonnet 5 și nimeni nu știa.
  *
  * Catalogul vine din selectorul oficial al CLI-ului (`initialize`, fără prompt AI, fără MCP și fără hook-uri), ținut
  * minte 12 ore în <config>/symbai/model-catalog.json. Catalogul expirat se recitește chiar în hook, cel mult 3 secunde;

@@ -38,7 +38,6 @@ Modulul acoperă tot ce ține de configurarea și administrarea afacerii în Sym
 - **A/B teste oferte** (`/settings/ab-tests`) — teste A/B pe oferte către clienți: variante (discount %, sumă fixă, produs gratuit, puncte, voucher), metrică de câștig, sample size minim per variantă, segment de audiență.
 - **Câmpuri personalizate** (`/settings/custom-fields`) — câmpuri suplimentare pe deals, contacte, proiecte etc.: cheie tehnică, etichetă, tip (inclusiv listă cu opțiuni), obligatoriu sau nu.
 - **Traduceri** (`/translations`, și `/settings/translations`) — traduceri pe entități cu progres per limbă, limbi active, valute cu sincronizare cursuri ECB/BNR sau curs manual și reguli de taxe pe țară (OSS).
-- **Documentație API** (`/api-docs`) — documentația tehnică a conexiunii cu Symbai Hub și Symbai Accounting (heartbeat, raportare zilnică, chei de legătură, rezolvare conflicte); se deschide în tab separat.
 
 ### Administrare & monitorizare
 - **Loguri Activitate** (`/audit-logs`) — jurnalul complet de audit: cine a făcut ce și când, cu detalii și diferențe. Filtre pe text (acțiune, angajat, produs, masă), categorie (POS & Comenzi, Inventar & Stoc, Producție, Finanțe, Setări, Personal, Meniu & Produse, Clienți, Sistem), angajat, masă și perioadă (Azi/Ieri/Săptămâna trecută/Luna trecută sau interval). Cere permisiunea de setări sau permisiunea dedicată de vizualizare audit.
@@ -74,7 +73,7 @@ Pașii din meniu se **renumerotează automat** după profilul afacerii (la un re
 **Scriere (cer modul de permisiune pe token):**
 - modul `setari`: `create_brand` / `update_brand`, `create_location` / `update_location`, `link_brand_location` / `unlink_brand_location`, `update_company` (date fiscale manuale), `create_payment_method`, `create_printer`, `create_kds_screen`, `configure_pos_settings`, `create_notification_rule`, `set_receipt_design` / `set_invoice_design` (aspectul bonului și al facturii), `create_uom` / `update_uom` / `delete_uom` (unități de măsură), `create_closure_report` / `update_closure_report` / `delete_closure_report` (secțiuni pe închiderea de tură și de zi), `configure_localization` (limbă, monedă, fus orar, formate, ora la care începe ziua operațională).
 - modul `personal`: `create_role`, `update_role`, `set_role_permissions`, `seed_default_roles` (set de roluri prestabilite pe tip de business).
-- modul `produse_meniu`: `create_vat_rate` (cotă TVA nouă), `auto_assign_vat_batch` (clasificare TVA automată cu AI).
+- modul `produse_meniu`: `create_vat_rate` (cotă TVA nouă), `bulk_update_products` (cota TVA pe mai multe produse).
 
 **SQL (toggle separat pe token, doar-citire):** `list_database_tables` → `describe_database_table` → `execute_sql_query`.
 

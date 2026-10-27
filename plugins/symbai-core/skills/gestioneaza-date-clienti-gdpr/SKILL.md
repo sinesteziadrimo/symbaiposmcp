@@ -37,7 +37,7 @@ Userul (proprietar/manager) vine cu o cerere de **conformitate** sau de **igien�
 
 Munca o faci prin tool, dar userul nu vede conexiunea — deci **deschide-i pagina și fă screenshot** ca dovadă.
 - **Baza de clienți**: `navigate("/customers")` — de aici vede clientul, tagurile, grupurile, istoricul. Link live: `gaseste_in_aplicatie("clienți")`.
-- **Grupuri de clienți**: `navigate("/settings/customer-groups")` (sau `gaseste_in_aplicatie("grupuri clienți")`) — după ce ai creat un grup / ai adăugat membri cu MCP, deschide-i pagina ca să-i arăți grupul + numărul de membri.
+- **Grupuri de clienți**: `navigate("/settings?tab=customer-groups")` (apare doar la firmele cu mai multe unități) (sau `gaseste_in_aplicatie("grupuri clienți")`) — după ce ai creat un grup / ai adăugat membri cu MCP, deschide-i pagina ca să-i arăți grupul + numărul de membri.
 - **Oaspeți hotel**: `navigate("/hotel/guests")` — profiluri cu marcaje GDPR, pentru proprietățile cu cazare.
 - **Rapoarte / segmente clienți**: `gaseste_in_aplicatie("rapoarte clienți")` (RFM, top clienți). Folosește `gaseste_in_aplicatie(termen scurt)` ca sursă autoritară de link — **nu inventa URL-uri**.
 - ⚠ Multe pagini Symbai au tab-uri adresabile cu `?tab=…`; du-te direct la tab prin `navigate(url?tab=…)` în loc să cauți tab-ul cu mouse-ul. Dacă nu știi tab-ul exact, cere-l de la `gaseste_in_aplicatie`.
@@ -63,7 +63,7 @@ Afli dacă e client retail sau oaspete hotel → `export_customer_gdpr_data(cust
 `find_duplicate_guests` → îți arată perechile suspecte (același email/telefon). **Verifică** cu userul că sunt chiar aceeași persoană, apoi `merge_guests(primaryId, mergedIds[])` — `primaryId` = profilul PĂSTRAT; restul se DEZACTIVEAZĂ (nu se șterg), iar punctele/istoricul/rezervările/folio se repointează pe primary. Nu se pierde nimic. Spune-i userului în care profil ai unit.
 
 **5. „Grupuri & segmente."**
-- Grup static manual: `create_customer_group(name)` → `add_customer_group_member(groupId, portalUserId, firstName, lastName, …)` pentru fiecare membru → verifici cu `list_customer_groups` (grupuri + nr. membri). Apoi deschide-i `/settings/customer-groups` ca să-i arăți.
+- Grup static manual: `create_customer_group(name)` → `add_customer_group_member(groupId, portalUserId, firstName, lastName, …)` pentru fiecare membru → verifici cu `list_customer_groups` (grupuri + nr. membri). Apoi deschide-i `/settings?tab=customer-groups` ca să-i arăți.
 - „Câți clienți intră într-un segment, fără să trimit nimic?" → `preview_guest_segment(segmentId)` sau `preview_guest_segment(criteria:{ rfmSegments, tierKeys, minLifetimeRevenue, notVisitedSinceDays, … })` — întoarce numărul, dry-run.
 
 ## Cele puține cazuri care cer un click

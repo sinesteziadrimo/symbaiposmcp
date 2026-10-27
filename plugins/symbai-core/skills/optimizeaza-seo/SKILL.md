@@ -15,8 +15,8 @@ Când userul zice „optimizează-mi site-ul / magazinul", „cât de bine stau 
 1. `audit_website_seo` → scor general 0-100 + scor pe categorii (de la cel mai slab) + probleme prioritizate cu fix-uri + următorii pași. E **onest** despre ce nu poate măsura (Core Web Vitals de teren → conectează Search Console; backlink-uri → instrument extern).
 2. Prezintă userului pe limba lui: scorul, primele 3-5 probleme mari și ce câștigă reparându-le. Cere-i prioritățile.
 3. **Repară pe categorii**, în ordinea impactului din raport:
-   - Produse fără descriere / descrieri slabe sau duplicate → skill `descrieri-produse-seo` (`bulk_optimize_product_seo`).
-   - Produse fără slug → `bulk_optimize_product_seo` le pune slug-uri ASCII. Pentru a repara DOAR slug-urile rapid (fără AI, deci instant și gratuit, pe mii de produse) folosește `bulk_optimize_product_seo({ slugsOnly: true })`. Produsele/categoriile noi primesc slug **automat la creare** — golurile apar de regulă la datele aduse prin importuri vechi.
+   - Produse fără descriere / descrieri slabe sau duplicate → skill `descrieri-produse-seo`: scrii tu descrierile și le salvezi cu `set_product_seo`.
+   - Produse fără slug → `bulk_optimize_product_seo` le pune slug-uri ASCII. Unealta pune doar slug-uri (fără AI, gratuit): întâi `dryRun: true`, apoi `dryRun: false` după acord. Produsele/categoriile noi primesc slug **automat la creare** — golurile apar de regulă la datele aduse prin importuri vechi.
    - Pagini de categorie generice (titlu „Categorie — Magazin", fără text) → `set_category_seo` (titlu + meta + text intro/outro + slug per categorie). Verifică slug-urile categoriilor cu `list_menu_categories` (au câmp `slug`). Vezi `pagini-seo-2026.md` → secțiunea PLP.
    - Entitate/NAP/Google Business slabe → `update_brand`/`update_company` + skill `raspunde-recenzii` + pagina Google Maps.
    - Articole on-page slabe → secțiunea de mai jos (`seo_audit` + `update_blog_post`).

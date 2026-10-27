@@ -22,7 +22,7 @@
 ## MENIU & DISPOZITIVE POS
 
 - **Meniu & Dispozitive POS** (`/menu`) — Hub meniu cu 5 tab-uri reale: Prețuri Meniu, Platforme, Configurare Afișaj (POS/Web), Meniu Fizic, Oferte & Promoții.
-  - Tab **Prețuri Meniu** (`/menu?tab=pricing`) — Editor prețuri de vânzare per meniu: listă „Toate produsele”, food cost total, sortare după food cost, adaugă produse/pachete-combo, buton „Prețuri Meniu Nou” (→/ai-pricing) + „Adaugă poze bulk”.
+  - Tab **Prețuri Meniu** (`/menu?tab=pricing`) — Editor prețuri de vânzare per meniu: listă „Toate produsele”, food cost total, sortare după food cost, adaugă produse/pachete-combo. Analiza pe cadrane (menu engineering) e în raportul P&L (`/reports/pnl`).
   - Tab **Platforme POS** (`/menu?tab=menus`) — Activezi/configurezi punctele de vânzare (Mod Kiosk, POS Ospătar, POS Mobil App&Web, POS Bar, Platforma Clienți Web) și ce meniu vede fiecare; include Website Builder și Kiosk Builder. _Notă: Din acest tab poți activa Website-ul propriu și comenzile online. Click pe 'Website/Online' → butonul 'Configurează' pentru Website Builder. Website Builder-ul are un asistent AI integrat (WB Assistant) care apare în dreapta jos — ajută cu template-uri, pagini, componente, design, setări._
   - Tab **Configurare Afișaj** (`/menu?tab=display`) — Profile de afișare meniu per canal (POS Ospătar, Kiosk Client, Website/Online, Platforma Clienți Web, Table—Clienți QR): teme, layout carduri, ordine/navigare categorii, imagini. Tot aici e **Politica de reduceri**: pragul de procent și de sumă sub care angajatul aplică reducerea fără aprobarea managerului (per platformă).
   - Tab **Meniu Fizic** (`/menu?tab=physical-menu`) — Designer de meniu tipărit/PDF : formate A4/A3, paginare „Recalculează”, copertă + pagini nutriționale/alergeni, export PDF/print, QR dinamic pe copertă.
@@ -163,17 +163,17 @@
 - **Evenimente Facebook** (`/facebook-events`) — Creare și gestionare evenimente Facebook pe pagina ta — seri tematice, lansări, workshop-uri
 - **Analiză Social Media** (`/social-analytics`) — Dashboard analytics — engagement, reach, followers, ore optime
 - **Materiale Grafice** (`/graphic-materials`) — Studio de design drag & drop pentru materialele brandului: afișe, flyere, broșuri, table tents, postări/story social, vouchere, carduri QR de masă și **etichete tipărite** (materiale de tip „Etichetă", cu cod de bare/QR și câmpuri dinamice completate la print). Șabloane gata făcute, recolorare pe brand, magic resize, export PDF/PNG. Aici se DESENEAZĂ eticheta; printarea ei se face din Producție / Scanner Containere / tableta de stație.
-- **Memorii Brand** (`/brand-memories`) — Fișiere de memorie per brand pentru contextul AI marketing
+- **Memorii Brand** — pagina a fost retrasă; memoriile de brand se citesc și se scriu prin conexiune (`list_brand_memories`, `upsert_brand_memory`).
 ## MARKETING — STRATEGIE & EXECUȚIE
 
-- **Strategie Marketing** (`/marketing/strategy`) — Strategie marketing per brand — poziționare, audiențe, obiective, KPI
+- **Strategie Marketing** (`/marketing/strategy`) — pagină de intrare cu legătura spre calendarul de conținut social.
 - **Canale Marketing** (`/marketing/channels`) — Configurare și performanță canale marketing — buget alocat, conversii
 - **Audiență Marketing** (`/marketing/audience`) — Segmente audiență, profiluri clienți, comportament. Tab inbox = inbox unificat social
 - **Performanță Marketing** (`/marketing/performance`) — KPI marketing — conversii, ROI, CAC, LTV, comparații canale
 - **Cross-Channel Marketing** (`/marketing/cross-channel`) — Campanii cross-channel — coordonare email + social + ads + SMS
 - **Atribuire Marketing** (`/marketing/attribution`) — Modele de atribuire — first-touch, last-touch, multi-touch, data-driven
 - **Experimente Marketing** (`/marketing/experiments`) — A/B testing campanii — variante, audiente split, statistici
-- **Plan Trimestrial Marketing** (`/marketing/quarterly-plan`) — Planificare trimestrială Q1-Q4 — obiective, bugete, campanii, deadline-uri
+- **Plan Trimestrial Marketing** — fără pagină proprie; prin conexiune: `list_quarterly_marketing_plans`, `get_quarterly_marketing_plan`, `apply_quarterly_marketing_plan`, `review_quarterly_marketing_plan`.
 - **Anomalii Marketing** (`/marketing/anomalies`) — Detecție anomalii în metrici marketing — alerte performanță
 - **Playbook B2B** (`/marketing/b2b-playbook`) — Playbook complet pentru marketing B2B — LinkedIn, ABM, sales enablement
 - **Playbook Meta Restaurante** (`/marketing/playbook-meta-restaurant`) — Playbook Meta (FB/IG) pentru restaurante — campanii, audiențe, creative
@@ -190,7 +190,6 @@
 - **Atracții** (`/portal-attractions`) — Administrare atracții — browse, recenzii, programare
 - **Jocuri** (`/portal-games`) — Administrare jocuri — sloturi, prețuri, rezervări, program
 - **Misiuni & Recompense** (`/portal-missions`) — Gamificație — misiuni zilnice/săptămânale, insigne, recompense
-- **Agenți Chat Portal** (`/portal-chat-agents`) — Creare și gestionare agenți AI pentru chat-ul portalului de clienți
 - **Carduri de Acces** (`/access-cards`) — Gestionare carduri RFID și brățări NFC pentru acces
 ## HACCP & SIGURANȚĂ ALIMENTARĂ
 
@@ -253,38 +252,19 @@
 - **Inbox WhatsApp** (`/whatsapp-inbox`) — Mesaje primite și trimise prin WhatsApp Business
 ## DATA IMPORT
 
-- **Import Date** (`/data-import`) — Titlu „Importuri Date”. 3 tab-uri: „Import Nou” (wizard 4 pași: Încărcare fișier → Mapare coloane → Confirmare → Rezultat, alegi entitatea țintă), „Șabloane (N)” (salvează/reaplică mapări), „Istoric (N)” (rulări trecute).
-  - Tab **Import Nou** (`/data-import?tab=new-import`) — Tab Import Nou — încărcare fișier Excel/CSV pentru import
-  - Tab **Șabloane Import** (`/data-import?tab=templates`) — Tab Șabloane — descărcare template-uri Excel pentru import
-  - Tab **Istoric Import** (`/data-import?tab=history`) — Tab Istoric — lista importurilor anterioare cu status
+- **Import Date** — pagina `/data-import` a fost retrasă (25.09.2026). Importul se face prin conexiune (skill-ul `importa-date`: `bulk_create_products`, `bulk_create_menus`, `import_retetar`, `import_supplier_catalog_from_file`). Clienții din fișier: `/customer-import`; rețetarul din Excel: `/recipe-mapping`.
 ## ALTE PAGINI
 
 - **Loguri Activitate** (`/audit-logs`) — Titlu „Loguri Activitate”. Jurnal audit cine/ce/când cu diff vechi→nou. Căutare text + filtru categorie (9: POS & Comenzi, Inventar & Stoc, Producție, Finanțe, Setări, Personal, Meniu & Produse, Clienți, Sistem) + filtru angajat + masă + perioadă (Azi/Ieri/Săptămâna trecută/Luna trecută/interval).
 - **Coduri QR** (`/qr-codes`) — Două tab-uri: QR Mese (cod per masă → meniul digital al mesei, regenerare) și QR-uri dinamice (link scurt /q/cod cu destinație editabilă oricând fără re-tipărire, etichete, activ/inactiv, contor scanări, export PNG/SVG/PDF).
 - **Centru Printare** (`/print`) — Administrare imprimante — bonuri, bucătărie, etichete, testare
-## AI AGENTS
+## AI ÎN APLICAȚIE
 
-- **AI Onboarding** (`/ai-onboarding`) — Asistent AI pentru configurarea inițială — ghidaj pas cu pas (alias: /ai-migration)
-- **Onboarding Avansat** (`/ai-advanced-onboarding`) — Agent AI pentru funcționalități avansate — integrări, automatizări, asistenți, website
-- **Import din Excel** (`/ai-bulk-import`) — Import în masă din Excel/CSV cu mapare AI a coloanelor, validare și raport pe fiecare rând
-- **AI Menu Creator** (`/ai-menu`) — Asistent AI Chef pentru creare meniu echilibrat — ingrediente, costuri
+Paginile de agenți AI (`/ai-onboarding`, `/ai-menu`, `/ai-pricing`, `/ai-reports`, `/ai-accounting`, `/ai-legal`, `/ai-staff-creator`, `/ai-logs`, memoriile agenților etc.) au fost retrase pe 25.09.2026. Sym (bula din dreapta-jos) e asistentul personal, prin Symbai Connect.
+
+- **Asistenții mei** (`/my-assistants`) — creezi și configurezi asistenții personali (rol, instrucțiuni, calculator Connect, acces, grupuri). `/ai-marketing` duce aici.
 - **Rețete** (`/recipes`; vechile `/ai-recipes` și `/ai-recipes?tab=create` redirecționează aici) — Rețetar: caută și selectează rețeta, explică ingredientele, cantitățile, unitățile, randamentul și food cost-ul. Fișa preparatului include etape, depozitare și valabilitate. Editare, salvare, sugestii de la echipă și restaurarea rețetelor șterse în aceeași pagină. Sym, în coloana din dreapta, vede rețeta deschisă și costul ei.
-- **AI Doctor Veterinar** (`/ai-dsv`) — Expert AI legislație alimentară — fișe tehnice, HACCP, norme sanitare
-- **AI Achiziții** (`/ai-procurement`) — Asistent AI aprovizionare — analiză cheltuieli, optimizare comenzi
-- **Prețuri Meniu Nou** (`/ai-pricing`) — Asistent AI pricing — analiză food cost, recomandări prețuri, marje
-- **AI Contabilitate** (`/ai-accounting`) — Asistent AI contabilitate — coduri contabile, e-Factura, export
-- **AI Rapoarte** (`/ai-reports`) — Asistent AI rapoarte — generare rapoarte inteligente cu analiză
-- **AI CFO** (`/ai-cashflow`) — Asistent AI financiar — cash flow, previziuni, strategie financiară
-- **AI Legal** (`/ai-legal`) — Asistent AI juridic — contracte, GDPR, legislație HoReCa, documente legale
-- **AI Marketing Agent** (`/ai-marketing`) — Agent AI conversațional pentru creare reclame, postări, strategii marketing
-- **AI Integrări** (`/ai-integrations`) — Agent AI expert configurare integrări — fiscale, messaging, social, hardware, delivery, plăți
-- **AI Creator Agenți Vânzări** (`/ai-sales-creator`) — Creează agenți AI specializați pe vânzări — petreceri, nunți, corporate
-- **AI Angajati** (`/ai-angajati`) — Agent AI pentru gestionare personal — roluri, angajati, ture, permisiuni
-- **AI Creator Asistenți Personal** (`/ai-staff-creator`) — Creează asistenți AI personalizați per angajat/rol
-- **AI Automatizări** (`/ai-automations`) — Agent AI pentru creare reguli și automatizări prin conversație
-- **Loguri AI** (`/ai-logs`) — Istoric conversații și acțiuni ale agenților AI
-- **Memorii Agenți AI** (`/ai-agent-memories`) — Fișiere de memorie pentru agenții AI
-- **Memorii Agenți Vânzări** (`/sales-agent-memories`) — Fișiere de memorie ale agenților AI de vânzări
+- **Prețuri Meniu** (`/menu/pricing`, la fel ca `/menu?tab=pricing`) — prețuri de vânzare, food cost și marje.
 ## PAGINI SUPLIMENTARE FRONTEND
 
 - **Plan Sală** (`/plan-sala`) — Designer plan sală — zone, mese, capacități, layout drag-and-drop
@@ -313,11 +293,6 @@
 
 - **Conturi pe Tip Produs** (`/ai-product-types`) — Hub cu toggle Simplu/Avansat + Asistent AI și 3 tab-uri: „Tipurile mele” (carduri tip cu semafor sănătate, Adaugă tip via template, Rezolvă ce lipsește, drawer+editor), „Pe unități” (regulă analitice brand/locație), „Împărțire costuri”.
 - **Sarcini Programate** (`/settings/cron-jobs`) — Administrare sarcini cron — joburi programate, automatizări pe orar
-## AI AGENȚI SUPLIMENTARI
-
-- **AI Reclame** (`/ai-ads`) — Agent AI pentru creare și gestionare campanii publicitare — Facebook Ads, Google Ads
-- **AI Analiză** (`/ai-analytics`) — Agent AI pentru analiză date — interpretare rapoarte, insights, sugestii
-- **AI Research Agent** (`/ai-research`) — Agent AI pentru cercetare — investigații, research competitor, analize de piață, sumarizare surse externe
 ## HOTEL / PENSIUNE
 
 - **Dashboard Hotel** (`/hotel`) — Dashboard PMS: KPI ocupare (camere libere/ocupate, %), sosiri/plecări azi, in-house, plus hub de quick-links spre toate sub-paginile hotel (recepție, camere, rate, channel, folio, analytics).
@@ -382,8 +357,6 @@
 - **Randament & Cost** (`/factory-yield-costing`) — Cockpit pentru mass balance, yield/cut-out, cost standard vs actual si reconciliere SAP/financiar.
 - **Validare & UAT** (`/factory-validation`) — Cockpit pentru scenarii UAT, load/DR, evidenta de acceptanta si go/no-go gates.
 - **Rollout Enterprise** (`/factory-rollout`) — Cockpit pentru wave plan, training, hypercare si criterii de trecere pilot -> rollout.
-- **Factory AI Chat** (`/factory-ai`) — Chat AI dedicat operațiunilor de fabrică
-- **AI Flow Builder** (`/ai-flow-builder`) — Constructor vizual fluxuri tehnologice cu AI
 - **Plan Fabrică 2D** (`/factory-floor-plan`) — Designer vizual al halei/fabricii: nivele, echipamente, zone de producție, magazii, zone de depozitare, pereți/culoare și conexiuni de flux material/personal. Legat de entități reale, cu status echipament și stoc sumar pe zone.
 - **Explorează Fabrica** (`/factory-explorer`) — Vizualizator live read-only al halei: hartă, căutare, Gantt pe utilaje cu scrubber de timp și panouri clickabile pentru zonă, magazie/raft, utilaj, operator și produs. Pentru investigații, întrebări la o oră anume și dovadă vizuală; pentru editare folosește Plan Fabrică 2D.
 - **Tabletă Stație Lucru** (`/workstation-tablet`) — Interfață tabletă pentru stația de producție — scanare container, progres, QC
@@ -410,17 +383,16 @@
 - **Calendar Platformă** (`/calendar`) — Calendar global — evenimente, task-uri, rezervări, ture, deadline-uri
 ## PAGINI ADIȚIONALE (completare RBAC 2026-05-24 — toate intrările din
 
-- **Menu Engineering** (`/ai-pricing`) — engineering: analiza popularitate vs profitabilitate (cadrane Vedete/Cai de povară/Puzzle/Câini) plus recomandări de preț AI.
-- **Blog** (`/blog`) — Pagină principală blog — overview tracker, postări, autori, advertoriale, backlinks
+- **Menu Engineering** — analiza popularitate vs profitabilitate (cadrane Vedete/Cai de povară/Puzzle/Câini) e secțiunea Menu Engineering din raportul P&L (`/reports/pnl`); prin conexiune: `get_menu_engineering`. `/menu-engineering` duce la `/menu`.
+- **Blog** (`/blog/tracker`) — Pagină principală blog — overview tracker, postări, autori, advertoriale, backlinks
 - **Calendar Conținut** (`/content-calendar`) — Calendar conținut social media — planificare postări multi-platforma
 - **Postări Social** (`/social-posts`) — Listă postări social media — toate canalele, status, performanță
 - **Story Manager** (`/story-manager`) — Manager stories Instagram/Facebook/TikTok — programare, stickere, CTA, analitice
 - **Mesaje Social Media** (`/social-messages`) — Inbox unificat mesaje DM, comentarii, mențiuni de pe toate platformele sociale conectate
 - **Achiziții** (`/purchases`) — Raport de achiziții agregat pe produs: ce ai cumpărat, ce cantități și la ce cost mediu pe perioadă. Lista comenzilor către furnizori (PO) este în Hub Aprovizionare. _Notă: Aici vezi TOATE comenzile către furnizori. Pentru o comandă nouă, folosește Smart Ordering (/smart-ordering) care propune AI-based pe baza stocului minim._
-- **Onboarding (Wizard Configurare)** (`/onboarding`) — Wizard pas-cu-pas configurare inițială platformă — 13 pași de bază + 16 pași avansați. Acces din meniu sau setări.
+- **Onboarding (Wizard Configurare)** (`/onboarding/welcome`, pașii la `/onboarding/step/:n`) — Wizard pas-cu-pas configurare inițială platformă — 13 pași de bază + 16 pași avansați. Acces din meniu sau setări.
 - **Welcome Onboarding** (`/onboarding/welcome`) — Ecran welcome onboarding — afișat o singură dată la primul login, prezintă platforma + propune wizard configurare
 - **Onboarding Pas 18 — Social Media** (`/onboarding/step/18`) — Pasul de configurare social media din wizard onboarding (FB/IG/TikTok conectare + strategie conținut)
-- **AI Migrare Date** (`/ai-migration`) — Asistent AI pentru migrare date din alt sistem POS — analiză export, mapare câmpuri, import automat. Alias pentru /ai-onboarding.
 - **Automatizări Sales CRM** (`/sales/automations`) — Reguli automate pe pipeline CRM — trigger pe schimbare etapă deal → acțiuni (email, task, notificare). 19 triggers + 9 actions.
 - **Catalog Servicii** (`/services/catalog`) — Catalog servicii oferite — definire, preț, durată, dependențe
 - **Oferte Servicii** (`/services/quotes`) — Oferte (quotes) către clienți — generare, trimitere, acceptare, conversie în proiect
@@ -428,10 +400,7 @@
 - **Pontaj Servicii** (`/services/time`) — Time tracking pe proiecte/tichete — ore lucrate, facturare time-based
 - **Tichete Servicii** (`/services/tickets`) — Tichete suport/incidente — status, priorități, SLA, atribuire
 - **Servicii Recurente** (`/services/recurring`) — Servicii recurente / abonamente — billing automat, retentie, churn
-- **Asistent Personal** (`/staff-assistant`) — Asistent AI per angajat — fiecare angajat are propriul ajutor AI cu memorie individuală
-- **AI Producție Expert** (`/ai-production`) — Agent AI Producție cu 149 tool-uri în 6 categorii — rețete, infrastructură, execuție, planificare, calitate, fluxuri. Poate crea loturi, porni producție, inspecții QC, BOM explosion, MPS. _Notă: Pentru creare lot producție concret cu cantitate, delegă la acest agent — are tool-uri specializate pe rețete/zone/echipamente/QC/fluxuri._
 - **Conturi pe Tip Produs** (`/ai-product-types`) — Hub cu toggle Simplu/Avansat + Asistent AI și 3 tab-uri: „Tipurile mele” (carduri tip cu semafor sănătate, Adaugă tip via template, Rezolvă ce lipsește, drawer+editor), „Pe unități” (regulă analitice brand/locație), „Împărțire costuri”.
-- **Documentație API** (`/api-docs`) — Documentație API publice Symbai pentru integratori externi
 - **Integrări Externe** (`/integrations`) — Hub integrări externe — listă conectate, status, configurare per categorie
 - **Evenimente CRM** (`/events`) — Listă standalone a tuturor evenimentelor cu sumar P&L în timp real: KPI sus (nr. evenimente, venit total, profit, marjă medie), tabel/carduri per eveniment + filtre dată și status; click pe rând deschide fișa /event/:id. Buton «Vezi în Calendar».
 - **Abonamente Clienți** (`/subscriptions`) — Abonamentele CLIENȚILOR cu livrări recurente: KPI MRR/ARR/ARPU/Churn 30z/LTV/Venit 30z, distribuție pe statusuri, listă abonați cu filtre+căutare; drawer detaliu cu Pauză/Reactivare/Anulare + sub-tab-uri Livrări/Dunning/Istoric.
@@ -456,8 +425,7 @@
 - **Unifică Duplicate** (`/automations`) — Detectează produsele duplicate din catalog (nume identic sau aproape identic) și le unește inteligent — supraviețuiește produsul cu vânzări și loc în meniu, stocul se adună, rețeta se preia; cu sugestii automate de unire și previzualizare de impact
 - **Leagă Rețetarul (import Excel)** (`/recipe-mapping`) — Import rețetar din Excel — fiecare ingredient se mapează la un produs existent (potrivire exactă, similară sau cu AI); conflictele de unitate de măsură blochează importul până le rezolvi
 - **Centru Meniu** (`/menu/center`) — Panou pentru manageri — ce produse sunt indisponibile (86) acum cu motiv și cine le-a marcat, câte produse nu au fotografie sau alergeni, căutare cu marcare 86 rapidă și alias-uri de căutare
-- **Meniu din PDF** (`/menu/import-pdf`) — Import meniu din PDF sau poze cu AI — extrage produsele, prețurile, pozele și designul paginilor (reconstruit pentru Meniu Fizic), cu propunere editabilă înainte de import
-- **Poze Bulk Meniu** (`/menu/pricing/bulk-photos`) — Urci multe poze deodată (drag & drop), AI le analizează și sugerează automat articolul de meniu potrivit pentru fiecare; confirmi/schimbi și se salvează ca imagine produs.
+- **Meniu din PDF / poze** — pagina `/menu/import-pdf` a fost retrasă. Asistentul citește PDF-ul sau pozele și creează produsele prin conexiune (`bulk_create_products`, `bulk_create_menus`), cu previzualizare și acordul omului.
 - **Mese Servite** (`/finance/served-meals`) — Titlu „Mese Servite”. KPI strip (mese/venit/cost/marjă) + căutare + filtru status (Toate/Cost de stabilit/Cost stabilit/Ciornă) + tabel registru. Buton „Masă servită nouă” (dialog: Manual/Din eveniment/Din comandă POS). Drawer detaliu cu tab-uri Cost(fișe consum)/Eveniment/Contract/General.
 - **Raport Beneficii Personal** (`/reports/staff-benefits`) — Ce au consumat angajații pe beneficii (mâncare/băutură personal) — grupat pe angajat, regulă, produs sau zi, cu export CSV
 - **Reparații Date** (`/settings/repair`) — Titlu „Reparații”. 11 unelte 1-click cu scanare/preview înainte de aplicare: reconciliere comenzi, curăță produse fantomă (cloud+edge), Sync 100% cloud↔edge, unifică categorii meniu, leagă rețete↔produse (alergeni), corectează unități neconvertibile, conturi non-stocabile, GL umflat penalități, rutare bucătărie/bar, curăță rețete orfane, reconciliază rețete↔produse (product_id).

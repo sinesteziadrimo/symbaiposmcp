@@ -25,6 +25,7 @@
 
 **Cumpărare mărfuri (TVA deductibilă):**
 - `% = 401 Furnizori` (total) · `371 Mărfuri` (bază) · `4426 TVA deductibilă` (TVA).
+- La **inventar intermitent** (OMFP 1802, pct. 289–291) aceeași cumpărare se înregistrează direct pe cheltuială: `% = 401` · `607` (bază) · `4426`; materiile prime pe `601`, materialele pe `602x`, ambalajele pe `608`. Descărcarea la vânzare nu se mai face; la sfârșitul lunii inventarul complet trece stocul rămas pe 3xx și reduce cheltuiala, iar la începutul lunii următoare acel stoc se reia automat pe cheltuială. Metoda și perechile exacte ale firmei: `get_inventory_accounting_policy` la data documentului. Documentul de recepție păstrează contul de stoc ca evidență a cantităților; registrul, balanța și rapoartele arată perechea.
 
 **Cumpărare cu deducere limitată (ex. 50%):**
 - `% = 401` (total) · contul de stoc/cheltuială (bază + TVA nedeductibilă) · `4426` (doar partea deductibilă). Exemplu: bază 100, TVA 21 → 110,50 pe cost, 10,50 pe 4426.

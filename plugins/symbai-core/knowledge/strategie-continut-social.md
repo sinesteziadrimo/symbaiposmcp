@@ -32,8 +32,8 @@ Construiește un plan pe ~24 de idei, pe cei 5 piloni, cu mixul 60-70% Reels și
 4. Mapează ~24 de idei pe cei 5 piloni, cu ~60-70% Reels și raportul 3-2-1; pentru fiecare scrie cârligul (1-3s) + caption cu cuvinte-cheie (SEO social).
 5. `create_hashtag_group` [marketing] — un grup de 3-5 hashtag-uri de nișă, reutilizabil.
 6. `browse_brand_media` [citire] pentru vizual existent, sau `render_material_design` pentru un material nou.
-7. `bulk_schedule_social_posts({ confirm:true })` [marketing] — programează tot lotul la 9:00 / 12:30 / 19:00 (fus `Europe/Bucharest`).
-8. Raportează proprietarului și folosește `approve_social_post` pe loturi după revizuire.
+7. `bulk_schedule_social_posts({ brandId, posts })` [marketing] — programează tot lotul la 9:00 / 12:30 / 19:00 (fus `Europe/Bucharest`); postările intră „în așteptare aprobare”.
+8. Raportează proprietarului; după ce aprobă explicit, `approve_social_post(postId, approvalStatus:"approved"|"rejected", approvalNote?)` pe fiecare postare (lista: `list_social_posts(approvalStatus:"pending")`).
 
 ### 2. Reel din teren, în aceeași zi (conținut spontan)
 Cea mai bună postare e adesea momentul real de azi.
@@ -43,7 +43,7 @@ Cea mai bună postare e adesea momentul real de azi.
 4. `marketing_send_content_request({ confirm:true })` [marketing] — cere echipei „clip 10s cu platoul de la masa 12, lumină naturală", prioritate mare, expiră în ~45 min.
 5. `marketing_recent_conversations` / `browse_brand_media` — preia clipul trimis de echipă.
 6. Scrie cârligul + textul-pe-ecran + caption-ul (din aplicație, pe vocea brandului).
-7. `schedule_social_post({ postType:'reel', confirm:true })` [marketing] cu media → apoi `approve_social_post`.
+7. `schedule_social_post({ brandId, content, platforms, scheduledAt, postType:'reel', mediaUrls })` [marketing] → după acordul omului `approve_social_post(postId, approvalStatus:"approved"|"rejected", approvalNote?)`.
 
 ### 3. Lansare preparat / produs nou pe organic (3 zile)
 1. `get_product_details` / `get_menu_engineering` — detaliile reale ale preparatului.
@@ -51,7 +51,7 @@ Cea mai bună postare e adesea momentul real de azi.
 3. Ziua 0: Reel demonstrativ + carusel-de-salvat cu ingrediente / pași.
 4. Ziua +2: UGC / reacția unui client (sourcing din sală).
 5. `gbp_create_post({ confirm:true })` [marketing] — postează lansarea și pe Google Business.
-6. `bulk_schedule_social_posts({ confirm:true })` pentru toate cele 3 zile → `approve_social_post` pe lot.
+6. `bulk_schedule_social_posts({ brandId, posts })` pentru toate cele 3 zile → după acordul omului `approve_social_post(postId, approvalStatus:"approved"|"rejected", approvalNote?)` pe fiecare.
 
 ### 4. Săptămâna de community management (cu SLA)
 1. `list_conversations` [citire] — mesajele/comentariile necitite de pe social.
@@ -69,15 +69,15 @@ Cea mai bună postare e adesea momentul real de azi.
 ## Tool-uri MCP utile
 
 - `read_brand_memories` [citire] — vocea, publicul și stilul brandului; RULEAZĂ-L MEREU înainte să generezi text, ca postările să sune ca brandul, nu generic.
-- `marketing_generate_post` [marketing] — generează un draft de postare (text + sugestii) pe baza unei idei; tot un draft, nu publică.
+- Textul postării îl scrii tu (din `read_brand_memories`), apoi `schedule_social_post` îl salvează „în așteptare aprobare” — nu se publică fără aprobare.
 - `marketing_location_weather`, `marketing_open_tables`, `marketing_active_shifts` [citire] — context LIVE pentru conținut spontan (vreme, terasă plină, cine filmează).
 - `browse_brand_media` [citire] — caută în biblioteca de poze/clipuri ale brandului materialul de folosit.
 - `render_material_design` [marketing] — creează un vizual nou (poster/grafic) când nu există material potrivit.
 - `create_hashtag_group` [marketing] — salvează un grup de 3-5 hashtag-uri de nișă, reutilizabil pe postări (`list_hashtag_groups` / `update_hashtag_group` pentru gestionare).
 - `marketing_send_content_request({ confirm:true })` [marketing] — cere echipei din teren un clip/o poză anume (declanșează o sarcină); `marketing_list_content_requests` / `marketing_recent_conversations` pentru a urmări răspunsul.
-- `schedule_social_post({ confirm:true })` [marketing] — programează O postare (`postType` poate fi `reel`, imagine, carusel etc.).
-- `bulk_schedule_social_posts({ confirm:true })` [marketing] — programează un LOT întreg de postări dintr-un calendar (cel mai folosit la planul lunar).
-- `approve_social_post({ confirm:true })` [marketing] — aprobă o postare aflată în așteptare ca să intre la programare/publicare; folosește-l pe loturi după revizuire.
+- `schedule_social_post({ brandId, content, platforms, scheduledAt?, postType?, mediaUrls? })` [marketing] — programează O postare (`postType` poate fi `reel`, imagine, carusel etc.).
+- `bulk_schedule_social_posts({ brandId, posts })` [marketing] — programează un LOT întreg de postări dintr-un calendar (cel mai folosit la planul lunar).
+- `approve_social_post(postId, approvalStatus:"approved"|"rejected", approvalNote?)` [marketing] — aprobă sau respinge o postare aflată în așteptare; fără `confirm`. Aprobarea e decizia omului: o ceri explicit înainte de apel.
 - `publish_social_post`, `update_social_post`, `duplicate_social_post`, `cancel_social_post` [marketing] — publică acum / editează / clonează / anulează o postare programată.
 - `list_social_posts`, `list_social_accounts` [citire] — vezi postările existente și ce conturi sunt conectate.
 - `get_social_top_posts`, `get_social_post_performance` [citire] — performanța reală Facebook/Instagram citită live de la Meta; insights lipsă = „indisponibil" cu motiv, nu zero.

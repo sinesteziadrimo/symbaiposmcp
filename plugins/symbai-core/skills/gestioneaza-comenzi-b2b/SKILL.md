@@ -106,7 +106,7 @@ Citește [ghidul comun pentru asistenți](../../knowledge/planificare-asistenti.
 - **Configurația rețelei și a punctelor** (`configure_b2b_distribution_network`, `create_b2b_client_depot`, `update_b2b_client_depot`, `upsert_b2b_distribution_source_rule`) acceptă scriere pe **Furnizori** sau **Setări**, dar pentru angajați cere exact `b2b_sales_supervise` ori `settings_access` și autoritate pe brand din fabrica/depozitul central. `get_b2b_distribution_network_setup` poate fi citit și prin Setări pentru verificarea înainte/după configurare.
 - **`apply_b2b_order_plan`** cere scriere pe modulul **`Producție`** (`productie`) — creează loturi de producție. Preview-ul și execuția sunt ambele în Producție, dar folosesc granturi diferite: citire, respectiv scriere.
 - **`set_b2b_picking_rules`** cere modulul **`Setări & Configurare`** (`setari`).
-- Pentru o factură fără comandă sau pe mai multe bonuri: `create_fiscal_invoice` cere modulul **`Financiar`** (`financiar`); `submit_efactura_anaf` e extern (confirm-first).
+- Pentru o factură fără comandă sau pe mai multe bonuri: `create_fiscal_invoice` cere modulul **`Financiar`** (`financiar`); trimiterea în SPV: automat după modul din `get_efactura_outgoing_settings`, altfel „Trimite la ANAF” din `/stock-exits?tab=invoices` (o face omul); problemele: `list_outgoing_efactura_problems`.
 - „Permisiune insuficientă" pe un tool → portal Hub → **Acces AI** → acordă modulul la citire și/sau scriere. Pentru angajat, rolul POS poate restrânge suplimentar scrierea.
 
 ## Legături

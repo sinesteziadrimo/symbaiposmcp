@@ -1,6 +1,6 @@
 # Onboarding 02d — Completarea datelor lipsă din surse externe (website, SmartMenu, marketplace)
 
-> Cum cauți SINGUR informațiile care lipsesc dintr-un import — DOAR cu permisiunea userului. Orchestrarea: `02b-import-asistat.md`. Șabloanele canonice în care torni rezultatul: `02c-import-sabloane-canonice.md`. Folosit de skill-ul `importa-date`.
+> Cum cauți SINGUR informațiile care lipsesc dintr-un import — DOAR cu permisiunea userului. Pașii de import: `02-import-date.md`. Tabelul canonic în care torni rezultatul: `02c-import-sabloane-canonice.md`. Folosit de skill-ul `importa-date`.
 
 ## Când intri pe surse externe
 
@@ -60,7 +60,7 @@ Marketplace-urile **NU se scrapează** (prețuri per-zonă, se schimbă des, fra
 
 ## Sursa 4 — PDF sau poze cu meniul
 
-Există pagina dedicată din aplicație care extrage produse + prețuri + poze + design cu AI: `gaseste_in_aplicatie("import meniu din PDF")`. **Nu reimplementa OCR** — trimite acolo (sau folosește-o în mod automat prin Chrome), apoi verifici prin `list_menu_items`. Skill-ul `adauga-produs-reteta` acoperă și fluxul website→catalog.
+Pagina „Meniu din PDF” a fost retrasă (25.09.2026). Citești TU PDF-ul sau pozele (text, prețuri, categorii), notezi pentru fiecare rând pagina sursă și pui rezultatul în tabelul canonic; prețurile vin doar din document. După import verifici cu `list_menu_items`. Skill-ul `adauga-produs-reteta` acoperă și fluxul website→catalog.
 
 ## Merge din mai multe surse — potrivire + conflicte
 
@@ -77,4 +77,4 @@ Când aduni din 2+ surse (ex. fișier Excel + SmartMenu + website):
 
 ## După enrichment
 
-Ai un fișier canonic complet → mergi pe fluxul din `02b` (pre-creează refs `02c` → importă → verifică). Spune-i userului ce-ai completat și din ce sursă, ce a rămas gol și de ce.
+Ai tabelul canonic complet → pre-creezi referințele (`02c`), creezi datele prin unelte (`02-import-date.md`) și verifici. Spune-i userului ce-ai completat și din ce sursă, ce a rămas gol și de ce.

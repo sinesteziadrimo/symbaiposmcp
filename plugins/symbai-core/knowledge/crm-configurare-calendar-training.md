@@ -1,10 +1,10 @@
-# CRM prin MCP — configurare, echipe, calendar, materiale și training
+# CRM prin MCP — configurare, echipe, calendar și materiale
 
 Acest ghid explică operarea CRM pentru vânzări de software, servicii sau alte produse. Adaptează fluxul firmei; nu impune tuturor clienților structura unei echipe Symbai.
 
 ## Începe cu disponibilitatea reală
 
-Ghidul nu dovedește că tenantul a primit funcțiile. Verifică conexiunea nominală a firmei și caută prin `cauta_tool` configurarea CRM, calendarul sau trainingul. Citește schema live și folosește executorul indicat (`citeste_tool` pentru citiri, `ruleaza_tool` pentru modificări). Dacă există, începe cu `get_crm_configuration_guide(brandId)`. Reutilizează brandul și persoana deja verificate.
+Ghidul nu dovedește că tenantul a primit funcțiile. Verifică conexiunea nominală a firmei și caută prin `cauta_tool` configurarea CRM sau calendarul. Citește schema live și folosește executorul indicat (`citeste_tool` pentru citiri, `ruleaza_tool` pentru modificări). Dacă există, începe cu `get_crm_configuration_guide(brandId)`. Reutilizează brandul și persoana deja verificate.
 
 Dacă instrumentele lipsesc, verifică versiunea disponibilă, rolul și aria conexiunii. Nu inventa apeluri, nu înlocui cu instrumente legacy și nu modifica datele prin SQL pentru a ocoli un refuz. Poți continua operațiile disponibile și deschide pagina CRM prin `gaseste_in_aplicatie`. Actualizarea ghidurilor nu instalează funcțiile în tenant.
 
@@ -75,24 +75,13 @@ Staff poate trimite linkul de programare și linkul de plată al produselor sau 
 
 ## Cursuri online în Materiale
 
-Pentru cursuri cu lecții text/video, creare, editare, reordonare, publicare, ștergere și progres personal/al echipei folosește [Cursuri online în CRM](crm-cursuri-online.md). Instrumentele `list_crm_courses`, `create_crm_course` și editările punctuale de lecții sunt distincte de fișierele bibliotecii și de asistenții AI de mai jos. Verifică disponibilitatea live.
-
-## Academia: asistentul de training
-
-Academia este pentru instruirea și evaluarea oamenilor. Este distinctă de asistenții personali din grupuri (`asistent_creeaza`) și de agenții AI de vânzări către clienți. Dreptul de a edita agenți AI nu acordă dreptul de a administra probele oamenilor.
-
-1. Citește `get_crm_training_configuration`: configurația actuală, revizia, vocea și drepturile disponibile. Citește toate fragmentele de cunoștințe înainte de înlocuire; folosește `expectedRevision` pentru aceeași versiune.
-2. Stabilește produsul, clienții vizați, discovery, demonstrația, obiecțiile, limitele afirmațiilor comerciale și criteriul de promovare. Nu inventa prețuri, contracte sau promisiuni de implementare.
-3. Citește `list_crm_training_voices` și alege un ID real. `save_crm_training_configuration` salvează produsul, cunoștințele, vocea, pragul 1–10 și mediile demo HTTPS. Cere administrarea trainingului și dreptul de setări globale; simpla funcție de lider nu este suficientă pentru schimbarea produsului întregului brand.
-4. `list_crm_team_training` verifică persoanele și probele autorizate; `assign_crm_training` atribuie subiect, domeniu și termen cu fus orar. Liderii au acces numai la echipele conduse; supervizorii autorizați au aria mai largă permisă.
-5. Angajatul își citește atribuirea prin `list_crm_training` și își pregătește sesiunea cu `start_crm_training_session`, legând `assignmentId` când este cazul. Linkul întors duce în Academia; selectează brandul și continuă sesiunea pregătită din istoric. Pregătirea nu înseamnă că microfonul sau apelul au pornit.
-6. `get_crm_training_session` citește rezultatul și dovezile permise. Nu inventa o notă și nu considera o sesiune incompletă drept probă promovată.
+Pentru cursuri cu lecții text/video, creare, editare, reordonare, publicare, ștergere și progres personal/al echipei folosește [Cursuri online în CRM](crm-cursuri-online.md). Instrumentele `list_crm_courses`, `create_crm_course` și editările punctuale de lecții sunt distincte de fișierele bibliotecii. Academia de training (probe, prag de promovare, voce) a fost retrasă: instruirea echipei se face cu aceste cursuri. Verifică disponibilitatea live.
 
 ## Citire completă și reluare sigură
 
-Urmează `pagination.nextArguments`, inclusiv `pageToken` pentru voci și `employeeCursor` pentru loturile mari de angajați. Lista de echipe este un sumar; citește membrii prin instrumentul indicat, inclusiv `list_crm_workspace_team_members` pentru echipe vizibile liderului. Cardul individual paginează colaboratorii și trimite către directorul separat de personal.
+Urmează `pagination.nextArguments`, inclusiv `employeeCursor` pentru loturile mari de angajați. Lista de echipe este un sumar; citește membrii prin instrumentul indicat, inclusiv `list_crm_workspace_team_members` pentru echipe vizibile liderului. Cardul individual paginează colaboratorii și trimite către directorul separat de personal.
 
-Pentru configurații calendar/fișiere: citește până la `nextOffset:null`, concatenează `content` în ordine, decodează base64 o singură dată și verifică `sha256`. La continuare transmite `expectedSha256` din primul fragment. Dacă versiunea diferă, reîncepe citirea; nu amesteca fragmentele. La training continuă cu `nextTextOffset` și aceeași revizie. Respectă `complete:false`: unele surse au limite de istoric, sarcini sau evenimente; o listă parțială nu dovedește absența datelor.
+Pentru configurații calendar/fișiere: citește până la `nextOffset:null`, concatenează `content` în ordine, decodează base64 o singură dată și verifică `sha256`. La continuare transmite `expectedSha256` din primul fragment. Dacă versiunea diferă, reîncepe citirea; nu amesteca fragmentele. Respectă `complete:false`: unele surse au limite de istoric, sarcini sau evenimente; o listă parțială nu dovedește absența datelor.
 
 Fiecare modificare folosește un **`operationId` UUID stabil**. Repetarea exactă nu dublează efectul; alte argumente cu același UUID sunt refuzate. Un rezultat incert cere verificarea stării înainte de altă intenție; nu schimba UUID-ul pentru a forța repetarea. Dacă schema cere UUID și în configurația întâlnirii/sesiunii, folosește aceeași valoare. Pentru conflicte de revizie recitește și îmbină schimbarea cerută, fără suprascriere oarbă.
 

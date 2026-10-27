@@ -118,7 +118,7 @@ Modificări, anulări și refaceri: citește [Corectarea recepțiilor prin MCP](
 | „De ce nu apar în Google?" | `audit_website_seo`, `get_seo_provider_status` | skill `optimizeaza-seo` |
 | „Magazinul online are probleme" | `audit_shop_health` | skill `construieste-website` |
 | „Prezentarea iese plată" | `check_presentation_health` | skill `construieste-prezentare` |
-| „Chatul de pe site / recepționerul nu răspunde" | `get_agent_publish_status`, `diagnose_voice_agent` | skill `creeaza-agent-client` |
+| „Chatul de pe site / recepționerul nu răspunde" | — (funcție retrasă) | skill `creeaza-agent-client`; pe WhatsApp → `monitorizeaza-whatsapp` |
 | „Copierea site-ului s-a oprit?" | `get_clone_crawl_status` | skill `copiaza-website` |
 
 ## Personal, roluri, beneficii, conformitate

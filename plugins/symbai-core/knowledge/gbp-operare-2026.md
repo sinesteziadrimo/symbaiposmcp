@@ -48,7 +48,7 @@ Profilul de Google (Google Business Profile / fisa de pe Google Maps) este in 20
 2. Repara lipsurile la sursa: `update_company` / `update_location` / `update_brand`. `[marketing]`/`[setari]`
 3. Revendica si optimizeaza GBP + **Bing Places** (sursa ChatGPT) + Apple Business — manual, prin extensia Chrome — cu NAP identic la litera. (Bing/Apple se fac **din aplicatie/din browser**, nu exista tool MCP dedicat.)
 4. Tine recenziile si postarile bogate (AI-ul raspunde din ele) si pune informatii reale pre-vizita pe site ca FAQ.
-5. Lunar: ruleaza un panel fix de 15-20 intrebari-client prin ChatGPT/Perplexity/Gemini (din Chrome) + `seo_web_research` pentru audit concurenta; noteaza cota de citare si share-of-voice fata de concurentii locali numiti.
+5. Lunar: ruleaza un panel fix de 15-20 intrebari-client prin ChatGPT/Perplexity/Gemini (din Chrome) + cauti tu pe web (cu surse) cum apar concurentii; noteaza cota de citare si share-of-voice fata de concurentii locali numiti.
 
 ## Tool-uri MCP utile
 

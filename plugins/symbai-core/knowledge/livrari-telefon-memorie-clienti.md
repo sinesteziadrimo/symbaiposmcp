@@ -6,7 +6,7 @@
 
 Symbai ține minte fiecare client de livrare după numărul de telefon. Intră în memorie comenzile de pe site, cele de pe platforma proprie și cele notate la telefon. Când clientul sună din nou, operatorul îi vede numele, adresele la care i s-a livrat, ultima comandă și comanda în curs. Poate nota comanda din câteva atingeri.
 
-Pentru o franciză cu **un singur număr de telefon și un singur site** (o piață de livrări cu mai multe firme, de exemplu Zon Lime și Datozo pe piața „zone”), comanda luată la telefon se notează **pe site-ul pieței, în mod dispecer**. Rutarea pieței alege restaurantul după adresă, ca la o comandă pusă de client.
+Pentru o franciză cu **un singur număr de telefon și un singur site** (o piață de livrări cu mai multe firme, de exemplu două firme pe aceeași piață), comanda luată la telefon se notează **pe site-ul pieței, în mod dispecer**. Rutarea pieței alege restaurantul după adresă, ca la o comandă pusă de client.
 
 ## Memoria clientului
 

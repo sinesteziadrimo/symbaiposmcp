@@ -72,15 +72,15 @@ bulk_assign_tag(tagId: 12, brandId: 1, categoryPath: "Bar > Cocktails > Fara Alc
 
 **După fiecare scriere, confirmă printr-o CITIRE** (`list_tag_summary`, `search_products_db(tagNames:[...])`), nu prin interfață: UI-ul are cache în browser și arată datele noi abia după refresh. Nu repeta scrierea, nu raporta bug. **Pentru spot-check pe produse folosește `search_products_db`, NU `get_product_details`** — acesta din urmă întoarce un vector de embedding uriaș care umple contextul degeaba.
 
-## Ce se face DOAR din aplicație
+## Rutarea, ștergerea și ce rămâne în aplicație
 
-- **Legarea etichetă → imprimantă / ecran de bucătărie** (rutarea propriu-zisă) — nu există tool MCP pentru regulile de rutare. Se face în faza următoare de onboarding (imprimante + ecrane) sau direct în aplicație: cheamă `gaseste_in_aplicatie(intrebare: "rutare etichete către imprimante și ecrane bucătărie")` și dă utilizatorului linkul. Verificare după: nu poți citi regulile prin tool-urile standard — dacă tokenul are SQL read-only, găsește tabelele de reguli de rutare cu `list_database_tables` (caută după „routing") și interoghează-le; altfel cere utilizatorului un test real (o comandă de probă care iese la imprimanta corectă).
-- **Ștergerea unei etichete** — `delete_tag` NU e expus prin MCP (politica: fără ștergeri de entități întregi). Ghidează utilizatorul: `gaseste_in_aplicatie(intrebare: "pagina de etichete produse")`. Dacă scopul e doar „scoate eticheta de pe produse", NU e nevoie de ștergere — `bulk_remove_tag` rezolvă prin conexiune. Verifică după ce userul termină: `list_tags(brandId)`.
+- **Legarea etichetă → imprimantă / ecran de bucătărie** (rutarea propriu-zisă) se face prin conexiune (modul `setari`): `list_printers` + `list_kds_screens` (id-urile destinațiilor) → `set_tag_routing(tagId | tagName, printerId | printerName și/sau screenIds | screenNames, allZones:true | zoneIds:[...], locationId?)` — exact ce arată pagina Rutare Taguri, idempotent. Rutarea pe ZONĂ de sală (ce imprimante/ecrane primesc comenzile meselor dintr-o zonă) e `set_zone_routing(zoneId, ...)`. `create_tag_routing_rule` creează doar o regulă de rezervă la nivel de locație, invizibilă în pagină — nu e calea principală. Verificare: `list_tag_routing_rules(locationId)` + un bon de test real. De regulă vine în faza 04 (după ce imprimantele și ecranele există).
+- **Ștergerea unei etichete** — `delete_tag(tagId, confirm)` șterge tagul cu TOATE dependențele (asignări, reguli de rutare, rute către imprimante) — ireversibil; dacă tagul are rutare activă, fără `confirm:true` primești doar avertismentul. Cere acordul explicit al omului. Pentru „scoate tagul de pe produse” nu e nevoie de ștergere: `bulk_remove_tag`. Verifică după: `list_tags(brandId)`.
 - **Atribuirea vizuală** (tabel/wizard de bifat produse) — pagina de etichete din aplicație; alternativă pentru utilizatorii care preferă să vadă lista. Verifici apoi cu `list_tag_summary(brandId)`.
 
 ## Echivalentul în wizard-ul din aplicație
 
-Pasul **6** din `/onboarding` — „Etichete (Tags)" (panou explicativ + chat cu agentul „Sym Tag Master" + listă live de etichete). Etichetele create prin conexiunea ta apar acolo și în pagina de etichete a aplicației (după refresh), dar **progresul wizard-ului NU se bifează prin conexiune** — dacă utilizatorul folosește și wizard-ul, apasă singur „Următorul pas". Rutarea propriu-zisă apare la pasul 8 din wizard (imprimante + ecrane).
+Pasul **6** din `/onboarding/welcome` (pașii la `/onboarding/step/N`) — „Etichete (Tags)" (panou explicativ + chat cu agentul „Sym Tag Master" + listă live de etichete). Etichetele create prin conexiunea ta apar acolo și în pagina de etichete a aplicației (după refresh), dar **progresul wizard-ului NU se bifează prin conexiune** — dacă utilizatorul folosește și wizard-ul, apasă singur „Următorul pas". Rutarea propriu-zisă apare la pasul 8 din wizard (imprimante + ecrane).
 
 ## Verificare la final
 
@@ -92,7 +92,7 @@ Pasul **6** din `/onboarding` — „Etichete (Tags)" (panou explicativ + chat c
 
 ## Capcane
 
-- **`search_products_for_tagging` EXISTĂ prin MCP** (dry-run) — folosește-l înainte de orice scriere în masă ca să vezi numărul real de produse. (Doar `delete_tag` lipsește prin MCP — ștergerea tagului gol se face din aplicație.)
+- **`search_products_for_tagging` EXISTĂ prin MCP** (dry-run) — folosește-l înainte de orice scriere în masă ca să vezi numărul real de produse. (Ștergerea unui tag: `delete_tag(tagId, confirm)`, ireversibilă, după acordul omului.)
 - **`list_menu_categories.productCount` over-numără** — numără articole de meniu, deci un produs aflat în 2 meniuri e numărat de 2 ori. Numărul REAL de produse distincte care vor fi etichetate îl dă `search_products_for_tagging`, nu suma category counts (exemplu: o ramură care arată 36 după category counts poate avea doar 31 de produse distincte).
 - **`get_product_details` umple contextul** — întoarce un vector de embedding cu sute de numere. Pentru verificarea tagurilor folosește `search_products_db(tagNames:[...])` (câmp `tags` curat).
 - **`categoryPath` acceptă `›`, `>` sau `/`** — poți lipi direct path-ul exact cum îl întoarce `list_menu_categories` (ex. `BAR › BERE › ARTIZANALA`).

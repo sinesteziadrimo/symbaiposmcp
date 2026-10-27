@@ -60,7 +60,7 @@ Componentele trebuie să fie **distincte** — același produs nu poate fi și �
 1. Creează produsul LTO din meniu (vezi skill-ul `adauga-produs-reteta`) sau alege unul existent.
 2. `preview_offer_margin` — prețuiește-l ca să iasă pe profit.
 3. `create_offer(name, type:'fixed' sau 'buy_x_get_y', value, channels, startsAt:'2026-02-01T00:00:00Z', expiresAt:'2026-02-14T23:59:59Z')` — fereastra de 2 săptămâni se aprinde și se stinge singură.
-4. `create_website_promotion(name, targetUrl, title, startsAt, endsAt aliniate cu oferta)` ca să o anunți vizual + `push_notify_customers` / `marketing_generate_post` pentru anunț.
+4. `create_website_promotion(name, targetUrl, title, startsAt, endsAt aliniate cu oferta)` ca să o anunți vizual + `push_notify_customers` / `schedule_social_post` pentru anunț.
 5. La final: `get_offer_scorecard` → raportezi lift-ul; oferta a expirat deja singură.
 
 ### 3. Add-on / upgrade care crește profitul `[marketing]`
@@ -84,7 +84,7 @@ Componentele trebuie să fie **distincte** — același produs nu poate fi și �
 
 ### 6. Pasaj trimestrial de menu engineering (promovează, nu tăia) `[citire]` + `[marketing]`
 1. `get_menu_engineering(brandId)` pe ultimele 30–90 zile.
-2. 🧩 **Ghicitori** (marjă mare, vânzări mici): repoziționează sus în categorie + rescrie descrierea (`generate_product_description`) — operatorii raportează +20–35% vânzări în prima lună DOAR din repoziționare; NU le scoate.
+2. 🧩 **Ghicitori** (marjă mare, vânzări mici): repoziționează sus în categorie + rescrie descrierea (o scrii tu, salvezi cu `set_product_seo`) — operatorii raportează +20–35% vânzări în prima lună DOAR din repoziționare; NU le scoate.
 3. 🐎 **Cai de povară** (vânzări mari, marjă mică): nudge mic de preț + atașează o garnitură cu marjă mare (`set_product_recommendations`), nu le pune pe reducere.
 4. ⭐ **Vedete**: protejează, nume cu poveste, NU le da niciodată discount.
 5. 🐕 **De reconsiderat**: scoate-le (`set_product_86`) sau reinventează-le; niciodată pe promoție.
@@ -104,7 +104,7 @@ Componentele trebuie să fie **distincte** — același produs nu poate fi și �
 - `get_menu_engineering(brandId, menuId)` `[citire]` — cele 4 cadrane (Vedete / Cai de povară / Ghicitori / De reconsiderat) cu marja pe produs; baza deciziei „pe ce împing, pe ce nu".
 - `get_free_shipping_suggestions(supplierId, currentTotal)` `[citire]` — cât mai lipsește până la pragul de livrare gratuită.
 - `get_sales_analytics` / `raport_vanzari` / `top_produse` `[citire]` — măsoară nota medie și efectul înainte/după.
-- `push_notify_customers`, `send_email_campaign`, `marketing_generate_post` `[marketing]` — anunță oferta. Toate trimit/cheltuie real → `confirm:true` + confirmarea explicită a proprietarului.
+- `push_notify_customers`, `send_email_campaign`, `schedule_social_post` `[marketing]` — anunță oferta. Push-ul și emailul trimit real → `confirm:true` + confirmarea explicită a proprietarului; postarea intră „în așteptare aprobare”.
 - `check_marketing_allowed` / `comms_get_status` `[citire]` — verifică permisiunile și consimțământul înainte de orice trimitere în masă.
 
 ## Întrebări frecvente și capcane

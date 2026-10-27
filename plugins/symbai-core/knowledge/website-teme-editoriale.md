@@ -24,7 +24,7 @@ Tema `magazin_jucarii_premium` are o deschidere `bento-hero`: o imagine principa
 
 ## Personalizare prin editor sau MCP
 
-Citește `list_websites(brandId)` și identifică website-ul exact, apoi `get_website_page` pentru pagina curentă. Pentru o ajustare, păstrează componentele existente și modifică numai configurația vizată prin instrumentul disponibil. `set_website_page_content` înlocuiește lista de componente a paginii: citește și păstrează restul listei. `add_website_section` adaugă o secțiune. Nu reaplica întreaga temă pentru a schimba un font sau o fotografie; înlocuirea unei teme existente trebuie să fie autorizată.
+Citește `list_websites(brandId)` și identifică website-ul exact, apoi `preview_public_page(path, device)` ca să vezi pagina curentă. Pentru o ajustare, păstrează componentele existente și modifică numai configurația vizată prin instrumentul disponibil. `set_website_page_content` înlocuiește lista de componente a paginii: citește și păstrează restul listei. `add_website_section` adaugă o secțiune. Nu reaplica întreaga temă pentru a schimba un font sau o fotografie; înlocuirea unei teme existente trebuie să fie autorizată.
 
 Configurație exemplu pentru o secțiune `hero-slider`:
 

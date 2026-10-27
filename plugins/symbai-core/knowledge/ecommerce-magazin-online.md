@@ -19,21 +19,21 @@ Modulul de magazin online acoperă vânzarea de produse pe site-ul propriu și p
 ## Pagini
 
 - **Comenzi magazin** (`/ecommerce/orders`) — comenzile online: status, procesare, expediere.
-- **Produse & Variante** (`/ecommerce/variants`), **Colecții** (`/ecommerce/collections`).
+- **Produse & Variante** (`/ecommerce/variants`), cu tab-urile Pachete, **Colecții** (`/ecommerce/variants?tab=collections`) și Feed-uri.
 - **Feed-uri** (`/ecommerce/feeds`) — generare/preview feed-uri pentru Google/Facebook.
-- **Coduri de reducere** (`/ecommerce/discount-codes`).
+- **Coduri de reducere** (`/ecommerce/auto-discounts?tab=codes`); reducerile automate în tab-ul „automatic” al aceleiași pagini.
 - **Retururi (RMA)** (`/ecommerce/returns`) — cereri, KPI (rată retur, total rambursat, top motive), politici.
 - **Antifraudă** (`/ecommerce/fraud`), **Livrare** (`/ecommerce/shipping`), **AWB** (`/ecommerce/awb`).
 - **Marketplace-uri** (`/ecommerce/marketplaces`) — vedere unificată eMAG/Trendyol/Amazon: dashboard, conturi, comenzi, mapare oferte, jurnal sincronizare.
 - **Recenzii produse** (`/ecommerce/reviews`) — vezi ghidul „Recenzii & reputație".
-- **Setări magazin** (`/ecommerce/settings`).
+- **Setări magazin** — prin conexiune: `get_ecommerce_settings` / `update_ecommerce_settings`; site-urile în `/ecommerce/websites`.
 
 ## Fluxuri pas-cu-pas
 
 1. **Adaugi variante la un produs**: /ecommerce/variants → definești atributele (mărime/culoare) → preț/stoc per variantă. (Citire: `list_product_variants`.)
-2. **Faci o colecție**: /ecommerce/collections → nume + produse incluse → o folosești pe site/în campanii. (Citire: `list_product_collections`.)
+2. **Faci o colecție**: prin conexiune `create_product_collection(brandId, name, productIds | codes | productBrand | menuCategoryId | search, type?)` (manuală sau `type:"smart"` cu reguli); în aplicație: `/ecommerce/variants?tab=collections`. (Citire: `list_product_collections`.)
 3. **Generezi un feed pentru Google/Facebook**: /ecommerce/feeds → alegi platforma → `preview_product_feed` (verifici că produsele au imagini/descrieri/preț) → `generate_product_feed` → publici. (Citire: `list_product_feeds`.)
-4. **Creezi un cod de reducere**: /ecommerce/discount-codes → tip (procent/sumă/transport gratuit) + condiții (minim, dată, clienți). (Citire: `list_discount_codes`.) Pentru reducerile care chiar scad nota la POS/website, vezi și „Motorul de oferte" din ghidul de produse/meniu.
+4. **Creezi un cod de reducere**: prin conexiune `create_discount_code(code, type: percentage|fixed|free_shipping, value, minOrderAmount?, maxDiscountAmount?, usageLimit?, expiresAt?, brandId?)`; în aplicație: `/ecommerce/auto-discounts?tab=codes`. (Citire: `list_discount_codes`.) Pentru reducerile care chiar scad nota la POS/website, vezi și „Motorul de oferte" din ghidul de produse/meniu.
 5. **Procesezi o comandă online**: citești comanda (`list_ecommerce_orders`, `get_ecommerce_order`), pregătești produsele în `/ecommerce/picking`, ambalezi, emiți AWB-ul și confirmi predarea fizică. Urmărești apoi livrarea; simpla emitere a AWB-ului nu înseamnă livrare. Vezi [depozit, colete și predare](depozit-colete-predare.md) și [configurarea GLS](gls-magazin-online.md).
 6. **Tratezi un retur (RMA)**: /ecommerce/returns → verifici eligibilitatea (`check_rma_eligibility`) → aprobi → primești produsul → inspectezi → rambursare + restock sau rebut. (Citire: `list_rma_requests`, `get_rma_details`, `get_rma_kpi_summary`.)
 7. **Vinzi pe eMAG**: /ecommerce/marketplaces → conectezi contul → mapezi ofertele (produs Symbai ↔ ofertă eMAG) → comenzile vin în Symbai. (Citire: `get_emag_dashboard`, `list_emag_offers`, `list_emag_orders`.)

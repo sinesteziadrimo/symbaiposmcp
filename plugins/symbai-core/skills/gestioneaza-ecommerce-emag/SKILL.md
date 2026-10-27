@@ -25,12 +25,12 @@ Citește mereu cu un tool ÎNAINTE de a scrie. Numele de mai jos sunt tool-urile
 | „ce conține comanda X / statusul ei" | `get_ecommerce_order(id)` | `/ecommerce/orders` |
 | „pune AWB-ul / numărul de tracking pe comandă" | `set_ecommerce_order_tracking(id, trackingNumber, trackingUrl?)` | `/ecommerce/orders` |
 | „marcheaz-o expediată / livrată / anulată" ⚠ EXTERN | `update_ecommerce_order_status(id, status, confirm:true)` | `/ecommerce/orders` |
-| „adaugă cod de reducere VARA10 / −10%" | `create_discount_code(code, type, value, …)` | `/ecommerce/discount-codes` |
-| „dezactivează / modifică un cod" | `update_discount_code(id, …)` | `/ecommerce/discount-codes` |
-| „ce coduri de reducere am" | `list_discount_codes` | `/ecommerce/discount-codes` |
+| „adaugă cod de reducere VARA10 / −10%" | `create_discount_code(code, type, value, …)` | `/ecommerce/auto-discounts?tab=codes` |
+| „dezactivează / modifică un cod" | `update_discount_code(id, …)` | `/ecommerce/auto-discounts?tab=codes` |
+| „ce coduri de reducere am" | `list_discount_codes` | `/ecommerce/auto-discounts?tab=codes` |
 | „variantele produsului X (mărimi/culori, stoc/preț)" | `list_product_variants(productId)` | `/ecommerce/variants` |
-| „ce colecții am pe site" | `list_product_collections` | `/ecommerce/variants` (catalog) |
-| „cum e configurat magazinul" | `get_ecommerce_settings` | `/ecommerce/settings` |
+| „ce colecții am pe site" | `list_product_collections` (creare: `create_product_collection`) | `/ecommerce/variants?tab=collections` |
+| „cum e configurat magazinul" | `get_ecommerce_settings` (scriere: `update_ecommerce_settings`) | `/ecommerce/websites` |
 | „ce feed-uri am / verifică feed-ul înainte să-l public" | `list_product_feeds`, apoi `preview_product_feed(id)` | `/ecommerce/feeds` |
 | „actualizează / regenerează feed-ul de produse" | `generate_product_feed(id)` | `/ecommerce/feeds` |
 | „ce retururi am / pe ce status" | `list_rma_requests` (filtre: `status`, `orderId`, `customerId`, interval) | `/ecommerce/returns?tab=list` |
@@ -43,7 +43,7 @@ Citește mereu cu un tool ÎNAINTE de a scrie. Numele de mai jos sunt tool-urile
 | „ce comenzi am pe eMAG" | `list_emag_orders(accountId?)` | `/ecommerce/marketplaces?tab=orders` |
 | „împinge prețurile/stocul pe eMAG" ⚠ EXTERN | `sync_emag_offers(accountId, confirm:true, productIds?/pushAll?)` | `/ecommerce/marketplaces?tab=offers` |
 | „adu comenzile noi de pe eMAG" ⚠ EXTERN | `sync_emag_orders(accountId, pages?)` | `/ecommerce/marketplaces?tab=orders` |
-| „ce preparat e în poza asta / leagă poza de meniu" | `interpret_menu_photo(imageUrl)` | (vezi skill-ul `adauga-produs-reteta`) |
+| „ce preparat e în poza asta / leagă poza de meniu" | o deschizi tu, compari cu `list_menu_items`, apoi `set_product_image(productId, imageUrl)`; în masă `bulk_set_product_images` | (vezi skill-ul `adauga-produs-reteta`) |
 
 **Deep-link sub-taburi** (parametrul `?tab=` supraviețuiește refresh-ului): Marketplace `?tab=dashboard|accounts|orders|offers|logs` · Retururi `?tab=list|kpi|policies` · AWB `?tab=generate|awbs|reconcile|accounts`. Pentru orice altă rută exactă (Antifraudă, Livrare/zone, Recenzii produse, Websites) cere `gaseste_in_aplicatie(...)`.
 
@@ -51,7 +51,7 @@ Citește mereu cu un tool ÎNAINTE de a scrie. Numele de mai jos sunt tool-urile
 
 **Procesezi o comandă online → o expediezi.** `list_ecommerce_orders(status:"processing")` (sau „paid") → `get_ecommerce_order(id)` ca să verifici articolele/adresa → pui AWB-ul cu `set_ecommerce_order_tracking(id, trackingNumber)` → **confirmi cu userul** → `update_ecommerce_order_status(id, "shipped", confirm:true)`. ⚠ La „shipped/delivered/cancelled" statusul se PROPAGĂ AUTOMAT la marketplace-urile conectate (eMAG/Skroutz); la prima trecere în „delivered" se trimite o INVITAȚIE DE RECENZIE clientului. De-asta cere `confirm:true` — spune-i userului exact ce se întâmplă înainte. (Generarea AWB-ului la curier se face din pagina `/ecommerce/awb?tab=generate` — vezi `livrari-comenzi-online.md`.)
 
-**Tratezi un retur (RMA).** `check_rma_eligibility(orderId)` (fereastra politicii + articole eligibile) → dacă userul vrea, vezi cererile cu `list_rma_requests(status:"pending")` + `get_rma_details(id)`. Aprobarea (`approve_rma`), respingerea (`reject_rma`) și mai ales **rambursarea** (`process_rma_refund` — MUTĂ BANI REALI, cere `confirm:true` + modulul „Plăți Terminal") sunt acțiuni cu efecte; condu-le doar la cererea explicită a userului și confirmă suma. Pentru KPI: `get_rma_kpi_summary` (rată retur, total rambursat, restocare).
+**Tratezi un retur (RMA).** Ce e de făcut azi: `list_returns_needing_action(brandId?)` (pe pasul următor). Pentru o comandă: `check_rma_eligibility(orderId)` (fereastra politicii + articole eligibile) → dacă userul vrea, vezi cererile cu `list_rma_requests(status:"pending")` + `get_rma_details(id)`. Aprobarea (`approve_rma`) și respingerea (`reject_rma`, definitivă) sunt acțiuni cu efecte; condu-le doar la cererea explicită a userului. **Rambursarea** nu se face din conexiune: `process_rma_refund(id)` NU mută bani: verifică returul (inclusiv plafonul de rambursare al asistentului) și întoarce linkul spre ecranul Retururi (`/ecommerce/returns`), unde omul procesează efectiv rambursarea (Viva / transfer / manual / credit magazin); cere modulul „Plăți Terminal”. Pentru KPI: `get_rma_kpi_summary` (rată retur, total rambursat, restocare).
 
 **Verifici un feed înainte de reclame.** `list_product_feeds` → `preview_product_feed(id)` (câte produse, câte erori/avertismente — „de ce nu apare în Google Shopping" = de obicei lipsesc imagini/descrieri/preț) → repari produsele (skill `adauga-produs-reteta`) → `generate_product_feed(id)` regenerează fișierul public. ⚠ Feed-urile țin de modulul **Marketing & Social**, nu de „ecommerce".
 
@@ -64,7 +64,7 @@ Citește mereu cu un tool ÎNAINTE de a scrie. Numele de mai jos sunt tool-urile
 - **Politici de retur, antifraudă, zone/tarife de transport, websites/checkout** — config în pagină; tu citești cu `get_ecommerce_settings` și ghidezi.
 
 ## Reguli (cele care contează)
-- **Confirm-first la tot ce iese în afară.** `update_ecommerce_order_status` (push marketplace + invitație recenzie), `sync_emag_offers` (preț/stoc live pe eMAG), `sync_emag_orders` (pull eMAG), `process_rma_refund` (bani reali), `track_awb`/`cancel_awb` (apel la curier) — spune-i userului efectul, apoi rulează cu `confirm:true`. Nu presupune; aceste tool-uri refuză fără confirmare.
+- **Confirm-first la tot ce iese în afară.** `update_ecommerce_order_status` (push marketplace + invitație recenzie), `sync_emag_offers` (preț/stoc live pe eMAG), `sync_emag_orders` (pull eMAG), `track_awb`/`cancel_awb` (apel la curier) — spune-i userului efectul, apoi rulează cu `confirm:true`. Nu presupune; aceste tool-uri refuză fără confirmare.
 - **Citește înainte să scrii** — `get_ecommerce_order` / `get_rma_details` / `preview_product_feed` îți confirmă ce atingi. Nu opera pe orb.
 - **`productId` la variante = id-ul produsului** (variantele sunt per produs). `id` la comandă/retur/feed/cod = id-ul din lista respectivă (`list_*`). eMAG cere `accountId` doar dacă sunt mai multe conturi.
 - **Permisiuni (module pe token)**: citirile (`list_*`/`get_*`/`check_*`/`preview_*`) cer `readModule` al domeniului. Scrieri pe magazin (status comandă, AWB tracking, coduri) = modulul **ecommerce**. Sincronizări eMAG = modulul **emag**. Generare feed = modulul **Marketing & Social**. RMA approve/reject = modulul **Livrări**; rambursarea = **Plăți Terminal**. „Permisiune insuficientă" → portal Hub → Acces AI, activează modulul.

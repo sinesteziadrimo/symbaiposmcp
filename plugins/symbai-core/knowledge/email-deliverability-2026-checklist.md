@@ -58,14 +58,14 @@ Din 2026 livrabilitatea NU mai e un "nice to have" — Gmail, Yahoo și Microsof
 1. `get_email_analytics_overview` + `get_brand_email_reputation` [citire] — starea de plecare.
 2. `get_customer_email_segments` [citire] — identifici inactivii de 90–180 zile.
 3. Campanie de re-angajare "ne-a fost dor de tine" + sondaj/stimulent (`create_email_campaign`).
-4. După fereastră, non-responderii → `add_email_suppression({ email, reason:"unsubscribe", confirm:true })` (sunset).
+4. După fereastră, non-responderii → `add_email_suppression({ email, reason:"unsubscribe" })` (sunset) — scrie din primul apel, fără `confirm`: arată lista și cere acordul omului ÎNAINTE.
 5. Re-verifici reputația. Dacă bounce/plângeri erau ridicate, oprești creșterea volumului până se curăță.
 
 ### 4. Reacție la SPIKE de bounce sau plângeri (urgent)
 1. **Oprești imediat creșterea volumului** — nu mai trimite valuri noi mari.
 2. `get_email_account_health` + `get_brand_email_reputation` [citire] — cât de rău e și de ce.
 3. `list_email_logs` [citire] — vezi exact ce adrese au dat bounce dur / plângere / failed.
-4. `add_email_suppression` [marketing, confirm:true] — adaugi adresele cu hard bounce și pe cei care s-au plâns. Motiv: `complaint` sau `unsubscribe`.
+4. `add_email_suppression` [marketing; fără `confirm`, scrie din primul apel — acordul omului înainte] — adaugi adresele cu hard bounce și pe cei care s-au plâns. Motiv: `complaint` sau `unsubscribe`.
 5. `analyze_email_deliverability_plan` [citire] — refaci planul de igienă.
 6. Următorul val merge DOAR către contacte calde, în volum mic, până se stabilizează cifrele.
 
@@ -85,7 +85,7 @@ Sănătate, reputație, domeniu (toate [citire]):
 
 Listă de suprimare:
 - `get_email_suppression_list({ brandId, search?, limit?, offset? })` [citire] — cine nu mai primește emailuri și de ce (dezabonare / plângere / bounce dur / manual). Folosit pentru "de ce nu primește X emailurile".
-- `add_email_suppression({ email, reason?, detail?, brandId })` [marketing, confirm:true] — adaugi o adresă pe lista de suprimare. `reason`: `unsubscribe` / `complaint` / `manual` (default `manual`). Acțiune GDPR pozitivă, ireversibilă din UI.
+- `add_email_suppression({ email, reason?, detail?, brandId })` [marketing; fără `confirm` — se aplică din primul apel, deci acordul omului înainte] — adaugi o adresă pe lista de suprimare. `reason`: `unsubscribe` / `complaint` / `manual` (default `manual`). Acțiune GDPR pozitivă, ireversibilă din UI.
 
 Verificare conținut + plan livrabilitate (toate [citire], NU trimit):
 - `check_email_campaign_deliverability({ campaignId })` — scor rapid de spam pe o campanie: subiect agresiv, CTA lipsă, HTML prea mare, cuvinte riscante, personalizare slabă. Rulează ÎNAINTE de test-send.

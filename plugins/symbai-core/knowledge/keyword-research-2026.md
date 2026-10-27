@@ -50,10 +50,10 @@ Oamenii formulează prompturi („recomandă un restaurant romantic în [oraș] 
 1. **Vezi ce surse ai:** `get_seo_provider_status` (provider plătit de volume? Search Console conectat?). Fii onest cu clientul.
 2. **Cuvinte de la un seed:** `seo_keyword_research(seed)` — întoarce volum/dificultate dacă există provider plătit; altfel idei reale din Search Console + (cu `includeWeb=true`) teme din web. Spune clar care sursă.
 3. **Ce trafic ai deja:** `get_search_performance` (top interogări + pagini, cu poziție/CTR) — găsește „striking distance".
-4. **Documentare pe subiect/oraș:** `seo_web_research(query, jobType:"blog_research")` pentru întrebări și surse; `jobType:"trend_scan"` pentru tendințe.
-5. **Concurenți:** `add_seo_competitor` / `list_seo_competitors` / `suggest_seo_competitors`, plus `seo_web_research(jobType:"competitor_audit", competitors:[...])` ca să vezi ce acoperă ei.
+4. **Documentare pe subiect/oraș:** cercetezi tu pe web (căutare/Chrome) întrebările, sursele și tendințele; citezi linkurile.
+5. **Concurenți:** `add_seo_competitor` / `list_seo_competitors` / `suggest_seo_competitors`, plus citești tu site-urile și SERP-ul lor ca să vezi ce acoperă.
 6. **Pune pe urmărire:** `track_seo_keyword` (cele bune, cu `targetPosition`, `intent`, `associatedPostId`), apoi `run_rank_tracker` ca să măsori pozițiile (necesită provider SERP).
-7. **Plan de articol:** `generate_content_brief(postId)` după ce ai o ciornă cu titlul + cuvântul-cheie.
+7. **Plan de articol:** `get_content_brief(postId)` dacă ciorna are un brief salvat; altfel scrii tu planul (H2/H3, FAQ, LSI) din SERP.
 
 ## Competitor gap (+ gap de vizibilitate AI)
 

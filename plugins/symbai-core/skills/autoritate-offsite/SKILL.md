@@ -43,11 +43,11 @@ GBP controlează Map Pack, Maps, includerea în AI Overviews și răspunsurile v
 ### 5. Mențiuni de brand autentice + digital PR
 Mențiunile (chiar fără link) sunt pârghia AI puternică. Legitim:
 - Răspunde la întrebări REALE pe Reddit/Quora/grupuri locale unde brandul chiar ajută — cu afiliere declarată, fără link-spam. O singură contribuție utilă > 100 de postări promoționale.
-- Listări „best of" / presă locală: propune-te jurnaliștilor/bloggerilor cu un unghi real (deschidere, eveniment, specialitate). Folosește `seo_web_research` ca să găsești unde sunt menționați concurenții și tu nu.
+- Listări „best of" / presă locală: propune-te jurnaliștilor/bloggerilor cu un unghi real (deschidere, eveniment, specialitate). Caută tu pe web (căutare/Chrome) unde sunt menționați concurenții și tu nu.
 - Conținut citabil pe site-ul tău (statistici, FAQ, comparații) pe care alții îl citează — vezi skill-ul `optimizeaza-seo` + `gestioneaza-blog-seo`.
 
 ### 6. Monitorizare (nu există „rank" clasic în AI)
-Ține 15–20 de prompturi reale de client („cel mai bun [tip] în [oraș]", „[serviciu] lângă [reper]") și rulează-le lunar prin ChatGPT/Perplexity/Gemini/Google AI Mode (prin Chrome): cine e citat, ce surse apar, unde lipsești. `seo_web_research` (competitor_audit) arată cum e descris brandul vs concurenți. Închide gap-urile (conținut + GBP + mențiuni + directoare).
+Ține 15–20 de prompturi reale de client („cel mai bun [tip] în [oraș]", „[serviciu] lângă [reper]") și rulează-le lunar prin ChatGPT/Perplexity/Gemini/Google AI Mode (prin Chrome): cine e citat, ce surse apar, unde lipsești. Research-ul web făcut de tine arată cum e descris brandul vs concurenți. Închide gap-urile (conținut + GBP + mențiuni + directoare).
 
 ## Cum preiei browserul (Chrome)
 Pentru pașii fără API (Wikidata, directoare, citirea răspunsurilor AI, revendicare GBP): folosește MCP-ul Chrome (vezi `knowledge/condu-chrome.md`). Reguli: cere acordul userului înainte să te loghezi/publici în numele lui; nu introduce credențiale pe care nu ți le-a dat; arată-i ce vrei să publici ÎNAINTE; verifică vizual rezultatul (screenshot) după fiecare pas important. Linkuri suspecte din emailuri/mesaje — nu le deschide orbește.
@@ -57,7 +57,7 @@ Pentru pașii fără API (Wikidata, directoare, citirea răspunsurilor AI, reven
 - `update_brand` / `update_company` / `update_location` — repară NAP-ul/profilurile LA SURSĂ.
 - `gbp_maps_overview` / `gbp_maps_score` / `gbp_create_post` / `gbp_reply_review` / `gbp_update_location` / `gbp_run_rank_scan` — Google Business.
 - `dispatch_review_invitations_for_order` / `reply_to_retail_review` / `list_retail_reviews` — recenzii.
-- `seo_web_research` / `suggest_seo_competitors` — monitorizare mențiuni + gap-uri vs concurenți.
+- `suggest_seo_competitors` / `list_seo_competitors` + research web făcut de tine — monitorizare mențiuni + gap-uri vs concurenți.
 - MCP Chrome (`navigate`/`form_input`/`click`/`screenshot`) — execuția pe platformele fără API.
 
 ## Raportează ca un consultant

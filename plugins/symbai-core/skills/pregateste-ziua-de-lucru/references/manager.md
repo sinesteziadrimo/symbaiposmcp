@@ -2,11 +2,12 @@
 
 Folosește [briefing-business](../../briefing-business/SKILL.md) pentru sursele potrivite activității. Nu cere de fiecare dată toate rapoartele: pornește de la obiectiv și extinde citirea când apare o abatere care trebuie explicată.
 
-## Cele trei întrebări
+## Cele patru întrebări
 
 1. **Cum am performat?** O perioadă încheiată comparabilă, aceeași arie și aceeași definiție a indicatorului. Distinge vânzări, încasări, profit calculat și venit atribuit unei campanii. Nu deduce profitul din încasări și nu agrega de două ori utilizatori sau clienți deduplicați.
 2. **Ce ne poate opri azi sau în următoarele 7 zile?** Comenzi/livrări, materiale, capacitate, personal și documente în așteptare, numai unde firma folosește aceste fluxuri.
-3. **Ce decizie este necesară?** Opțiuni sprijinite de date, efect asupra termenului, cost cunoscut și ce rămâne incert. O recomandare comercială nu înseamnă aplicare automată.
+3. **Ce așteaptă aprobarea mea?** Cereri din POS, plăți marcate manual, retururi, mișcări de casă, ture rămase deschise — skill-ul [ce-am-de-aprobat](../../ce-am-de-aprobat/SKILL.md). Beneficiile de masă ale personalului: `get_staff_benefit_usage_summary(date)`.
+4. **Ce decizie este necesară?** Opțiuni sprijinite de date, efect asupra termenului, cost cunoscut și ce rămâne incert. O recomandare comercială nu înseamnă aplicare automată.
 
 La o fabrică, descoperă `get_factory_dashboard` pentru situația operațională, apoi `get_factory_forecast_plan` pentru cererea autoritară în gestiunea verificată; folosește referința [producție](productie.md) când trebuie verificat un termen. Într-un restaurant fără producție industrială, pornește de la `raport_vanzari` pentru perioada încheiată și `get_reservations_overview` pentru serviciul următor, apoi verifică stocul și aprovizionarea unde apar riscuri; nu cere configurarea unei fabrici pentru a pregăti ziua. Hotelul folosește sosiri, plecări și stări reale ale camerelor. Caută separat aceste nume, verifică schema live și limitează fiecare citire la aria permisă; niciun rezumat inițial nu dovedește singur că au fost verificate toate blocajele. Un raport de vânzări nu înlocuiește închiderea de zi: pentru aceasta descoperă separat `get_end_of_day_report`, iar dacă nu este disponibil păstrează verificarea închiderii ca neefectuată.
 

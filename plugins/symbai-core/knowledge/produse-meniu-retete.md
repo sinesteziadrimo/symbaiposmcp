@@ -36,8 +36,8 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 
 **Meniu și afișare**
 - **Meniu** (`/menu`) — pagina clasică „Meniu & Dispozitive POS" cu 5 taburi: Prețuri Meniu, Platforme, Configurare Afișaj (POS/Web), Meniu Fizic, Oferte & Promoții. Vechea adresă /menu-engineering redirectează aici.
-- **Produse Meniu** (`/menu/pricing`) — prețurile de vânzare ale articolelor din meniu: adaugi produse/pachete în meniu, editezi prețuri, filtrezi pe tip/tag/sursă de cost. Butoane: „Adaugă poze bulk" și „Prețuri Meniu Nou" (duce la /ai-pricing — clasificare în 4 cadrane Vedete/Cai de povară/Ghicitori/De reconsiderat + recomandări de preț + „Pregătește meniu nou" = copie de lucru a meniului).
-- **Poze Bulk Meniu** (`/menu/pricing/bulk-photos`) — urci multe poze deodată (drag & drop), AI sugerează automat produsul potrivit din meniu pentru fiecare poză; tu confirmi sau schimbi.
+- **Produse Meniu** (`/menu/pricing`) — prețurile de vânzare ale articolelor din meniu: adaugi produse/pachete în meniu, editezi prețuri, filtrezi pe tip/tag/sursă de cost. Clasificarea pe cele 4 cadrane (Vedete/Cai de povară/Puzzle/Câini) e în raportul P&L (`/reports/pnl`, secțiunea Menu Engineering) și prin conexiune cu `get_menu_engineering`.
+- **Poze pe produse** — pagina de poze în masă nu mai există. Prin conexiune: `set_product_image` (URL public pe un produs anume); pentru un fișier local: `get_menu_photo_context` → `prepare_menu_photo_upload` → transfer → `attach_generated_menu_photo`; verificare cu `view_menu_photo`.
 - **Platforme** (`/menu/platforms`) — ce meniu se vede pe fiecare canal de vânzare: Mod Kiosk, POS Ospătar, POS Mobil, POS Bar, POS (retail — vânzare rapidă), Comenzi Client și Platforma Clienți Web; per canal alegi meniurile-sursă și poți exclude categorii sau produse. Pentru prețuri diferite pe o platformă de livrare (Glovo/Wolt) creezi un meniu separat cu prețurile acelei platforme; conectarea efectivă a canalelor de livrare se face în modulul Livrări.
 - **Configurare Afișaj** (`/menu/display`) — cum arată meniul pe fiecare din cele 8 profile: POS Ospătar, POS Mobil, POS Bar, POS (retail), Kiosk Client, Website/Online, Platforma Clienți Web și Table — Clienți (meniul QR scanat la masă). Teme, mărimi carduri și navigarea categoriilor: plată, pe 2 niveluri sau drill-down.
 - **Meniu Fizic** (`/menu/physical`) — editor full-screen de meniu printabil (sidebar-ul aplicației se ascunde): formate A4/A3, paginare automată cu „Recalculează", copertă + pagini speciale, pagini finale cu valori nutriționale și alergeni, stiluri pe 3 niveluri (meniu → pagină → produs), export PDF/print; QR-ul de pe copertă e un QR dinamic editabil ulterior.
@@ -59,14 +59,14 @@ Modulul acoperă tot ce se vinde și din ce se face: catalogul de produse, meniu
 - **Leagă Rețetarul** (`/recipe-mapping`) — import rețetar din Excel (coloane: Produse Finite, Porții, Ingrediente, UM, Cantitate): fiecare ingredient se mapează la un produs existent (potrivire exactă → similară → „Rezolvă cu AI"); conflictele de unitate de măsură BLOCHEAZĂ importul până le rezolvi; produse noi se creează doar pentru ce nu există.
 
 **Import**
-- **Import din Excel** (`/ai-bulk-import`) — „Sym Import": urci fișiere Excel (produse, prețuri, stocuri), AI mapează coloanele, pune întrebări de clarificare unde nu e sigur și are editare avansată înainte de import. Prin MCP, pentru Excel/CSV mic există același flux fără browser: `create_bulk_import_session_from_file` → întrebări → `import_bulk_session`.
-- **Meniu din PDF** (`/menu/import-pdf`) — urci un PDF cu meniul SAU poze/scanări: AI extrage produsele, prețurile, pozele și chiar designul paginilor (reconstruit pentru Meniu Fizic), cu propunere editabilă înainte de import; prețurile nu sunt niciodată inventate — doar ce există în document.
+- **Import din Excel/CSV** — paginile de import din fișier (`/ai-bulk-import`, `/data-import`) au fost retrase pe 25.09.2026. Prin conexiune: asistentul citește fișierul și creează produsele cu `bulk_create_products`, le pune în meniu cu preț prin `bulk_add_menu_items`, categoriile cu `bulk_create_menu_categories`; rețetarul cu `import_retetar` (dryRun întâi); catalogul unui furnizor cu `import_supplier_catalog_from_file`. Skill: `importa-date`.
+- **Meniu din PDF / poze** — pagina `/menu/import-pdf` a fost retrasă. Asistentul citește PDF-ul sau pozele, propune lista (produse, prețuri, categorii) și, după acordul omului, o creează prin aceleași unelte; prețurile vin doar din document, nu se inventează.
 
 **Pagini publice (văzute de clienți)**
 - **Meniu Public Portal** (`/portal/menu`) — meniul digital pe platforma clienților, cu căutare, filtre dietetice, alergeni și poze (ce se afișează e controlat din Configurare Afișaj + setările portalului).
 - **Meniu la Masă QR** (`/t/:codQR`, și `/table-menu/:codQR`) — pagina deschisă când clientul scanează QR-ul mesei; detectează automat dacă telefonul e pe rețeaua restaurantului și folosește serverul local pentru viteză, altfel rămâne pe cloud.
 
-**Conex**: „Sym Menu" (`/ai-menu`) — agent AI conversațional care creează sau editează meniul întreg pentru o unitate; „Prețuri Meniu Nou" (`/ai-pricing`) — analiza și recomandările de preț.
+**Conex**: agenții „Sym Menu” (`/ai-menu`) și „Prețuri Meniu Nou” (`/ai-pricing`) au fost retrași; meniul se construiește prin conexiune, iar analiza de preț e în `/reports/pnl` / `get_menu_engineering`.
 
 ## Cum citești costul din Produse Meniu
 
@@ -136,9 +136,9 @@ Pagina de administrare: **Meniul Zilei** (folosește `gaseste_in_aplicatie("meni
 3. Sugestiile greșite se pot respinge persistent (nu mai reapar).
 
 **Imporți meniul dintr-un PDF sau poze**
-1. /menu/import-pdf → urci PDF-ul sau pozele → AI analizează paginile.
-2. Verifici propunerea (produse, prețuri, categorii) și corectezi ce vrei.
-3. Imporți — produsele intră în catalog/meniu și designul e reconstruit în Meniu Fizic.
+1. Userul îți dă PDF-ul sau pozele; le citești și extragi produsele, prețurile și categoriile.
+2. Arăți propunerea și corectezi ce cere omul.
+3. După acord: `bulk_create_menu_categories` → `bulk_create_products` → `bulk_add_menu_items`; verifici cu `list_menu_items`.
 
 **Introduci băuturile de bar corect (marfă vs materie primă)**
 1. Uită-te ÎNTÂI cum ține clientul barul (caută 2-3 băuturi existente): marfă la bucată sau materie primă la litru cu rețete de porționare. Continuă stilul lui.
@@ -182,7 +182,7 @@ Pagina de administrare: **Meniul Zilei** (folosește `gaseste_in_aplicatie("meni
 **Scriere (cer modulul de permisiune `produse_meniu` pe token):**
 - `create_product`, `update_product`, `bulk_create_products`, `bulk_update_products`, `set_standard_costs` — catalog (prețul de vânzare NU se pune aici; `standardCost` este doar cost provizoriu pentru food cost până la recepții reale). La retail/import păstrează codurile sursă: `sku`, `barcode`, `ean` pe `create_product`/`bulk_create_products` și `update_product` unde trebuie corectate.
 - `create_menu`, `update_menu`, `add_menu_item`, `update_menu_item`, `bulk_update_menu_item_prices`, `apply_menu_prices`, `auto_create_menu_from_products` — meniuri și prețuri de vânzare.
-- `create_vat_rate`, `auto_assign_vat_batch` — TVA (clasificare automată cu AI).
+- `create_vat_rate`, `bulk_update_products` (`updates.vatRate`) — TVA.
 - `create_tag`, `update_tag`, `assign_tag`, `bulk_assign_tag`, `bulk_remove_tag`, `auto_tag_from_menu_categories` — etichete.
 - `create_allergen`, `set_product_allergens` — alergeni.
 
@@ -217,7 +217,7 @@ Pentru eliminare, caută operația exactă în catalogul live și citește schem
 **Rutarea taguri→imprimante/KDS merge acum și prin MCP** (modul `setari`): `list_tag_routing_rules` (vezi ce e configurat) → `set_tag_routing` (leagă tagul de ecrane KDS și/sau imprimantă, per zonă de sală — exact ce face pagina Rutare Taguri) / `create_tag_routing_rule` (regulă de rezervă la nivel de locație) / `delete_tag_routing`. Un tag NOU creat prin MCP tot nu rutează nicăieri până nu-i setezi rutarea (cu tool-urile de mai sus sau din pagină) — preferă tagurile EXISTENTE ale clientului.
 
 **⚠ Ce rămâne DOAR din aplicație (nu prin MCP):**
-- **Pozele în masă cu potrivire automată**: dacă ai zeci de poze fără să știi exact ce produs e fiecare, pagina Poze Bulk Meniu (`/menu/pricing/bulk-photos`) le potrivește cu AI. Prin MCP pui poza pe un produs anume cu `set_product_image` (când ai URL-ul și produsul).
+- **Pozele în masă cu potrivire automată** nu mai au pagină: potrivești tu fiecare poză cu produsul (o vezi, compari cu `list_menu_items`) și o pui cu `set_product_image` sau, pentru un fișier local, `get_menu_photo_context` → `prepare_menu_photo_upload` → `attach_generated_menu_photo`.
 - **Autopilot / Win-Back Radar / Surprize** din pagina Oferte: din aplicație. Pentru ștergeri verifică operația exactă în catalogul live; nu generaliza o limită veche la toate entitățile.
 
 **⚠ Capcane de tool-uri:**

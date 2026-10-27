@@ -35,7 +35,7 @@ la produs.
 **b) PO de retailer generat din SAP** (Mega Image, Auchan). Are codul articolului LA CLIENT
 („Cod material"), EAN-ul, uneori și codul tău („Cod Material Furnizor"), plus cantitatea în
 cartoane și factorul explicit: `28 CV 28 x 8 EA` = 28 de cartoane a câte 8 bucăți. Denumirile sunt
-tăiate de sistem: `ARCA FRESH ECLER CR AR VANILIE2X90G`.
+tăiate de sistem: `PRODUS EXEMPLU VANILIE 2X90G`.
 
 **c) EDI ORDERS** (Carrefour prin DocProcess, Penny, Lidl). Are GLN-uri (pentru firmă și pentru
 punctul de livrare), EAN pe fiecare linie, cantitate în bucăți ȘI număr de baxuri ȘI unități/bax,

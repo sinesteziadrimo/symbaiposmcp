@@ -31,7 +31,7 @@ Dacă tipul paginii ≠ formatul dominant din SERP, **nu rankezi**, oricât de b
 - Schema Product + Offer (preț, disponibilitate, stare) — pe Symbai se generează automat la SSR. Din iulie 2026 Google recunoaște oficial și **categoria produsului** în aceste date — ține categoria corect setată pe fiecare produs.
 - **Reducerile cer perioadă declarată**: Google validează prețul redus doar dacă oferta are dată de început/sfârșit; o reducere „permanentă", fără interval, poate fi ignorată în rezultatele de cumpărături. Definește promoțiile cu perioadă, nu tăind prețul pe termen nelimitat.
 - Recenzii pe pagină (stele eligibile DOAR din recenzii reale de produs), FAQ, produse înrudite.
-- **Tool-uri**: `bulk_optimize_product_seo` (descrieri+slug la scară), `set_product_seo` (titlu/meta/slug per produs), `audit_website_seo` (vezi golurile).
+- **Tool-uri**: `bulk_optimize_product_seo` (doar slug-uri, cu dryRun), `set_product_seo` (titlu/meta/slug per produs), `audit_website_seo` (vezi golurile).
 
 ### Pagina de CATEGORIE (PLP)
 - **Text intro** (50-150 cuvinte deasupra grilei) cu cuvântul-cheie: ce găsește clientul aici, de ce de la tine. Opțional text mai amplu sub grilă (200-400 cuvinte).
@@ -40,7 +40,7 @@ Dacă tipul paginii ≠ formatul dominant din SERP, **nu rankezi**, oricât de b
 - **Tool**: `set_category_seo` (titlu, meta, slug, text intro/outro, noindex) — face pagina de categorie să rankeze, nu doar să listeze.
 
 ### Pagina de CONȚINUT / blog (articol)
-- Vezi `scriere-articol-seo.md`. Pe scurt: intenție informațională, H1+intro cu promisiune, secțiuni pe întrebări PAA, experiență reală + foto proprii, FAQ, 2+ linkuri interne, schema Article. Tool: `scrie-articol-seo` + `generate_content_brief`.
+- Vezi `scriere-articol-seo.md`. Pe scurt: intenție informațională, H1+intro cu promisiune, secțiuni pe întrebări PAA, experiență reală + foto proprii, FAQ, 2+ linkuri interne, schema Article. Skill: `scrie-articol-seo` (+ `get_content_brief` dacă articolul are brief salvat).
 
 ### HOME / landing
 - Schema Organization/LocalBusiness sitewide (nume, logo, sameAs, contact) — pe Symbai din `update_brand`/`update_company`. Mesaj clar + linkuri către categoriile/serviciile principale.
@@ -61,7 +61,7 @@ Dacă tipul paginii ≠ formatul dominant din SERP, **nu rankezi**, oricât de b
 - Conținut AI în masă, cvasi-identic = „scaled content abuse" = risc. AI ca schiță + verificare umană = ok.
 
 ## Fluxul „fă o pagină foarte bună"
-1. Cuvânt-cheie + **citește SERP-ul** (intenție + format) → `seo_keyword_research` / `seo_web_research`.
+1. Cuvânt-cheie + **citește SERP-ul** (intenție + format) → `seo_keyword_research` + citești tu SERP-ul.
 2. Alege tipul de pagină potrivit formatului dominant.
 3. Construiește/optimizează cu tool-ul potrivit (PDP/PLP/articol/categorie).
 4. **Auditează**: `audit_website_seo` (tot site-ul) sau `seo_audit` (un articol) → repară până e curat.

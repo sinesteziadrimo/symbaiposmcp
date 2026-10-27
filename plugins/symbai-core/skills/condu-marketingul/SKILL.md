@@ -19,18 +19,18 @@ Pentru fiecare material cu destinație web, pregătește măsurarea din `knowled
    - `recompute_loyalty_rfm` + `get_email_segment_opportunities` — pe cine ai (noi/fideli/în pericol/pierduți).
    - `raport_vanzari` + `top_produse` + `get_menu_engineering` — ce să promovezi (vedete, ghicitori).
    - `get_seasonal_calendar(quarter, year)` — evenimentele trimestrului + cu câte zile înainte trebuie pregătit fiecare.
-3. **Generează planul:** `generate_quarterly_marketing_plan(brandId, quarter, year, totalBudget?, strategicNote?)`. Întoarce un plan complet (rezumat, OKR target venit/CAC/ROAS, buget total + distribuție pe canale, 8-12 campanii cu date, calendar, riscuri, 3 milestone-uri lunare) și îl salvează ca DRAFT.
+3. **Planul:** `list_quarterly_marketing_plans` → `get_quarterly_marketing_plan` dacă există unul pentru trimestru. Generarea automată a unui plan nou a fost retrasă: altfel îl scrii tu (rezumat, OKR venit/CAC/ROAS, buget pe canale, 8-12 campanii cu date, calendar, riscuri, 3 milestone-uri lunare).
    - Dacă utilizatorul nu dă buget, propune un interval justificat prin contribuția produselor, capacitate, cashflow și limita de test. Nu transforma procente de industrie în reguli universale.
 4. **PREZINTĂ-l clar utilizatorului** (în lei, pe limba lui): tema trimestrului, targetul de venit, cum se împarte bugetul și de ce, top campaniile pe luni. **Cere confirmarea.**
-5. **Aplică:** `apply_quarterly_marketing_plan(planId, confirm:true)` — transformă campaniile în drafturi de reclame (în așteptarea aprobării) + planuri de conținut lunare. Spune-i ce avertismente au ieșit (ex. „contul TikTok neconectat").
+5. **Aplică** (doar pe un plan salvat): `apply_quarterly_marketing_plan(planId, confirm:true)` — transformă campaniile în drafturi de reclame (în așteptarea aprobării) + planuri de conținut lunare. Spune-i ce avertismente au ieșit (ex. „contul TikTok neconectat").
 
 ## B. Execută tacticile (săptămânal)
 
 Din campaniile planului, lansează concret — fiecare prin skill-ul lui, mereu pe **canalul potrivit obiectivului**:
-- **Conștientizare** → social organic: `programeaza-postare` / `creeaza-calendar-social` (format ales după conținut, audiență și rezultate), GBP (`gestioneaza-gbp`).
+- **Conștientizare** → social organic: `programeaza-postare` + `scrie-continut-marketing` (format ales după conținut, audiență și rezultate), GBP (`raspunde-recenzii` + `knowledge/gbp-operare-2026.md`).
 - **Achiziție** → reclame: `gestioneaza-reclame` (Meta/Google), retargeting din CRM.
 - **Retenție** → email + push + loialitate: `gestioneaza-comunicare`, `trimite-notificare-push`, `ruleaza-retentie`, `gestioneaza-loialitate`.
-- **Oferte** → `creeaza-oferta` / `create_offer` — pentru happy hour/interval orar pune OBLIGATORIU `timeStart`+`timeEnd` (altfel rulează 24/7 și pierzi marjă); rulează întâi `preview_offer_margin`.
+- **Oferte** → `create_offer` (ghid: `knowledge/oferte-promotii-horeca.md`) — pentru happy hour/interval orar pune OBLIGATORIU `timeStart`+`timeEnd` (altfel rulează 24/7 și pierzi marjă); rulează întâi `preview_offer_margin`.
 
 **Regula de aur (anti-oboseală):** o singură ofertă pe client pe zi; max 1-2 mesaje de marketing/client/zi, 3-5/săptămână, pe TOATE canalele la un loc. Înainte de o trimitere mare verifică cu `check_marketing_allowed` / vezi `knowledge/comunicare-cross-channel-lifecycle.md`. Niciodată același mesaj pe 4 canale în aceeași zi.
 
@@ -51,4 +51,4 @@ Din campaniile planului, lansează concret — fiecare prin skill-ul lui, mereu 
 - **Măsoară pe vânzări, nu pe vanity:** click/conversii/venit atribuit, nu like-uri sau deschideri brute.
 - Necesită scriere pe „Marketing & Social Media" (+ „Reclame" pentru ads, „Comunicare" pentru email/push). Dacă lipsesc, îndrumă spre portal Hub → Acces AI.
 - Conținutul (texte, scenarii video, dosarul de voce, încălzirea audienței înainte de vânzare) urmează `scrie-continut-marketing` + `knowledge/continut-marketing-video.md`. Pe un canal nou sau cu public rece, planul începe cu 3–4 săptămâni de încălzire, iar achiziția plătită țintește apoi publicul încălzit.
-- Skill-uri pe care le coordonezi: `scrie-continut-marketing`, `continut-video-vanzari`, `gestioneaza-reclame`, `programeaza-postare`/`creeaza-calendar-social`, `gestioneaza-comunicare`, `trimite-notificare-push`, `ruleaza-retentie`, `gestioneaza-loialitate`, `creeaza-oferta`, `gestioneaza-gbp`, `raspunde-recenzii`, `masoara-marketing`. Concepte: `knowledge/plan-marketing-strategie.md`.
+- Skill-uri pe care le coordonezi: `scrie-continut-marketing`, `continut-video-vanzari`, `gestioneaza-reclame`, `programeaza-postare`, `gestioneaza-comunicare`, `trimite-notificare-push`, `ruleaza-retentie`, `gestioneaza-loialitate`, `raspunde-recenzii` (+ `knowledge/gbp-operare-2026.md` pentru GBP), ofertele prin `create_offer` (`knowledge/oferte-promotii-horeca.md`), `masoara-marketing`. Concepte: `knowledge/plan-marketing-strategie.md`.

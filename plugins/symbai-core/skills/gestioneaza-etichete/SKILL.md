@@ -29,7 +29,7 @@ Scopul: fiecare produs vandabil are o etichetă de secție, ca bonul să ajungă
 3. **Dry-run** per secție: `search_products_for_tagging(brandId, categoryName:"BAR")` (subtree rollup prinde toată ramura). Confirmă numărul cu utilizatorul.
 4. **Asignează**: `bulk_assign_tag(tagId, brandId, categoryName:"BAR")` (sau `categoryNames` / `categoryPath` pentru ramuri exacte). Răspuns `{assigned, skipped, total}`.
 5. **Rămășițe**: `list_untagged_products(brandId)` → `bulk_assign_tag` cu `nameContains`/`entityIds`, sau `assign_tag` pentru 1–2 cazuri.
-6. **⚠ Tag NOU = bonuri pierdute.** Un tag de secție nou NU rutează nicăieri până nu există regula tag→imprimantă/KDS — produsele lui generează bonuri „unrouted" fără eroare. Regula NU se face prin MCP. Spune-i utilizatorului EXACT ce tag și unde trebuie să iasă, du-l în pagină (`gaseste_in_aplicatie("rutare etichete imprimante KDS")`) și cere un bon de test. Etichetele puse pe etichete deja-rutate (refolosite) merg imediat.
+6. **⚠ Tag NOU = bonuri pierdute.** Un tag de secție nou NU rutează nicăieri până nu există regula tag→imprimantă/KDS — produsele lui generează bonuri „unrouted" fără eroare. Regula se face prin conexiune (modul `setari`): `list_printers` + `list_kds_screens` (id-urile destinațiilor) → `set_tag_routing(tagId | tagName, printerId | printerName și/sau screenIds | screenNames, allZones:true | zoneIds:[...], locationId?)` — exact ce arată pagina Rutare Taguri, idempotent. Rutarea pe ZONĂ de sală (ce imprimante/ecrane primesc comenzile meselor dintr-o zonă) e `set_zone_routing(zoneId, ...)`. `create_tag_routing_rule` creează doar o regulă de rezervă la nivel de locație, invizibilă în pagină — nu e calea principală. Verificare: `list_tag_routing_rules(locationId)` + un bon de test real. Etichetele puse pe etichete deja-rutate (refolosite) merg imediat.
 
 ## Rețeta 2 — Etichete de marketing / atribute
 
@@ -44,7 +44,7 @@ Pentru filtre de meniu/portal/campanii: „Recomandat", „Nou", „Vegan", „P
 1. `list_tag_summary(brandId)` → vezi dubluri de nume („Bar" vs „bar" vs „BAR TERASĂ"), etichete goale (0 asignări), etichete fără brand asociat.
 2. `list_untagged_products(brandId)` → produse fără rutare (= bonuri care nu ies). Etichetează-le sau confirmă cu utilizatorul că intenționat nu se trimit nicăieri.
 3. **Scoate o etichetă greșită**: `bulk_remove_tag(tagId, ...aceleași filtre)` sau `bulk_remove_tag(tagId, entityIds:[...])`. (Pentru „scoate tagul de pe produse" NU e nevoie de ștergerea tagului.)
-4. **Ștergerea tagului gol** se face DOAR din aplicație — `gaseste_in_aplicatie("pagina de etichete produse")`, dă-i link-ul.
+4. **Ștergerea tagului**: `delete_tag(tagId, confirm)` șterge tagul cu TOATE dependențele (asignări, reguli de rutare, rute către imprimante) — ireversibil; dacă tagul are rutare activă, fără `confirm:true` primești doar avertismentul. Cere acordul explicit al omului. Pentru „scoate tagul de pe produse” nu e nevoie de ștergere: `bulk_remove_tag`.
 5. **Redenumire / reculoare**: `update_tag(tagId, name?, color?, description?)` — singura cale (NU `create_tag`, care nu suprascrie).
 
 ## Arată-i utilizatorului ce faci (extensia Chrome)

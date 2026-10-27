@@ -24,8 +24,8 @@ Modulul acoperă tot marketingul restaurantului: postări social media (Facebook
 
 **Centru de comandă marketing**
 - **Performanță** (`/marketing/performance`) — hub cu tab-uri: Social Analytics, Atribuire, Anomalii, Experimente și feed de Activitate (toate acțiunile recente de marketing).
-- **Strategie** (`/marketing/strategy`) — tab-uri Overview, Quarterly Plan, AI Strategist.
-- **Plan Trimestrial Marketing** (`/marketing/quarterly-plan`) — generează plan pe trimestru: distribuție buget pe canale, campanii prioritare, milestones lunare, calendar sezonier, simulator What-If, istoric și performance review.
+- **Strategie** (`/marketing/strategy`) — pagină de intrare cu legătura spre calendarul de conținut (`/social-hub?view=calendar`).
+- **Plan Trimestrial Marketing** — fără pagină proprie; prin conexiune: `list_quarterly_marketing_plans`, `get_quarterly_marketing_plan`, `apply_quarterly_marketing_plan` (confirm-first), `review_quarterly_marketing_plan`.
 - **Canale Marketing** (`/marketing/channels`) — toate canalele (Google Ads, Meta Ads, Google Business, Email) în tab-uri, cu același UX, plus linkuri spre playbook-uri și agenți AI.
 - **Wizard Cross-Channel** (`/marketing/cross-channel`) — campanie pe mai multe canale în 4 pași: obiectiv & nume → canale → buget zilnic → lansare (sumar). Versiunea veche e la `/marketing/cross-channel-legacy`.
 - **Audiență** (`/marketing/audience`) — un singur ecran cu 4 tab-uri: **Inbox** (conversații/mesaje social, `?tab=inbox`), **CRM** (clienți, `?tab=crm`), **Segmente** (se gestionează din filtrele CRM), **Loialitate**.
@@ -37,7 +37,7 @@ Modulul acoperă tot marketingul restaurantului: postări social media (Facebook
 - **Evenimente Facebook** (`/facebook-events`) — creezi evenimente cu categorie (Muzică, Dining, Festival...), poză cover, co-hosts (invitații), vezi răspunsurile RSVP, publici postări în feed-ul evenimentului, duplici sau anulezi evenimentul, deschizi linkul pe Facebook.
 - **Configurare Conturi Social** (`/social-media`) — conectezi conturile per brand: Facebook, Instagram, TikTok, YouTube, LinkedIn, WhatsApp (inclusiv WhatsApp Business API) + configurare CAPI (Meta Conversions API).
 - **Bibliotecă Media** (`/brand-media-library`) — pozele/video-urile/graficele brandului: upload, generare grafice, import automat, etichete, materiale de la angajați, top performeri.
-- **Memorii Brand** (`/brand-memories`) — gestionezi memoriile pe categorii; se pot crea și din fișiere încărcate.
+- **Memorii Brand** — pagina a fost retrasă; prin conexiune: `list_brand_memories` / `read_brand_memories` și `upsert_brand_memory` (după acordul omului).
 - **Automatizări Marketing** (`/marketing-automations`) — roboții de postări recurente AI + jurnalul execuțiilor (Finalizat / Rulează / Eroare / Așteaptă materiale) + statistici pe angajați (câte materiale au încărcat și câte au fost folosite).
 
 **Reclame plătite**

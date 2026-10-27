@@ -281,7 +281,7 @@ test('rolul pe scurt și promptul editat în caseta de scris', async ($, on) => 
     return {
       value: {
         isAnswered: true,
-        text: 'Ce face: preia comenzile clienților.\nUnde și pentru cine: grupul de comenzi.\nCe nu are voie: să emită facturi.\nCine îi dă instrucțiuni: Mihai.',
+        text: 'Ce face: preia comenzile clienților.\nUnde și pentru cine: grupul de comenzi.\nCe nu are voie: să emită facturi.\nCine îi dă instrucțiuni: Andrei.',
         usage: { input_tokens: 1, output_tokens: 1, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 },
       },
     }
@@ -399,11 +399,11 @@ test('din listă: oprești, repari și ștergi un asistent; erorile vechi nu se 
     for (const key of Object.keys(state)) delete state[key]
     Object.assign(state, {
       lost: {
-        id: 'lost', activa: true, mod: 'always', dispatch: 'codex', conversatie: { nume: 'Alex', tip: 'contact' }, obiectiv: 'Ești Sym.',
+        id: 'lost', activa: true, mod: 'always', dispatch: 'codex', conversatie: { nume: 'Radu', tip: 'contact' }, obiectiv: 'Ești Sym.',
         ultimaRulare: { la: '2026-10-20 02:06:15', stare: 'failed', rezumat: 'ChatGPT Codex: Error: thread/resume failed: no rollout found for thread id x' },
       },
       old: {
-        id: 'old', activa: true, mod: 'always', dispatch: 'stream', conversatie: { nume: 'Simina', tip: 'contact' }, obiectiv: 'Ești Sym.',
+        id: 'old', activa: true, mod: 'always', dispatch: 'stream', conversatie: { nume: 'Ioana', tip: 'contact' }, obiectiv: 'Ești Sym.',
         ultimaRulare: { la: '2026-10-08 11:24:23', stare: 'failed', rezumat: 'ChatGPT Codex: exit status 0xffffffff' },
       },
       tired: {
@@ -484,16 +484,16 @@ test('din listă: oprești, repari și ștergi un asistent; erorile vechi nu se 
     // Stop straight from the list.
     await pane.press({ key: 'toggle-old' })
     expect(calls[2]).toEqual({ tool: 'update_watch', args: { watch: 'old', active: false } })
-    expect(await pane.find({ type: 'Text', text: /„Simina” e oprit/ })).toBeDefined()
+    expect(await pane.find({ type: 'Text', text: /„Ioana” e oprit/ })).toBeDefined()
 
     // Delete asks first, then removes for good.
     await pane.press({ key: 'open-lost' })
     await pane.press({ key: 'delete-ask' })
-    expect(await pane.find({ type: 'Text', text: /Ștergi definitiv „Alex”/ })).toBeDefined()
+    expect(await pane.find({ type: 'Text', text: /Ștergi definitiv „Radu”/ })).toBeDefined()
     expect(calls.length).toBe(3)
     await pane.press({ key: 'delete-confirm' })
     expect(calls[3]).toEqual({ tool: 'stop_watch', args: { watch: 'lost', delete: true } })
-    expect(await pane.find({ type: 'Text', text: /„Alex” a fost șters/ })).toBeDefined()
+    expect(await pane.find({ type: 'Text', text: /„Radu” a fost șters/ })).toBeDefined()
     expect(await pane.find({ key: 'open-lost' })).toBeUndefined()
     await pane.unmount()
   }

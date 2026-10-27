@@ -4,7 +4,7 @@ Folosește [gestioneaza-hotel](../../gestioneaza-hotel/SKILL.md), [plan-sala-qr]
 
 ## Restaurant: pregătește serviciul următor
 
-Citește rezervările, evenimentele, mesele/comenzile deschise, precomenzile și livrările care intră în interval. Leagă necesarul de oameni, raionul și configurația efectivă a sălii. O masă liberă pe ecran acum nu dovedește disponibilitatea pentru orice interval viitor.
+Citește rezervările, evenimentele, mesele/comenzile deschise, precomenzile și livrările care intră în interval. Pentru ziua întreagă dintr-un apel: `get_day_at_a_glance(date)` (rezervări, sloturi de joc, milestone-uri masă/tort); plăți sau mese rămase agățate: `list_stuck_payments`. Leagă necesarul de oameni, raionul și configurația efectivă a sălii. O masă liberă pe ecran acum nu dovedește disponibilitatea pentru orice interval viitor.
 
 Pentru bucătărie și bar, verifică disponibilitatea produselor și materialele în gestiunile reale, apoi sarcinile de pregătire și siguranță aplicabile. Separă lipsa de stoc, un produs indisponibil temporar și o rețetă neconfigurată. Nu modifica automat meniul sau rețeta ca să dispară blocajul.
 

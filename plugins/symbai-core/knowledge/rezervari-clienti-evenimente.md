@@ -82,7 +82,7 @@ Modulul acoperă tot ce ține de relația cu clienții: rezervări de masă și 
 
 ## Fluxuri frecvente
 
-1. **Creezi o rezervare de masă**: /reservations → „Rezervare Nouă" → client, dată, oră, persoane, eventual masă → salvezi. Prin AI: `create_reservation`. Statusul se schimbă ulterior cu `update_reservation`, anularea cu `cancel_reservation`.
+1. **Creezi o rezervare de masă**: /reservations → „Rezervare Nouă" → client, dată, oră, persoane, eventual masă → salvezi. Prin conexiune: `create_reservation(date, time, guestCount?, customerName?, customerPhone?, tableId?, zoneId | zoneName?, employeeId?, notes?)` — obligatorii sunt doar data și ora exactă HH:mm (fără oră întrebi, nu creezi); numele și numărul de persoane le pui când le ai, iar telefonul e obligatoriu doar dacă setările brandului îl cer (`get_reservation_settings`); masa (`tableId`), zona (`zoneId` din `list_floor_zones` sau `zoneName`) și ospătarul (`employeeId`, din `get_staff_overview`) se pun direct în câmpuri, nu în notițe. **O rezervare blochează pe plan o singură masă**: la un grup pe mai multe mese pui masa principală și îi spui omului că celelalte apar libere. Re-apelul cu aceleași date nu dublează. Modificarea (oră, masă, zonă, ospătar, persoane, status) cu `update_reservation(reservationId, ...)` — nu crea din nou; anularea cu `cancel_reservation`.
 2. **Configurezi sistemul de rezervări**: /reservations/config → Reguli (activare, fereastră, min/max persoane și sursele proprii), Inventar & Zone, Control Flux, Câmpuri Formular → „Salvează Modificări". Prin AI: `configure_reservation_settings`, `configure_reservation_operating_hours`, `configure_reservation_turn_times`, `configure_reservation_deposit`, `configure_reservation_pacing`, sau `seed_reservation_settings` pentru valori recomandate pe tipul de business.
 3. **Urmărești o campanie de rezervări**: configurezi mai întâi sursa exactă pentru brand/locație → `build_reservation_tracking_link(brandId, locationId?, source, medium?, campaign?, expiryDays?)` → pui URL-ul rezultat în bio, reclamă sau într-un QR dinamic → urmărești rezervările confirmate în analiza pe surse. Linkul păstrează atribuirea și după navigarea prin portal. Un click sau o scanare QR nu este o rezervare; dashboard-ul numără rezervările create, nu promite conversii din simple accesări. Generarea linkului este o acțiune de management și cere dreptul de administrare a rezervărilor.
 4. **Organizezi o petrecere/eveniment privat**: creezi deal-ul în /sales-crm (sau rezervare de tip eveniment) → în fișa evenimentului adaugi Produse (meniul), Personal, eventual Producție și Cheltuieli → trimiți Contractul la semnat → ceri avansul → în ziua evenimentului printezi BEO-ul → după, vezi P&L-ul evenimentului.
@@ -107,8 +107,10 @@ Modulul acoperă tot ce ține de relația cu clienții: rezervări de masă și 
 **Management sensibil — cere `reservations_manage`:**
 - `build_reservation_tracking_link` — nu creează și nu modifică o rezervare, dar emite un URL urmărit și semnat pentru o sursă configurată, strict pe brand și, când este aleasă, pe locație. Fiind o capabilitate de distribuție și atribuire, este permisă numai utilizatorilor care pot administra rezervările; conturile Demo sau cu acces doar de vizualizare sunt refuzate.
 
+**Ziua dintr-o privire** („arată-mi ziua de mâine”, „ce evenimente am pe 15”): `get_day_at_a_glance(date)` — toate rezervările zilei, sloturile de joc, milestone-urile (masă/tort) și jocurile disponibile, într-un apel; o singură rezervare în detaliu: `get_reservation_timeline`.
+
 **Scriere — modul `rezervari_clienti`:**
-- `create_reservation` / `update_reservation` / `cancel_reservation` — creare, modificare (status, dată, persoane), anulare rezervări.
+- `create_reservation` / `update_reservation` / `cancel_reservation` — creare (cu `tableId`, `zoneId`/`zoneName`, `employeeId`; o rezervare = o masă), modificare (status, dată, oră, persoane, masă, zonă, ospătar), anulare.
 - `create_waitlist_entry` / `update_waitlist_entry` — lista de așteptare (walk-in).
 - `create_customer` — client nou în baza de date (fidelizare, rezervări, istoric).
 - `create_game_reservation` — rezervare de joc/activitate.

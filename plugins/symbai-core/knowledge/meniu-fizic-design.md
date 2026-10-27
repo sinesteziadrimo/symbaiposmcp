@@ -12,6 +12,26 @@ Editarea meniului fizic are **tool-uri MCP semantice** — sunt **calea principa
 
 `update_menu_display_config` (REPLACE) rămâne DOAR ultima soluție, pentru un câmp structural pe care niciun tool nu-l acoperă — și atunci tot citești întâi întreg cu `get_physical_menu_config(section:'raw')`. Catalogul complet al tool-urilor + tabelul intenție→tool: secțiunea „Tool-urile MCP" mai jos.
 
+## Calea scurtă (v19.3.978+): catalog, lot, traduceri, pagina live
+
+Un meniu complet, făcut cu uneltele vechi, a cerut ~450 de apeluri: zeci de redenumiri de categorie și sute de texte de produs trimise câte unul, nume de câmpuri ghicite prin SQL, un design englezesc clonat de mână. Acum:
+
+- **Nu ghici câmpuri.** `describe_physical_menu_fields({query:"majuscule"})` (sau `level`, `keys`) întoarce cheia exactă, nivelul (meniu/pagină/categorie/produs), valorile permise, locul din interfață și dacă cere repaginare. Setterele resping o valoare greșită cu motivul și sugerează cheia corectă pentru una necunoscută.
+- **Scrie în lot.** `edit_physical_menu_design({configId, operations:[…]})` = orice combinație de setări pe meniu, pagini, categorii și produse, într-un singur salvat (max 600 operații). Ex.: redenumești 40 de categorii (`{level:"category", categoryId, fields:{customName}}`), ascunzi 5 (`categoryIds:[…]`, `fields:{visible:false}`), barul pe pagină nouă și numele cu majuscule — un apel.
+- **Altă limbă = traduceri, nu design clonat.** `get_menu_translations({configId, locale:"en"})` arată ce lipsește; `set_menu_translations({configId, locale:"en", items:[{menuItemId,name,description}], categories:[{categoryId,name}], clearDesignOverrides:true})` scrie tot meniul într-un apel (se vede și în meniul QR). Apoi pe designul englezesc `language:"en"`. `customName`/`customDescription` pe design bat traducerea — curăță-le.
+- **Opțiuni de tipar care se caută des:** `titleTextTransform:"uppercase"` (numele cu MAJUSCULE la tipar, catalogul rămâne neschimbat), `categoryTitleMode:"leaf"` (titlul „Pizza", nu „Bucătărie › Pizza"), `categoryTitleTextTransform`, `categoryTitleAlign:"center"`.
+- **Designerul deschis la om = pagina live.** Pe `/menu/physical` Sym vede stratul `physical-menu` (designul, paginile cu umplerea, 35 de câmpuri, acțiunile recalculeaza/anuleaza/salveaza/export-pdf/reincarca) și, cu produse selectate, `physical-menu-selection`. Câmpurile scriu exact ca butoanele — omul vede schimbarea imediat. Pentru modificări mari: salvează întâi (`salveaza`), scrie cu `edit_physical_menu_design`, apoi `reincarca` (refuză dacă pagina are modificări nesalvate, ca să nu le piardă).
+- **Auditul prinde datele care se tipăresc greșit:** `placeholder-about-page` (textul implicit „Bine ați venit!…" pe Despre noi), `suspicious-gramaj` („55cm" sau prețul pus în gramaj), `mixed-title-case`. Nu inventa povestea localului; oprește pagina (`locationPage:false`) dacă nu ai text real.
+
+## Ce face un meniu de grafician (nu doar corect)
+
+- **Două cărți într-una.** Mâncarea pe hârtia caldă, barul pe paleta lui (pagini întunecate, auriu, liste cu puncte până la preț), pornit pe pagină nouă. Temele semnătură o fac singure (`pageOverridesForDrinks`).
+- **Sistem tipografic, nu font schimbat.** Titlu de secțiune display (Cinzel, Playfair, DM Serif, Oswald) mare și rărit; numele produselor într-o literă de text, eventual MAJUSCULE cu spațiere mică; descrierea mică, în culoarea descrierii, niciodată în accent.
+- **Un singur accent pe pagină.** 1–2 vedete foto late pe categorie, restul miniaturi sau text. Evidențierea (`featuredStyle`) pe maximum 1–2 produse pe pagină.
+- **Rama face cartonul.** Ramă dublă subțire, colțuri, filete sus/jos — din temă (decor `theme:*`, identic în PDF). Nu combina ramă de temă cu `pageBorderEnabled`.
+- **Coperta e afișul.** Ornament vectorial (`coverArtStyle`: laurel, frame, deco, celestial, waves, arch, botanical, sunrise), titlu mare, subtitlu cu localitatea; fără text inventat.
+- **Aerul e intenționat.** Spațierea „normal" + `categorySpacingPx` 22–30 arată mai scump decât „compact" cu pagini pline 100%; nu micșora fonturile ca să încapă — adaugă grupul următor de pagini.
+
 ## Găsește meniul și deschide designul
 
 Rezolvă tenant → brand → meniu → design cu `list_brands`, `list_menus` și `list_physical_menu_designs`. Folosește selecția deja stabilită. Întreabă numai dacă meniurile candidate au scopuri diferite și intenția rămâne ambiguă. Pentru un design nou alege un nume și folosește `create_physical_menu_design({brandId, menuId, name, fromConfigId?})`; sursa de duplicare trebuie să fie din același meniu.

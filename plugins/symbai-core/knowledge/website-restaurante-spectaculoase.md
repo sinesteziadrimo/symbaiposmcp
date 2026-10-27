@@ -33,7 +33,7 @@ Pentru un website existent, citește configurația înainte de modificare și p�
 
 Numele temei este o direcție de design, nu numele restaurantului. La aplicare se folosesc identitatea și datele reale ale brandului.
 
-Flux: `list_website_templates` → `preview_website_template` → `create_website` pentru un site nou sau `apply_website_template` pentru înlocuirea autorizată a celui existent → `get_website_page` pentru citire înapoi.
+Flux: `list_website_templates` → `preview_website_template` → `create_website` pentru un site nou sau `apply_website_template` pentru înlocuirea autorizată a celui existent → `list_websites` + `preview_public_page(path, device)` pentru verificare.
 
 Opțiuni uzuale la previzualizare/creare/aplicare:
 

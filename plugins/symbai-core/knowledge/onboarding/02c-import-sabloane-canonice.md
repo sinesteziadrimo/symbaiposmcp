@@ -1,18 +1,12 @@
-# Onboarding 02c — Fișierul canonic + pre-creare referințe + capcane prevenite
+# Onboarding 02c — Tabelul canonic + pre-creare referințe + capcane prevenite
 
-> Referința tehnică a importului asistat. Orchestrarea: `02b-import-asistat.md`. Surse externe (website/SmartMenu): `02d-import-surse-externe.md`. Folosit de skill-ul `importa-date`.
+> Referința tehnică pentru pregătirea datelor la import. Pașii și uneltele: `02-import-date.md`. Surse externe (website/SmartMenu): `02d-import-surse-externe.md`. Folosit de skill-ul `importa-date`.
 
-## De ce un fișier „canonic" = importul devine determinist
+## De ce un tabel „canonic”
 
-Motorul de import are un strat de mapare determinist care alimentează analiza AI. **Atenție la realitate**: analiza AI rulează MEREU — nu există un mod „zero AI". DAR **dacă fișierul are anteturile EXACT ca numele câmpurilor țintă** (sau un alias recunoscut) + valori în enum-uri valide, mapper-ul determinist propune corect de la început, iar AI-ul doar **confirmă** (nu mai are de ghicit). Efectul practic: **maparea iese corectă din prima și întrebările de clarificare scad mult** (de regulă 0–2 minore, nu zero garantat), iar greșelile de mapare aproape dispar. Asta e cea mai inteligentă cale: **TU (Claude) construiești fișierul perfect**, motorul îl importă rapid și sigur.
+Paginile de import din fișier au fost retrase (25.09.2026): datele intră prin unelte (`bulk_create_products`, `bulk_add_menu_items`, `create_supplier`, `import_retetar`). Înainte de apeluri, aduci fișierul userului (sau datele adunate din mai multe surse, vezi `02d`) la un **tabel de lucru canonic**: o coloană = un sens, valori normalizate, nume consecvente. Din el construiești argumentele uneltelor fără să mai ghicești, iar rezumatul pentru acordul omului iese direct din el. Rețetarul pentru `import_retetar` se trimite ca fișier, cu coloanele de mai jos.
 
-Două moduri de a obține fișierul canonic:
-1. **Rescrii fișierul userului** într-unul canonic (redenumești coloane, normalizezi valori, separi compozitele) — și-l imporți pe acela.
-2. **Construiești de la zero un fișier** din date adunate de tine (din mai multe surse — vezi `02d`).
-
-În ambele, scrii un CSV/Excel cu anteturile de mai jos și-l imporți (prin pagină sau prin tool, după mod).
-
-## Șabloanele canonice — anteturile EXACTE pe care le pui
+## Coloanele canonice
 
 Pune coloanele cu **aceste nume** (engleză, exact). `*` = obligatoriu.
 
@@ -71,7 +65,7 @@ Scrii fișierul (cu un mic script / capabilitatea de spreadsheet), îl arăți u
 ## Checklist „mapare corectă din prima" (minime întrebări)
 
 Înainte să imporți, verifică fișierul tău:
-1. ☐ Anteturile = numele canonice de mai sus (sau alias clar recunoscut).
+1. ☐ Coloanele tabelului de lucru = numele canonice de mai sus.
 2. ☐ `vatRate` ∈ {0,11,21}; `unit` ∈ lista validă; `productType` ∈ {raw_material, merchandise, finished_good, wip}.
 3. ☐ Numere cu punct zecimal; fără „1.234,50" ambiguu.
 4. ☐ `menuCategory` cu ` > ` la ierarhii.
@@ -79,20 +73,20 @@ Scrii fișierul (cu un mic script / capabilitatea de spreadsheet), îl arăți u
 6. ☐ Numele produselor normalizate consecvent (alegi „Coca-Cola", nu și „Coca Cola").
 7. ☐ Referințele (gestiuni, categorii, furnizori, tipuri) **există deja** în aplicație — vezi pre-crearea de mai jos.
 
-Dacă toate bifate → maparea iese corectă din prima și întrebările scad mult (de regulă 0–2 minore, **nu zero garantat**). Ce reduce cel mai mult întrebările e **pre-crearea referințelor** (mai jos) — fără ea, importul cere mai multe clarificări (dar nu-s probleme, le rezolvi pe loc).
+Dacă toate sunt bifate, apelurile ies corecte din prima. Ce scade cel mai mult corecțiile ulterioare e **pre-crearea referințelor** (mai jos).
 
-## Pre-creează referințele prin MCP ÎNAINTE de import (ca să se lege curat)
+## Pre-creează referințele prin MCP ÎNAINTE de import
 
-Importul leagă produsele de gestiuni/categorii/furnizori **după nume**. Dacă acele referințe nu există, le nimerește pe ghicite (sau le ratează). Deci **creează-le tu întâi prin conexiune**, cu numele EXACT pe care-l pui în fișier:
+Uneltele leagă produsele de gestiuni/categorii/furnizori prin **ID-uri** (`warehouseId`, `menuCategoryId`, `supplierId`). Creează întâi referințele lipsă prin conexiune și păstrează ID-urile întoarse:
 
 | Referință | Tool MCP | Când |
 |---|---|---|
 | Gestiuni | `create_warehouse({ name, locationId })` | dacă fișierul are >1 gestiune sau niciuna; la multi-locație dă `locationId` |
 | Categorii meniu | `create_menu_category({ name, brandId, parentId? })` | pentru fiecare secție din fișier (idempotent pe nume+brand) |
-| Tipuri de produs | `create_product_type({ brandId, code, name, ... })` | doar dacă fișierul folosește tipuri custom (de regulă cele standard există) |
-| Furnizori | `create_supplier({ name*, brandId*, cui?, ... })` | dacă imporți produse cu coloană furnizor (⚠ `brandId` e OBLIGATORIU) |
+| Tipuri de produs | `create_product_type({ code, name, ... })` | doar dacă fișierul folosește tipuri custom (de regulă cele standard există) |
+| Furnizori | `create_supplier({ name*, cui?, ... })` (fără brand; caută întâi cu `list_suppliers`) | dacă imporți produse cu coloană furnizor |
 | Cote TVA | `create_vat_rate({ name, rate })` | doar dacă lipsește 0/11/21 (`list_vat_rates` întâi) |
-| Sub-zone | `bulk_create_storage_zones({ brandId, storageZones })` | DOAR dacă userul cere sub-zone explicit |
+| Sub-zone | `bulk_create_storage_zones({ warehouseId, storageZones })` | DOAR dacă userul cere sub-zone explicit |
 | Taguri | `create_tag({ name, brandId })` | refolosește tagurile EXISTENTE; `entityTypes` are deja default `["product"]` (nu-l seta); tag nou ⇒ regulă de rutare din aplicație |
 
 Verifică întâi ce există (`list_warehouses_full`, `list_menu_categories(brandId)`, `list_product_types(brandId)`, `list_suppliers`, `list_vat_rates`) ca să NU dublezi. Apoi pune în fișier numele EXACT al referințelor pre-create.
@@ -101,7 +95,7 @@ Verifică întâi ce există (`list_warehouses_full`, `list_menu_categories(bran
 
 ## Capcanele importului automat — și cum le previi (catalog de capcane cunoscute)
 
-Astea sunt locurile unde importul „pe cont propriu" greșește. Tu le previi prin: fișier canonic + pre-creare refs + verificare. Vânează-le mereu.
+Astea sunt locurile unde importurile greșesc des. Le previi prin tabel canonic + pre-creare refs + verificare. Vânează-le mereu.
 
 **Gestiuni**
 - *Tot într-o gestiune greșită* (fallback „Magazie"): pune coloana `warehouse` explicit pe fiecare rând; pre-creează gestiunile.
@@ -134,8 +128,8 @@ Astea sunt locurile unde importul „pe cont propriu" greșește. Tu le previi p
 - *Brand NULL la multi-brand*: dacă tenantul are >1 brand, fixează brandul țintă explicit (produsele/meniul greșit-scop nu apar în rapoarte).
 - *Furnizor dublat pe similaritate* („Metro" → „Metro Romania"): confirmă potrivirea, nu o lăsa automată.
 - *Rânduri sărite tăcut*: la final, raportează „importate X / sărite Y / total Z" și spune CARE rânduri au fost sărite.
-- *Clarificare nerăspunsă consumată cu default*: la magazie + tip produs, răspunde TU (nu lăsa default-ul), că acolo dor cel mai tare.
+- *Default tăcut*: la magazie și tip de produs trimite MEREU valoarea explicit în apel (nu lăsa default-ul), că acolo dor cel mai tare.
 
-## Verificarea post-import (prin MCP) — vezi „Faza E" din `02b-import-asistat.md`
+## Verificarea post-import (prin MCP) — vezi „Verifică și corectează” din `02b-import-asistat.md` și „Verificare la final” din `02-import-date.md`
 
 După import, citește datele reale și corectează (tip/TVA/unitate/categorie = sigur; magazie = are efect contabil, cere aprobare). Folosește `search_products_db`/SQL, `list_*`, `get_config_status`. Explică userului fiecare corecție în limbaj de restaurant.

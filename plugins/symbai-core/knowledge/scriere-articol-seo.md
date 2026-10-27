@@ -11,8 +11,8 @@ Un articol care rankează ȘI e citat de AI în 2026 = intenție potrivită cu S
 1. **Citește brandul:** `read_brand_memories` (voce, public țintă, stil, competitori), `list_brands`/`list_locations` (oraș, tip business), site-ul/meniul dacă e relevant. Nu presupune tonul — citește-l.
 2. **Clarifică tema (dacă nu e dată exact):** întreabă userul — subiect, **cuvânt-cheie/întrebare țintă**, public (cine caută asta?), obiectiv (trafic / rezervări / autoritate), oraș/zonă (dacă e local). NU începe să scrii pe presupuneri.
 3. **Verifică intenția din SERP** (vezi `keyword-research-2026.md`): e o întrebare informativă (merită articol) sau o căutare cu Map Pack (cere GBP, nu articol)? Dacă e greșit pentru blog, spune-i userului.
-4. **Documentează-te** pentru oraș/țară/subiect: `seo_web_research(query, jobType:"blog_research", countryCode:"ro")` — primești observații + surse reale. Pentru un business local, caută specific („tendințe brunch [oraș] 2026", obiceiuri locale). **Citează sursele**; nu inventa.
-5. **Cere un plan:** creează o ciornă (`create_blog_post` cu titlu + `primaryKeyword`), apoi `generate_content_brief(postId)` → structură H2/H3 + competitori SERP + cuvinte LSI + FAQ + word count țintă. Urmează planul.
+4. **Documentează-te** pentru oraș/țară/subiect: cauți tu pe web (căutare/Chrome) observații + surse reale. Pentru un business local, caută specific („tendințe brunch [oraș] 2026", obiceiuri locale). **Citează sursele**; nu inventa.
+5. **Cere un plan:** creează o ciornă (`create_blog_post` cu titlu + `primaryKeyword`), apoi `get_content_brief(postId)` dacă are un brief salvat; altfel scrii tu planul: structură H2/H3 + competitori SERP + cuvinte LSI + FAQ + word count țintă. Urmează planul.
 
 ## Structura (anatomie)
 
@@ -43,8 +43,8 @@ Un articol care rankează ȘI e citat de AI în 2026 = intenție potrivită cu S
 
 1. `read_brand_memories` + clarifică tema (întreabă dacă lipsește).
 2. `get_seo_provider_status` (ce surse ai) → `seo_keyword_research` / `get_search_performance` (cuvânt + variante + ce ai deja).
-3. `seo_web_research` (documentare locală, surse citate).
-4. `create_blog_post(status:"draft", title, primaryKeyword, targetIntent)` → `generate_content_brief(postId)`.
+3. Documentare locală pe web, făcută de tine, cu surse citate.
+4. `create_blog_post(status:"draft", title, primaryKeyword, targetIntent)` → `get_content_brief(postId)` sau planul scris de tine.
 5. Scrie conținutul real (urmează brief-ul, vocea brandului, experiență, FAQ, linkuri).
 6. `update_blog_post(id, content, metaDescription, secondaryKeywords, ogImageUrl, ...)`.
 7. `seo_audit(postId)` → fix → reaudit.
@@ -55,7 +55,7 @@ Un articol care rankează ȘI e citat de AI în 2026 = intenție potrivită cu S
 ## Reguli (cele care contează)
 
 - **Temă exactă → aplici; lipsă → întrebi.** Nu scrii pe presupuneri.
-- **Nu inventa** cifre, recenzii, autori, surse, citate. Documentează (`seo_web_research`) sau întreabă.
+- **Nu inventa** cifre, recenzii, autori, surse, citate. Documentează-te pe web (cu surse) sau întreabă.
 - **Cere feedback** la decizii cu miză (unghi, cuvânt-cheie principal, schimbare de slug publicat) înainte să le faci.
 - **Vocea brandului**, limbaj de restaurant — scrii pentru clienții LUI, nu un articol generic.
 - **Onest despre AI/surse** — nu promite „garantat pe locul 1"; SEO ia timp (indexare 1-2 săptămâni).

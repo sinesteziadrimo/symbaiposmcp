@@ -35,7 +35,7 @@ Regula: **ce trebuie făcut = sarcină** (are termen, dovadă, verificare, răm�
 ## Urmărirea (partea pe care managerii o uită)
 
 - `get_task_dashboard` / `list_tasks(status)` — ce e depășit, ce e fără dovadă, ce așteaptă verificare.
-- Raportezi pe oameni și pe fapte: „Ana: 4/4 făcute cu poză. Mihai: 2/5, două depășite de ieri (curățenie hotă, inventar bar)". Nu judeci caracterul; arăți datele.
+- Raportezi pe oameni și pe fapte: „Ana: 4/4 făcute cu poză. Andrei: 2/5, două depășite de ieri (curățenie hotă, inventar bar)". Nu judeci caracterul; arăți datele.
 - Reminder: un mesaj scurt pe grup sau push către cel vizat — o dată, nu în rafală. Dacă nu s-a făcut nici după reminder, propui managerului să discute el.
 - La final de tură: rezumat de 5 rânduri (făcut / nefăcut / incidente / de predat turei următoare) — skill `inchidere-zi-casa` pentru partea de casă.
 
@@ -61,4 +61,4 @@ Doar dacă managerul te-a pus explicit să răspunzi și doar la întrebări ope
 
 ## Memoria echipei
 
-Înainte să dai o sarcină sau să scrii cuiva: `memorie_citeste(fel: "persoana", persoana: "<nume>")` — cum lucrează omul (canal, oră, ce i s-a cerut deja, ce a livrat, cine decide peste el). După o coordonare care te-a învățat ceva durabil („Ana confirmă doar cu poză", „Mihai nu citește grupul după 20:00"), propui managerului să reții (`memorie_scrie(fel: "persoana", persoanaId, cheie: "persoana-<nume>")`), cu acordul lui. Fapte de lucru, nu etichete despre caracter. Sarcinile pe care managerul ți le dă ție („urmărește dacă a făcut inventarul") → `fel: "sarcina"` cu termen. Skill: `memorie-business`.
+Înainte să dai o sarcină sau să scrii cuiva: `memorie_citeste(fel: "persoana", persoana: "<nume>")` — cum lucrează omul (canal, oră, ce i s-a cerut deja, ce a livrat, cine decide peste el). După o coordonare care te-a învățat ceva durabil („Ana confirmă doar cu poză", „Andrei nu citește grupul după 20:00"), propui managerului să reții (`memorie_scrie(fel: "persoana", persoanaId, cheie: "persoana-<nume>")`), cu acordul lui. Fapte de lucru, nu etichete despre caracter. Sarcinile pe care managerul ți le dă ție („urmărește dacă a făcut inventarul") → `fel: "sarcina"` cu termen. Skill: `memorie-business`.

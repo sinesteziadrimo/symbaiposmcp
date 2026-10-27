@@ -38,7 +38,7 @@ Memoria de brand e „briefingul" pe care îl citesc toate tool-urile de conțin
 - **Stil**: emoji da/nu și câți, lungime preferată, prețuri în lei, formule de adresare (tu/dumneavoastră).
 - **Concurenți**: 2-3 nume + diferențiatorul față de fiecare.
 - **Dovezi**: rating + nr. recenzii, preparat-vedetă, furnizor/ingredient local, ani, viteză — faptele pe care conținutul are voie să se sprijine.
-Apoi testează coerența: cere `marketing_generate_post` pentru o postare-mostră (ori `generate_content_brief` pentru un articol) și vezi dacă „sună a brand". Dacă sună generic, memoria e prea vagă — adaugă specific (un preparat anume, o frază tipică). Module care citesc memoria: `marketing_generate_post`, `bulk_schedule_social_posts`, `create_email_campaign`, reclamele, `generate_content_brief`, `gbp_create_post`, `reply_to_retail_review`.
+Apoi testează coerența: scrie o postare-mostră din memorii și vezi dacă „sună a brand". Dacă sună generic, memoria e prea vagă — adaugă specific (un preparat anume, o frază tipică). Memoriile le citești cu `read_brand_memories` înainte de orice text: postări (`schedule_social_post`, `bulk_schedule_social_posts`), emailuri (`create_email_campaign`), reclame, `gbp_create_post`, răspunsuri la recenzii.
 
 ### 3. Derivă segmentul de bază din date (cui te adresezi cu adevărat)
 Când proprietarul zice „clienții mei sunt toți" — datele spun altceva.
@@ -56,7 +56,7 @@ Când proprietarul zice „clienții mei sunt toți" — datele spun altceva.
 ### 5. Poziționarea ca temelie pentru planul de marketing
 Poziționarea bine scrisă alimentează direct planul trimestrial.
 1. Întâi rulează fluxul 1 (poziționarea salvată în brand + memorii).
-2. Apoi planul: `read_brand_memories` + `get_attribution_ltv_by_channel` + `get_attribution_report` + `recompute_loyalty_rfm` + `raport_vanzari` + `get_menu_engineering` + `get_seasonal_calendar` → `generate_quarterly_marketing_plan`. Planul moștenește vocea, publicul și diferențiatorul din memorii, deci ofertele/postările/reclamele propuse vin deja pe-brand. (Detaliu complet în `knowledge/strategie-marketing-plan.md`.)
+2. Apoi planul: `read_brand_memories` + `get_attribution_ltv_by_channel` + `get_attribution_report` + `recompute_loyalty_rfm` + `raport_vanzari` + `get_menu_engineering` + `get_seasonal_calendar` → planul (cel salvat, citit cu `get_quarterly_marketing_plan`, sau scris de tine). Planul moștenește vocea, publicul și diferențiatorul din memorii, deci ofertele/postările/reclamele propuse vin deja pe-brand. (Detaliu complet în `knowledge/strategie-marketing-plan.md`.)
 
 ## Tool-uri MCP utile
 
@@ -68,7 +68,7 @@ Poziționarea bine scrisă alimentează direct planul trimestrial.
 - `raport_vanzari` [citire] — bon mediu + frecvență, ca să formulezi segmentul și să verifici dacă diferențiatorul e plauzibil comercial.
 - `preview_guest_segment` [citire] — mărimea reală a segmentului de bază înainte să-l declari publicul-țintă.
 - `get_retail_reviews_summary` / `gbp_reviews_summary` [citire] — rating + nr. recenzii = cea mai puternică „dovadă" pentru poziționare.
-- `marketing_generate_post` [marketing] — test de coerență: generează o postare-mostră ca să verifici dacă memoriile fac conținutul „să sune a brand".
+- Test de coerență: scrii tu o postare-mostră din `read_brand_memories`, ca să verifici dacă memoriile fac conținutul „să sune a brand".
 
 > Notă permisiuni: tool-urile [marketing] (`update_brand`, `recompute_loyalty_rfm`) cer modulul Marketing activ pe conexiune. Verifică din timp cu `check_marketing_allowed`. Salvarea poziționării NU trimite nimic clienților, deci nu cere `confirm:true` ca o campanie — dar confirmă MEREU cu proprietarul în cuvinte înainte de a scrie peste o identitate existentă.
 
@@ -78,7 +78,7 @@ Poziționarea bine scrisă alimentează direct planul trimestrial.
 - **„Clienții mei sunt toți / toată lumea."** Nu există. Datele (RFM + atribuire) arată mereu un nucleu de 20-30% care aduce majoritatea banilor. Poziționează-te pe EI; restul vin oricum. „Pentru toți" = pentru nimeni.
 - **Diferențiator generic** („cea mai bună mâncare", „servicii de calitate"). Concurentul spune exact la fel. Un diferențiator bun trece testul: poate concurentul să spună asta la fel de credibil? Dacă da, nu e diferențiator. Sprijină-l pe o dovadă cu cifre.
 - **Poziționare scrisă din intuiție, fără date.** E cea mai frecventă greșeală. Întotdeauna `recompute_loyalty_rfm` + `top_produse` + `get_attribution_ltv_by_channel` ÎNAINTE de a formula. Intuiția proprietarului confirmă sau corectează datele, nu le înlocuiește.
-- **Memorie de brand prea vagă** → conținut generic. Dacă `marketing_generate_post` scoate ceva care s-ar potrivi oricărui restaurant, memoria e prea slabă. Adaugă specific: un preparat anume, o frază tipică a casei, un cuvânt-semnătură, numele concurenților.
+- **Memorie de brand prea vagă** → conținut generic. Dacă postarea-mostră scrisă din memorii s-ar potrivi oricărui restaurant, memoria e prea slabă. Adaugă specific: un preparat anume, o frază tipică a casei, un cuvânt-semnătură, numele concurenților.
 - **Suprascrii o identitate existentă fără să întrebi.** `read_brand_memories` întâi; dacă există deja o poziționare, confirmă cu proprietarul înainte să o schimbi cu `update_brand`. Nu ștergi munca anterioară din reflex.
 - **Poziționare „o dată și gata".** Revizuieșt-o când se schimbă realitatea: meniu nou, public nou, concurent nou, sezon. Recitește RFM lunar; reîmprospătează diferențiatorul când apar dovezi noi (rating mai bun, preparat nou de succes).
 - **Confunzi vocea cu tonul.** Vocea e constantă peste tot (cine ești); tonul se adaptează (jucăuș la promoții, sobru și empatic la recenzii negative). Scrie ambele în memoria de brand, separat.

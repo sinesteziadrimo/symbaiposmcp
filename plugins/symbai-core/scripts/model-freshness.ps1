@@ -1,7 +1,7 @@
 # Symbai: newer model in the same family (Windows PowerShell 5.1, no Node).
 # Twin of model-freshness.mjs for the Connect package: at session start/resume, when the session runs on a pinned
 # model older than the newest one of the same family offered by the official picker (Opus 5 while Opus 5.5 exists),
-# Claude tells the person and asks whether to switch. Riverside, 20.10.2026: Simina's posting sessions stayed on
+# Claude tells the person and asks whether to switch. Real case: a marketing colleague's posting sessions stayed on
 # Opus 5 / Sonnet 5 for weeks and nobody knew.
 # The catalog comes from the CLI picker (`initialize`, no AI prompt, no MCP, no hooks), cached 12 hours in
 # <config>\symbai\model-catalog.json. A stale catalog is read again inside the hook, capped at 3 seconds: with the

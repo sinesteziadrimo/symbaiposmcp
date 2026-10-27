@@ -17,8 +17,8 @@
 | # | Pasul (ce e) | Faci prin MCP | UI-only — explică/ghidează | Fază |
 |---|---|---|---|---|
 | 1 | **Firmă, branduri, locații, TVA** | `lookup_company_cui` (ANAF, creează și TVA), `create_brand`, `create_location`, `link_brand_location`, `update_company` | logo brand, țară/monedă, program, ștergeri | 01 |
-| 2 | **Import date** (produse, meniu, stoc) | tot fluxul inteligent: pre-creezi refs + construiești fișier canonic + verifici/corectezi (`02b/c/d`) | upload fișier în pagină, meniu din PDF/poze | 02,02b,02c,02d |
-| 3 | **Verificare & completare** | `list_*` + repari: `auto_assign_vat_batch`, `bulk_update_products` (tip/TVA/unitate), `update_menu_item`/`apply_menu_prices` (preț), `create_menu_category` | cardurile de pe dashboard + butoanele Quick-Fix (sunt wrappere pe aceleași tool-uri) | 02 |
+| 2 | **Import date** (produse, meniu, stoc) | tot fluxul prin conexiune: pre-creezi refs + tabel canonic + creezi prin unelte + verifici/corectezi (`02`, `02c`, `02d`) | pasul a rămas fără import (upload-ul de fișier și meniul din PDF au fost retrase pe 25.09.2026); butonul „Nu am fișiere de importat” | 02,02b,02c,02d |
+| 3 | **Verificare & completare** | `list_*` + repari: `bulk_update_products` (tip/TVA/unitate), `update_menu_item`/`apply_menu_prices` (preț), `create_menu_category` | cardurile de pe dashboard + butoanele Quick-Fix (sunt wrappere pe aceleași tool-uri) | 02 |
 | 4 | **Gestiune & stocuri** (ghid) | nimic de creat AICI (gestiunile + stocul = pasul 2). Explică NIR vs inventar vs transfer | Intrări Marfă (NIR), Verificări Stoc, Mișcări — pagini | 02 |
 | 5 | **Creare manuală** (dacă sari importul) | `create_warehouse`, `bulk_create_products`, `create_menu`, `add_menu_item`, stoc inițial cu costuri: `save_opening_stock` → `publish_opening_stock` | — (echivalentul manual al pasului 2) | 02 |
 | 6 | **Etichete** (rutare bonuri) | `create_tag` (1/secție), `bulk_assign_tag` (filtre pe categorie), `list_untagged_products`, `list_tag_summary` | pagina vizuală de asignare (alternativă la bulk) | 03 |
@@ -37,12 +37,12 @@
 | 19 | **Email marketing** | **0 tool-uri** — `gaseste_in_aplicatie` → Setări → Email | **TOT**: SMTP, expeditor (domeniu+SPF/DKIM), șabloane, campanii. Explică ordinea + recomandă domeniu verificat | 11 |
 | 20 | **Integrări** (livrări, Viva) | `create_delivery_channel` (doar DECLARĂ canalul) | cheile API (Glovo/Wolt/...), activarea fluxului, Viva, ANAF — 90% UI | 11 |
 | 21 | **Automatizări** | `create_notification_rule` (alerte simple: stoc mic→email) | motorul de Acțiuni Automate (birthday→voucher, inactiv→discount) — conversațional in-app | 11 |
-| 22 | **Staff Creator** (asistenți AI) | **0 scriere** (`list_entities` citire). Precondiție: rolurile din pasul 12 | builder conversațional `/ai-staff-creator`: descrii jobul, urci proceduri, alegi rolurile | 07 |
+| 22 | **Asistenți AI pentru echipă** | **0 scriere** prin conexiune. Precondiție: rolurile din pasul 12 | Asistenții mei (`/my-assistants`): asistent personal cu rol, instrucțiuni, acces și grupuri; skill `gestioneaza-asistentii`. Vechiul `/ai-staff-creator` a fost retras | 07 |
 | 23 | **Sales CRM** (pipeline) | `list_sales_agents` (citire) | pipeline Kanban + dealuri (evenimente/catering/nunți) — UI | 12 |
-| 24 | **Sales Creator** (agenți AI vânzări) | **0 scriere** (`list_sales_agents`) | builder `/ai-sales-creator`: descrii oferta, alegi canale (Messenger/IG/WhatsApp), limite preț | 12 |
-| 25 | **Website** (builder + SEO) | citire: `browse_brand_media`, `list_menus` (meniul se sincronizează automat) | builder vizual `/website-builder`: template, pagini, domeniu, SEO, SSL | 12 |
+| 24 | **Agenți AI vânzări** | `list_sales_agents`, `toggle_sales_agent` | creatorul `/ai-sales-creator` a fost retras (25.09.2026) | 12 |
+| 25 | **Website** (builder + SEO) | citire: `browse_brand_media`, `list_menus`, `list_websites` (meniul se sincronizează automat) | Website Builder din `/ecommerce/websites`: template, pagini, domeniu, SEO, SSL; skill `construieste-website` | 12 |
 | 26 | **Portal clienți** | `configure_portal_general/appearance/texts/features/menu_config/display`, `get_portal_config` | aranjare vizuală butoane, loyalty (puncte), gamificație | 12 |
-| 27 | **Portal chat** (chatbot clienți) | activezi cu `configure_portal_features(chat:true)`, apoi **0 scriere** | builder `/portal-chat-agents`: tip (Concierge/Order/Support), personalitate, FAQ, escalare | 12 |
+| 27 | **Portal chat** (chatbot clienți) | — | agenții de chat pentru clienți (`/portal-chat-agents`) au fost retrași (25.09.2026); vezi skill `creeaza-agent-client` | 12 |
 | 28 | **Meniu fizic** (tipăribil) | **manipulezi config-ul integral**: citești cu `execute_sql_query` (config din `menu_display_configs`), rescrii cu `update_menu_display_config` (REPLACE) — poze, fonturi, fundal, mutare produse, freeform, umplere goluri; + finalizezi produsele cu `update_menu_item`. Skill: `meniu-fizic` (+ `meniu-fizic-design.md`/`-pricing.md`) | aplicarea TEMEI (eroi/decor/repaginare — le face motorul de teme doar din aplicație) + export PDF se fac în app; verificare vizuală prin Chrome | 12 |
 | 29 | **Platforme & dispozitive** | `create_menu_display_config`/`update_menu_display_config` (afișaj per device) | editor layout per platformă (Waiter/Bar/Kiosk/KDS), test pe device-ul fizic | 12 |
 

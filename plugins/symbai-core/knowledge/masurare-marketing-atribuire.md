@@ -52,4 +52,4 @@ Toate sunt de **citire** [citire] — măsurarea nu cheltuie și nu trimite nimi
 - `get_sales_analytics` — analiză de vânzări din zona **deal-uri / pipeline CRM** (oferte de evenimente, catering), NU bonuri POS. Folosește-l doar pentru lumea de vânzări B2B/evenimente.
 - `get_email_campaign_analytics`, `get_email_ab_test_report`, `reconcile_email_conversions` — KPI email post-MPP, varianta câștigătoare, recuperare click-fără-conversie.
 - `top_produse`, `vanzari_in_timp` — context de produs și evoluție în timp pentru stratul MMM-lite.
-- Pentru context strategic: `get_marketing_scorecard` + `compare_attribution_models` + `get_attribution_ltv_by_channel` intră direct în planul trimestrial (`generate_quarterly_marketing_plan`, `what_if_marketing_budget`) — vezi `knowledge/plan-marketing-strategie.md`.
+- Pentru context strategic: `get_marketing_scorecard` + `compare_attribution_models` + `get_attribution_ltv_by_channel` intră direct în planul trimestrial (`get_quarterly_marketing_plan`, `review_quarterly_marketing_plan`, `what_if_marketing_budget`) — vezi `knowledge/plan-marketing-strategie.md`.

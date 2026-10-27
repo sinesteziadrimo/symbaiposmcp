@@ -32,7 +32,7 @@ diagnose_card_gp()
 - ce urmează pentru fiecare.
 
 Spune-i userului concluzia, nu tabelul brut:
-> „Am găsit o încasare pe card din 18 iulie, de 0,10 lei, pornită de Mihai, care nu a primit niciodată răspuns de la terminal. Ea ține butonul blocat pe telefonul lui. Nota a fost achitată între timp cu card BT, deci încasarea aia nu mai are ce să închidă."
+> „Am găsit o încasare pe card de acum două zile, de 12 lei, pornită de ospătarul Andrei, care nu a primit niciodată răspuns de la terminal. Ea ține butonul blocat pe telefonul lui. Nota a fost achitată între timp cu altă metodă, deci încasarea aceea nu mai are ce să închidă."
 
 ## Pasul 2 — Condu deblocarea în aplicație
 
@@ -54,6 +54,7 @@ După ce încasarea e închisă, telefonul se deblochează la următoarea încer
 
 Atunci butonul e blocat din configurare, nu dintr-un blocaj:
 
+- **Verifică terminalele** → `list_card_terminals(locationId?)`: tip, TID sau adresa din rețea, PC-ul cu Print Agent și dacă e online, terminalul implicit al locației. Pentru un terminal fizic din rețea (`physical_ecr`), `test_card_terminal(id)` trimite un handshake fără nicio plată (cod `000` = OK) — nu-l rula în timpul unei încasări.
 - **Terminal neconfigurat** → owner-ul adaugă terminalul de card în Setări → Integrări (are nevoie de TID-ul de la GlobalPayments și de contul de comerciant).
 - **Terminal configurat, dar ospătarul nu l-a ales** → pe telefon: Operațiuni → „Terminal plată Card GP" → alege terminalul (sau „Acest telefon", dacă încasează cu aplicația de card de pe telefonul lui).
 - **Pe iPhone**, varianta „Acest telefon" deschide aplicația de card cu suma și revine automat în Symbai — aplicația trebuie să fie instalată și logată.

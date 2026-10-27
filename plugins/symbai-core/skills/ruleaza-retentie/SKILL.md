@@ -66,7 +66,7 @@ Trimite pe canalul din rețetă, escaladat în timp. Tot ce **trimite efectiv** 
 **WhatsApp** (conversațional, ultima treaptă pentru segmentul cald care tot n-a reacționat):
 - `send_whatsapp_message(..., confirm: true)` — doar către cei cu opt-in, după ce email+push n-au prins. Win-back-ul recuperează **12-18%** când emailul e dublat de SMS/WhatsApp.
 
-**Ofertă ca mecanism** (reducerea care alimentează win-back-ul): creează-o din `creeaza-oferta` (`create_offer`). Pentru o ofertă cu termen pune `startsAt`+`expiresAt`; fără fereastră de timp oferta rulează 24/7 și pierzi marjă. Rulează întâi `preview_offer_margin` ca să nu vinzi în pierdere.
+**Ofertă ca mecanism** (reducerea care alimentează win-back-ul): creează-o cu `create_offer` (ghid: `knowledge/oferte-promotii-horeca.md`). Pentru o ofertă cu termen pune `startsAt`+`expiresAt`; fără fereastră de timp oferta rulează 24/7 și pierzi marjă. Rulează întâi `preview_offer_margin` ca să nu vinzi în pierdere.
 
 ## 7. Măsoară (câștigul în lei, nu click-uri)
 
@@ -87,4 +87,4 @@ La 72h-2 săptămâni după campanie: [citire]
 - **Sunset (oprește) după ladder:** clienții care nu reacționează după toată secvența și ~90-180 zile de tăcere → scoate-i din trimiterile active (`add_email_suppression`) ca să protejezi reputația de trimitere. Win-back-ul are dezabonări mai multe — e normal și sănătos pentru igiena listei.
 - **Nu da reduceri cui n-are nevoie:** fidelii primesc recunoaștere (puncte, status), nu discount. Reducerea o vede doar cine chiar avea nevoie de un imbold.
 - Necesită scriere pe „CRM & Automatizări Marketing" + „Comunicare (Email/WhatsApp/Push)" (+ „Marketing & Social Media" pentru oferte). Dacă lipsesc, îndrumă spre portal Hub → Acces AI.
-- Skill-uri vecine: `condu-marketingul` (planul de ansamblu), `gestioneaza-loialitate` (puncte/tiere/expirare), `gestioneaza-comunicare` (email/secvențe lifecycle), `trimite-notificare-push`, `creeaza-oferta`, `gestioneaza-reclame` (retargeting CRM al acelorași segmente). Concepte: `knowledge/crm-retete-retentie.md` + `knowledge/comunicare-cross-channel-lifecycle.md`.
+- Skill-uri vecine: `condu-marketingul` (planul de ansamblu), `gestioneaza-loialitate` (puncte/tiere/expirare), `gestioneaza-comunicare` (email/secvențe lifecycle), `trimite-notificare-push`, ofertele prin `create_offer` (`knowledge/oferte-promotii-horeca.md`), `gestioneaza-reclame` (retargeting CRM al acelorași segmente). Concepte: `knowledge/crm-retete-retentie.md` + `knowledge/comunicare-cross-channel-lifecycle.md`.

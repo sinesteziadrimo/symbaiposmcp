@@ -30,7 +30,7 @@ Symbai e un sistem complet de management pentru restaurante și hoteluri (HoReCa
 - **Aplicație Staff în POS web** — cardul „În Aplicație Staff" de pe `/menu/platforms`: profiluri pentru livratori/agenți/task-uri/CRM, previzualizare pe telefon și legătura cu rolurile reale din Personal. → `expo-aplicatii-mobile.md` + skill `configureaza-aplicatie-staff`
 - **Bara de platforme** — comutatorul de sus Livrări / POS / Comenzi Client / Rezervări (web/tabletă) și bara aplicației POS mobil, pe fiecare rol (`get_operations_bar_config`, `configure_operations_bar`). → skill `configureaza-bara-platforme`
 - **Setări & Administrare** — locații, branduri, TVA, metode de plată, utilizatori și roluri, integrări, abonament. → `setari-administrare.md`
-- **AI în aplicație** — asistentul Sym (butonul plutitor) + agenții specialiști. → `asistentul-ai-in-aplicatie.md`
+- **AI în aplicație** — Sym (bula din dreapta-jos = asistentul tău personal, prin Symbai Connect) și uneltele AI rămase; agenții specialiști au fost retrași. → `asistentul-ai-in-aplicatie.md`
 
 Fișiere de referință transversale: `agent-operare-avansata.md` (standardul de lucru pentru task-uri complexe: consultant + inginer + QA), `erp-manufacturing-benchmark.md` (pattern-uri ERP/MES pentru fabrică: release gate, BoM, MPS, capacitate, QC), `harta-aplicatiei.md` (indexul exhaustiv al TUTUROR paginilor, generat din registrul de navigare al aplicației), `tools-mcp.md` (catalogul complet al tool-urilor MCP, generat din registry-ul live, cu modelul de permisiuni), `expo-aplicatii-mobile.md` (configurarea actuala a aplicatiilor native) și `claude-code-mcp-operare.md` (cum lucrează corect Claude Code cu skill-uri, knowledge, MCP live, confirmări și verificare prin citire).
 

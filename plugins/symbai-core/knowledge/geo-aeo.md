@@ -35,7 +35,7 @@ Trei lucruri decid dacă un AI te numește:
 
 ## Cum măsori vizibilitatea AI (nu există „rank" clasic)
 
-- Ține o listă de **15-20 de prompturi realiste** de client („cel mai bun brunch lângă [reper]", „hotel pet-friendly în [oraș]") și **rulează-le lunar** prin ChatGPT/Perplexity/Gemini/Google AI Mode; loghează cine e citat și de ce. Folosește `seo_web_research` ca să vezi ce surse apar.
+- Ține o listă de **15-20 de prompturi realiste** de client („cel mai bun brunch lângă [reper]", „hotel pet-friendly în [oraș]") și **rulează-le lunar** prin ChatGPT/Perplexity/Gemini/Google AI Mode; loghează cine e citat și de ce. Notează ce surse apar (le verifici tu, cu linkuri).
 - Urmărește **mențiunile de brand** pe web (recenzii noi, articole, directoare).
 - Compară cu concurenții: unde sunt ei numiți în răspunsurile AI și tu nu = gap de închis (conținut + GBP + mențiuni).
 
@@ -43,9 +43,9 @@ Trei lucruri decid dacă un AI te numește:
 
 - `get_brand_entity_kit` — **sursa UNICĂ de adevăr off-site** (NAP, descriere, sameAs, afirmații Wikidata, directoare, goluri). Rulează-l ÎNAINTE de a popula orice platformă, ca totul să fie IDENTIC (consistența = semnalul #1 de entitate). Inima skill-ului `autoritate-offsite`.
 - `get_seo_provider_status` — confirmă că robots/boții AI și sursele de date sunt ok.
-- `seo_web_research` (jobType `competitor_audit` / `trend_scan`) — vezi cum e descris brandul/concurenții pe web și ce citează AI-ul.
+- Research web făcut de tine (căutare/Chrome) — cum e descris brandul/concurenții pe web și ce citează AI-ul; `list_seo_competitors` pentru share of voice.
 - `update_brand` / `update_company` — ține NAP-ul și identitatea (socialMedia, googleReviewUrl) canonice la SURSĂ (de aici se construiește entitatea/JSON-LD pe site).
-- Conținut: `create_blog_post`/`update_blog_post` cu FAQ și răspunsuri concise; `generate_content_brief` produce întrebări FAQ gata de folosit.
+- Conținut: `create_blog_post`/`update_blog_post` cu FAQ și răspunsuri concise; întrebările FAQ le iei din SERP (People Also Ask) și din `get_content_brief`, dacă articolul are un brief salvat.
 
 ## Capcane
 

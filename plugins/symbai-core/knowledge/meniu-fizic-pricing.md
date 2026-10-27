@@ -34,7 +34,7 @@ MCP acoperă acum redenumirea/reordonarea categoriilor și nutriția manuală. M
 2. Produse pe categorii (`update_menu_item menuCategoryId`) + ordinea în categorie (`sortOrder`) — best-sellers/semnătură sus.
 3. Titlu, descriere, gramaj, preț (per item sau în masă).
 4. Alergeni (`set_product_allergens`); nutriție (`set_product_nutrition` / `bulk_set_product_nutrition` sau `recalc_product_nutrition` din rețetă).
-5. Poze (`set_product_image` cu URL; sau pagina Poze Bulk Meniu pentru multe poze necunoscute).
+5. Poze (`set_product_image` cu URL; multe poze de pe calculator: `upload_product_photos`, vezi `poze-produse-in-masa.md`).
 6. Verificare finală: `list_menu_items` — totul are nume/preț/categorie corecte → gata pentru meniul fizic.
 
 Detalii pe produse/rețete/tipuri: `produse-meniu-retete.md`. Importul în masă: skill-ul `importa-date`.

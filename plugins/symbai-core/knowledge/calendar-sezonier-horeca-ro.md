@@ -48,8 +48,8 @@ Anul comercial dintr-un restaurant, hotel sau magazin se construiește în jurul
 2. `read_brand_memories` + `list_locations` + `marketing_location_weather` [citire] — vocea brandului, orașul, sezonul real.
 3. `get_attribution_ltv_by_channel` + `get_attribution_report` [citire] — ce canale aduc bani (ca să aloci bugetul sezonier pe ROAS real, nu pe șablon).
 4. `get_menu_engineering` + `top_produse` + `raport_vanzari` [citire] — preparatele-vedetă reale de promovat și bonul mediu.
-5. `generate_quarterly_marketing_plan` [marketing] — generează planul cu OKR-uri + split de buget + calendar; arată-l proprietarului în limbaj simplu.
-6. La aprobare: `apply_quarterly_marketing_plan(confirm:true)` [marketing] — creează drafturile de campanii/conținut. Raportează ce s-a creat + avertismente.
+5. Planul: `list_quarterly_marketing_plans` → `get_quarterly_marketing_plan` [citire] dacă există unul pentru trimestru. Generarea automată a unui plan nou a fost retrasă: altfel îl scrii tu (OKR-uri, split de buget, calendar) și i-l arăți proprietarului în limbaj simplu.
+6. La aprobare, pe un plan salvat: `apply_quarterly_marketing_plan(planId, confirm:true)` [marketing] — creează drafturile de campanii/conținut. Raportează ce s-a creat + avertismente.
 7. Verifică ulterior cu `get_quarterly_marketing_plan` / `review_quarterly_marketing_plan` [citire].
 
 ### 2. Lansează o campanie sezonieră (Valentine's / Paște / Revelion)
@@ -73,7 +73,7 @@ Anul comercial dintr-un restaurant, hotel sau magazin se construiește în jurul
 1. `marketing_location_weather` + `marketing_open_tables` [citire] — soare + terasă plină la 18:00 = postezi ACUM.
 2. `marketing_active_shifts` [citire] — cine poate filma un Reel din teren.
 3. `marketing_send_content_request` [marketing] — cere un clip scurt (terasă, lumină naturală).
-4. `marketing_generate_post` / `schedule_social_post` [marketing] — Reel + caption cu keywords locale (oraș + tip de bucătărie).
+4. `schedule_social_post` [marketing] — Reel + caption scrise de tine, cu keywords locale (oraș + tip de bucătărie); intră „în așteptare aprobare”.
 5. Happy hour zilnic: `create_offer` cu `timeStart:'17:00'`, `timeEnd:'19:00'`, `daysOfWeek` [marketing] + `push_notify_customers` [marketing, `confirm:true`] la 16:30 în fusul clientului, cap 1/zi.
 
 ### 5. Black Friday (retail + shop online, fereastră 3 săpt)
@@ -86,7 +86,7 @@ Anul comercial dintr-un restaurant, hotel sau magazin se construiește în jurul
 ## Tool-uri MCP utile
 
 - `get_seasonal_calendar(quarter, year)` [citire] — **sursa calendarului viu**: evenimentele cu dată exactă + fereastra de pregătire calculată pe perioada cerută. Punctul de pornire pentru orice campanie sezonieră.
-- `generate_quarterly_marketing_plan` [marketing] — generează planul trimestrial cu OKR-uri, split de buget și calendar sezonier.
+- `list_quarterly_marketing_plans` / `get_quarterly_marketing_plan` [citire] — planurile trimestriale salvate (generarea automată a fost retrasă).
 - `get_quarterly_marketing_plan` / `list_quarterly_marketing_plans` / `review_quarterly_marketing_plan` [citire] — citește/listează/revizuiește planurile existente.
 - `apply_quarterly_marketing_plan(confirm:true)` [marketing] — transformă planul în drafturi de campanii și conținut.
 - `what_if_marketing_budget` [citire] — simulează realocarea bugetului pe canale (70/20/10 pe ROAS real) înainte de a schimba ceva.
@@ -97,7 +97,7 @@ Anul comercial dintr-un restaurant, hotel sau magazin se construiește în jurul
 - `get_offer_scorecard` / `list_offer_suggestions` [citire] — măsoară performanța ofertei / ia idei de oferte pe obiectiv.
 - `create_website_promotion` / `create_discount_code` [marketing] — bannere și coduri pentru campanii de shop online.
 - `create_traffic_ad` / `create_event_ad` / `create_messages_ad` / `boost_post` [marketing, `confirm:true` — cheltuie buget] — achiziție plătită pentru evenimentul sezonier.
-- `bulk_schedule_social_posts` / `schedule_social_post` / `marketing_generate_post` [marketing] — programare conținut organic pe săptămânile de ramp-up.
+- `bulk_schedule_social_posts` / `schedule_social_post` [marketing] — programare conținut organic pe săptămânile de ramp-up.
 - `gbp_create_post` [marketing] — postare pe Google Business (cea mai mare intenție locală).
 - `create_email_campaign` / `enroll_customers_in_email_sequence` / `send_email_campaign_predictive(confirm:true)` [marketing] — retenție pe segmentele VIP + inactivi.
 - `push_notify_customers` [marketing, `confirm:true`] — reminder scurt; rulează `check_marketing_allowed` întâi.

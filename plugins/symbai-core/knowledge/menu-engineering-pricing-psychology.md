@@ -28,7 +28,7 @@ Ingineria de meniu îți spune negru pe alb care preparate îți aduc bani și c
 
 ### 1. Pasul trimestrial de inginerie de meniu (acțiune peste cele 4 cadrane)
 1. **Citește cadranele** — `get_menu_engineering` [citire] pe brandId, pe 30-90 de zile. Arată owner-ului cine e Vedetă / Ghicitoare / Cal / Câine, în limbaj simplu.
-2. **Pentru fiecare Ghicitoare** (marjă mare, popularitate mică) — repoziționează sus în categorie cu `update_menu_item` [marketing] (sortOrder/poziție) + rescrie descrierea apetisant cu `generate_product_description` [marketing]. Aici e câștigul de **20-35%** — explică-i owner-ului că nu schimbăm prețul, doar locul și textul.
+2. **Pentru fiecare Ghicitoare** (marjă mare, popularitate mică) — repoziționează sus în categorie cu `update_menu_item` [marketing] (sortOrder/poziție) + rescrie descrierea apetisant (o scrii tu, o salvezi cu `set_product_seo` sau `update_menu_item` cu `description`) [produse_meniu]. Aici e câștigul de **20-35%** — explică-i owner-ului că nu schimbăm prețul, doar locul și textul.
 3. **Pentru fiecare Cal-de-povară** (popular, marjă mică) — retuș fin de preț cu `bulk_update_menu_item_prices` [marketing] (mută la o cifră charm, ex. 28 → 28,99) ȘI atașează un side cu marjă mare cu `set_product_recommendations` [marketing]. NU ieftini.
 4. **Pentru fiecare Câine** (slab/slab) — propune scoaterea cu `set_product_86` [marketing] (sau reinventare). Confirmă cu owner-ul înainte. NICIODATĂ pe promoție.
 5. **Pentru fiecare Vedetă** — `update_menu_item` [marketing]: nume cu poveste + poziție în triunghiul de aur (dreapta-sus). Exclude-o din orice reducere.
@@ -45,7 +45,7 @@ Ingineria de meniu îți spune negru pe alb care preparate îți aduc bani și c
 1. **Creează produsul LTO** — `add_menu_item` [marketing] (sau produsul nou).
 2. **Prețuiește pentru profit** — `preview_offer_margin` [citire] înainte de a fixa prețul.
 3. **Oferta pe interval de date** — `create_offer` [marketing] cu `startsAt`/`expiresAt` pentru o fereastră de 2-4 săptămâni (fix sau buy-x-get-y). Se închide singură la termen — exact ce vrei la un LTO.
-4. **Anunță-l** — `create_website_promotion` [marketing] (banner cu aceleași date) + `push_notify_customers` [marketing] (confirm:true) sau `marketing_generate_post` [marketing] pentru social.
+4. **Anunță-l** — `create_website_promotion` [marketing] (banner cu aceleași date) + `push_notify_customers` [marketing] (confirm:true) sau `schedule_social_post` [marketing] pentru social (text scris de tine, intră în așteptare aprobare).
 5. **La final** — `get_offer_scorecard` [citire] pentru liftul real, apoi lasă-l să expire.
 
 ### 4. Bundle + creșterea coșului online
@@ -74,7 +74,7 @@ Ingineria de meniu îți spune negru pe alb care preparate îți aduc bani și c
 - `set_product_recommendations` [marketing] — atașează un side cu marjă mare la un Cal-de-povară.
 - `bulk_update_menu_item_prices` [marketing] — retuș de preț în masă (charm pricing pe Cai-de-povară).
 - `update_menu_item` [marketing] — nume cu poveste + repoziționare în triunghiul de aur.
-- `generate_product_description` [marketing] — rescrie descrierea unei Ghicitori (câștigul de 20-35%).
+- `set_product_seo` / `update_menu_item` (`description`) [produse_meniu] — salvează descrierea rescrisă a unei Ghicitori (câștigul de 20-35%).
 - `set_product_86` [marketing] — scoate temporar un Câine din meniu; `restore_product_86` [marketing] îl readuce.
 - `create_discount_code` [marketing] — cod de reducere (ex. „cheltuie X, primești Y", single-use pe win-back). (confirm:true)
 - `get_free_shipping_suggestions` [citire] — prag recomandat de livrare gratuită (țintă: +15-25% peste nota medie).
@@ -86,7 +86,7 @@ Ingineria de meniu îți spune negru pe alb care preparate îți aduc bani și c
 
 ## Întrebări frecvente și capcane
 
-- **Cum cresc vânzările cel mai repede, fără să schimb prețurile?** Rulează `get_menu_engineering`, ia Ghicitorile (marjă mare, popularitate mică), rescrie-le descrierea cu `generate_product_description` și ridică-le sus în categorie cu `update_menu_item`. Doar repoziționarea + rescrierea dau **20-35%** în prima lună.
+- **Cum cresc vânzările cel mai repede, fără să schimb prețurile?** Rulează `get_menu_engineering`, ia Ghicitorile (marjă mare, popularitate mică), rescrie-le descrierea (o salvezi cu `set_product_seo`) și ridică-le sus în categorie cu `update_menu_item`. Doar repoziționarea + rescrierea dau **20-35%** în prima lună.
 - **Pun .99 sau număr rotund?** Depinde de poziționare: charm pricing (.99/.90) pentru casual/fast-food (până la +24%); numere rotunde, fără bani mărunți, la fine-dining (semnalează premium). Nu amesteca cele două stiluri pe același meniu.
 - **Funcționează ancora/decoy-ul?** Da — un produs deliberat scump sus pe listă ridică valoarea percepută a restului cu ~32% și face mid-tier-ul să pară rezonabil. Decoy-ul nu trebuie să se vândă; rolul lui e comparația.
 - **Un Cal-de-povară se vinde grozav dar are marjă mică — îl ieftinesc?** NU. Pierzi marjă pe un produs deja popular. Ajustează porția/costul, fă un retuș fin de preț (la o cifră charm) și atașează-i un side cu marjă mare (`set_product_recommendations`).

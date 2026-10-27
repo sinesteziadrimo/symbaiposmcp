@@ -22,7 +22,7 @@ Pregătește campaniile sezoniere după timpul real pentru producție, aprobare,
 Fiecare propunere de modificare include observația, ipoteza, costul maxim, rezultatul urmărit și criteriul de continuare/oprire. Simulările de buget sunt scenarii, nu garanții de vânzări. Nu muta bani automat doar pentru că o platformă revendică un ROAS mai mare.
 
 ## Tool-uri MCP utile
-- `generate_quarterly_marketing_plan(brandId, quarter, year, totalBudget?, strategicNote?)` — generează + salvează planul (OKR, buget pe canale, campanii, calendar, riscuri). [marketing]
+- Generarea automată a planului trimestrial a fost retrasă: dacă nu există plan salvat, îl scrii tu (OKR, buget pe canale, campanii, calendar, riscuri) și îl prezinți; tacticile le lansezi prin uneltele canalelor.
 - `get_quarterly_marketing_plan` / `list_quarterly_marketing_plans` — citește planurile. [citire]
 - `apply_quarterly_marketing_plan(planId, confirm:true)` — îl operaționalizează (drafturi reclame + planuri conținut). [marketing]
 - `review_quarterly_marketing_plan(planId)` — real vs așteptat + recomandări de realocare. [marketing]

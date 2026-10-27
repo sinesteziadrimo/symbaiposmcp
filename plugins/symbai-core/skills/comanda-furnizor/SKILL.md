@@ -42,7 +42,7 @@ Pentru PDF-uri scanate, oferte cu ambalaje diferite și export Excel, folosește
 6. `get_stock_levels(warehouseId, onlyLowStock:true)` rămâne util pentru praguri. O listă goală, mai ales cu praguri neconfigurate, nu dovedește că necesarul este acoperit. La unealtă indisponibilă sau acces refuzat, verifică versiunea și aria contului; nu afirma că lipsesc mapările și nu ocoli permisiunile. Pentru revizuire vizuală oferă linkul către `/smart-ordering` prin `gaseste_in_aplicatie`.
 
 ### B. Compar prețurile între furnizori pe un produs
-1. `search_products_db(productName:"Brânză Albă")` → productId.
+1. `search_products_db(query:"Brânză Albă")` → productId.
 2. În gestiunea și brandul verificate, `list_procurement_recommendations(warehouseId, brandId, productId)` → ofertele și condițiile lor. Apelul nu primește cantitatea dorită; eventualele totaluri folosesc `pricingAssumptionInternalQty` din istoric/praguri și sunt ilustrative. Arată ipoteza, fără să o prezinți drept necesarul sau costul unei comenzi cerute. Dacă este cerută și cantitatea pentru o perioadă, continuă cu `prepare_procurement_forecast`.
 3. Pentru istoricul unui partener, `get_supplier_last_prices(supplierId)` este o citire separată, numai dacă este disponibilă contului. Nu folosi un istoric mai larg drept dovadă a recepțiilor brandului ales.
 4. Fără cantitate verificată, compară prețul pe aceeași unitate internă și monedă, MOQ/pachet, valabilitatea și termenul. Totalul achiziției se evaluează numai la cantitatea verificată, după rotunjire. Păstrează distincte prețul de catalog și ultimul preț recepționat; nu declara „cel mai ieftin” pe baza prețului unitar când cantitățile sau monedele diferă.

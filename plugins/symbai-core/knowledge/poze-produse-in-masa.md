@@ -63,7 +63,7 @@ Fișiere de tipul `IMG_0042.jpg`, `DSC_1177.jpg`, `foto1.jpg` — numele nu con�
 Două ieșiri, spuse userului ca atare:
 
 1. **Redenumește fișierele** după preparat (îi dai lista de nume exacte din `list_products_without_photo`) — după redenumire le urci tu, normal.
-2. **Potrivirea vizuală din aplicație**: pagina Meniuri → Prețuri → **Poze Bulk Meniu**, unde AI-ul se uită în poză, nu la nume, și propune preparatul. Acolo userul confirmă și salvează. Pagina arată câte produse sunt disponibile pentru potrivire și, dacă unitatea are mai multe meniuri, permite alegerea meniului; o poză rămasă fără produs apare ca „poză fără produs”, nu ca salvată.
+2. **Potrivirea vizuală făcută de tine**: deschizi fiecare poză, propui preparatul (din `list_products_without_photo`) și, după confirmarea userului, o urci cu `upload_product_photos` cu `productId` explicit. Pagina de poze în masă din aplicație nu mai există.
 
 ## Capcane confirmate
 

@@ -58,7 +58,7 @@ Completează și ține ACTIV fiecare câmp:
 ## Tool-uri MCP utile
 
 - `get_seo_overview` / `get_search_performance` — vizibilitate și trafic local din Search Console.
-- `seo_web_research(jobType:"competitor_audit")` — cum apar concurenții locali în SERP/AI.
+- Research web făcut de tine + `list_seo_competitors` / `gbp_rank_summary` — cum apar concurenții locali în SERP/hartă/AI.
 - `update_brand` / `update_company` — NAP + identitate canonice (sursa entității/schema).
 - `gaseste_in_aplicatie("Google Business Profile")` → `/gbp`; skill `raspunde-recenzii` pentru recenzii.
 

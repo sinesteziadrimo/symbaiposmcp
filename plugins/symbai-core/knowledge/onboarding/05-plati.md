@@ -63,7 +63,7 @@ Ghidează-l cu `gaseste_in_aplicatie({ intrebare: "metode de plată" })`.
 
 ## Echivalentul în wizard-ul din aplicație
 
-**Pasul 9 din wizard** (`/onboarding`, „Metode de plată") — două taburi: *Metode de plată* (status curent + butonul „Configurare rapidă" + link spre Setări POS) și *Terminal Viva* (status integrare + link spre Setări → Integrări). Metodele create prin conexiune SUNT văzute de pas (statusul devine verde „N metode active"), dar **bifa de progres a wizardului NU se actualizează prin conexiune** — utilizatorul apasă singur „Următorul pas" în wizard.
+**Pasul 9 din wizard** (`/onboarding/welcome` (pașii la `/onboarding/step/N`), „Metode de plată") — două taburi: *Metode de plată* (status curent + butonul „Configurare rapidă" + link spre Setări POS) și *Terminal Viva* (status integrare + link spre Setări → Integrări). Metodele create prin conexiune SUNT văzute de pas (statusul devine verde „N metode active"), dar **bifa de progres a wizardului NU se actualizează prin conexiune** — utilizatorul apasă singur „Următorul pas" în wizard.
 
 ## Verificare la final
 

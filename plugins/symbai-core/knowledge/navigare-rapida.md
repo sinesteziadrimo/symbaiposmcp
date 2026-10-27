@@ -34,11 +34,9 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 
 ## Meniu, produse & rețete
 - **Meniu & Dispozitive POS** `/menu` — Hub meniu cu 5 tab-uri reale: Prețuri Meniu, Platforme, Configurare Afișaj (POS/Web), Meniu Fizic, Oferte & Promoții.
-· NU aici: pentru catalog produse/categorii → /master-data; pentru rețete → /recipes; pentru analiză popularitate-profitabilitate (cadrane) → /ai-pricing
-- **Prețuri Meniu** `/menu?tab=pricing` — Editor prețuri de vânzare per meniu: listă „Toate produsele”, food cost total, sortare după food cost, adaugă produse/pachete-combo, buton „Prețuri Meniu Nou” (→/ai-pricing) + „Adaugă poze bulk”.
-· NU aici: pentru recomandări de preț + cadrane stars/plowhorses → /ai-pricing (buton „Prețuri Meniu Nou”); pentru cost din rețetă → /recipes
-- **Prețuri Meniu Nou** `/ai-pricing` — Analiza popularitate vs profitabilitate: cadrane Vedete/Cai de povară/Puzzle/Câini + recomandări de preț AI.
-· NU aici: ca să SETEZI efectiv prețurile + food cost → /menu?tab=pricing
+· NU aici: pentru catalog produse/categorii → /master-data; pentru rețete → /recipes; pentru analiză popularitate-profitabilitate (cadrane) → raportul P&L `/reports/pnl` (secțiunea Menu Engineering) sau `get_menu_engineering`
+- **Prețuri Meniu** `/menu?tab=pricing` — Editor prețuri de vânzare per meniu: listă „Toate produsele”, food cost total, sortare după food cost, adaugă produse/pachete-combo. Aceeași pagină: `/menu/pricing`.
+· NU aici: pentru cadranele Vedete/Cai de povară/Puzzle/Câini → `/reports/pnl` (Menu Engineering) sau `get_menu_engineering`; pentru cost din rețetă → /recipes
 - **Oferte & Promoții** `/menu?tab=promotions` — Motor de oferte care reduc nota; 3 sub-tab-uri: Panou Control, Upsell & Cross-sell, Happy Hour & Dinamic. Tipuri promo: Reducere %, Articol Gratuit, Cumpără X primești Y, Sumă Fixă. Pe canale (POS/Kiosk/Website/QR/Delivery) și zile/ore; buton „Sugestii AI” + „Campanie Nouă”.
 · NU aici: pentru voucher-e/promoții în portalul clienților → /portal-customers?tab=promotions; pentru banner-e vizuale website (NU reduc nota) → website builder
 - **Configurare Afișaj** `/menu?tab=display` — Profile de afișare meniu per canal (POS Ospătar, Kiosk Client, Website/Online, Platforma Clienți Web, Table—Clienți QR): teme, layout carduri, ordine/navigare categorii, imagini. **Tot aici se setează Politica de reduceri** — până la ce procent/sumă poate da un angajat reducere fără aprobare (per platformă).
@@ -47,7 +45,6 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: presetul QR per zonă/raion → /staff?tab=floor-schedule (Program Salon); generarea/tipărirea codurilor QR de masă → /qr-codes; misiuni/gamificare → /portal-missions; jocuri/atracții → /portal-games
 - **Meniu Fizic** `/menu?tab=physical-menu` — Designer de meniu tipărit/PDF : formate A4/A3, paginare „Recalculează”, copertă + pagini nutriționale/alergeni, export PDF/print, QR dinamic pe copertă.
 · NU aici: pentru meniul digital scanat de clienți la masă → /t/:codQR (meniu QR); pentru aspectul pe ecrane POS/web → tab Configurare Afișaj
-- **Poze Bulk Meniu** `/menu/pricing/bulk-photos` — Urci multe poze deodată (drag & drop), AI le analizează și sugerează automat articolul de meniu potrivit pentru fiecare; confirmi/schimbi și se salvează ca imagine produs.
 · NU aici: pentru a pune o singură poză pe un produs → fișa produsului în /master-data; pentru editare prețuri → tab Prețuri Meniu
 - **Centru Meniu** `/menu/center` — Overview manager: ce e indisponibil acum (86), produse cu lipsuri, acțiuni rapide pe meniu.
 · NU aici: prețuri → /menu?tab=pricing; alerte stoc → /inventory
@@ -61,8 +58,8 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: pentru taguri de alergeni propuse de AI + rutare KDS + TVA → /ai-tags (Sym Tag Master); pentru alergeni la import → tot /ai-tags sau fișa produsului
 - **Etichete & Alergeni (Sym Tag Master)** `/ai-tags` — Titlu „Sym Tag Master”: gestionare etichete (panou „Etichete”) + chat AI „Chat AI / Propuneri AI” care PROPUNE taguri de alergeni (Reg. UE 1169), rutare imprimante/KDS și marketing — tu Aplici/Refuzi fiecare propunere, nimic automat.
 · NU aici: pentru lista oficială de alergeni + matrice cross-contact → /allergens; pentru regula efectivă tag→imprimantă → Setări → Imprimante; pentru cote TVA pe tip produs → /ai-product-types
-- **Meniu din PDF / poze** `/menu/import-pdf` — Încarci meniul ca PDF sau poze; AI extrage produsele, prețurile, pozele și designul paginilor (pentru Meniu Fizic), cu propunere editabilă înainte de import.
-· NU aici: pentru import produse/stoc/furnizori din Excel → /data-import; pentru editarea prețurilor după import → /menu?tab=pricing
+- **Meniu din PDF / poze** — pagina `/menu/import-pdf` a fost retrasă: asistentul citește PDF-ul sau pozele și creează produsele prin conexiune (`bulk_create_products`, `bulk_create_menus`), cu previzualizare și acordul omului.
+· NU aici: pentru import din Excel → skill-ul `importa-date` (prin conexiune); pentru editarea prețurilor după import → /menu?tab=pricing
 - **Leagă Rețetarul (import Excel)** `/recipe-mapping` — Imporți rețetarul din Excel: fiecare ingredient se mapează la un produs existent (potrivire exactă/similară/AI); conflictele de unitate de măsură blochează importul până le rezolvi.
 · NU aici: ca să CREEZI/editezi rețete manual → /recipes; pentru fișă tehnică tabelară (export CSV) → /recipe-datasheet
 
@@ -101,8 +98,6 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: ca să procesezi efectiv factura/NIR → /stock-entries; pentru diferențe contestate → /inventory/disputes
 - **Dispute Inventar** `/inventory/disputes` — Diferențele constatate la recepție, clasificate: dispute cu furnizorul, corecții OCR, variații de livrare — locul unde contești o diferență.
 · NU aici: pentru igiena/anomaliile intrărilor → /inventory/inbox-quality; pentru solduri/datorii furnizori → /supplier-balances
-- **AI Achiziții** `/ai-procurement` — Întrebi AI-ul ce să comanzi de la furnizori săptămâna asta: analiză cheltuieli + optimizare comenzi, conversațional.
-· NU aici: pentru generarea efectivă a comenzilor (predicție) → /smart-ordering; pentru comparare prețuri furnizori → /procurement-recommendations
 - **HACCP & Siguranță Alimentară** `/haccp` — Notezi temperaturile la frigidere și gestionezi siguranța alimentară: 5 tab-uri (Temperaturi, Curățenie, Incidente, Senzori IoT, Răcire Rapidă).
 · NU aici: pentru checklist-uri generale de echipă → /staff?tab=tasks; pentru sarcinile mele ca angajat → /my-tasks
 
@@ -155,8 +150,6 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: pentru P&L cu drill-down în hub → /analytics?tab=pnl; pentru KPI cu semafor → /reports/pnl-kpi; pentru compară perioade → /reports/pnl-compare-periods; snapshot-uri salvate → /analytics/saved-pnl
 - **Rapoarte Clienți** `/customer-reports` — Raport despre clienți: segmentare, comportament, lifetime value (LTV), frecvență — cât cheltuie fiecare.
 · NU aici: pentru lista/fișele clienților → /customers; pentru follow-up + sugestii AI per client → /customer-followup
-- **AI Rapoarte** `/ai-reports` — Întrebi AI-ul cum ți-au mers vânzările (ex. „cum a fost săptămâna asta") și primești rapoarte cu analiză, conversațional.
-· NU aici: pentru rapoartele clasice cu tab-uri/filtre → /analytics; pentru P&L → /reports/pnl
 
 ## Finanțe & casă
 - **Finanțe & Contabilitate** `/finance` — Pagină-umbrelă, 9 tab-uri: Sumar (default), Cash Flow, Cheltuieli & Plăți, Reconciliere Canale, Control Viva, Control Card GP, Solduri inițiale, Balanță inițială, Stoc inițial. Buton „Ghid". Tab-ul „close" redirect→/finance/daily-close.
@@ -186,13 +179,11 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 - **Rapoarte Fiscale** `/finance/fiscal-reports` — Raportul fiscal pentru contabilitate: bonuri emise, X/Z, defalcare TVA, export ANAF.
 · NU aici: pentru ritualul de închidere de zi cu numărătoare casă → /finance/daily-close; pentru raportul Z din analiză → /analytics?tab=daily
 - **Extrase bancare** `/finance/bank-statements` — Imporți extrasul băncii și potrivești plățile cu facturile; al doilea tab e pentru statele de salarii.
-· NU aici: pentru notele contabile/planul de conturi în aplicație → /accounting-ledger; pentru import produse/clienți → /data-import sau /customer-import
-- **AI CFO (Cash Flow)** `/ai-cashflow` — Întrebi AI-ul cum stai cu cash-flow-ul („am bani de salarii?"): previziuni + strategie financiară, conversațional.
-· NU aici: pentru fluxul de numerar detaliat (plăți programate/recurente) → /finance?tab=cashflow; pentru registrul legal de numerar → /finance/cash-book
+· NU aici: pentru notele contabile/planul de conturi în aplicație → /accounting-ledger; pentru import produse/clienți → skill-ul `importa-date` (produse) sau /customer-import (clienți)
 
 ## Personal & sarcini
 - **Personal** `/staff` — Pagina centrală HR „Personal & Control Acces": 10 tab-uri (Planificator Ture, Foaie Pontaj, Pontaje (prezență), Sarcini & Liste, Listă Personal, Roluri & Permisiuni, Grupuri Mesaje, Program Salon, Contracte & Salarii, Beneficii Personal) + buton Adaugă Angajat + selector unitate.
-· NU aici: pentru sarcinile mele ca angajat → /my-tasks; pentru beneficii masă personal → /staff, tab „Beneficii Personal" (vechiul /settings/staff-benefits redirecționează); pentru AI HR → /ai-angajati
+· NU aici: pentru sarcinile mele ca angajat → /my-tasks; pentru beneficii masă personal → /staff, tab „Beneficii Personal" (vechiul /settings/staff-benefits redirecționează)
 - **Planificator Ture** `/staff?tab=scheduler` — Calendar săptămânal drag-and-drop pentru ture: adaugi/muți/editezi ture, undo, copiere săptămâna anterioară, șabloane de tură, rânduri custom, culori per angajat, buton „Salvează și Publică Program". Sub el panoul „Cereri Concediu" (aprobă/respinge).
 · NU aici: pentru pontajul efectiv (intrare/ieșire) → /staff?tab=timesheets; pentru ce aranjament de sală e activ pe zi → /staff?tab=floor-schedule; pentru turele de fabrică (producție) → /production
 - **Foaie Pontaj** `/staff?tab=timesheets` — Tabel cu pontaje efective: intrare/ieșire, pauze, total ore, ore suplimentare, cu căutare, filtru brand/perioadă, aprobare și export/print. Realitatea lucrată, nu planul.
@@ -244,7 +235,7 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 - **Follow-up Clienți** `/customer-followup` — Clienți care n-au mai venit: funnel + Next Best Action (sugestii zilnice cu scor — sună/ofertă/cere recenzie), coadă de sarcini, playbooks automate, timeline per client.
 · NU aici: pentru lista/fișele clienților → /customers; pentru rapoarte clienți → /customer-reports; pentru automatizări marketing → /marketing-automations
 - **Import Clienți** `/customer-import` — Imporți o listă de clienți din Excel/CSV: contact, segmente, puncte loialitate.
-· NU aici: pentru import produse/meniu/stoc → /data-import; pentru rapoarte despre clienți → /customer-reports
+· NU aici: pentru import produse/meniu/stoc → skill-ul `importa-date` (prin conexiune); pentru rapoarte despre clienți → /customer-reports
 
 ## Hotel + Marketing, online & livrări
 - **Dashboard Hotel** `/hotel` — Dashboard PMS: KPI ocupare (camere libere/ocupate, %), sosiri/plecări azi, in-house, plus hub de quick-links spre toate sub-paginile hotel (recepție, camere, rate, channel, folio, analytics).
@@ -285,10 +276,10 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: pentru comenzi de pe Glovo/Wolt/Bolt (agregatori) → /channels; pentru kanban dispecer + hartă live → /deliveries/dispatch; pentru zone de livrare → /deliveries/zones
 - **Inbox WhatsApp** `/whatsapp-inbox` — Citești și răspunzi la mesajele clienților de pe WhatsApp Business (primite și trimise).
 · NU aici: pentru conectarea numărului WhatsApp → /social-media (tab WhatsApp); pentru mesaje/comentarii social → /marketing/audience?tab=inbox
-- **AI Marketing Agent** `/ai-marketing` — Pui AI-ul să-ți facă o campanie de marketing: agent conversațional pentru reclame, postări și strategii.
+- **Asistent marketing** `/ai-marketing` — duce la Asistenții mei (`/my-assistants?focus=marketing`): asistentul personal care lucrează pe marketing prin Symbai Connect.
 · NU aici: pentru programarea postărilor → /social-hub; pentru reclame plătite (wizard) → /ad-campaigns; pentru automatizări/triggere → /marketing-automations
 - **Automatizări Marketing** `/marketing-automations` — Mesaje automate (ex. de ziua clientului): fluxuri, triggere, secvențe email/SMS.
-· NU aici: pentru follow-up cu Next Best Action → /customer-followup; pentru programare postări → /social-hub; pentru agent AI marketing → /ai-marketing
+· NU aici: pentru follow-up cu Next Best Action → /customer-followup; pentru programare postări → /social-hub; pentru asistentul de marketing → /my-assistants
 - **Template-uri Email** `/email-templates` — Editezi șablonul de email trimis clienților: galerie template-uri, HTML custom, editor drag & drop.
 · NU aici: pentru crearea/trimiterea campaniei → /email-campaigns; pentru statistici → /email-analytics; pentru loguri trimiteri → /email-logs
 - **Analitice Email** `/email-analytics` — Câți clienți au deschis emailul: open rate, click rate, bounce, dezabonări, tendințe.
@@ -319,8 +310,7 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: pentru flag-ul fiscal isMasaServita pe produs → fișa produsului, nu aici. Pentru rețeta unui produs → /recipes. Pentru registru de casă → /finance/cash-book.
 - **Loguri Activitate** `/audit-logs` — Titlu „Loguri Activitate”. Jurnal audit cine/ce/când cu diff vechi→nou. Căutare text + filtru categorie (9: POS & Comenzi, Inventar & Stoc, Producție, Finanțe, Setări, Personal, Meniu & Produse, Clienți, Sistem) + filtru angajat + masă + perioadă (Azi/Ieri/Săptămâna trecută/Luna trecută/interval).
 · NU aici: pentru același jurnal prin AI → tool MCP jurnal_activitate. Pentru starea tehnică/erori sistem → /observability. Pentru logurile edge/Print Agent live → /settings?tab=edge-server „Loguri Live”.
-- **Import Date** `/data-import` — Titlu „Importuri Date”. 3 tab-uri: „Import Nou” (wizard 4 pași: Încărcare fișier → Mapare coloane → Confirmare → Rezultat, alegi entitatea țintă), „Șabloane (N)” (salvează/reaplică mapări), „Istoric (N)” (rulări trecute).
-· NU aici: pentru import asistat conversațional → onboarding/asistent Sym. Pentru pasul de import din onboarding → /onboarding/step/2.
+- **Import Date** — pagina `/data-import` a fost retrasă (25.09.2026). Importul se face prin conexiune: skill-ul `importa-date`. Clienți din fișier → /customer-import; rețetar din Excel → /recipe-mapping.
 - **Contexte QR dinamice** `/settings/qr-contexts` — Configurezi ce context se deschide la scanarea QR-ului de pe masă (Terasă/Piscină/Cameră hotel/Eveniment): cheie URL, nume, imagine, culoare, masă implicită.
 · NU aici: pentru generarea/tipărirea codurilor QR → /qr-codes; pentru presetul QR per raion (câmpuri cerute) → /staff?tab=floor-schedule
 
