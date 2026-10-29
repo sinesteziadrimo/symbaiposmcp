@@ -14,6 +14,16 @@ Pentru operații POS citește skill-ul relevant, nu doar descrierea lui din list
 | Emailurile mele Google/Microsoft din firma POS | Conexiunea POS nominală, `connect_email_status`. Conturile personale și expeditorul principal sunt separate de emailul operațional al brandului. |
 | Datele firmei POS / Accounting | Confirmă firma și identitatea cu `verifica_conexiune` pentru POS, respectiv `get_connection_identity` pentru Accounting. |
 
+## Mai multe firme conectate — pe ce firmă lucrezi
+
+Un contabil sau un proprietar cu mai multe firme are câte o conexiune pentru fiecare firmă și produs: POS (`symbai`, `symbai-<subdomeniu>`) și Accounting (`symbai-accounting-<id>-<numele firmei>`). Fiecare conexiune vede o singură firmă.
+
+1. Stabilește firma din cererea utilizatorului: nume, CUI, subdomeniu sau firma discutată deja în conversație. Alege conexiunea a cărei identitate (`verifica_conexiune` în POS, `get_connection_identity` în Accounting) are acel nume sau CUI. Numele serverului ajută, dar identitatea live decide.
+2. Dacă cererea nu numește firma și sunt conectate mai multe, sau numele se potrivește cu mai multe firme (ex. „Brutăria” la două SRL-uri), **întreabă** pe care firmă lucrezi și oferă variantele găsite, cu CUI. Pentru o citire banală poți propune firma folosită ultima dată, dar o spui explicit.
+3. Înainte de prima modificare pe o firmă (factură, notă contabilă, recepție, stoc, salarii, setări) confirmă identitatea conexiunii și numește firma în răspuns. Nu scrie „de probă” pe altă firmă și nu încerca altă conexiune când una refuză.
+4. Nu copia ID-uri, documente, coduri de cont ori setări dintr-o firmă în alta. Același nume de produs, partener sau angajat în două firme înseamnă înregistrări diferite. Un transfer între firme cere cererea explicită a omului pentru ambele capete.
+5. La schimbarea firmei în conversație, spune pe ce firmă lucrezi de acum. Rezultatele și verificările unei firme nu dovedesc nimic despre alta.
+
 ## Dacă uneltele lipsesc sau asistentul spune că nu poate
 
 1. Caută uneltele în lista/căutarea de conexiuni a aplicației, inclusiv numele serverului local. Numele din ghiduri sunt exemple de capabilități: folosește numai schema live oferită contului. Un plugin public poate avea intenționat un catalog mai restrâns decât conexiunea POS din Connect. Nu presupune că oferă `cauta_tool`, `citeste_tool` sau `ruleaza_tool`. `cauta_tool` din POS caută doar catalogul acelui POS, nu serverele locale. Nu repeta căutări în toate brandurile pentru un număr personal.

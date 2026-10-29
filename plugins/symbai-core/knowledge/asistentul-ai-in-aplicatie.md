@@ -58,4 +58,4 @@ Ce există acum:
 - **Poate AI-ul să șteargă lucruri?** Doar prin uneltele dedicate, cu previzualizare și confirmare (ex. `bulk_delete_products` reversibil, `delete_menu_category`), cu drepturile omului. Totul apare în jurnalul de activitate.
 
 ## Pentru acces SQL (scurt)
-Tabele relevante: `brand_memories`, `automation_rules`, `audit_logs`.
+Tabele relevante: `brand_memories`, `automation_rules`. Jurnalul de activitate se citește cu `jurnal_activitate`, nu prin SQL.

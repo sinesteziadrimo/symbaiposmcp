@@ -58,7 +58,7 @@ Pentru „ce recepții sunt pe gestiunea greșită”, verifică mai întâi met
 
 Pentru „cine a schimbat”, jurnalul filtrat și o pagină recentă nu acoperă automat tot istoricul. Urmează paginarea declarată de versiunea live sau restrânge la entitatea și perioada relevante; consemnează limitele de retenție/acces necunoscute. Zero la un cuvânt și o categorie înseamnă zero potriviri pentru acele filtre. Starea de azi a unei politici nu dovedește că nu a fost schimbată niciodată.
 
-„Cine a pornit/schimbat X" se caută în `jurnal_activitate` sau `audit_logs` (rândurile `mcp_tool_call`, cu unealta și argumentele în `metadata`), înainte de „nu știu cine". Un acces de suport al echipei Symbai apare ca „Acces complet admin" chiar dacă rândul poartă numele proprietarului: spune-i omului că a fost suportul Symbai, nu el.
+„Cine a pornit/schimbat X" se caută în `jurnal_activitate` (inclusiv apelurile prin conexiune, cu numele uneltei; ale suportului Symbai apar doar prin efecte, cu autorul «Suport Symbai»), înainte de „nu știu cine"; `audit_logs` e refuzat prin SQL ad-hoc. Un acces de suport al echipei Symbai apare ca „Acces complet admin" chiar dacă rândul poartă numele proprietarului: spune-i omului că a fost suportul Symbai, nu el.
 
 Un motiv standard precum „Anulare manuală din Recepții” nu identifică singur persoana sau interfața care a trimis cererea. Nici absența unui apel MCP în minutul respectiv nu dovedește apăsarea unui buton: pot lipsi înregistrări ori pot exista alte surse. Dacă jurnalul unei ștergeri în masă nu enumeră ID-urile facturilor, corelarea cu perioada rămâne o ipoteză; păstrează această limită și în concluzie. Un timestamp de creare identic între două documente nu dovedește singur reemiterea sau renumerotarea.
 

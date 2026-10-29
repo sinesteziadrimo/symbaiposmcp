@@ -4,10 +4,12 @@ Symbai Connect poate servi o firmă care folosește numai Accounting, numai POS 
 
 ## Conectare
 
-1. În Accounting, selectează firma corectă și deschide Setări → Integrări → Symbai Connect. Descarcă pachetul personalizat pentru calculator. Activarea necesită dreptul de administrare a securității firmei.
-2. Dezarhivează și pornește instalarea. Dacă există deja Connect pentru POS, instalarea adaugă activarea Accounting și păstrează conexiunile și istoricul existente.
-3. În panoul local Connect, alege Codex sau Claude Code și apasă Conectează pentru firma contabilă. Utilizatorul se autentifică în browser cu propriul cont Accounting și acordă modulele necesare. Nu cere tokenuri în chat.
-4. Verifică pe conexiunea respectivă `get_connection_identity`: `product=accounting`, `companyId` și `userId` nominal. Verifică firma și datele printr-un apel de citire disponibil. Un pachet descărcat sau un asistent instalat nu dovedește accesul la date.
+1. În Accounting deschide **Asistent AI pe calculator** (meniul Automatizare). Pasul 1 descarcă pachetul Connect pentru calculator (Windows, Mac, Linux); dacă există deja Connect, inclusiv pentru POS, pasul se sare: instalarea păstrează conexiunile și istoricul existente.
+2. Pasul 2 listează toate firmele contului în care rolul permite accesul AI, cu nume și CUI. Contabilul bifează clienții (implicit toți) și apasă **Adaugă în Symbai Connect**. Se deschide panoul local Connect, care arată lista; firmele se adaugă abia după „Adaugă firmele”.
+3. În același dialog, **Autorizează în Codex** sau **Autorizează în Claude Code** deschide pe rând câte o pagină Accounting pentru fiecare firmă nouă; omul apasă „Autorizează conectarea”. Firmele deja legate nu se reautorizează. Nu cere tokenuri în chat.
+4. Verifică pe conexiunea respectivă `get_connection_identity`: `product=accounting`, `companyId`, numele și CUI-ul firmei, `userId` nominal. Verifică firma și datele printr-un apel de citire disponibil. Un pachet descărcat sau un asistent instalat nu dovedește accesul la date.
+
+Calea manuală rămâne: în Connect → Firme → „+ Adaugă o firmă” → **Symbai Accounting**, lipește adresa firmei (`…/mcp/companies/<id>`) copiată din aceeași pagină. Pentru POS se alege **Symbai POS** și se scrie subdomeniul (`firma` pentru `firma.symbai.app`). La mai multe firme conectate urmează regulile din [alege-conexiunea](alege-conexiunea.md) → „Mai multe firme conectate”.
 
 Firma Accounting are o adresă specifică firmei, afișată în aplicație. Păstrează adresa exactă și numele conexiunii detectate de Connect. Două firme de pe aceeași instanță de Accounting sunt conexiuni distincte. Nu înlocui adresa cu cea generică și nu adăuga parametrii POS.
 

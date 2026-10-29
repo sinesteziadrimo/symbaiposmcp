@@ -11,7 +11,7 @@ Scop: serverul `symbai` să apară conectat și să funcționeze direct, fără 
 
 Începe cu [alege-conexiunea.md](../../knowledge/alege-conexiunea.md): WhatsApp personal, canale partajate, Business, email local, email personal din POS și datele firmei folosesc conexiuni diferite. Verifică în aplicația și pe calculatorul în care lucrează utilizatorul.
 
-Pentru Accounting, inclusiv firme care nu au POS, urmează [fluxul Accounting din același Connect](../../knowledge/symbai-connect-accounting.md). Pachetul se descarcă din Accounting → Setări → Integrări → Symbai Connect; autentificarea firmei se face cu contul Accounting. Pașii POS de mai jos se aplică numai conexiunilor POS. La utilizarea ambelor produse, păstrează toate conexiunile și verifică separat identitatea fiecăreia.
+Pentru Accounting, inclusiv firme care nu au POS, urmează [fluxul Accounting din același Connect](../../knowledge/symbai-connect-accounting.md). Pachetul și lista tuturor firmelor contabilului se iau din Accounting → Asistent AI pe calculator („Adaugă în Symbai Connect”); autentificarea fiecărei firme se face cu contul Accounting. Pașii POS de mai jos se aplică numai conexiunilor POS. La utilizarea ambelor produse, păstrează toate conexiunile și verifică separat identitatea fiecăreia.
 
 Simptomul („nu merge", „nu văd tool-urile", „scrie blocat") nu spune cauza. Cauza o
 spune serverul Symbai, iar tu o ai la un apel distanță. **Nu porni niciodată de la
