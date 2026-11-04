@@ -36,7 +36,7 @@ Tu, asistentul interactiv, pornești monitorizarea cu scop și destinatari clari
 | `assistant_reporting` | unde merg raportările; `set_owner` stabilește proprietarul numărului |
 | `run_watch_now` | rulare acum, la cererea proprietarului; rezultatul îl primește doar el |
 | `simulate_watch` | probă cu un mesaj închipuit: nimic nu pleacă, nimic nu se scrie în Symbai |
-| `watch_health`, `owner_watch_control` | starea celorlalte monitorizări și pauză / reluare / mod, numai din conversația privată a proprietarului, după „da”-ul lui |
+| `watch_health`, `owner_watch_control` | starea celorlalte monitorizări și pauză / reluare / mod / plafonul de pași (`actiune: pasi`, propunerea numește numărul), numai din conversația privată a proprietarului, după „da”-ul lui |
 | `schedule_reminder`, `followup_if_unanswered`, `notify_when_read`, `list_reminders`, `cancel_reminder` | memento-uri pe care Connect le trimite singur, fără model |
 
 Ultimele cinci rânduri cer Symbai Connect 1.2.106 sau mai nou (Windows). Regulile lor (proprietarul numărului, rularea la cerere, proba, memento-urile, mesajele corectate, conversațiile preluate de Asistenții mei, trimiterea aceluiași mesaj de două ori): [Proprietarul, rulări la cerere, probe și memento-uri](../../knowledge/monitorizare-whatsapp.md#proprietarul-rulări-la-cerere-probe-și-memento-uri).
@@ -148,7 +148,7 @@ Calculatorul trebuie să rămână pornit, cu utilizatorul conectat și internet
 `watch_activity` pe conversație: fiecare rulare are ora, ce a declanșat-o, câte mesaje a primit, **rezumatul lăsat de asistent** („am adăugat Limonada la 18 lei în Băuturi; Andrei a cerut și un tort, am transmis proprietarului”) și erorile. Spune-i omului rezumatele, nu structura. Dacă o rulare a eșuat de trei ori la rând, monitorizarea s-a oprit singură cu motivul în `motivOprire` — citește-l, repară cauza, reia. Pentru „uită-te acum în grup și spune-mi…” folosește `run_watch_now` (Connect 1.2.106 sau mai nou; rezultatul vine doar la proprietar), nu citiri repetate.
 
 Stările pe care le vezi acolo:
-- `step_limit` — rularea s-a oprit la plafonul de pași; conversația a primit deja un mesaj „răspunde cu continuă” (în modul silent îl primește proprietarul). Ce a apucat să facă rămâne făcut.
+- `step_limit` — rularea s-a oprit la plafonul de pași. Lucrul început continuă singur de cel mult 2 ori (Claude și Codex, în versiunile Connect de după 1.2.132), verificând întâi ce s-a aplicat; abia după ultima oprire conversația primește „răspunde cu continuă” (în modul silent, proprietarul). Ce a apucat să facă rămâne făcut. Pentru sarcini lungi, proprietarul poate mări plafonul (`update_watch max_turns` sau `owner_watch_control actiune: pasi`).
 - `skipped` — au venit doar confirmări („ok”, „mersi”, 👍) și asistentul nu a fost pornit.
 - Symbai indisponibil (repornire, `recovery_only`) — cererea se reia singură de două ori; dacă Symbai a răspuns explicit `recovery_only`, conversația primește apoi un mesaj (în modul silent, proprietarul).
 

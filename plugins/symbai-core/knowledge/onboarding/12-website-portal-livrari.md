@@ -47,17 +47,18 @@ La portal NOU, acest apel pune deja default-uri potrivite tipului de business: r
 
 **2. Aspect — `configure_portal_appearance`**
 ```json
-{"brandId": 1, "primaryColor": "#7c2d12", "fontFamily": "Playfair Display", "borderRadius": "rounded", "buttonStyle": "filled", "cardStyle": "shadow", "navStyle": "solid"}
+{"brandId": 1, "primaryColor": "#7c2d12", "fontFamily": "Lato", "borderRadius": "rounded", "buttonStyle": "filled", "cardStyle": "shadow"}
 ```
+Fontul titlurilor, bara de sus, bannerul, taburile, blocurile de pe Acasă, CSS-ul propriu și textele fixe se setează după aceea, dacă firma vrea portalul la nivelul site-ului: `configure_portal_display` → `branding` (vezi `portal-config.md` → „Identitatea vizuală avansată”). Ex. titluri `branding.fonts.heading: "Playfair Display"` + text Lato.
 Rețete verificate pe tip: restaurant clasic → maro `#7c2d12`/negru `#0f172a` + Playfair Display; cafenea → portocaliu `#d97706`/verde `#059669` + Nunito + pill/soft/flat; bar → violet `#7c3aed`/negru + Montserrat + sharp/outline/glass; fast-food → roșu `#dc2626` + Poppins + `requireLogin: false`.
 
 **3. Texte — `configure_portal_texts`** — `welcomeTitle`, `welcomeSubtitle`, `exploreButton` („Vezi Meniul" / „Comandă Acum"), `discoverText`, `signupButton`, `signupDescription`. Scrie-le tu, personalizate pe brand, nu generice.
 
 **4. Funcționalități — `configure_portal_features`** — folosește-l pentru ajustări față de default sau pentru portaluri existente. Boolean per modul: `menu`, `orders`, `reservations`, `qrCode`, `profile`, `loyalty`, `notifications`, `events`, `chat`, `gamification`, `social`, `friends`, `messages`, `attractions`, `games`. Restaurant tipic: ON `menu, orders, reservations, qrCode, profile, loyalty`; OFF `games, attractions, gamification, social`. `attractions`/`games`/`gamification` au sens la parcuri/spa/hotel. `chat: true` doar dacă va configura și agenții de chat (pasul din aplicație).
 
-**5. Meniul din portal — `configure_portal_menu_config`** — `showWeight`, `showAllergens`, `showDescription`, `showNutrition`, `showCategoryHeaders` (boolean), `menuHeroImage` (URL — ia unul din `browse_brand_media`, nu inventa), `dietaryFilters` (listă din: `vegetarian, vegan, gluten_free, lactose_free, nut_free, sugar_free, spicy, halal, kosher`), `categoryLayouts` (listă sau slider orizontal pe categorii; cheie = ID categorie sau `all`, subcategoriile preiau setarea părintelui — vezi `portal-config.md`).
+**5. Meniul din portal — `configure_portal_menu_config`** — `showWeight`, `showAllergens`, `showDescription`, `showNutrition`, `showCategoryHeaders` (boolean), `menuHeroImage` (URL — ia unul din `browse_brand_media` sau urcă poza primită cu `prepare_portal_media_transfer` → `attach_portal_media_transfer`; nu inventa), `dietaryFilters` (listă din: `vegetarian, vegan, gluten_free, lactose_free, nut_free, sugar_free, spicy, halal, kosher`), `categoryLayouts` (listă sau slider orizontal pe categorii; cheie = ID categorie sau `all`, subcategoriile preiau setarea părintelui — vezi `portal-config.md`).
 
-**6. Fin-tuning vizibilitate — `configure_portal_display`** — obiecte `tabs` (chei: `home, menu, attractions, games, events, gamification, qrCode, profile`), `tabLabels` (ex. `{"menu": "Meniul Nostru"}`), `homeSections`, `profileSections`. Folosește-l doar dacă utilizatorul vrea să ascundă explicit ceva — valorile implicite sunt bune.
+**6. Fin-tuning vizibilitate — `configure_portal_display`** — obiecte `tabs` (chei: `home, menu, attractions, games, events, gamification, qrCode, profile`), `tabLabels` (ex. `{"menu": "Meniul Nostru"}`), `homeSections`, `profileSections`, `fastTravel` (scurtături peste categorii, max. 5), `signup` (formularul de cont nou) și `branding` (aspectul avansat). Folosește-l doar dacă utilizatorul vrea explicit ceva — valorile implicite sunt bune.
 
 **După fiecare scriere confirmă cu `get_portal_config(brandId)`** — nu prin interfață (cache în browser; utilizatorul vede după refresh). Dacă tool-ul a întors succes, e salvat: nu repeta, nu raporta bug. Clientul accesează portalul pe ruta relativă `/portal` sau scanând QR-ul de pe masă (QR-urile: faza 06).
 
@@ -96,7 +97,6 @@ Pentru fiecare: dă link cu `gaseste_in_aplicatie(intrebare: ...)`, lasă utiliz
 - **Agenții AI de vânzări + memoria lor** — creator conversațional dedicat (descrii ce vinzi — petreceri, nunți, corporate, catering — și el generează agentul + fișierele de memorie cu pachete/prețuri/FAQ). `gaseste_in_aplicatie("AI sales creator agent vânzări")`, memoria: `gaseste_in_aplicatie("memorii agenți vânzări")`. Verificare: `list_sales_agents(brandId)` — nume, tip, activ/inactiv. Pentru pornirea/oprirea unui agent verifică dacă ai `toggle_sales_agent` în catalogul conexiunii; dacă lipsește, ghidează utilizatorul să o facă din aplicație.
 - **Sales CRM** — pipeline de dealuri cu etape configurabile (ex. Lead Nou → Calificare → Ofertă → Negociere → Contract → Câștigat/Pierdut), calendar, mod de lucru pe tip de business: Restaurant, Parc de Distracții, Cafenea/Bar, Sală Evenimente/Hotel, Servicii Profesionale (din tab-ul Setări al CRM-ului). Pur informativ + ghidare: `gaseste_in_aplicatie("sales CRM pipeline evenimente")`. Niciun tool de scriere pe dealuri.
 - **Fidelizarea (puncte, niveluri, recompense) și misiunile cu XP** — `gaseste_in_aplicatie("program fidelizare")` și `gaseste_in_aplicatie("misiuni și recompense portal")`. Prin conexiune doar activezi modulele în portal (`loyalty`/`gamification` la `configure_portal_features`).
-- **Butoanele „fast travel"** din meniul portalului (navigare rapidă la categorii) — doar din pagina de configurare a portalului din aplicație; `configure_portal_display` NU le acoperă.
 
 ## Echivalentul în wizard-ul din aplicație
 
@@ -112,12 +112,12 @@ Pașii **23–29** din `/onboarding/welcome` (pașii la `/onboarding/step/N`): 2
 
 ## Capcane
 
-- **`businessType` la portal are doar 5 valori** (`restaurant/cafe/bar/qsr/amusement_park`) — nu coincide cu lista bogată de tipuri de business a brandului (pizzerie, bistro, hotel...). Mapează pe cel mai apropiat; pizzerie/bistro → `restaurant`, food truck/patiserie → `qsr` sau `cafe`.
+- **`businessType` la portal are o listă scurtă** (`generic`, `restaurant`, `cafe`, `bar`, `qsr`, `amusement_park`, `hotel`, `magazin_fashion`, `magazin_electronics`, `magazin_general`, `magazin_boutique`, `magazin_alimentar`) — nu coincide cu lista bogată de tipuri de business a brandului (pizzerie, bistro...). Mapează pe cel mai apropiat; pizzerie/bistro → `restaurant`, food truck/patiserie → `qsr` sau `cafe`, magazin online → `magazin_general` sau tipul `magazin_*` potrivit.
 - **Configurările de portal ÎMBINĂ, nu înlocuiesc** — poți apela `configure_portal_features` doar cu `chat: true` fără să pierzi restul. Dar `dietaryFilters` la `configure_portal_menu_config` se trimite ca listă COMPLETĂ (înlocuiește lista veche).
 - **Orice `configure_portal_*` activează portalul** (îl face vizibil clienților). Nu „testa" tool-urile pe un brand al cărui portal nu trebuie să fie public încă fără acordul utilizatorului.
 - **`create_delivery_channel` nu conectează nimic** — e doar înregistrarea canalului. Comenzile vin abia după credențiale + sincronizare meniu din aplicație. Nu raporta „Glovo conectat" pe baza apelului reușit; pentru Glovo, accept/gata/predare pot fi trimise prin Symbai, dar refuzul/anularea se fac în aplicația/suportul Glovo și se confirmă apoi automat înapoi.
 - **Trei „meniuri" diferite, nu le confunda**: meniul din **portal** (`configure_portal_menu_config`), afișajul meniului pe **ecranele POS/kiosk** (`create_menu_display_config`) și **meniul fizic tipăribil** (designer, doar din aplicație). Toate citesc aceleași produse/prețuri din meniul digital.
-- **`menuHeroImage` cere un URL existent** — caută cu `browse_brand_media`; nu există upload de imagini prin conexiune.
+- **`menuHeroImage` și pozele/video-urile/fonturile din `branding` cer o adresă** — caută cu `browse_brand_media` sau urcă fișierul primit cu `prepare_portal_media_transfer` → `attach_portal_media_transfer` (întoarce adresa `/uploads/website/…`).
 - **Portal gol = meniu negestionat, nu bug de portal** — dacă portalul nu afișează produse, cauza e aproape mereu în meniul digital (fără articole, fără prețuri, brand nelegat de locație), nu în configurația portalului.
 - **Pornirea/oprirea agenților de vânzări** — verifică întâi catalogul conexiunii: dacă ai `toggle_sales_agent`, folosește-l; dacă nu apare, nu promite porniri/opriri prin conexiune — ghidează în aplicație (`list_sales_agents` rămâne mereu pentru citire).
 - **Interfața nu se actualizează instant** după scrieri — confirmă prin citire, spune-i utilizatorului să dea refresh.
