@@ -60,4 +60,5 @@ Dacă userul spune „**eticheta e predefinită / nu o pot modifica / a ieșit u
 - Containere, coduri QR, scanner, palet → `knowledge/productie-fabrica.md`.
 - Imprimante de etichete / configurarea imprimantelor → `knowledge/echipamente-kds-imprimante.md`.
 - Loturi, valabilitate, alergeni pe rețetă → `knowledge/productie-restaurant.md` + skill `productie-flux`.
+- QR de recenzie pe ambalaj (Slot QR cu `{{recenzieProdus}}`) → skill `recenzii-pe-loturi`. Nu e QR-ul de verificare de la `set_label_qr`.
 - Blocaj → `trimite_ticket_symbai` + ghidează în app.

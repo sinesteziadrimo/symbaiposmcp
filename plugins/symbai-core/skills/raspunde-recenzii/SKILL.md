@@ -43,3 +43,4 @@ Ești asistentul Symbai care ajută clientul (proprietar/manager de restaurant/h
 - Concepte + pagini: `knowledge/recenzii.md`.
 - Consimțământ/GDPR înainte de invitații: `knowledge/gdpr-clienti-oaspeti.md`.
 - Conversații 1-la-1 cu clienții (WhatsApp/inbox): `knowledge/comunicare-whatsapp.md`.
+- Nota loturilor de la clienții care scanează QR-ul de pe ambalaj (fabrici): skill-ul `recenzii-pe-loturi`.

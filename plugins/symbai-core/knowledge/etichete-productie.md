@@ -41,6 +41,7 @@ Le pui pe etichetă din butonul „Câmp dinamic" din editor (sau le scrii direc
 - `{{ingrediente}}` — lista ingredientelor.
 - `{{sku}}` / `{{gtin}}` — codul intern / codul de bare al produsului.
 - `{{operator}}`, `{{depozitare}}`, `{{descriere}}` — cine a făcut, condiții de păstrare, descriere.
+- `{{recenzieProdus}}` — pagina de recenzie a lotului. Se pune la „Conținut QR la tipărirea etichetei” pe un Slot QR, nu în text. Vezi [recenzii pe loturi](recenzii-pe-loturi.md).
 - Prefixele sunt compoziție liberă: scrii „Lot: {{lot}}" și iese „Lot: L240617-1".
 
 ### Pe eticheta de RECEPȚIE (marfă primită de la furnizor)
@@ -111,6 +112,7 @@ Pentru palet: desenează în Materiale Grafice un șablon de etichetă cu un **Q
 - „Etichetă de palet cu QR mare, una pe fiecare față" → un șablon cu QR mare (Materiale Grafice) + `copies:4`. Pe fabrică: leagă-l de operația de ambalare cu `configure_operation_completion({ operationId, labelTemplateId, labelCount:4, labelApplicationTarget:'pallet' })`.
 - „Pune eticheta X pe operația de ambalare / să iasă automat la finalizare" (fabrică) → `configure_operation_completion({ operationId, labelTemplateId, autoPrintLabels:true })`; pentru a obliga eticheta înainte de finalizare adaugă `completionRequiresLabel:true`.
 - „Dă-mi un PDF cu eticheta" → `print_designed_label({ ..., output:'pdf' })`.
+- „Pune pe ambalaj un QR ca clienții să dea notă" → `add_material_elements` cu `type:"qr-slot"` și `qrValue:"{{recenzieProdus}}"`, apoi `preview_label`. Produsul are nevoie de o campanie activă; vezi skill-ul `recenzii-pe-loturi`.
 - „Setează eticheta asta ca implicită pentru rețeta Y" → din Materiale Grafice, pe etichetă, „Setează ca etichetă implicită" (UI). (Asistentul ghidează userul — legarea se face din aplicație.)
 - „Nu am imprimantă de etichete / nu iese pe Zebra" → verifici cu `list_printers` (există una de tip Etichete, pe rețea, cu IP și `status:"online"`?). Dacă lipsește sau e `offline`/`unassigned`, ghidezi: Setări → Imprimante → adaugă/leagă „Imprimantă Etichete" și verifică legătura cu imprimanta. Vezi `echipamente-kds-imprimante.md`.
 - „Unde fac etichete?" → `gaseste_in_aplicatie("etichete")` (du-l în Materiale Grafice → Etichete) sau `gaseste_in_aplicatie("printează etichetă")` (Producție).

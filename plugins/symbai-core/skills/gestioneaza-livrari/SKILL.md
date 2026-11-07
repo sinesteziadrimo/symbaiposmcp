@@ -60,6 +60,47 @@ Pentru fiecare cerere: **(1) tool MCP** care face/citește treaba → **(2) deep
 | „pauzează Wolt/Glovo 30 min, suntem aglomerați" | `snooze_delivery_channel(id,minutes,confirm:true)` | `/channels?tab=integrations` |
 | „cât mă costă Wolt/Glovo / ce profit fac pe platforme" | `list_delivery_pnl_segments` → `get_delivery_pnl` (read-only) | `/reports/pnl-livrari` |
 | „ce agenți de vânzări am / activează-l/dezactivează-l" | `list_sales_agents` · `toggle_sales_agent` (modul `setari`) | (creare agent nou = UI) |
+| „pune QR de recenzie / un mesaj pe bonul de livrare / ascunde telefonul de pe nota din pungă" | `get_delivery_print_settings(locationId)` → `update_delivery_print_settings({ locationId, packingNoteDesign: {…doar ce schimbi} })`; arată omului `packingNote.preview` și `packingNote.reviewQr.problems` din răspuns | `/deliveries/pos` (butonul imprimantei → Tipărire & ambalare) |
+| „ce note au dat clienții care au scanat punga" | `list_review_responses(channel:"delivery_qr")` · `get_review_report(section:"tables")` (zonele „Livrare Wolt/Glovo/Bolt”) | `/feedback` |
+
+Pentru „fă -25% pe Wolt la X", „pune reducerea pe Glovo" sau „de ce nu apare reducerea pe Wolt", reducerea pe produs se publică din Symbai. Pașii sunt: `create_offer` cu `channels:["delivery:wolt"]` (sau glovo/bolt), produsele și perioada. Apoi citești `data.platforme` din răspuns. Dacă starea este `blocked` pentru că promoțiile canalului sunt administrate de platformă, ceri acordul și rulezi `set_delivery_promotion_ownership(id, symbai)`. Pe Wolt poți folosi și `hybrid`, care păstrează campaniile create în Wolt. Urmează `sync_channel_menu(id)` și verificarea produsului în `get_channel_wolt_menu`. Nu spune omului că reducerea e pe platformă înainte să o vezi în meniul publicat. Pentru reducerile pe produs nu trimite omul în portal.
+
+Campaniile Wolt ca în Wolt Merchant se fac cu `create_channel_portal_campaign`. Aici intră bulina roșie „X% reducere pentru articolele selectate”, cumperi X primești Y gratis, livrarea gratuită, reducerea la valoarea comenzii, plus audiența, limita per client, coșul minim, bugetul și programul. Reclamele „Sponsorizat” se fac cu `create_channel_portal_ad_campaign`. Ai două căi:
+- `transport:"server"`: Symbai creează campania prin contul legat în **Canale → Conectare Delivery Merchant**. Contul poate fi al proprietarului (`accountKind:"owner"`, fără invitații) sau unul separat (`accountKind:"separate"`, invitat în echipa restaurantului). Verifici întâi cu `get_channel_portal_campaign_connection`, care arată și dacă ai acces (`canUse`). Conectarea se face cu `connect_channel_portal_campaigns`, linkul de logare primit pe email (nedeschis) și `consent:true` dat de titularul contului. Cine din firmă poate folosi conexiunea se stabilește cu `set_channel_portal_access`. Fără acces, ceri unui administrator; nu ocolești regula.
+- `transport:"browser"`: primești linkul și câmpurile, ca să le completezi în portalul deja logat pe PC-ul clientului.
+
+Citește opțiunile cu `get_channel_portal_campaign_options` și produsele cu `list_channel_portal_menu_items`. Confirmă cu omul tipul, reducerea, bugetul și perioada, apoi verifică rezultatul în `list_channel_portal_campaigns`. Nu pune aceeași reducere și ca ofertă Symbai pe Wolt.
+
+Bolt Food și Glovo se leagă din aceeași pagină, **Canale → Conectare Delivery Merchant**, cu contul proprietarului sau cu unul separat. Omul își scrie el emailul și parola portalului acolo. Parola se folosește o singură dată și nu se păstrează. Nu cere parola în chat: `connect_channel_portal_campaigns` merge doar pentru Wolt. La Glovo, la prima conectare vine un cod pe email, pe care omul îl scrie tot în pagină. Dacă contul vede mai multe locații, `get_channel_portal_campaign_connection` întoarce `needsProviderChoice` și `choices`, iar locația aleasă de om se leagă cu `choose_channel_portal_location`.
+- **Bolt**: tipurile vin din arborele `get_channel_portal_campaign_options`, iar alegerea finală are `trait`. Campania se creează cu `create_channel_portal_bolt_campaign(traitSlug, startDate, endDate, boltItemIds?, discountPercentage?, consent)`. Pentru Smart Promotions citești propunerile și estimările cu `list_channel_portal_bolt_smart_offers`, apoi pornești cu `create_channel_portal_bolt_smart_promotion`. Bolt nu programează campanii pentru mai târziu. Oprirea se face cu `stop_channel_portal_campaign`, cu `kind` din listă.
+- **Glovo**: promoțiile pornesc din șabloanele magazinului (`templates` din opțiuni). Tipurile sunt procent pe produse, tot meniul, livrare gratuită și 2+1, cu publicul, valorile, comanda minimă și bugetul permise. Le creezi cu `create_channel_portal_glovo_campaign` (zile AAAA-LL-ZZ) și le oprești cu `stop_channel_portal_campaign`. Dacă Glovo blochează cererea ca automată, campania se face în portalul Glovo, din browserul restaurantului.
+
+**Toate campaniile dintr-o privire:** `list_all_portal_campaigns` citește toate canalele Wolt, Bolt și Glovo conectate și întoarce campaniile și reclamele într-o listă comună (stare, perioadă, rezultate). Folosește-l la „ce campanii am”, „ce rulează acum pe platforme”.
+
+**Rezultatele și editarea:**
+- Rezultatele unei campanii: `get_channel_portal_campaign_performance(id, campaignId, from?, to?)`. La Wolt primești vânzări, comenzi, costul restaurantului și al Wolt, clienți noi și recurenți, pe zile. La Glovo, comenzi, vânzări, costul reducerii și al reclamei. La Bolt, comenzi, cost și venit.
+- Editarea unei campanii Wolt: `edit_channel_portal_campaign` (sfârșit, buget, nume). La Bolt și Glovo campania se oprește și se creează alta.
+- Recomandările Wolt: `list_channel_portal_recommendations`.
+
+**Reclamele pe toate trei platformele** (plătite de restaurant, confirmă mereu bugetul cu omul):
+1. Citești ce se poate cu `get_channel_portal_ad_setup`:
+   - Wolt: limitele bugetului săptămânal.
+   - Bolt: bugetul lunar minim/maxim/recomandat, obiectivele și listările pe plasamente.
+   - Glovo: bid-ul recomandat și treptele de buget cu comenzi și ROAS estimate, pe `product` și `segment`.
+   - Bolt are și estimarea pentru un buget: `forecast_channel_portal_bolt_ad`.
+2. Creezi reclama:
+   - Wolt: `create_channel_portal_ad_campaign`.
+   - Bolt: `create_channel_portal_bolt_ad_campaign` (CPC, buget lunar, obiectiv) sau `create_channel_portal_bolt_sponsored_listing` (preț pe zi pe plasamente).
+   - Glovo: `create_channel_portal_glovo_ad_campaign` (product: în listă, locul de sus sau la căutare; buget lunar sau zilnic; bid sau automat).
+3. Urmărești și ajustezi:
+   - lista și detaliile: `list_channel_portal_ad_campaigns`, `get_channel_portal_ad_campaign` (afișări, click-uri, comenzi, venit, cheltuit, ROAS, pe zile);
+   - schimbarea bugetului sau a licitației: `update_channel_portal_ad_campaign`;
+   - pauză sau reluare: `set_channel_portal_ad_campaign_running`;
+   - încheierea definitivă (Bolt, Glovo): `end_channel_portal_ad_campaign`;
+   - facturile reclamelor Bolt: `list_channel_portal_bolt_ad_invoices`;
+   - raportul cumulat al reclamelor Glovo: `get_channel_portal_glovo_ads_report`;
+   - bannerele Bolt (invitații la campanii speciale): `list_channel_portal_bolt_banners`.
+4. Glovo Automate Growth (Glovo face singur reduceri și reclame cu un buget zilnic): citești cu `get_channel_portal_glovo_growth`. Intri, schimbi bugetul sau ieși cu `set_channel_portal_glovo_growth`.
 
 Pentru „micul dejun doar dimineața", „meniul de noapte", „oprește categoria X în afara weekendului" sau „program pe Wolt/Glovo", nu folosi ofertele/discounturile. Flux corect: găsești ținta (`search_products_db` / `list_menu_categories` / `list_menus`) → `list_availability_schedules` → `create_availability_schedule` sau `update_availability_schedule` (modul `produse_meniu`) → recitești și dai linkul `/menu/promotions`, tab **Disponibilitate**. Asta setează vizibil/comandabil; prețul rămâne neschimbat.
 

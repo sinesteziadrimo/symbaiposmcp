@@ -205,6 +205,7 @@ Caută și identifică lotul exact, rețeta, produsul, data și gestiunea. Cite�
 
 - `knowledge/productie-restaurant.md` — traseul restaurant (simplu): rețete semipreparate, loturi, finalizare cu consum prin `exec_complete_batch`, evenimente, stoc semipreparate.
 - `knowledge/productie-fabrica.md` — traseul fabrică: proiectare flux, execuție pe stații, MPS/MRP, containere QR, genealogie/recall, QC, HACCP, B2B.
+- Skill `recenzii-pe-loturi` — nota fiecărui lot de la clienții care scanează QR-ul de pe ambalaj, avertizări și anunț către abonații lotului.
 - `knowledge/plan-fabrica-2d.md` + skill `plan-fabrica` — planul fizic 2D al halei: planuri, obiecte reale, conexiuni de flux, stoc/status live și dovadă vizuală în browser.
 - `knowledge/erp-manufacturing-benchmark.md` — pattern-uri ERP/MES pentru fabrică și regula de readiness înainte de planificare/lansare.
 - `knowledge/sap-parity-fabrica.md` — hartă de migrare/paritate SAP S/4HANA → Symbai (PP-PI/QM/MM/CO: tranzacție SAP → tool/pagină), argumente de vânzare + gap-uri oneste.

@@ -213,7 +213,9 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 - **Program Fidelizare** `/loyalty` — Program loialitate cu 3 tab-uri: Panou General (statistici, niveluri), Clienți Fideli (puncte/nivel/istoric, filtru pe tier), Configurare Program (rată câștig pct/leu, valoare răscumpărare, niveluri/tiers cu praguri+beneficii, bonus zi naștere).
 · NU aici: pentru misiuni/insigne/recompense gamificate → /portal-missions; pentru lista clienților → /customers
 - **Recenzii & Feedback** `/feedback` — 4 tab-uri: Management Recenzii (listă recenzii + filtre perioadă/locație/angajat/sortare + răspuns), Performanța Angajaților, Tendințe & Analiză, Setări Feedback (declanșator după plată/rezervare, alertă rating scăzut).
-· NU aici: pentru chestionare/sondaje construite (builder + răspunsuri) → /questionnaires; pentru feedback hotel/oaspeți (NPS PMS) → /hotel/guest-feedback
+· NU aici: pentru chestionare/sondaje construite (builder + răspunsuri) → /questionnaires; pentru feedback hotel/oaspeți (NPS PMS) → /hotel/guest-feedback; pentru recenziile de pe ambalajul produselor fabricate → /product-reviews
+- **Recenzii pe loturi** `/product-reviews` — Fabrici, Calitate & Trasabilitate: clasamentul loturilor după nota clienților care scanează QR-ul de pe ambalaj, graficul pe loturi, avertizările și campaniile (întrebări, pasul Google, email, alerta lotului, regula de avertizare).
+· NU aici: pentru recenziile de la masă și Google → /feedback; pentru trasabilitate și recall → pagina de trasabilitate a lotului
 - **Abonamente Clienți** `/subscriptions` — Abonamentele CLIENȚILOR cu livrări recurente: KPI MRR/ARR/ARPU/Churn 30z/LTV/Venit 30z, distribuție pe statusuri, listă abonați cu filtre+căutare; drawer detaliu cu Pauză/Reactivare/Anulare + sub-tab-uri Livrări/Dunning/Istoric.
 · NU aici: pentru abonamentul TĂU la platforma Symbai (facturare SaaS) → Setări → Module & Facturare sau portalul Hub
 - **Calendar Rezervări & Evenimente** `/calendar` — Vedere unificată: rezervări + evenimente + deal-uri de vânzări, pe zi/săptămână/lună, cu cod culori pe status; click pe element → detalii.
@@ -258,6 +260,8 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: pentru conturile Ads (conectare) → /social-media tab Ads; pentru anomalii ads → /marketing/anomalies; pentru programare postări organice → /social-hub
 - **Manager Canale Livrare** `/channels` — Integrare agregatori livrare (Glovo/Wolt/Bolt), 5 tab-uri: Prezentare & KPI, Control Comenzi, Meniu & Prețuri, Reconciliere, Integrări. Acceptare/refuz comenzi, sync meniu, comisioane.
 · NU aici: pentru livrări cu FLOTĂ PROPRIE (dispecerat livratori) → /deliveries/dispatch; pentru comenzile magazinului online → /ecommerce/orders; pentru comenzi sală → /pos/waiter-orders
+- **Concurență pe livrări** `/channels?tab=business&section=competitors` — Canale → Analiză → Concurență. Raport pe rază în jurul punctului de ridicare: restaurantele de pe Glovo/Wolt/Bolt Food cu reducerile (tip, procent), produsele reduse, prețuri comparate, evaluări. Hartă cu Google Maps, concurenți urmăriți (stea), schimbări față de raportul trecut, recomandări cu asistentul.
+· NU aici: pentru campaniile tale de livrări și buget → /channels?tab=business&section=growth; pentru reclame Meta → gestioneaza-reclame
 - **Dispecerat Livrări** `/deliveries/dispatch` — Ecran dispecer flotă proprie: kanban pe statusuri (Pregătire/De livrat/Asignat/În livrare/Livrat/Eșuat) + hartă Leaflet cu comenzi și livratori, asignare manuală + sugestie automată, 3 view-uri (split/kanban/hartă).
 · NU aici: pentru comenzi de pe Glovo/Wolt (agregatori) → /channels; pentru zone de livrare → /deliveries/zones; pentru flotă/vehicule → /deliveries/fleet
 - **Comenzi Ecommerce** `/ecommerce/orders` — Comenzi magazin online: filtre brand/website/risc fraudă/decizie/status (pending→processing→shipped→delivered→cancelled→refunded), evaluare fraudă, acțiuni procesare/expediere/anulare, tracking, print.
@@ -274,6 +278,8 @@ Nota pentru `/menu/platforms`: aceeasi pagina are doua configurari diferite. Car
 · NU aici: pentru meniul public al portalului → /portal/menu; pentru carduri RFID/acces fizic → /access-cards sau /portal-customers?tab=auth; pentru DESENAREA cardului QR care se tipărește → /graphic-materials
 - **Livrări (flotă proprie)** `/deliveries` — Monitorizezi comenzile de livrare la domiciliu cu curierii TĂI: status comenzi, cine ce duce, timpi pe traseu.
 · NU aici: pentru comenzi de pe Glovo/Wolt/Bolt (agregatori) → /channels; pentru kanban dispecer + hartă live → /deliveries/dispatch; pentru zone de livrare → /deliveries/zones
+- **Centru de Comenzi** `/deliveries/pos` — ecranul comenzilor Wolt/Glovo/Bolt/site. Butonul imprimantei (**Tipărire & ambalare**): casa fiscală, nota pentru pungă și designul ei — titlu, mesaje, ce date apar, QR de recenzie legat de comandă, QR de urmărire, cod de bare pentru șofer.
+· NU aici: pentru nota de plată de la masă (bonul ospătarului) → /settings?tab=bill-design (Design Bon & Notă); pentru întrebările și butonul Google ale paginii de recenzie → /feedback (setări recenzii)
 - **Inbox WhatsApp** `/whatsapp-inbox` — Citești și răspunzi la mesajele clienților de pe WhatsApp Business (primite și trimise).
 · NU aici: pentru conectarea numărului WhatsApp → /social-media (tab WhatsApp); pentru mesaje/comentarii social → /marketing/audience?tab=inbox
 - **Asistent marketing** `/ai-marketing` — duce la Asistenții mei (`/my-assistants?focus=marketing`): asistentul personal care lucrează pe marketing prin Symbai Connect.

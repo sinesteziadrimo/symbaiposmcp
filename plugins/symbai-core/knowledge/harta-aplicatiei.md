@@ -354,6 +354,7 @@ Paginile de agenți AI (`/ai-onboarding`, `/ai-menu`, `/ai-pricing`, `/ai-report
 - **Integrări Enterprise** (`/factory-integrations`) — Cockpit pentru adaptere ERP/MES/EDI, live/hybrid/demo signals, lipsuri de integrare si pasi de pilot.
 - **Date Master Enterprise** (`/factory-master-data`) — Cockpit pentru coduri produs, unitati, retete/BOM/routing, GTIN/SSCC si guvernanta datelor master.
 - **Calitate Enterprise** (`/factory-quality`) — Cockpit pentru QC holds, specificatii client, LIMS/COA, CAPA si eliberare loturi.
+- **Recenzii pe loturi** (`/product-reviews`) — Nota fiecărui lot de la clienții care scanează QR-ul de pe ambalaj: clasament, grafic, avertizări și campanii (întrebări, pasul Google, email, alerta lotului).
 - **Randament & Cost** (`/factory-yield-costing`) — Cockpit pentru mass balance, yield/cut-out, cost standard vs actual si reconciliere SAP/financiar.
 - **Validare & UAT** (`/factory-validation`) — Cockpit pentru scenarii UAT, load/DR, evidenta de acceptanta si go/no-go gates.
 - **Rollout Enterprise** (`/factory-rollout`) — Cockpit pentru wave plan, training, hypercare si criterii de trecere pilot -> rollout.
