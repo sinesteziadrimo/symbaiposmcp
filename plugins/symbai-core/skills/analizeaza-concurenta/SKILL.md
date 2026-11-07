@@ -113,6 +113,12 @@ Recomandă concret, cu cifre din raport, și termină cu 2–3 acțiuni pentru s
 
 ## Limite de știut
 
+- **Wolt și Bolt Food nu arată reducerile în lista de restaurante, doar în meniu.** Pentru ele:
+  - procentul „au reduceri” vine numai din meniurile citite (`summary.byPlatform.<platformă>.checked` și `checkedWithDiscount`), nu din toate restaurantele din listă;
+  - meniurile citite (`menuLimit`, implicit 18) se împart egal între platforme;
+  - un restaurant cu meniul necitit are reducerile **necunoscute**, nu „fără reducere”. Spune asta omului;
+  - pentru cifre mai sigure pe Wolt/Bolt crește `menuLimit` sau urmărește concurenții direcți: lor li se citește mereu meniul.
+- Pe hartă, restaurantele din jur care nu intră în analiză (în afara razei sau cu alt tip de mâncare) apar cu gri. Le vezi și tu cu `competitor_intel_report(includeAround: true)`; implicit primești doar numărul lor.
 - Platformele pot limita temporar citirile. Raportul iese `partial` și spune ce sursă lipsește. Reîncearcă mai târziu, nu în buclă.
 - Fără Google Maps configurat lipsesc:
   - harta Google;
