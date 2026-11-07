@@ -67,6 +67,18 @@ Pagina: **Canale → Analiză → Concurență** (`/channels?tab=business&sectio
 - `insights`:
   - observații cu ton: amenințare, oportunitate sau informație;
   - acțiunea propusă în `assistant`: `explain`, `promo_plan`, `price_check` sau `meta_ad`.
+
+**„Ce promoție să fac”:** pornește de la `competitor_intel_recommend_promotions` (fără `id` = ultimul raport încheiat; opțional `goal`: visibility, new_customers, basket, margin). Primești pe fiecare canal Wolt/Bolt/Glovo din aria raportului:
+- reducerea pe produse:
+  - produsele alese, adică ce reduc concurenții similar, unde ești mai scump decât prețul plătit la ei și cu marjă bună;
+  - procentul oferit de platformă care păstrează cel puțin 40% din câștigul de azi pe produs (după TVA, comisionul canalului și costul din rețetă);
+  - calculul pe produs: cât plătește clientul, câștigul înainte și după, cu cât trebuie să crească vânzările.
+- varianta doar pentru clienții noi, când piața e plină de reduceri;
+- livrarea gratuită cu comandă minimă, când e standard la vecini;
+- reclama, când concurenții plătesc locuri sponsorizate;
+- produsele la care ești deja mai ieftin, pe care nu le reduci.
+
+Fiecare are în `next` unealta de creare, argumentele știute și ce mai trebuie completat. Prezintă omului 2–3 variante cu cifrele lor. Bugetul și acordul îl alege el. Abia apoi creezi campania cu unealta din `next`. Produsele fără cost complet nu primesc recomandare: spune-i omului să completeze rețetele.
 - `coverage`:
   - ce sursă a fost limitată temporar de platformă, sărită sau incompletă (de exemplu Glovo fără orașul punctului ori prea multe tipuri de mâncare);
   - la `status=partial` spune omului ce lipsește, nu prezenta cifrele ca fiind complete.

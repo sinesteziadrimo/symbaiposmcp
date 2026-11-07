@@ -4,7 +4,7 @@
 
 **Recenzii pe loturi (QR pe ambalaj, fabrici):** [ghidul](recenzii-pe-loturi.md) — `get_product_review_lots`, `get_product_review_lot`, `get_product_review_trend`, `get_product_review_campaigns`, și cu `confirm: true` `configure_product_review_campaign`, `acknowledge_product_lot_alert`, `notify_product_lot_followers`. Verifică disponibilitatea în conexiunea live.
 
-**Concurența pe livrări (Glovo/Wolt/Bolt Food + Google Maps):** [ghidul](../skills/analizeaza-concurenta/SKILL.md). Citire: `competitor_intel_context`, `competitor_intel_report`, `competitor_intel_reports`, `competitor_intel_search`. Pornește un raport: `competitor_intel_run`. Lista urmăriților, cu dreptul de administrare a canalelor: `competitor_intel_watch_add`, `competitor_intel_watch_remove`. Raportul arată ce e public în aplicații, nu vânzările concurenților.
+**Concurența pe livrări (Glovo/Wolt/Bolt Food + Google Maps):** [ghidul](../skills/analizeaza-concurenta/SKILL.md). Citire: `competitor_intel_context`, `competitor_intel_report`, `competitor_intel_reports`, `competitor_intel_search`, `competitor_intel_recommend_promotions` (promoțiile concrete recomandate din concurență și marja ta). Pornește un raport: `competitor_intel_run`. Lista urmăriților, cu dreptul de administrare a canalelor: `competitor_intel_watch_add`, `competitor_intel_watch_remove`. Raportul arată ce e public în aplicații, nu vânzările concurenților.
 
 **Produse și vânzări:** [ghidul de căutare completă](cautare-produse-si-vanzari.md). `search_products_db` identifică produsele; `vanzari_produse` măsoară vânzările cerute fără limita top 50. Ambele au paginare și funcționează cu modulele de citire potrivite, fără SQL/read_all. Verifică schema live înainte de parametri noi.
 
