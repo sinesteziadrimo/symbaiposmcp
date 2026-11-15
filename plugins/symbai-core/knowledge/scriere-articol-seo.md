@@ -20,10 +20,22 @@ Un articol care rankează ȘI e citat de AI în 2026 = intenție potrivită cu S
 2. **Intro (primul paragraf) = răspunsul direct, în 40–60 de cuvinte**, cu cuvântul-cheie — blocul pe care Google (featured snippet) și AI-ul îl pot cita ca atare. Abia după el vine contextul/hook-ul cu problema reală a cititorului.
 3. **H2/H3 din brief, formulate ca ÎNTREBĂRI** (cum caută oamenii: „Cât costă…?", „Ce alegi pentru…?") — fiecare secțiune răspunde la o întrebare reală (din PAA). Răspuns concis imediat sub heading (~40-60 cuvinte), apoi detaliu. Fără salturi de nivel (H2→H4).
 4. **Experiență & specific** — detalii pe care doar businessul le știe (cum aleg ingredientele, ce să comanzi cu copii, parcarea de lângă terasă), **foto reale** ale localului/preparatelor cu **alt-text** descriptiv.
-5. **Elemente extractabile** (pentru featured snippet + AI): un **tabel** (preț/program/opțiuni), liste, definiții, plus **2–4 „fraze-citat"** — propoziții de sine stătătoare cu o cifră reală („Un meniu de prânz în centrul Clujului costă în medie 45–60 lei în 2026") — AI-ul citează exact astfel de fraze. Doar din date reale; nu inventa cifre.
+5. **Elemente extractabile** (pentru featured snippet + AI): o **listă** clară pentru preț/program/opțiuni (blogul nu afișează tabele — scrie „- Pachet de bază: 2 ore, 1 animator”), definiții, plus **2–4 „fraze-citat"** — propoziții de sine stătătoare cu o cifră reală („Un meniu de prânz în centrul Clujului costă în medie 45–60 lei în 2026") — AI-ul citează exact astfel de fraze. Doar din date reale; nu inventa cifre.
 6. **FAQ** la final (4-6 întrebări din PAA, răspuns 1-2 fraze) — hrănesc snippets + AI Overviews. (Panourile FAQ din Google au murit definitiv în 2026 — nu le promite; FAQ-ul se scrie ca TEXT VIZIBIL pentru cititor și pentru AI, nu pentru un panou.)
 7. **Linkuri** — **3–8 interne**, nu doar spre articole conexe (`list_blog_posts`), ci mai ales spre paginile care convertesc: meniul, produsele, rezervări, pagina locației. Articolul aduce traficul; linkurile interne îl duc spre comandă. Plus 1+ **extern** spre o sursă autoritară.
 8. **CTA & concluzie** — rezumat + îndemn clar (rezervare/comandă/citește mai mult).
+
+## Formatul conținutului (Markdown-ul blogului, nu HTML)
+
+`content` se scrie în Markdown-ul blogului — același format îl afișează site-ul, îl pune în pagina pentru Google și îl citește `seo_audit`:
+
+- `## Întrebare?` și `### Subtitlu` pentru titluri (H1 e titlul articolului — nu pune `#` în conținut);
+- un paragraf pe fiecare rând; `- ` liste, `1. ` liste numerotate; `**bold**`, `*italic*`;
+- `[text descriptiv](/rezervari)` pentru linkuri; `![alt descriptiv](url)` singur pe rând pentru imagini; `> ` citat; `---` separator;
+- îndemn: un rând `:::cta page=/rezervari title="Rezervă" cta="Cere ofertă"`, apoi descrierea, apoi `:::`;
+- întrebări frecvente: `:::faq`, apoi rânduri `Q: …` și `A: …`, apoi `:::`.
+
+HTML-ul trimis se afișează convertit automat, dar tabelele, iframe-urile și stilurile se pierd — scrie direct Markdown.
 
 ## Checklist on-page (înainte de publicare)
 
