@@ -10,6 +10,8 @@ La „creează trei asistenți, câte unul pentru producție, întrebări și fa
 4. Rezultatul local este o cerere de partajare, nu acces activ. După înregistrarea în firmă, folosește `connect_whatsapp_partajare_preview(connectionId, brandId)` pe conexiunea POS a aceleiași firme; verifică numărul, grupurile și drepturile. Aplică `connect_whatsapp_partajare_confirma` cu `expectedConsentHash` exact, `confirmed:true` și numai persoanele autorizate. Acordul explicit din cererea inițială se reutilizează; nu cere încă o confirmare formală pentru același scop.
 5. Dacă preview încă nu găsește cererea, recitește starea după sincronizare; nu genera alt UUID și nu dubla partajarea. Dacă drepturile ori identitatea diferă, rezolvă cauza înainte de aprobare. Recitește `connect_whatsapp_canale` și `asistenti_lista.taskTargets` pentru conexiunile active.
 
+Când omul își leagă singur numărul de firmă (tu nu ai serverul local al numărului lui), dă-i pașii exacți din panoul Symbai Connect de pe calculatorul lui: meniul **WhatsApp în firmă** → **Folosește numărul în POS** → alege firma și numărul, apoi la „Ce conversații incluzi?” varianta potrivită → **Pregătește conectarea** → aprobă în pagina Symbai care se deschide. Nu inventa alte nume de butoane („Partajează conversația cu firma” nu există).
+
 Pe versiuni fără uneltele locale, precizează lipsa exactă. Nu pretinde că există în catalogul POS și nu începe direct cu browserul. Verifică actualizarea Connect și reîncărcarea uneltelor. Browserul poate rămâne necesar pentru autentificarea titularului sau o funcție încă neexpusă, nu pentru un pas oferit deja prin MCP.
 
 ## Configurează și verifică fiecare asistent
