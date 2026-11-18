@@ -20,7 +20,7 @@ Userul (proprietar/manager de fabrică sau magazin alimentar) vinde sau valorize
 | „ce cântare am configurate", „cât a citit cântarul de la bucătărie", „e online" | `list_scale_devices` |
 | „adaugă/conectează cântarul de la recepție" | `create_scale_device` (nume + driver + conexiune serial COM/baud SAU rețea IP/port + `deviceId` = PC-ul cu Print Agent) |
 | „pune modelul X în catalog" (model suportat, înainte de a adăuga aparatul) | `register_scale_model` |
-| „produsul X se vinde la kg", „pune greutatea pe bon pentru Y", „activează catch-weight" | `set_product_catch_weight` (`productId`, `nominalWeight` kg/buc estimat, `pricePerWeight` + `pricingMode:"per_weight"` dacă prețul e pe kg) |
+| „produsul X se vinde la kg", „pune greutatea pe bon pentru Y", „activează catch-weight" | `set_product_catch_weight` (`productId`, `nominalWeight` kg/buc estimat, `pricePerWeight` + `pricingMode:"per_weight"` dacă prețul e pe kg) — **doar dacă produsul e numărat în bucăți**; cu unitatea deja kg nu e nimic de activat |
 | „oprește catch-weight pe produsul Z" | `set_product_catch_weight` (`enable:false`) |
 | „cât arată cântarul X", „citește greutatea" | `capture_weight` (`scaleDeviceId`) |
 | „cântarul meu Y nu e suportat, cereți integrarea", „vreau să folosesc cântarul Z" | `request_scale_integration` (vezi secțiunea dedicată) |
@@ -54,6 +54,7 @@ Dacă userul are un cântar cu protocol propriu pe care driverele actuale nu-l a
 - **Tool MCP întâi, click rar.** Configurarea (cântare, catch-weight pe produs) are tool — folosește-l, nu reproduce prin click. Chrome e doar pentru a arăta rezultatul pe ecran.
 - **Confirmă prin citire, nu „pare bine pe ecran".** Tool-ul întoarce `success` + un rezumat — ăla e adevărul. Re-verifici cu `list_scale_devices` / re-citire produs.
 - **Nu inventa cifre.** Prețul pe kg, greutatea nominală, portul serial — le iei de la user. Ce nu știe, îl ajuți să afle (ex. portul COM îl vede în setările Windows ale PC-ului cu Print Agent).
+- **Greutate ≠ cantitate.** Câmpurile de greutate (`weighedKg`, `weighedQty`, `capturedWeight`) sunt doar pentru marfa „la greutate” (numărată în bucăți) și doar cu cifra de pe cântar. La marfa ținută în kg (făină, umplutură, cremă) cantitatea e deja greutatea: lasă câmpurile goale, nu copia cantitatea în ele. Tabelul și exemplul real sunt în `knowledge/cantare-catch-weight.md`, secțiunea „Marfa ținută în kg NU e «la greutate»”.
 - **Ștergerea nu e prin conexiune.** Dacă userul vrea să șteargă un cântar sau un model, ghidează-l în aplicație (Setări).
 - **Permisiune**: `create_scale_device` / `register_scale_model` cer modulul **Setări & Configurare**; `set_product_catch_weight` cere **Produse & Meniuri**. Citirile și `request_scale_integration` cer grantul `readModule` aferent pe token. „Permisiune insuficientă" → portal Hub → Acces AI → bifează modulul.
 

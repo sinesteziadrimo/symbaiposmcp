@@ -8,6 +8,21 @@ Folosește `gaseste_in_aplicatie("cantare")` / `gaseste_in_aplicatie("setari imp
 
 De ce contează: la o fabrică/măcelărie/brânzărie, dacă vinzi la kg dar sistemul valorizează „pe bucată", pierzi bani la fiecare gram în plus dat gratis (giveaway) și nu poți factura corect către retail. Catch-weight rezolvă asta — leagă greutatea reală de lot, de preț și de eticheta cu cod de bare.
 
+## Marfa ținută în kg NU e „la greutate” (cea mai frecventă confuzie)
+
+Sunt două lucruri diferite, chiar dacă amândouă „se vând la kg”:
+
+| | Marfă ținută în kg | Marfă „la greutate” (catch-weight) |
+|---|---|---|
+| Unitatea de stoc | kg (sau g, l) | bucăți, baxuri, caserole |
+| Exemple | făină, umplutură de zmeură, cremă, zahăr, aluat | ceafă de porc pe bucată, roată de brânză, pește întreg |
+| Ce înseamnă „28,48” | 28,48 kg — cantitatea ESTE greutatea | 28 de bucăți; greutatea lor reală se cântărește separat |
+| Câmpurile de greutate (`weighedKg`, `weighedQty`, `capturedWeight`) | **rămân goale** | se completează cu cifra de pe cântar |
+
+Regula pentru asistent: **un câmp de greutate îl completezi numai cu cifra citită pe cântar sau spusă de om pentru o marfă „la greutate”.** Nu copia cantitatea în câmpul de greutate și nu calcula o greutate din cantitate. Exemplu real: la închiderea unui container de lucru, restul „22,5 kg de umplutură” se trimite doar ca `remainingQty: 22.5`; trimis și ca `weighedKg: 22.5`, s-a salvat pe palet ca greutate separată, iar la închiderea următoare operatorul a fost refuzat. Din 18.11.2026 serverul ignoră o astfel de greutate, dar nu te baza pe asta: câmpul gol e corect.
+
+„Produsul X se vinde la kg” cere `set_product_catch_weight` **numai** dacă produsul e numărat în bucăți. Dacă unitatea lui e deja kg, nu e nimic de activat.
+
 ## Cum se conectează un cântar
 
 Cântarul se conectează la **PC-ul care rulează Print Agent** (același calculator care vorbește cu imprimanta de bonuri / casa de marcat). De acolo Symbai citește greutatea. Conexiunea poate fi:
