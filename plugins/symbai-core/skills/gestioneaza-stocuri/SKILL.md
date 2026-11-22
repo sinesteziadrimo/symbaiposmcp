@@ -182,6 +182,13 @@ Finalizarea poate continua după răspunsul inițial. La `status:'finalizing'` s
 
 **O cantitate greșită într-un inventar existent se corectează în inventarul acela, nu cu un inventar nou pe aceeași dată.** Inventar încă deschis → `correct_stock_count_entry` pe intrarea greșită; inventar finalizat → `correct_completed_stock_count` pe produs (sau lot cu lot), cu previzualizare, motiv și acordul omului; corecții dus-întors rămase după recalculări → `recalculate_stock_count_position` (nu schimbă cantitatea numărată). Nu redeschide tot inventarul pentru câteva produse: redeschiderea stornează toate ajustările lui. Detalii: `knowledge/stocuri-inventar-furnizori.md` → „Verificarea unui inventar introdus din urmă”. Verifică în catalogul live ce unelte are instanța.
 
+**Marfa stă pe alt lot al aceluiași produs decât arată sistemul** (eticheta de pe recipient e a altui lot; stația spune „lotul nu are stoc disponibil”). Nu face un minus pe un lot și un plus pe altul prin ajustări de mână și nu scrie în baza de date. Alege unealta după cauză:
+- numărătoarea unui inventar **finalizat** a ajuns pe lotul greșit, sau lotul unei recepții introduse după numărare a fost pus pe 0 la aprobare → `correct_completed_stock_count` cu `lots`: 0 pe lotul greșit, cantitatea pe lotul corect, totalul rămâne. Previzualizarea verifică și aplicarea (`executionCheck`); dacă spune refuzat, nu cere acordul omului și urmează pasul din răspuns;
+- inventarul e încă **deschis** → numără pe lotul corect și corectează intrarea greșită înainte de aprobare; previzualizarea aprobării arată loturile recepțiilor introduse după numărare, care s-ar pune pe 0;
+- fără inventar în cauză, sau refuzul `STOCK_COUNT_CORRECTION_APPROVED_LATER` (inventar aprobat în altă zi decât numărarea) → marfa de acum se **numără pe loturi**: Inventar rapid în Symbai Staff, scanând etichetele, sau `preview_physical_inventory` / `apply_physical_inventory` cu `unlisted:'keep'`, câte un rând pe lot și ora numărării. Cifrele vin de la om, nu le deduci;
+- consumul unei operații a ieșit pe alt lot decât cel folosit → după ce lotul corect are stoc, `exec_correct_completed_consumption` pe lotul folosit.
+`audit_stock_lot_chronology` arată înainte dovezile loturilor. Tichet trimiți abia când niciuna nu se potrivește, cu uneltele încercate și refuzurile lor.
+
 Nu porni o a doua reprocesare peste una activă. Dacă vânzările trebuie refăcute după corectarea rețetelor ori a inventarelor, identifică un singur job și urmărește-l. Raportează separat cantitățile numărate, diferențele istorice, soldul curent și valorile încă provizorii. Nu compensa o lipsă de date prin recepții, transferuri ori prețuri presupuse.
 
 ## Tool-uri folosite
