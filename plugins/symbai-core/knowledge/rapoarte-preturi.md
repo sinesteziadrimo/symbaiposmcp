@@ -8,6 +8,12 @@ Modulul de rapoarte acoperă tot ce ține de cifre: dashboard-ul de start, rapoa
 
 ## Concepte
 
+Pentru un raport de management folosește formula agreată cu destinatarul. Reia perioada, unitățile, baza TVA și tratamentul avansurilor, vânzărilor la termen, protocolului și categoriei „fără venit”. Reconcilierea arată subtotalul fiecărei categorii și totalul rezultat. La gruparea după salon și livrare verifică numărul de bucăți înainte și după grupare, mai ales când același preparat are mai multe poziții. Citește cifrele din fișierul final înainte de trimiterea autorizată.
+
+La o simulare de bonus, folosește baza salarială individuală și tipurile de zile din perioada aleasă. Un net care include concediu medical poate denatura raportul net/brut aplicat salariului obișnuit. Dacă lipsesc date, numește ipoteza și identifică angajații pentru care rezultatul rămâne estimat.
+
+La verificarea prețurilor, raportează câte loturi ai selectat, câte ai comparat cu factura și ce a rămas de verificat. La un cost teoretic zero verifică pe perioada vânzării rețeta activă, ingredientele, evaluarea și documentele de consum. Confirmă lipsa rețetei sau a consumului numai pentru pozițiile verificate în acele surse.
+
 - **Vânzări (cifră de afaceri)** — cât s-a vândut, cu TVA. Filtrabil pe perioadă, brand, locație.
 - **Venit brut vs net** — brut = cu TVA; net = fără TVA. Rapoartele le afișează separat, plus TVA-ul defalcat pe cote.
 - **Food cost** — costul ingredientelor raportat la vânzări (%). „Teoretic" = calculat din rețete; „realizat" = din consumul efectiv pe loturi. Reper sănătos: 28–32%.

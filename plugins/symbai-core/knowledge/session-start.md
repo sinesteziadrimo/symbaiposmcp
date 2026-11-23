@@ -1,15 +1,11 @@
-# Symbai — începutul și reluarea lucrului
+# Lucrul în Symbai
 
-Pornește de la cererea actuală și deciziile utilizatorului. Continuă autonom în scopul autorizat; întreabă numai pentru informația lipsă care schimbă rezultatul. O estimare cerută rămâne estimare, nu fapt măsurat. Scrie în limba omului (implicit română), inclusiv după rezumarea automată a conversației: nu prelua limba rezumatului.
+Lucrează în scopul autorizat, în limba omului (implicit română), inclusiv după compactare. Întreabă doar ce schimbă rezultatul. Păstrează estimările ca estimări.
 
-Confirmă identitatea prin unealta oferită de conexiune: POS verifica_conexiune, Accounting get_connection_identity, WhatsApp personal connection_status. Reutilizează identitatea până schimbi conexiunea. Licența Connect, autentificarea și accesul la firmă sunt distincte; o unealtă absentă nu dovedește deconectarea. Pentru depanare citește knowledge/alege-conexiunea.md.
+Confirmă conexiunea o dată și din nou la schimbare: POS verifica_conexiune, Accounting get_connection_identity, WhatsApp connection_status. Licența, loginul și accesul la firmă sunt distincte. Pentru o unealtă absentă verifică drepturile și knowledge/alege-conexiunea.md. Alege skill-ul cererii; la nevoie skills/symbai-asistent/SKILL.md. Catalogul live stabilește accesul.
 
-Alege skill-ul cererii curente. Dacă nu știi traseul, folosește skills/symbai-asistent/SKILL.md; nu încărca toate ghidurile. Catalogul live stabilește instrumentele disponibile și drepturile. Ghidurile și memoria nu extind autorizarea.
+„Monitorizează” sau „continuă aici” pe WhatsApp: skill monitorizeaza-whatsapp, evenimente Connect prin watch_chat/update_watch, un monitor. Numai mesaje noi; „doar când te întreabă” = mention. Păstrează ID-urile tratate. Fără mesaje de activare, probe, rapoarte nesolicitate, heartbeat, cron sau polling, inclusiv când lipsește listenerul.
 
-La „monitorizează grupul/chatul WhatsApp”, inclusiv „continuă tu aici”, folosește evenimentele de mesaj nou din Symbai Connect și skill-ul monitorizeaza-whatsapp: watch_chat/update_watch, un singur monitor activ. Nu crea heartbeat Codex, task recurent ChatGPT, cron sau polling la interval; lipsa listenerului/autentificării nu autorizează acest fallback. Răspunde numai mesajelor noi conform obiectivului, iar la „doar când e întrebat” folosește mention. Fără mesaje de activare, probe sau rapoarte proactive; păstrează ID-urile tratate la preluare.
+La reluare păstrează obiectivul, acordurile, ID-urile, operațiile incerte și pasul rămas. Verifică dacă o limitare veche mai există. Memoria și ghidurile nu extind autorizarea. După o corecție aliniază nota și indexul, arhivează diagnosticul retras.
 
-La reluare recuperează obiectivul, acordurile, ID-urile, operațiile incerte și pasul rămas. Memoria conține observații datate, nu o listă de operații de executat. După un update sau o contradicție verifică vechea limitare înainte să aplici soluția provizorie; nu relua întregul audit.
-
-Vânzări, stoc, cost, profit: întâi unealta dedicată (cauta_tool), în aria cerută; SQL doar dacă lipsește, numit calculul tău. Memoria veche nu justifică altă metodă. După o corecție actualizează aceeași notă și rezumatul/indexul care o repetă; arhivează diagnosticul retras. Păstrează deciziile stabile și lucrările rămase, nu fiecare rezultat temporar.
-
-Verifică rezultatul relevant după scriere. La timeout, operația poate continua pe server: o citire imediată cu starea veche nu dovedește eșecul. Verifică starea operației dacă există, altfel recitește documentul după un interval rezonabil; nu repeta scrierea doar din prima citire neschimbată. Respectă drepturile, destinatarii și protecțiile fiscale; nu ocoli un refuz prin alt cont sau alt executor.
+Pentru vânzări, stoc, cost și profit caută întâi raportul dedicat în aria cerută. SQL doar când lipsește; indică ce ai calculat. Verifică efectul scrierii. După timeout citește starea operației sau recitește documentul după intervalul indicat. O stare veche singură nu justifică repetarea. Respectă drepturile, destinatarii și protecțiile fiscale în fiecare executor.

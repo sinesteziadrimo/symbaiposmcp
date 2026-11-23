@@ -32,6 +32,8 @@ Configurează participarea în grup care răspunde mesajelor umane (`always`) se
 
 ## Identifică înainte să modifici
 
+În `asistenti_lista`, `ceiling` arată plafonul proprietarului. Cere `catalogDrepturi:true` când ai nevoie de descrierile drepturilor, `unelte` pentru dreptul care deschide o unealtă și `templateId` pentru un șablon complet. Pentru participarea în Staff, citește `asistent_citeste` cu `sectiune=grupuri`, apoi `bindingId` pentru configurația aleasă. Dacă versiunea instalată oferă numai profilul, folosește indexul `bindings` din profil.
+
 Folosește `asistenti_lista` pe conexiunea nominală a firmei cerute. Lista oferă asistenții proprii, calculatoarele, modelele disponibile, grupurile și plafonul de acces. Nu selecta primul brand sau prima unitate. Același nume în altă firmă nu este același asistent.
 
 Pentru `@identificator`, găsește ID-ul în lista proprie și citește `asistent_citeste`. Nu încerca să administrezi asistenții altui angajat prin schimbarea unui ID. Lipsa uneltelor cere actualizarea conexiunii/Connect, nu înlocuirea cu un agent tehnic de grup sau cu chatul privat al proprietarului.
